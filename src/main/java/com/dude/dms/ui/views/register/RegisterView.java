@@ -2,7 +2,6 @@ package com.dude.dms.ui.views.register;
 
 import com.dude.dms.backend.data.Role;
 import com.dude.dms.backend.data.entity.User;
-import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.views.login.LoginView;
 import com.vaadin.flow.component.Tag;

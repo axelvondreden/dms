@@ -3,7 +3,6 @@ package com.dude.dms.ui.utils;
 import org.springframework.data.domain.Sort.Direction;
 
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 public class Const {
 
@@ -19,7 +18,6 @@ public class Const {
     public static final String TITLE_TAGS = "Tags";
     public static final String TITLE_LOGOUT = "Logout";
     public static final String TITLE_NOT_FOUND = "Page was not found";
-    public static final String TITLE_ACCESS_DENIED = "Access denied";
 
     public static final String[] DOC_SORT_FIELDS = { "uploadDate", "orderId" };
     public static final Direction DEFAULT_SORT_DIRECTION = Direction.ASC;

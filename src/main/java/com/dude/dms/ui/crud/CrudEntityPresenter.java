@@ -1,6 +1,5 @@
 package com.dude.dms.ui.crud;
 
-import com.dude.dms.app.HasLogger;
 import com.dude.dms.app.security.CurrentUser;
 import com.dude.dms.backend.data.entity.DataEntity;
 import com.dude.dms.backend.service.CrudService;
@@ -13,7 +12,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
 import java.util.function.Consumer;
 
-public class CrudEntityPresenter<E extends DataEntity> implements HasLogger {
+public class CrudEntityPresenter<E extends DataEntity> {
 
     private final CrudService<E> crudService;
 
@@ -49,22 +48,21 @@ public class CrudEntityPresenter<E extends DataEntity> implements HasLogger {
             return true;
         } catch (DataIntegrityViolationException e) {
             // Commit failed because of validation errors
-            consumeError(e, CrudErrorMessage.OPERATION_PREVENTED_BY_REFERENCES, true);
+            consumeError(CrudErrorMessage.OPERATION_PREVENTED_BY_REFERENCES, true);
         } catch (OptimisticLockingFailureException e) {
-            consumeError(e, CrudErrorMessage.CONCURRENT_UPDATE, true);
+            consumeError(CrudErrorMessage.CONCURRENT_UPDATE, true);
         } catch (EntityNotFoundException e) {
-            consumeError(e, CrudErrorMessage.ENTITY_NOT_FOUND, false);
+            consumeError(CrudErrorMessage.ENTITY_NOT_FOUND, false);
         } catch (ConstraintViolationException e) {
-            consumeError(e, CrudErrorMessage.REQUIRED_FIELDS_MISSING, false);
+            consumeError(CrudErrorMessage.REQUIRED_FIELDS_MISSING, false);
         } catch (RuntimeException e) {
             // Commit failed because of application-level data constraints
-            consumeError(e, e.getMessage(), true);
+            consumeError(e.getMessage(), true);
         }
         return false;
     }
 
-    private void consumeError(Throwable e, String message, boolean isPersistent) {
-        getLogger().debug(message, e);
+    private void consumeError(String message, boolean isPersistent) {
         view.showNotification(message, isPersistent);
     }
 

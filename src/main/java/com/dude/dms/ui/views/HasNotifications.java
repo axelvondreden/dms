@@ -10,6 +10,7 @@ import com.vaadin.flow.component.notification.Notification.Position;
 /**
  * Interface for views showing notifications to users
  */
+@FunctionalInterface
 public interface HasNotifications extends HasElement {
 
     default void showNotification(String message) {

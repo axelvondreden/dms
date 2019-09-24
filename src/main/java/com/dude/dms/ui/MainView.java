@@ -82,8 +82,7 @@ public class MainView extends AppLayout {
 
     private static Tab[] getAvailableTabs() {
         List<Tab> tabs = new ArrayList<>(4);
-        tabs.add(createTab(VaadinIcon.EDIT, Const.TITLE_DOCS,
-                DocsView.class));
+        tabs.add(createTab(VaadinIcon.EDIT, Const.TITLE_DOCS, DocsView.class));
         if (SecurityUtils.isAccessGranted(UsersView.class)) {
             tabs.add(createTab(VaadinIcon.USER, Const.TITLE_USERS, UsersView.class));
         }

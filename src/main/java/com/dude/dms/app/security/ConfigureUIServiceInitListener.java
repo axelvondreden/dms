@@ -17,11 +17,11 @@ import org.springframework.security.access.AccessDeniedException;
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
 
     @Override
-    public void serviceInit(ServiceInitEvent serviceInitEvent) {
-        serviceInitEvent.getSource().addUIInitListener(uiEvent -> {
+    public void serviceInit(ServiceInitEvent event) {
+        event.getSource().addUIInitListener(uiEvent -> {
             UI ui = uiEvent.getUI();
             ui.add(new OfflineBanner());
-            ui.addBeforeEnterListener(this::beforeEnter);
+            ui.addBeforeEnterListener(ConfigureUIServiceInitListener::beforeEnter);
         });
     }
 
@@ -30,7 +30,7 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
      *
      * @param event before navigation event with event details
      */
-    private void beforeEnter(BeforeEvent event) {
+    private static void beforeEnter(BeforeEvent event) {
         boolean accessGranted = SecurityUtils.isAccessGranted(event.getNavigationTarget());
         if (!accessGranted) {
             if (SecurityUtils.isUserLoggedIn()) {

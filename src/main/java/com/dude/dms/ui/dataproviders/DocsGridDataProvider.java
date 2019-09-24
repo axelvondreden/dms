@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/**
- * A pageable order data provider.
- */
 @SpringComponent
 @UIScope
 public class DocsGridDataProvider extends FilterablePageableDataProvider<Doc, DocFilter> {
