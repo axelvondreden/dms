@@ -1,6 +1,6 @@
 # Running the Project in Development Mode
 
-`mvn spring-boot:run`
+`clean spring-boot:run -Ddb.url=jdbc:mysql://ip:3306/dbname -Ddb.user= -Ddb.password=`
 
 Wait for the application to start
 

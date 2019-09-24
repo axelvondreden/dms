@@ -35,7 +35,6 @@ public class ExpenseService implements CrudService<Expense> {
         return expenseRepository;
     }
 
-    @Override
     public Expense createNew(User currentUser) {
         return null;
     }

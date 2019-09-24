@@ -100,7 +100,6 @@ public class DocService implements CrudService<Doc> {
         return docRepository;
     }
 
-    @Override
     @Transactional
     public Doc createNew(User currentUser) {
         Doc doc = new Doc(currentUser);
