@@ -24,10 +24,6 @@ public class UserHistoryService implements CrudService<UserHistory> {
         return userHistoryRepository;
     }
 
-    public Page<UserHistory> find(Pageable pageable) {
-        return userHistoryRepository.findBy(pageable);
-    }
-
     @Override
     public UserHistory save(UserHistory entity) {
         return userHistoryRepository.saveAndFlush(entity);

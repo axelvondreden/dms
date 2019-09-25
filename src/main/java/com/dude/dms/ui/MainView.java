@@ -3,9 +3,10 @@ package com.dude.dms.ui;
 import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.ui.utils.Const;
 import com.dude.dms.ui.views.HasConfirmation;
+import com.dude.dms.ui.views.accounts.AccountsView;
+import com.dude.dms.ui.views.docs.DocsView;
 import com.dude.dms.ui.views.persons.PersonsView;
 import com.dude.dms.ui.views.tags.TagsView;
-import com.dude.dms.ui.views.docs.DocsView;
 import com.dude.dms.ui.views.users.UsersView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -19,6 +20,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.Tabs.Orientation;
+import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
@@ -69,7 +71,7 @@ public class MainView extends AppLayout {
         String target = null;
         try {
             target = RouteConfiguration.forSessionScope().getUrl(getContent().getClass());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NotFoundException e) {
             //TODO
         }
         if (target != null) {
@@ -94,6 +96,9 @@ public class MainView extends AppLayout {
         tabs.add(createTab(VaadinIcon.EDIT, Const.TITLE_DOCS, DocsView.class));
         if (SecurityUtils.isAccessGranted(PersonsView.class)) {
             tabs.add(createTab(VaadinIcon.USERS, Const.TITLE_PERSONS, PersonsView.class));
+        }
+        if (SecurityUtils.isAccessGranted(AccountsView.class)) {
+            tabs.add(createTab(VaadinIcon.ACCESSIBILITY, Const.TITLE_ACCOUNTS, AccountsView.class));
         }
         if (SecurityUtils.isAccessGranted(UsersView.class)) {
             tabs.add(createTab(VaadinIcon.USER, Const.TITLE_USERS, UsersView.class));
