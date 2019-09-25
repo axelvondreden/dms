@@ -23,8 +23,7 @@ public class CrudEntityDataProvider<T extends DataEntity> extends FilterablePage
 
     private void setSortOrders() {
         QuerySortOrderBuilder builder = new QuerySortOrderBuilder();
-
-        builder.thenAsc("id");
+        builder.thenAsc(crudService.getPK());
         defaultSortOrders = new QuerySortOrderBuilder().build();
     }
 
