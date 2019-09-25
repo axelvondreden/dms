@@ -12,4 +12,6 @@ public interface FilterableCrudService<T extends DataEntity> extends CrudService
 
     long countAnyMatching(Optional<String> filter);
 
+    String getPK();
+
 }

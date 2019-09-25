@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.vaadin.artur.spring.dataprovider.FilterablePageableDataProvider;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -49,7 +48,7 @@ public class DocsGridDataProvider extends FilterablePageableDataProvider<Doc, Do
 
     private final DocService docService;
     private List<QuerySortOrder> defaultSortOrders;
-    private Consumer<Page<Doc>> pageObserver;
+    private Consumer<? super Page<Doc>> pageObserver;
 
     @Autowired
     public DocsGridDataProvider(DocService docService) {
@@ -72,7 +71,7 @@ public class DocsGridDataProvider extends FilterablePageableDataProvider<Doc, Do
     @Override
     protected Page<Doc> fetchFromBackEnd(Query<Doc, DocFilter> query, Pageable pageable) {
         DocFilter filter = query.getFilter().orElse(DocFilter.getEmptyFilter());
-        Page<Doc> page = docService.findAnyMatchingAfterUploadDate(Optional.ofNullable(filter.getFilter()), getFilterDate(filter.isShowPrevious()), pageable);
+        Page<Doc> page = docService.findByTitleLikeIgnoreCase(Optional.ofNullable(filter.getFilter()), pageable);
         if (pageObserver != null) {
             pageObserver.accept(page);
         }
@@ -87,14 +86,10 @@ public class DocsGridDataProvider extends FilterablePageableDataProvider<Doc, Do
     @Override
     protected int sizeInBackEnd(Query<Doc, DocFilter> query) {
         DocFilter filter = query.getFilter().orElse(DocFilter.getEmptyFilter());
-        return (int) docService.countAnyMatchingAfterUploadDate(Optional.ofNullable(filter.getFilter()), getFilterDate(filter.isShowPrevious()));
+        return (int) docService.countByTitleLikeIgnoreCase(Optional.ofNullable(filter.getFilter()));
     }
 
-    private static Optional<LocalDate> getFilterDate(boolean showPrevious) {
-        return showPrevious ? Optional.empty() : Optional.of(LocalDate.now().minusDays(1));
-    }
-
-    public void setPageObserver(Consumer<Page<Doc>> pageObserver) {
+    public void setPageObserver(Consumer<? super Page<Doc>> pageObserver) {
         this.pageObserver = pageObserver;
     }
 

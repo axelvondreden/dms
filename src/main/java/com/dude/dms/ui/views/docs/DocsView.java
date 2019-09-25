@@ -11,7 +11,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.*;
@@ -26,58 +25,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DocsView extends PolymerTemplate<TemplateModel> implements AfterNavigationObserver {
 
     @Autowired
-    private DocService service;
+    private DocService docService;
 
-    @Id
-    private Grid<Doc> employees;
-
-    @Id
+    @Id("grid")
+    private Grid<Doc> grid;
+    @Id("title")
     private TextField title;
-    @Id
-    private TextField lastname;
-    @Id
-    private TextField email;
-    @Id
-    private PasswordField password;
-
-    @Id
+    @Id("guid")
+    private TextField guid;
+    @Id("cancel")
     private Button cancel;
-    @Id
+    @Id("save")
     private Button save;
 
     private final Binder<Doc> binder;
 
     public DocsView() {
-        employees.addColumn(Doc::getTitle).setHeader("Title");
-        employees.addColumn(Doc::getUploadDate).setHeader("Uploaded");
+        grid.addColumn(Doc::getTitle).setHeader("Title");
+        grid.addColumn(Doc::getGuid).setHeader("GUID");
 
-        //when a row is selected or deselected, populate form
-        employees.asSingleSelect().addValueChangeListener(event -> populateForm(event.getValue()));
+        grid.asSingleSelect().addValueChangeListener(event -> populateForm(event.getValue()));
 
-        // Configure Form
         binder = new Binder<>(Doc.class);
-
-        // Bind fields. This where you'd define e.g. validation rules
         binder.bindInstanceFields(this);
-        // note that password field isn't bound since that property doesn't exist in
-        // Employee
-
-        // the grid valueChangeEvent will clear the form too
-        cancel.addClickListener(e -> employees.asSingleSelect().clear());
-
+        cancel.addClickListener(e -> grid.asSingleSelect().clear());
         save.addClickListener(e -> Notification.show("Not implemented"));
     }
 
     @Override
-    public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
-        employees.setItems(service.findAll());
+    public void afterNavigation(AfterNavigationEvent event) {
+        grid.setItems(docService.findAll());
     }
 
     private void populateForm(Doc value) {
-        // Value can be null as well, that clears the form
         binder.readBean(value);
-
-        // The password field isn't bound through the binder, so handle that
-        password.setValue("");
     }
 }

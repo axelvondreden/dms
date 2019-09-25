@@ -10,71 +10,41 @@ import "@vaadin/vaadin-text-field/vaadin-password-field.js";
 import "@vaadin/vaadin-button/vaadin-button.js";
 import "@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout.js";
 
-
-
 class DocsView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles">
+<style include="shared-styles">
         :host {
           display: block;
           height: 100%;
         }
       </style>
-
-      <vaadin-split-layout style="width: 100%; height: 100%;">
-        <div style="flex-grow:1;width:100%;" id="wrapper">
-          <vaadin-grid style="height:100%" theme="no-border" id="employees">
-          </vaadin-grid>
-        </div>
-        <div style="width:400px;padding:var(--lumo-space-l)">
-          <vaadin-form-layout>
-            <vaadin-form-item>
-              <label slot="label">First name</label>
-              <vaadin-text-field
-                class="full-width"
-                value=""
-                id="firstname"
-              ></vaadin-text-field>
-            </vaadin-form-item>
-            <vaadin-form-item>
-              <label slot="label">Last name</label>
-              <vaadin-text-field
-                class="full-width"
-                value=""
-                id="lastname"
-              ></vaadin-text-field>
-            </vaadin-form-item>
-            <vaadin-form-item>
-              <label slot="label">Email</label>
-              <vaadin-text-field
-                class="full-width"
-                value=""
-                id="email"
-              ></vaadin-text-field>
-            </vaadin-form-item>
-            <vaadin-form-item>
-              <label slot="label">Password</label>
-              <vaadin-password-field
-                class="full-width"
-                id="password"
-                ></vaadin-password-field>
-            </vaadin-form-item>
-          </vaadin-form-layout>
-          <vaadin-horizontal-layout
-            style="display:flex;flex-wrap:wrap-reverse;width:100%;justify-content:flex-end;"
-            theme="spacing"
-          >
-            <vaadin-button theme="tertiary" slot="" id="cancel">
-              Cancel
-            </vaadin-button>
-            <vaadin-button theme="primary" id="save">
-              Save
-            </vaadin-button>
-          </vaadin-horizontal-layout>
-        </div>
-      </vaadin-split-layout>
-    `;
+<vaadin-split-layout style="width: 100%; height: 100%;">
+ <div style="flex-grow:1;width:100%;" id="wrapper">
+  <vaadin-grid style="height:100%" theme="no-border" id="grid"></vaadin-grid>
+ </div>
+ <div style="width:400px;padding:var(--lumo-space-l)">
+  <vaadin-form-layout>
+   <vaadin-form-item>
+    <label slot="label">Title</label>
+    <vaadin-text-field class="full-width" value="" id="title"></vaadin-text-field>
+   </vaadin-form-item>
+   <vaadin-form-item>
+    <label slot="label">GUID</label>
+    <vaadin-text-field class="full-width" value="" id="guid"></vaadin-text-field>
+   </vaadin-form-item>
+  </vaadin-form-layout>
+  <vaadin-horizontal-layout style="display:flex;flex-wrap:wrap-reverse;width:100%;justify-content:flex-end;" theme="spacing">
+   <vaadin-button theme="tertiary" slot="" id="cancel">
+     Cancel 
+   </vaadin-button>
+   <vaadin-button theme="primary" id="save">
+     Save 
+   </vaadin-button>
+  </vaadin-horizontal-layout>
+ </div>
+</vaadin-split-layout>
+`;
   }
 
 

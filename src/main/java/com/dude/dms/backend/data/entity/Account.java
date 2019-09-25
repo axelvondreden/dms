@@ -3,13 +3,13 @@ package com.dude.dms.backend.data.entity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.List;
 
-@Entity(name = "accounts")
+@Entity
 public class Account extends DataEntity {
-
-    //@Type(type = "org.hibernate.type.NumericBooleanType")
 
     @Id
     @GeneratedValue
@@ -18,6 +18,9 @@ public class Account extends DataEntity {
     @NotBlank
     @Size(max = 50)
     private String name;
+
+    @OneToMany(mappedBy = "account")
+    private List<AccountHistory> history;
 
     public Long getAccount_id() {
         return account_id;
@@ -38,5 +41,13 @@ public class Account extends DataEntity {
     @Override
     public Long getId() {
         return account_id;
+    }
+
+    public List<AccountHistory> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<AccountHistory> history) {
+        this.history = history;
     }
 }

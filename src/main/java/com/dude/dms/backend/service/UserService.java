@@ -1,5 +1,6 @@
 package com.dude.dms.backend.service;
 
+import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,19 +55,19 @@ public class UserService implements FilterableCrudService<User> {
     }
 
     @Override
-    public User save(User currentUser, User entity) {
+    public User save(User entity) {
         return userRepository.saveAndFlush(entity);
     }
 
     @Override
     @Transactional
-    public void delete(User currentUser, User entity) {
-        throwIfDeletingSelf(currentUser, entity);
-        FilterableCrudService.super.delete(currentUser, entity);
+    public void delete(User entity) {
+        throwIfDeletingSelf(entity);
+        FilterableCrudService.super.delete(entity);
     }
 
-    private static void throwIfDeletingSelf(User currentUser, User user) {
-        if (currentUser.equals(user)) {
+    private static void throwIfDeletingSelf(User user) {
+        if (SecurityUtils.getUsername() == null || SecurityUtils.getUsername().equalsIgnoreCase(user.getLogin())) {
             throw new RuntimeException(DELETING_SELF_NOT_PERMITTED);
         }
     }

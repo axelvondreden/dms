@@ -2,6 +2,8 @@ package com.dude.dms.ui.views.register;
 
 import com.dude.dms.backend.data.Role;
 import com.dude.dms.backend.data.entity.User;
+import com.dude.dms.backend.data.entity.UserHistory;
+import com.dude.dms.backend.service.UserHistoryService;
 import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.views.login.LoginView;
 import com.vaadin.flow.component.Tag;
@@ -42,6 +44,8 @@ public class RegisterView extends PolymerTemplate<TemplateModel> {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserHistoryService userHistoryService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -82,7 +86,9 @@ public class RegisterView extends PolymerTemplate<TemplateModel> {
 
     private void register() {
         User user = new User(userName.getValue(), passwordEncoder.encode(password1.getValue()), roles.getValue());
-        userService.save(user, user);
+        userService.save(user);
+        UserHistory history = new UserHistory(user, user, "Created", true, false, false);
+        userHistoryService.save(history);
         UI.getCurrent().navigate(LoginView.class);
     }
 }

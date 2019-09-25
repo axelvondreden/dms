@@ -27,7 +27,7 @@ public class CrudEntityPresenter<E extends DataEntity> {
     }
 
     public void delete(E entity, Consumer<E> onSuccess, Consumer<E> onFail) {
-        if (executeOperation(() -> crudService.delete(currentUser.getUser(), entity))) {
+        if (executeOperation(() -> crudService.delete(entity))) {
             onSuccess.accept(entity);
         } else {
             onFail.accept(entity);
@@ -67,7 +67,7 @@ public class CrudEntityPresenter<E extends DataEntity> {
     }
 
     private void saveEntity(E entity) {
-        crudService.save(currentUser.getUser(), entity);
+        crudService.save(entity);
     }
 
     public boolean loadEntity(Long id, Consumer<E> onSuccess) {

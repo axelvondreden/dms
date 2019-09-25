@@ -3,11 +3,13 @@ package com.dude.dms.backend.data.entity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
-@Entity(name = "users")
+@Entity
 public class User extends DataEntity {
 
     @Id
@@ -25,6 +27,9 @@ public class User extends DataEntity {
     @NotBlank
     @Size(max = 255)
     private String role;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserHistory> history;
 
     public User() {
 
@@ -67,5 +72,13 @@ public class User extends DataEntity {
 
     public Long getUser_id() {
         return user_id;
+    }
+
+    public List<UserHistory> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<UserHistory> history) {
+        this.history = history;
     }
 }

@@ -51,14 +51,10 @@ public class TagService implements FilterableCrudService<Tag> {
         return tagRepository;
     }
 
-    public Tag createNew(User currentUser) {
-        return new Tag(currentUser);
-    }
-
     @Override
-    public Tag save(User currentUser, Tag entity) {
+    public Tag save(Tag entity) {
         try {
-            return FilterableCrudService.super.save(currentUser, entity);
+            return FilterableCrudService.super.save(entity);
         } catch (DataIntegrityViolationException e) {
             throw new RuntimeException("There is already a tag with that name.");
         }
