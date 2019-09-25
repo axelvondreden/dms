@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @Theme(value = Lumo.class, variant = Lumo.DARK)
 @Viewport(Const.VIEWPORT)
-@PWA(name = "Bakery App Starter", shortName = "dms", startPath = "login", backgroundColor = "#227aef", themeColor = "#227aef", offlinePath = "offline-page.html", offlineResources = "images/offline-login-banner.jpg")
+@PWA(name = "dms", shortName = "dms", startPath = "login", backgroundColor = "#227aef", themeColor = "#227aef", offlinePath = "offline-page.html", offlineResources = "images/offline-login-banner.jpg")
 public class MainView extends AppLayout {
 
     private final ConfirmDialog confirmDialog = new ConfirmDialog();

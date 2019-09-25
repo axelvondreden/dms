@@ -1,7 +1,8 @@
 import '@polymer/polymer/lib/elements/custom-style.js';
 const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="bakery-app-layout-theme" theme-for="vaadin-app-layout">
+$_documentContainer.innerHTML = `
+<dom-module id="dms-app-layout-theme" theme-for="vaadin-app-layout">
   <template>
     <style>
       :host {
@@ -55,180 +56,6 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-app-layout-theme" theme-
   </template>
 </dom-module>
 
-<dom-module id="bakery-login-theme" theme-for="vaadin-login-overlay-wrapper">
-  <template>
-    <style>
-      [part="brand"] {
-        background-image: url(frontend/images/login-banner.jpg);
-      }
-    </style>
-  </template>
-</dom-module>
-
-<dom-module id="bakery-crud-theme" theme-for="vaadin-crud">
-  <template>
-    <style>
-      :host {
-        height: 100%;
-      }
-
-      #new {
-        display: none;
-      }
-
-      [part="toolbar"] {
-        padding: 0 !important;
-      }
-
-      :host ::slotted(vaadin-grid) {
-        max-width: calc(964px + var(--lumo-space-m));
-        background-color: var(--lumo-base-color);
-      }
-
-      @media (min-width: 700px) {
-        :host {
-          flex-direction: column-reverse;
-        }
-      }
-    </style>
-  </template>
-</dom-module>
-
-<!-- Themes for dialogs -->
-<dom-module id="bakery-dialog-overlay-theme" theme-for="vaadin-dialog-overlay">
-  <template>
-    <style>
-      :host([theme~="orders"]) {
-        padding: var(--lumo-space-xs);
-      }
-
-      :host([theme~="orders"]) [part="overlay"] {
-        display: flex;
-        animation: none !important;
-        min-width: 300px;
-        outline: none;
-      }
-
-      :host([theme~="crud"]) [part="content"] {
-        padding: 0;
-      }
-
-      :host([theme~="orders"]) [part="content"],
-      :host([theme~="orders"]) [part="overlay"] {
-        max-width: 65em;
-        width: 100%;
-      }
-
-      @media (max-width: 600px), (max-height: 600px) {
-        :host([theme]) {
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          padding: 0;
-        }
-
-        :host([theme]) [part="content"] {
-          display: flex;
-          flex-direction: column;
-        }
-
-        :host([theme]) [part="overlay"] {
-          height: 100%;
-          border-radius: 0 !important;
-        }
-      }
-
-      /* we need explicitly set height for wrappers inside dialog-flow */
-      [part="content"] ::slotted(flow-component-renderer) {
-        height: 100%;
-      }
-    </style>
-  </template>
-</dom-module>
-
-<!-- Theme for the status selector, we need to theme the text-field instead of the combo-box -->
-<dom-module id="bakery-text-field-theme" theme-for="vaadin-text-field">
-  <template>
-    <style>
-      :host([status="new"]) [part~="input-field"],
-      :host([status="confirmed"]) [part~="input-field"] {
-        color: var(--lumo-primary-color);
-        background: var(--lumo-primary-color-10pct);
-      }
-
-      :host([status="ready"]) [part~="input-field"],
-      :host([status="delivered"]) [part~="input-field"] {
-        color: var(--lumo-success-color);
-        background: var(--lumo-success-color-10pct);
-      }
-
-      :host([status="problem"]) [part~="input-field"],
-      :host([status="cancelled"]) [part~="input-field"] {
-        color: var(--lumo-error-color);
-        background: var(--lumo-error-color-10pct);
-      }
-
-      :host([theme="white"]) [part~="input-field"] {
-        color: var(--lumo-secondary-text-color);
-        background-color: var(--lumo-base-color);
-      }
-    </style>
-  </template>
-</dom-module>
-
-<!-- Theme for the vaadin-grid -->
-<dom-module id="bakery-grid-theme" theme-for="vaadin-grid">
-  <template>
-    <style>
-      :host {
-        width: 100%;
-        margin: auto;
-      }
-
-      [part~="row"]:last-child [part~="header-cell"],
-      [part~="header-cell"]:not(:empty):not([details-cell]) {
-        padding-top: var(--lumo-space-l);
-        padding-bottom: var(--lumo-space-m);
-
-        font-size: var(--lumo-font-size-s);
-        border-bottom: 1px solid var(--lumo-shade-5pct);
-      }
-
-      :host(:not([theme~="no-row-borders"])) [part~="cell"]:not([part~="details-cell"]) {
-        border-top: 1px solid var(--lumo-shade-5pct);
-      }
-
-      /* a special grid theme for the bakery storefront view */
-      :host([theme~="orders"]) {
-        background: transparent;
-      }
-
-      :host([theme~="orders"]) [part~="cell"]:not(:empty):not([details-cell]) {
-        padding: 0;
-      }
-
-      :host([theme~="orders"]) [part~="row"][selected] [part~="cell"] {
-        background: transparent !important;
-      }
-
-      :host([theme~="orders"]) [part~="body-cell"] {
-        background: transparent;
-      }
-
-      @media (max-width: 600px) {
-        :host([theme~="orders"]) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
-          padding: 0 !important;
-        }
-      }
-
-      :host([theme~="dashboard"]) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
-        padding: 0;
-      }
-    </style>
-  </template>
-</dom-module>
-
 <!-- shared styles for all views -->
 <dom-module id="shared-styles">
   <template>
@@ -260,7 +87,7 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-app-layout-theme" theme-
       }
 
       .scrollable {
-        padding: var(--lumo-space-m);
+        padding: var(--lumo-space-s);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
       }
