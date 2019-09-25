@@ -50,7 +50,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public CurrentUser currentUser(UserRepository userRepository) {
         String login = SecurityUtils.getUsername();
-        //User user = login != null ? userRepository.findByLogin(login) : null;-
         User user = userRepository.findByLogin(login).orElse(null);
         return () -> user;
     }

@@ -3,6 +3,7 @@ package com.dude.dms.ui;
 import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.ui.utils.Const;
 import com.dude.dms.ui.views.HasConfirmation;
+import com.dude.dms.ui.views.persons.PersonsView;
 import com.dude.dms.ui.views.tags.TagsView;
 import com.dude.dms.ui.views.docs.DocsView;
 import com.dude.dms.ui.views.users.UsersView;
@@ -65,12 +66,20 @@ public class MainView extends AppLayout {
             ((HasConfirmation) getContent()).setConfirmDialog(confirmDialog);
         }
 
-        String target = RouteConfiguration.forSessionScope().getUrl(getContent().getClass());
-        Optional<Component> tabToSelect = menu.getChildren().filter(tab -> {
-            Component child = tab.getChildren().findFirst().get();
-            return child instanceof RouterLink && ((RouterLink) child).getHref().equals(target);
-        }).findFirst();
-        tabToSelect.ifPresent(tab -> menu.setSelectedTab((Tab) tab));
+        String target = null;
+        try {
+            target = RouteConfiguration.forSessionScope().getUrl(getContent().getClass());
+        } catch (IllegalArgumentException e) {
+            //TODO
+        }
+        if (target != null) {
+            String finalTarget = target;
+            Optional<Component> tabToSelect = menu.getChildren().filter(tab -> {
+                Component child = tab.getChildren().findFirst().get();
+                return child instanceof RouterLink && ((RouterLink) child).getHref().equals(finalTarget);
+            }).findFirst();
+            tabToSelect.ifPresent(tab -> menu.setSelectedTab((Tab) tab));
+        }
     }
 
     private static Tabs createMenuTabs() {
@@ -83,6 +92,9 @@ public class MainView extends AppLayout {
     private static Tab[] getAvailableTabs() {
         List<Tab> tabs = new ArrayList<>(4);
         tabs.add(createTab(VaadinIcon.EDIT, Const.TITLE_DOCS, DocsView.class));
+        if (SecurityUtils.isAccessGranted(PersonsView.class)) {
+            tabs.add(createTab(VaadinIcon.USERS, Const.TITLE_PERSONS, PersonsView.class));
+        }
         if (SecurityUtils.isAccessGranted(UsersView.class)) {
             tabs.add(createTab(VaadinIcon.USER, Const.TITLE_USERS, UsersView.class));
         }

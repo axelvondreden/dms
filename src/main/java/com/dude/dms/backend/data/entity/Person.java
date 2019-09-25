@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -24,7 +24,7 @@ public class Person extends DataEntity {
     @Size(max = 255)
     private String last_name;
 
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @OneToMany(mappedBy = "person")
     private List<PersonHistory> history;
@@ -49,11 +49,11 @@ public class Person extends DataEntity {
         this.last_name = last_name;
     }
 
-    public LocalDateTime getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(LocalDateTime dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

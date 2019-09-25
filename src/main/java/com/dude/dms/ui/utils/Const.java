@@ -12,10 +12,14 @@ public class Const {
     public static final String PAGE_DOCS = "docs";
     public static final String PAGE_USERS = "users";
     public static final String PAGE_TAGS = "tags";
+    public static final String PAGE_PERSONS = "persons";
+    public static final String PAGE_ACCOUNTS = "accounts";
 
     public static final String TITLE_DOCS = "Docs";
     public static final String TITLE_USERS = "Users";
     public static final String TITLE_TAGS = "Tags";
+    public static final String TITLE_PERSONS = "Persons";
+    public static final String TITLE_ACCOUNTS = "Accounts";
     public static final String TITLE_LOGOUT = "Logout";
     public static final String TITLE_NOT_FOUND = "Page was not found";
 
