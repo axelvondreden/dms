@@ -4,15 +4,13 @@ import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService implements FilterableCrudService<User> {
+public class UserService implements CrudService<User> {
 
     private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
     private final UserRepository userRepository;
@@ -22,48 +20,23 @@ public class UserService implements FilterableCrudService<User> {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> findByLogin(String login) {
-        return userRepository.findByLogin(login);
-    }
-
-    public Page<User> findAnyMatching(Optional<String> filter, Pageable pageable) {
-        if (filter.isPresent()) {
-            String repositoryFilter = '%' + filter.get() + '%';
-            return userRepository.findByLoginLikeIgnoreCaseOrRoleLikeIgnoreCase(repositoryFilter, repositoryFilter, pageable);
-        } else {
-            return find(pageable);
-        }
-    }
-
-    @Override
-    public long countAnyMatching(Optional<String> filter) {
-        if (filter.isPresent()) {
-            String repositoryFilter = '%' + filter.get() + '%';
-            return userRepository.countByLoginLikeIgnoreCaseOrRoleLikeIgnoreCase(repositoryFilter, repositoryFilter);
-        } else {
-            return count();
-        }
-    }
-
     @Override
     public UserRepository getRepository() {
         return userRepository;
     }
 
-    public Page<User> find(Pageable pageable) {
-        return userRepository.findBy(pageable);
+    public Optional<User> findByLogin(String login) {
+        return userRepository.findByLogin(login);
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override
-    public User save(User entity) {
-        return userRepository.saveAndFlush(entity);
-    }
-
-    @Override
-    @Transactional
     public void delete(User entity) {
         throwIfDeletingSelf(entity);
-        FilterableCrudService.super.delete(entity);
+        CrudService.super.delete(entity);
     }
 
     private static void throwIfDeletingSelf(User user) {

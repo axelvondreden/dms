@@ -10,32 +10,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UserHistoryService implements FilterableCrudService<UserHistory> {
+public class UserHistoryService implements CrudService<UserHistory> {
 
     private final UserHistoryRepository userHistoryRepository;
 
     @Autowired
     public UserHistoryService(UserHistoryRepository userHistoryRepository) {
         this.userHistoryRepository = userHistoryRepository;
-    }
-
-    public Page<UserHistory> findAnyMatching(Optional<String> filter, Pageable pageable) {
-        if (filter.isPresent()) {
-            String repositoryFilter = '%' + filter.get() + '%';
-            return userHistoryRepository.findByTextLikeIgnoreCase(repositoryFilter, pageable);
-        } else {
-            return find(pageable);
-        }
-    }
-
-    @Override
-    public long countAnyMatching(Optional<String> filter) {
-        if (filter.isPresent()) {
-            String repositoryFilter = '%' + filter.get() + '%';
-            return userHistoryRepository.countByTextLikeIgnoreCase(repositoryFilter);
-        } else {
-            return count();
-        }
     }
 
     @Override

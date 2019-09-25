@@ -21,17 +21,17 @@ public class DocService implements CrudService<Doc> {
         this.docRepository = docRepository;
     }
 
+    @Override
+    public JpaRepository<Doc, Long> getRepository() {
+        return docRepository;
+    }
+
     public Page<Doc> findByTitleLikeIgnoreCase(Optional<String> title, Pageable pageable) {
         return title.isPresent() ? docRepository.findByTitleLikeIgnoreCase(title.get(), pageable) : docRepository.findAll(pageable);
     }
 
     public long countByTitleLikeIgnoreCase(Optional<String> title) {
         return title.map(docRepository::countByTitleLikeIgnoreCase).orElseGet(docRepository::count);
-    }
-
-    @Override
-    public JpaRepository<Doc, Long> getRepository() {
-        return docRepository;
     }
 
     public List<Doc> findAll() {
