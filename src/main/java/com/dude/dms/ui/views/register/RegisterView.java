@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.data.entity.UserHistory;
 import com.dude.dms.backend.service.UserHistoryService;
 import com.dude.dms.backend.service.UserService;
+import com.dude.dms.ui.views.HasNotifications;
 import com.dude.dms.ui.views.login.LoginView;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -25,7 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Route("register")
 @Tag("register-view")
 @JsModule("./src/views/register/register-view.js")
-public class RegisterView extends PolymerTemplate<TemplateModel> {
+public class RegisterView extends PolymerTemplate<TemplateModel> implements HasNotifications {
 
     @Id("userName")
     private TextField userName;
@@ -78,9 +79,7 @@ public class RegisterView extends PolymerTemplate<TemplateModel> {
         } else {
             return true;
         }
-        Notification notification = new Notification(errorMsg, 3000);
-        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-        notification.open();
+        showNotification(errorMsg, true);
         return false;
     }
 
