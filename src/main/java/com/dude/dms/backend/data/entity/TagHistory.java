@@ -8,11 +8,11 @@ public class TagHistory extends History {
 
     @Id
     @GeneratedValue
-    private Long tag_history_id;
+    private Long tagHistoryId;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tagId")
     private Tag tag;
 
     public TagHistory() {
@@ -24,13 +24,13 @@ public class TagHistory extends History {
         this.tag = tag;
     }
 
-    public Long getTag_history_id() {
-        return tag_history_id;
+    public Long getTagHistoryId() {
+        return tagHistoryId;
     }
 
     @Override
     public Long getId() {
-        return tag_history_id;
+        return tagHistoryId;
     }
 
     public Tag getTag() {

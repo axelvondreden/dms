@@ -13,7 +13,7 @@ public class Tag extends DataEntity {
 
     @Id
     @GeneratedValue
-    private Long tag_id;
+    private Long tagId;
 
     @NotBlank
     @Size(max = 50)
@@ -30,8 +30,8 @@ public class Tag extends DataEntity {
 
     }
 
-    public Long getTag_id() {
-        return tag_id;
+    public Long getTagId() {
+        return tagId;
     }
 
     public String getName() {
@@ -44,7 +44,7 @@ public class Tag extends DataEntity {
 
     @Override
     public Long getId() {
-        return tag_id;
+        return tagId;
     }
 
     public List<TagHistory> getHistory() {

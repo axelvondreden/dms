@@ -8,11 +8,11 @@ public class UserHistory extends History {
 
     @Id
     @GeneratedValue
-    private Long user_history_id;
+    private Long userHistoryId;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     public UserHistory() {
@@ -24,13 +24,13 @@ public class UserHistory extends History {
         this.user = user;
     }
 
-    public Long getUser_history_id() {
-        return user_history_id;
+    public Long getUserHistoryId() {
+        return userHistoryId;
     }
 
     @Override
     public Long getId() {
-        return user_history_id;
+        return userHistoryId;
     }
 
     public User getUser() {

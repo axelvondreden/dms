@@ -43,8 +43,8 @@ public class PersonsView extends PolymerTemplate<TemplateModel> implements After
     private final Binder<Person> binder;
 
     public PersonsView() {
-        grid.addColumn(Person::getFirst_name).setHeader("First name");
-        grid.addColumn(Person::getLast_name).setHeader("Last name");
+        grid.addColumn(Person::getFirstName).setHeader("First name");
+        grid.addColumn(Person::getLastName).setHeader("Last name");
         grid.addColumn(Person::getDateOfBirth).setHeader("Date of birth");
 
         grid.asSingleSelect().addValueChangeListener(event -> populateForm(event.getValue()));

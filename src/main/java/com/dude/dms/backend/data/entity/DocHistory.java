@@ -8,11 +8,11 @@ public class DocHistory extends History {
 
     @Id
     @GeneratedValue
-    private Long doc_history_id;
+    private Long docHistoryId;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "doc_id")
+    @JoinColumn(name = "docId")
     private Doc doc;
 
     public DocHistory() {
@@ -24,13 +24,13 @@ public class DocHistory extends History {
         this.doc = doc;
     }
 
-    public Long getDoc_history_id() {
-        return doc_history_id;
+    public Long getDocHistoryId() {
+        return docHistoryId;
     }
 
     @Override
     public Long getId() {
-        return doc_history_id;
+        return docHistoryId;
     }
 
     public Doc getDoc() {

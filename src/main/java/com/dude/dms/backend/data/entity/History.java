@@ -13,7 +13,7 @@ public abstract class History extends DataEntity {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "history_user_id")
+    @JoinColumn(name = "historyUserId")
     protected User historyUser;
 
     @NotBlank

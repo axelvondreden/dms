@@ -1,8 +1,12 @@
 package com.dude.dms.ui.views.register;
 
 import com.dude.dms.backend.data.Role;
+import com.dude.dms.backend.data.entity.Person;
+import com.dude.dms.backend.data.entity.PersonHistory;
 import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.data.entity.UserHistory;
+import com.dude.dms.backend.service.PersonHistoryService;
+import com.dude.dms.backend.service.PersonService;
 import com.dude.dms.backend.service.UserHistoryService;
 import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.views.HasNotifications;
@@ -12,8 +16,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -47,6 +49,10 @@ public class RegisterView extends PolymerTemplate<TemplateModel> implements HasN
     private UserService userService;
     @Autowired
     private UserHistoryService userHistoryService;
+    @Autowired
+    private PersonService personService;
+    @Autowired
+    private PersonHistoryService personHistoryService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -88,6 +94,12 @@ public class RegisterView extends PolymerTemplate<TemplateModel> implements HasN
         userService.save(user);
         UserHistory history = new UserHistory(user, user, "Created", true, false, false);
         userHistoryService.save(history);
+
+        Person person = new Person(firstName.getValue(), lastName.getValue(), null);
+        personService.save(person);
+        PersonHistory personHistory = new PersonHistory(person, user, "Created", true, false, false);
+        personHistoryService.save(personHistory);
+
         UI.getCurrent().navigate(LoginView.class);
     }
 }

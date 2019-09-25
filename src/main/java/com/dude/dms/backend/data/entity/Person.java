@@ -14,39 +14,49 @@ public class Person extends DataEntity {
 
     @Id
     @GeneratedValue
-    private Long person_id;
+    private Long personId;
 
     @NotBlank
     @Size(max = 255)
-    private String first_name;
+    private String firstName;
 
     @NotBlank
     @Size(max = 255)
-    private String last_name;
+    private String lastName;
 
     private LocalDate dateOfBirth;
 
     @OneToMany(mappedBy = "person")
     private List<PersonHistory> history;
 
-    public Long getPerson_id() {
-        return person_id;
+    public Person() {
+
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public Person(String firstName, String lastName, LocalDate dateOfBirth) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public Long getPersonId() {
+        return personId;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public LocalDate getDateOfBirth() {
@@ -59,7 +69,7 @@ public class Person extends DataEntity {
 
     @Override
     public Long getId() {
-        return person_id;
+        return personId;
     }
 
     public List<PersonHistory> getHistory() {

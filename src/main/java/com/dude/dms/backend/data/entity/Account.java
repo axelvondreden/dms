@@ -13,7 +13,7 @@ public class Account extends DataEntity {
 
     @Id
     @GeneratedValue
-    private Long account_id;
+    private Long accountId;
 
     @NotBlank
     @Size(max = 50)
@@ -22,12 +22,12 @@ public class Account extends DataEntity {
     @OneToMany(mappedBy = "account")
     private List<AccountHistory> history;
 
-    public Long getAccount_id() {
-        return account_id;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount_id(Long account_id) {
-        this.account_id = account_id;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
     public String getName() {
@@ -40,7 +40,7 @@ public class Account extends DataEntity {
 
     @Override
     public Long getId() {
-        return account_id;
+        return accountId;
     }
 
     public List<AccountHistory> getHistory() {

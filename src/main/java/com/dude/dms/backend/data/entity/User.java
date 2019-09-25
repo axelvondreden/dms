@@ -14,7 +14,7 @@ public class User extends DataEntity {
 
     @Id
     @GeneratedValue
-    private Long user_id;
+    private Long userId;
 
     @NotBlank
     @Size(max = 255)
@@ -67,11 +67,11 @@ public class User extends DataEntity {
 
     @Override
     public Long getId() {
-        return user_id;
+        return userId;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUserId() {
+        return userId;
     }
 
     public List<UserHistory> getHistory() {
