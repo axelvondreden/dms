@@ -37,11 +37,14 @@ public final class SecurityUtils {
      * has not signed in
      */
     public static String getUsername() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Object principal = context.getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
-            return userDetails.getUsername();
+        try {
+            SecurityContext context = SecurityContextHolder.getContext();
+            Object principal = context.getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
+                return userDetails.getUsername();
+            }
+        } catch (NullPointerException ignored) {
         }
         // Anonymous or no authentication.
         return null;

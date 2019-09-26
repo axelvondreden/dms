@@ -5,8 +5,7 @@ import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.repositories.UserRepository;
 import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.MainView;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -22,12 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EntityScan(basePackageClasses = User.class)
 public class Application extends SpringBootServletInitializer {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -38,8 +31,8 @@ public class Application extends SpringBootServletInitializer {
     }
 
     @Bean
-    InitializingBean createAdmin() {
-        return () -> {
+    public CommandLineRunner demoData(UserService userService, PasswordEncoder passwordEncoder) {
+        return args -> {
             if (!userService.findByLogin("admin").isPresent()) {
                 userService.create(new User("admin", passwordEncoder.encode("admin"), "admin"));
             }
