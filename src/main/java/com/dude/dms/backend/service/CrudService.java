@@ -36,4 +36,8 @@ public interface CrudService<T extends DataEntity> {
         }
         return entity;
     }
+
+    default T create(T entity) {
+        return getRepository().saveAndFlush(entity);
+    }
 }

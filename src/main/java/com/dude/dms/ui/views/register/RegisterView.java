@@ -2,9 +2,7 @@ package com.dude.dms.ui.views.register;
 
 import com.dude.dms.backend.data.Role;
 import com.dude.dms.backend.data.entity.Person;
-import com.dude.dms.backend.data.entity.PersonHistory;
 import com.dude.dms.backend.data.entity.User;
-import com.dude.dms.backend.data.entity.UserHistory;
 import com.dude.dms.backend.service.PersonHistoryService;
 import com.dude.dms.backend.service.PersonService;
 import com.dude.dms.backend.service.UserHistoryService;
@@ -90,15 +88,8 @@ public class RegisterView extends PolymerTemplate<TemplateModel> implements HasN
     }
 
     private void register() {
-        User user = new User(userName.getValue(), passwordEncoder.encode(password1.getValue()), roles.getValue());
-        userService.save(user);
-        UserHistory history = new UserHistory(user, user, "Created", true, false, false);
-        userHistoryService.save(history);
-
-        Person person = new Person(firstName.getValue(), lastName.getValue(), null);
-        personService.save(person);
-        PersonHistory personHistory = new PersonHistory(person, user, "Created", true, false, false);
-        personHistoryService.save(personHistory);
+        userService.create(new User(userName.getValue(), passwordEncoder.encode(password1.getValue()), roles.getValue()));
+        personService.create(new Person(firstName.getValue(), lastName.getValue(), null));
 
         UI.getCurrent().navigate(LoginView.class);
     }
