@@ -39,3 +39,4 @@ buildNumber.properties
 hs_err_pid*
 /node_modules
 /package-lock.json
+/webpack.generated.js
