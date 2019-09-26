@@ -13,7 +13,7 @@ public abstract class History extends DataEntity {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "historyUserId")
+    @JoinColumn
     protected User historyUser;
 
     @NotBlank
@@ -29,10 +29,10 @@ public abstract class History extends DataEntity {
 
     protected Boolean deleted;
 
-    public History() {
+    protected History() {
     }
 
-    public History(User historyUser, String text, Boolean created, Boolean edited, Boolean deleted) {
+    protected History(User historyUser, String text, Boolean created, Boolean edited, Boolean deleted) {
         this.historyUser = historyUser;
         this.text = text;
         this.created = created;

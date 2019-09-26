@@ -1,32 +1,28 @@
 package com.dude.dms.backend.data.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
-public class User extends DataEntity {
-
-    @Id
-    @GeneratedValue
-    private Long userId;
+public class User extends DataEntity implements Diffable<User> {
 
     @NotBlank
     @Size(max = 255)
-    private String login;
+    protected String login;
 
     @NotNull
     @Size(min = 4, max = 255)
-    private String passwordHash;
+    protected String passwordHash;
 
     @NotBlank
     @Size(max = 255)
-    private String role;
+    protected String role;
+
+    @OneToOne
+    protected Person person;
 
     @OneToMany(mappedBy = "user")
     private List<UserHistory> history;
@@ -65,20 +61,19 @@ public class User extends DataEntity {
         this.login = login;
     }
 
-    @Override
-    public Long getId() {
-        return userId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
     public List<UserHistory> getHistory() {
         return history;
     }
 
     public void setHistory(List<UserHistory> history) {
         this.history = history;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
     }
 }

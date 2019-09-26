@@ -34,9 +34,19 @@ public class PersonService implements CrudService<Person> {
 
     @Override
     public Person create(Person entity) {
+        Person person = CrudService.super.create(entity);
         User currentUser = userService.findByLogin(SecurityUtils.getUsername()).orElseThrow(() -> new RuntimeException("No User!"));
-        personHistoryService.create(new PersonHistory(entity, currentUser, "Created", true, false, false));
-        return CrudService.super.create(entity);
+        personHistoryService.create(new PersonHistory(person, currentUser, "Created", true, false, false));
+        return person;
+    }
+
+    /**
+     * Special method for creating a Person from the register-view, without being logged in
+     */
+    public Person create(Person entity, User createdBy) {
+        Person person = CrudService.super.create(entity);
+        personHistoryService.create(new PersonHistory(person, createdBy, "Created", true, false, false));
+        return person;
     }
 
     public List<Person> findAll() {

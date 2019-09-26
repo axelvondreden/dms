@@ -6,13 +6,9 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class DocHistory extends History {
 
-    @Id
-    @GeneratedValue
-    private Long docHistoryId;
-
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "docId")
+    @JoinColumn
     private Doc doc;
 
     public DocHistory() {
@@ -22,15 +18,6 @@ public class DocHistory extends History {
     public DocHistory(Doc doc, User historyUser, String text, boolean created, boolean edited, boolean deleted) {
         super(historyUser, text, created, edited, deleted);
         this.doc = doc;
-    }
-
-    public Long getDocHistoryId() {
-        return docHistoryId;
-    }
-
-    @Override
-    public Long getId() {
-        return docHistoryId;
     }
 
     public Doc getDoc() {

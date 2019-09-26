@@ -68,8 +68,10 @@ public class RegisterView extends PolymerTemplate<TemplateModel> implements HasN
         String errorMsg;
         if (userName.isEmpty()) {
             errorMsg = "Username can not empty!";
-        } else if (firstName.isEmpty() && lastName.isEmpty()) {
-            errorMsg = "First or Last name must be filled!";
+        } else if (firstName.isEmpty()) {
+            errorMsg = "First name must be filled!";
+        } else if (lastName.isEmpty()) {
+            errorMsg = "Last name must be filled!";
         } else if (roles.isEmpty()) {
             errorMsg = "Role must be selected!";
         } else if (password1.isEmpty() && password2.isEmpty()) {
@@ -88,8 +90,10 @@ public class RegisterView extends PolymerTemplate<TemplateModel> implements HasN
     }
 
     private void register() {
-        userService.create(new User(userName.getValue(), passwordEncoder.encode(password1.getValue()), roles.getValue()));
-        personService.create(new Person(firstName.getValue(), lastName.getValue(), null));
+        User user = userService.create(new User(userName.getValue(), passwordEncoder.encode(password1.getValue()), roles.getValue()));
+        Person person = personService.create(new Person(firstName.getValue(), lastName.getValue(), null), user);
+        user.setPerson(person);
+        userService.save(user);
 
         UI.getCurrent().navigate(LoginView.class);
     }

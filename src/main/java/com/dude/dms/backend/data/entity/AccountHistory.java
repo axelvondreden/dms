@@ -6,13 +6,9 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class AccountHistory extends History {
 
-    @Id
-    @GeneratedValue
-    private Long accountHistoryId;
-
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "accountId")
+    @JoinColumn
     private Account account;
 
     public AccountHistory() {
@@ -22,15 +18,6 @@ public class AccountHistory extends History {
     public AccountHistory(Account account, User historyUser, String text, boolean created, boolean edited, boolean deleted) {
         super(historyUser, text, created, edited, deleted);
         this.account = account;
-    }
-
-    public Long getAccountHistoryId() {
-        return accountHistoryId;
-    }
-
-    @Override
-    public Long getId() {
-        return accountHistoryId;
     }
 
     public Account getAccount() {

@@ -1,9 +1,6 @@
 package com.dude.dms.backend.data.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -11,10 +8,6 @@ import java.util.List;
 
 @Entity
 public class Person extends DataEntity {
-
-    @Id
-    @GeneratedValue
-    private Long personId;
 
     @NotBlank
     @Size(max = 255)
@@ -25,6 +18,9 @@ public class Person extends DataEntity {
     private String lastName;
 
     private LocalDate dateOfBirth;
+
+    @OneToOne(mappedBy = "person")
+    private User user;
 
     @OneToMany(mappedBy = "person")
     private List<PersonHistory> history;
@@ -37,10 +33,6 @@ public class Person extends DataEntity {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
-    }
-
-    public Long getPersonId() {
-        return personId;
     }
 
     public String getFirstName() {
@@ -67,16 +59,19 @@ public class Person extends DataEntity {
         this.dateOfBirth = dateOfBirth;
     }
 
-    @Override
-    public Long getId() {
-        return personId;
-    }
-
     public List<PersonHistory> getHistory() {
         return history;
     }
 
     public void setHistory(List<PersonHistory> history) {
         this.history = history;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -1,8 +1,6 @@
 package com.dude.dms.backend.data.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,10 +9,6 @@ import java.util.List;
 
 @Entity
 public class Doc extends DataEntity {
-
-    @Id
-    @GeneratedValue
-    private Long docId;
 
     @NotBlank
     @Size(max = 255)
@@ -30,25 +24,12 @@ public class Doc extends DataEntity {
 
     }
 
-    public Long getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Long docId) {
-        this.docId = docId;
-    }
-
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Override
-    public Long getId() {
-        return docId;
     }
 
     public String getGuid() {

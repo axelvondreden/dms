@@ -37,9 +37,19 @@ public class UserService implements CrudService<User> {
 
     @Override
     public User create(User entity) {
-        User currentUser = findByLogin(SecurityUtils.getUsername()).orElseThrow(() -> new RuntimeException("No User!"));
-        userHistoryService.create(new UserHistory(entity, currentUser, "Created", true, false, false));
-        return CrudService.super.create(entity);
+        User user = CrudService.super.create(entity);
+        User currentUser = findByLogin(SecurityUtils.getUsername()).orElse(user);
+        userHistoryService.create(new UserHistory(user, currentUser, "Created", true, false, false));
+        return user;
+    }
+
+    @Override
+    public User save(User entity) {
+        User before = load(entity.getId());
+        User after = CrudService.super.save(entity);
+        User currentUser = findByLogin(SecurityUtils.getUsername()).orElse(after);
+        userHistoryService.create(new UserHistory(after, currentUser, before.diff(after), true, false, false));
+        return after;
     }
 
     public Optional<User> findByLogin(String login) {
