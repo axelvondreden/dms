@@ -8,7 +8,6 @@ public class AccountHistory extends History {
 
     @NotNull
     @ManyToOne
-    @JoinColumn
     private Account account;
 
     public AccountHistory() {

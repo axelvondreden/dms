@@ -8,7 +8,6 @@ public class TagHistory extends History {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "tagId")
     private Tag tag;
 
     public TagHistory() {

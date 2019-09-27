@@ -8,7 +8,6 @@ public class DocHistory extends History {
 
     @NotNull
     @ManyToOne
-    @JoinColumn
     private Doc doc;
 
     public DocHistory() {

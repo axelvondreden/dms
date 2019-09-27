@@ -5,9 +5,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-public class Person extends DataEntity {
+public class Person extends DataEntity implements Diffable<Person>, Historical<PersonHistory> {
 
     @NotBlank
     @Size(max = 255)
@@ -21,6 +22,9 @@ public class Person extends DataEntity {
 
     @OneToOne(mappedBy = "person")
     private User user;
+
+    @ManyToMany
+    private Set<User> users;
 
     @OneToMany(mappedBy = "person")
     private List<PersonHistory> history;
@@ -59,6 +63,7 @@ public class Person extends DataEntity {
         this.dateOfBirth = dateOfBirth;
     }
 
+    @Override
     public List<PersonHistory> getHistory() {
         return history;
     }
@@ -73,5 +78,13 @@ public class Person extends DataEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }

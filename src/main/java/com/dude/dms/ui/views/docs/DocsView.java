@@ -4,17 +4,16 @@ import com.dude.dms.backend.data.entity.Doc;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.utils.Const;
+import com.dude.dms.ui.views.HistoricalCrudView;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Tag("docs-view")
@@ -22,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route(value = Const.PAGE_DOCS, layout = MainView.class)
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView.class)
 @PageTitle(Const.TITLE_DOCS)
-public class DocsView extends PolymerTemplate<TemplateModel> implements AfterNavigationObserver {
+public class DocsView extends HistoricalCrudView implements AfterNavigationObserver {
 
     @Autowired
     private DocService docService;

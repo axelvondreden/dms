@@ -5,9 +5,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-public class User extends DataEntity implements Diffable<User> {
+public class User extends DataEntity implements Diffable<User>, Historical<UserHistory> {
 
     @NotBlank
     @Size(max = 255)
@@ -23,6 +24,15 @@ public class User extends DataEntity implements Diffable<User> {
 
     @OneToOne
     protected Person person;
+
+    @ManyToMany(mappedBy = "users")
+    private List<Account> accounts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Doc> docs;
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Person> persons;
 
     @OneToMany(mappedBy = "user")
     private List<UserHistory> history;
@@ -61,6 +71,7 @@ public class User extends DataEntity implements Diffable<User> {
         this.login = login;
     }
 
+    @Override
     public List<UserHistory> getHistory() {
         return history;
     }
@@ -75,5 +86,29 @@ public class User extends DataEntity implements Diffable<User> {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public List<Doc> getDocs() {
+        return docs;
+    }
+
+    public void setDocs(List<Doc> docs) {
+        this.docs = docs;
+    }
+
+    public Set<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(Set<Person> persons) {
+        this.persons = persons;
     }
 }

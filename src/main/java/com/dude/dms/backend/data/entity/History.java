@@ -1,6 +1,5 @@
 package com.dude.dms.backend.data.entity;
 
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
@@ -13,8 +12,7 @@ public abstract class History extends DataEntity {
 
     @NotNull
     @ManyToOne
-    @JoinColumn
-    protected User historyUser;
+    private User historyUser;
 
     @NotBlank
     @Size(max = 255)
