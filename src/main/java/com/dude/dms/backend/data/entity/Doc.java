@@ -1,9 +1,6 @@
 package com.dude.dms.backend.data.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -24,6 +21,7 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     private User user;
 
     @ManyToMany
+    @JoinColumn
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "doc")

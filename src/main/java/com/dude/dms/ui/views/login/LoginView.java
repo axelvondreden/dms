@@ -2,7 +2,7 @@ package com.dude.dms.ui.views.login;
 
 import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.ui.utils.Const;
-import com.dude.dms.ui.views.docs.DocsView;
+import com.dude.dms.ui.views.crud.DocsView;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginI18n.Form;

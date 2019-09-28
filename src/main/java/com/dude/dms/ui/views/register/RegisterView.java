@@ -9,39 +9,28 @@ import com.dude.dms.backend.service.UserHistoryService;
 import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.views.HasNotifications;
 import com.dude.dms.ui.views.login.LoginView;
-import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Route("register")
-@Tag("register-view")
-@JsModule("./src/views/register/register-view.js")
-public class RegisterView extends PolymerTemplate<TemplateModel> implements HasNotifications {
+public class RegisterView extends VerticalLayout implements HasNotifications {
 
-    @Id("userName")
-    private TextField userName;
-    @Id("firstName")
-    private TextField firstName;
-    @Id("lastName")
-    private TextField lastName;
-    @Id("password1")
-    private PasswordField password1;
-    @Id("password2")
-    private PasswordField password2;
-    @Id("roles")
-    private ComboBox<String> roles;
-    @Id("submit")
-    private Button submit;
+    private final TextField userName;
+    private final TextField firstName;
+    private final TextField lastName;
+    private final PasswordField password1;
+    private final PasswordField password2;
+    private final ComboBox<String> roles;
 
     @Autowired
     private UserService userService;
@@ -56,6 +45,35 @@ public class RegisterView extends PolymerTemplate<TemplateModel> implements HasN
     private PasswordEncoder passwordEncoder;
 
     public RegisterView() {
+        setSizeFull();
+        getElement().getStyle().set("display", "flex").set("alignItems", "center").set("paddingTop", "100px");
+
+        userName = new TextField();
+        userName.addClassName("full-width");
+        firstName = new TextField();
+        firstName.addClassName("full-width");
+        lastName = new TextField();
+        lastName.addClassName("full-width");
+        password1 = new PasswordField();
+        password1.addClassName("full-width");
+        password2 = new PasswordField();
+        password2.addClassName("full-width");
+        roles = new ComboBox<>();
+        roles.addClassName("full-width");
+        Button submit = new Button();
+        submit.addClassName("full-width");
+        submit.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        add(
+                new FormItem(new Label("Username"), userName),
+                new FormItem(new Label("First Name"), firstName),
+                new FormItem(new Label("Last Name"), lastName),
+                new FormItem(new Label("Password"), password1),
+                new FormItem(new Label("Password"), password2),
+                new FormItem(new Label("Role"), roles),
+                new FormItem(submit)
+        );
+
         roles.setItems(Role.getAllRoles());
         submit.addClickListener(e -> {
             if (validate()) {
