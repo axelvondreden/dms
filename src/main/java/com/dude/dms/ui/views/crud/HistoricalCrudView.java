@@ -30,7 +30,6 @@ public abstract class HistoricalCrudView<T extends Historical<U>, U extends Hist
         addToPrimary(grid);
 
         crudForm = new HistoricalCrudForm<>();
-        crudForm.setSizeFull();
         addToSecondary(crudForm);
     }
 

@@ -3,7 +3,6 @@ package com.dude.dms.ui.views.crud;
 import com.dude.dms.backend.data.entity.Historical;
 import com.dude.dms.backend.data.entity.History;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -20,8 +19,7 @@ public class HistoricalCrudForm<T extends Historical<U>, U extends History> exte
     }
 
     protected <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
-        ((HasStyle) component).addClassName("full-width");
-        addFormItem(new FormItem((Component) component), label);
+        addFormItem((Component) component, label);
         binder.bind(component, getter, setter);
     }
 
