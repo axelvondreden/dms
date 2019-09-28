@@ -24,6 +24,7 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "doc")
+    @OrderBy("timestamp")
     private List<DocHistory> history;
 
     public Doc() {

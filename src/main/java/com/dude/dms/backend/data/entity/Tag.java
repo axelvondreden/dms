@@ -3,6 +3,7 @@ package com.dude.dms.backend.data.entity;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
     private List<Person> persons;
 
     @OneToMany(mappedBy = "tag")
+    @OrderBy("timestamp")
     private List<TagHistory> history;
 
     public Tag() {

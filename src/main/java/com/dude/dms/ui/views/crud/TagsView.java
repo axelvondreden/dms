@@ -2,6 +2,7 @@ package com.dude.dms.ui.views.crud;
 
 import com.dude.dms.backend.data.entity.Tag;
 import com.dude.dms.backend.data.entity.TagHistory;
+import com.dude.dms.backend.service.TagHistoryService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.utils.Const;
@@ -15,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TagsView extends HistoricalCrudView<Tag, TagHistory> {
 
     @Autowired
-    public TagsView(TagService tagService) {
-        super(Tag.class, tagService);
+    public TagsView(TagService tagService, TagHistoryService historyService) {
+        super(Tag.class, tagService, historyService);
     }
 
     @Override

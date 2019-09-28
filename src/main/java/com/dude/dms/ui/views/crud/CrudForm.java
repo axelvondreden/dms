@@ -23,7 +23,7 @@ import com.vaadin.flow.function.ValueProvider;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
-public class HistoricalCrudForm<T extends DataEntity & Historical<U>, U extends History> extends FormLayout {
+public class CrudForm<T extends DataEntity & Historical<U>, U extends History> extends FormLayout {
 
     private Binder<T> binder;
 
@@ -35,14 +35,11 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U>, U extends 
 
     private final CrudService<T> service;
 
-    protected HistoricalCrudForm(Class<T> clazz, CrudService<T> service) {
+    protected CrudForm(Class<T> clazz, CrudService<T> service) {
         this.clazz = clazz;
         this.service = service;
 
-        setWidth("300px");
-
         binder = new Binder<>();
-        getElement().getStyle().set("padding", "10px");
     }
 
     protected <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
@@ -57,7 +54,7 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U>, U extends 
         binder.forField(component).withValidator(validator, errorMessage).bind(getter, setter);
     }
 
-    protected void create() {
+    private void create() {
         Optional<T> opt = createEmpty();
         opt.ifPresent(instance -> {
             BinderValidationStatus<T> status = binder.validate();

@@ -2,6 +2,7 @@ package com.dude.dms.ui.views.crud;
 
 import com.dude.dms.backend.data.entity.Doc;
 import com.dude.dms.backend.data.entity.DocHistory;
+import com.dude.dms.backend.service.DocHistoryService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.utils.Const;
@@ -17,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
 
     @Autowired
-    public DocsView(DocService docService) {
-        super(Doc.class, docService);
+    public DocsView(DocService docService, DocHistoryService historyService) {
+        super(Doc.class, docService, historyService);
     }
 
     @Override

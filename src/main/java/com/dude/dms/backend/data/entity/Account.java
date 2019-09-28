@@ -3,6 +3,7 @@ package com.dude.dms.backend.data.entity;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -15,6 +16,7 @@ public class Account extends DataEntity implements Diffable<Account>, Historical
     private String name;
 
     @OneToMany(mappedBy = "account")
+    @OrderBy("timestamp")
     private List<AccountHistory> history;
 
     @ManyToMany

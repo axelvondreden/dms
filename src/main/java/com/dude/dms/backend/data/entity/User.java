@@ -35,6 +35,7 @@ public class User extends DataEntity implements Diffable<User>, Historical<UserH
     private Set<Person> persons;
 
     @OneToMany(mappedBy = "user")
+    @OrderBy("timestamp")
     private List<UserHistory> history;
 
     public User() {

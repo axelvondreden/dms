@@ -2,6 +2,7 @@ package com.dude.dms.ui.views.crud;
 
 import com.dude.dms.backend.data.entity.Account;
 import com.dude.dms.backend.data.entity.AccountHistory;
+import com.dude.dms.backend.service.AccountHistoryService;
 import com.dude.dms.backend.service.AccountService;
 import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.utils.Const;
@@ -15,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AccountsView extends HistoricalCrudView<Account, AccountHistory> {
 
     @Autowired
-    public AccountsView(AccountService accountService) {
-        super(Account.class, accountService);
+    public AccountsView(AccountService accountService, AccountHistoryService historyService) {
+        super(Account.class, accountService, historyService);
     }
 
     @Override

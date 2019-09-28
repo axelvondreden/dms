@@ -30,6 +30,7 @@ public class Person extends DataEntity implements Diffable<Person>, Historical<P
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "person")
+    @OrderBy("timestamp")
     private List<PersonHistory> history;
 
     public Person() {
