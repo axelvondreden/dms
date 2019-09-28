@@ -8,8 +8,6 @@ import com.dude.dms.backend.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class TagService implements CrudService<Tag> {
 
@@ -37,9 +35,4 @@ public class TagService implements CrudService<Tag> {
     public TagRepository getRepository() {
         return tagRepository;
     }
-
-    public List<Tag> findAll() {
-        return tagRepository.findAll();
-    }
-
 }

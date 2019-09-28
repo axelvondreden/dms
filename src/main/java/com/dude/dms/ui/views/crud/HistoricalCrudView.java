@@ -1,52 +1,84 @@
 package com.dude.dms.ui.views.crud;
 
+import com.dude.dms.backend.data.entity.DataEntity;
 import com.dude.dms.backend.data.entity.Historical;
 import com.dude.dms.backend.data.entity.History;
+import com.dude.dms.backend.service.CrudService;
+import com.dude.dms.ui.views.HasNotifications;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 
-public abstract class HistoricalCrudView<T extends Historical<U>, U extends History> extends SplitLayout implements AfterNavigationObserver {
+public abstract class HistoricalCrudView<T extends DataEntity & Historical<U>, U extends History> extends SplitLayout implements AfterNavigationObserver, HasNotifications {
 
     protected Grid<T> grid;
 
-    protected HistoricalCrudForm<T, U> crudForm;
+    private final HistoricalCrudForm<T, U> crudForm;
 
-    protected abstract void setColumns();
+    protected final CrudService<T> service;
 
-    protected abstract void fillGrid();
+    protected abstract void defineProperties();
 
-    protected abstract void attachBinder();
+    protected HistoricalCrudView(Class<T> clazz, CrudService<T> service) {
+        this.service = service;
 
-    protected HistoricalCrudView() {
         setSizeFull();
         setOrientation(Orientation.HORIZONTAL);
 
         grid = new Grid<>();
         grid.setSizeFull();
-        setColumns();
         grid.asSingleSelect().addValueChangeListener(event -> fillForm(event.getValue()));
         addToPrimary(grid);
 
-        crudForm = new HistoricalCrudForm<>();
+        crudForm = new HistoricalCrudForm<>(clazz, service);
+        crudForm.setCreateListener(() -> {
+            fillGrid();
+            clearForm();
+            showNotification("Created!");
+        });
+        crudForm.setSaveListener(() -> showNotification("Saved!"));
+        crudForm.setErrorListener(errors -> errors.forEach(e -> showNotification(e.getErrorMessage(), true)));
         addToSecondary(crudForm);
     }
 
-    protected void fillForm(T entity) {
-        crudForm.getBinder().readBean(entity);
+    private void fillGrid() {
+        grid.setItems(service.findAll());
     }
 
-    protected void clearForm() {
+    private void fillForm(T entity) {
+        if (entity != null) {
+            crudForm.getBinder().setBean(entity);
+        }
+    }
+
+    private void clearForm() {
+        crudForm.getBinder().setBean(null);
         crudForm.getBinder().readBean(null);
+    }
+
+    protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
+        grid.addColumn(getter).setHeader(name);
+        crudForm.addFormField(name, component, getter, setter);
+    }
+
+    protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter, SerializablePredicate<? super R> validator, String errorMessage) {
+        grid.addColumn(getter).setHeader(name);
+        crudForm.addFormField(name, component, getter, setter, validator, errorMessage);
     }
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
+        grid.removeAllColumns();
         fillGrid();
-        if (!crudForm.getBinder().getFields().findAny().isPresent()) {
-            attachBinder();
-        }
+        crudForm.clear();
+        defineProperties();
+        crudForm.addButtons();
     }
 
 }

@@ -7,7 +7,6 @@ import com.dude.dms.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,14 +55,9 @@ public class UserService implements CrudService<User> {
         return userRepository.findByLogin(login);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
-
     private static void throwIfDeletingSelf(User user) {
         if (SecurityUtils.getUsername() == null || SecurityUtils.getUsername().equalsIgnoreCase(user.getLogin())) {
             throw new RuntimeException(DELETING_SELF_NOT_PERMITTED);
         }
     }
-
 }

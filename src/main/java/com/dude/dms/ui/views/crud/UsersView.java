@@ -17,28 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UsersView extends HistoricalCrudView<User, UserHistory> {
 
     @Autowired
-    private UserService userService;
-
-    public UsersView() {
-
-    }
-
-    protected void setColumns() {
-        grid.addColumn(User::getLogin).setHeader("Login");
-        grid.addColumn(User::getRole).setHeader("Role");
-    }
-
-    protected void fillGrid() {
-        grid.setItems(userService.findAll());
+    public UsersView(UserService userService) {
+        super(User.class, userService);
     }
 
     @Override
-    protected void attachBinder() {
+    protected void defineProperties() {
         ComboBox<String> roles = new ComboBox<>();
         roles.setItems(Role.getAllRoles());
         roles.setPreventInvalidInput(true);
         roles.setAllowCustomValue(false);
-        crudForm.addFormField("Login", new TextField(), User::getLogin, User::setLogin);
-        crudForm.addFormField("Role", roles, User::getRole, User::setRole);
+        addProperty("Login", new TextField(), User::getLogin, User::setLogin, s -> !s.isEmpty(), "Login can not be empty!");
+        addProperty("Role", roles, User::getRole, User::setRole, s -> s != null && !s.isEmpty(), "Role can not be empty!");
     }
 }

@@ -17,24 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
 
     @Autowired
-    private DocService docService;
-
-    public DocsView() {
-
-    }
-
-    protected void setColumns() {
-        grid.addColumn(Doc::getTitle).setHeader("Title");
-        grid.addColumn(Doc::getGuid).setHeader("GUID");
-    }
-
-    protected void fillGrid() {
-        grid.setItems(docService.findAll());
+    public DocsView(DocService docService) {
+        super(Doc.class, docService);
     }
 
     @Override
-    protected void attachBinder() {
-        crudForm.addFormField("Title", new TextField(), Doc::getTitle, Doc::setTitle);
-        crudForm.addFormField("GUID", new TextField(), Doc::getGuid, Doc::setGuid);
+    protected void defineProperties() {
+        addProperty("Title", new TextField(), Doc::getTitle, Doc::setTitle, s -> !s.isEmpty(), "Title can not be empty!");
+        addProperty("GUID", new TextField(), Doc::getGuid, Doc::setGuid);
     }
 }

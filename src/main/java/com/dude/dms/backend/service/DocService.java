@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,9 +47,5 @@ public class DocService implements CrudService<Doc> {
 
     public long countByTitleLikeIgnoreCase(Optional<String> title) {
         return title.map(docRepository::countByTitleLikeIgnoreCase).orElseGet(docRepository::count);
-    }
-
-    public List<Doc> findAll() {
-        return docRepository.findAll();
     }
 }

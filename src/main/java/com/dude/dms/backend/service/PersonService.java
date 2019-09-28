@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class PersonService implements CrudService<Person> {
 
@@ -47,9 +45,5 @@ public class PersonService implements CrudService<Person> {
         Person person = CrudService.super.create(entity);
         personHistoryService.create(new PersonHistory(person, createdBy, "Created", true, false, false));
         return person;
-    }
-
-    public List<Person> findAll() {
-        return personRepository.findAll();
     }
 }

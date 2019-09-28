@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.entity.DataEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @FunctionalInterface
 public interface CrudService<T extends DataEntity> {
@@ -39,5 +40,9 @@ public interface CrudService<T extends DataEntity> {
 
     default T create(T entity) {
         return getRepository().saveAndFlush(entity);
+    }
+
+    default List<T> findAll() {
+        return getRepository().findAll();
     }
 }

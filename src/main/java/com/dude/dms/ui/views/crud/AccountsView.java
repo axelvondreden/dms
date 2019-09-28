@@ -15,22 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AccountsView extends HistoricalCrudView<Account, AccountHistory> {
 
     @Autowired
-    private AccountService accountService;
-
-    public AccountsView() {
-
-    }
-
-    protected void setColumns() {
-        grid.addColumn(Account::getName).setHeader("Name");
-    }
-
-    protected void fillGrid() {
-        grid.setItems(accountService.findAll());
+    public AccountsView(AccountService accountService) {
+        super(Account.class, accountService);
     }
 
     @Override
-    protected void attachBinder() {
-        crudForm.addFormField("Name", new TextField(), Account::getName, Account::setName);
+    protected void defineProperties() {
+        addProperty("Name", new TextField(), Account::getName, Account::setName, s -> !s.isEmpty(), "name can not be empty!");
     }
 }

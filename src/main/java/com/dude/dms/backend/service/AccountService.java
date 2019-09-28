@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class AccountService implements CrudService<Account> {
 
@@ -37,9 +35,5 @@ public class AccountService implements CrudService<Account> {
         User currentUser = userService.findByLogin(SecurityUtils.getUsername()).orElseThrow(() -> new RuntimeException("No User!"));
         accountHistoryService.create(new AccountHistory(entity, currentUser, "Created", true, false, false));
         return CrudService.super.create(entity);
-    }
-
-    public List<Account> findAll() {
-        return accountRepository.findAll();
     }
 }

@@ -16,26 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PersonsView extends HistoricalCrudView<Person, PersonHistory> {
 
     @Autowired
-    private PersonService personService;
-
-    public PersonsView() {
-
-    }
-
-    protected void setColumns() {
-        grid.addColumn(Person::getFirstName).setHeader("First name");
-        grid.addColumn(Person::getLastName).setHeader("Last name");
-        grid.addColumn(Person::getDateOfBirth).setHeader("Date of birth");
-    }
-
-    protected void fillGrid() {
-        grid.setItems(personService.findAll());
+    public PersonsView(PersonService personService) {
+        super(Person.class, personService);
     }
 
     @Override
-    protected void attachBinder() {
-        crudForm.addFormField("First name", new TextField(), Person::getFirstName, Person::setFirstName);
-        crudForm.addFormField("Last name", new TextField(), Person::getLastName, Person::setLastName);
-        crudForm.addFormField("Date of birth", new DatePicker(), Person::getDateOfBirth, Person::setDateOfBirth);
+    protected void defineProperties() {
+        addProperty("First name", new TextField(), Person::getFirstName, Person::setFirstName, s -> !s.isEmpty(), "First name can not be empty!");
+        addProperty("Last name", new TextField(), Person::getLastName, Person::setLastName, s -> !s.isEmpty(), "Last name can not be empty!");
+        addProperty("Date of birth", new DatePicker(), Person::getDateOfBirth, Person::setDateOfBirth);
     }
 }

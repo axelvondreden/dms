@@ -15,22 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TagsView extends HistoricalCrudView<Tag, TagHistory> {
 
     @Autowired
-    private TagService tagService;
-
-    public TagsView() {
-
-    }
-
-    protected void setColumns() {
-        grid.addColumn(Tag::getName).setHeader("Name");
-    }
-
-    protected void fillGrid() {
-        grid.setItems(tagService.findAll());
+    public TagsView(TagService tagService) {
+        super(Tag.class, tagService);
     }
 
     @Override
-    protected void attachBinder() {
-        crudForm.addFormField("Name", new TextField(), Tag::getName, Tag::setName);
+    protected void defineProperties() {
+        addProperty("Name", new TextField(), Tag::getName, Tag::setName, s -> !s.isEmpty(), "Name can not be empty!");
     }
 }
