@@ -17,6 +17,9 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
     @ManyToMany(mappedBy = "tags")
     private List<Doc> docs;
 
+    @ManyToMany(mappedBy = "tags")
+    private List<Person> persons;
+
     @OneToMany(mappedBy = "tag")
     private List<TagHistory> history;
 
@@ -47,5 +50,13 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     public void setDocs(List<Doc> docs) {
         this.docs = docs;
+    }
+
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
     }
 }

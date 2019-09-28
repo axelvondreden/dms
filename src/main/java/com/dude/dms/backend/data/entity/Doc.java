@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHistory> {
+public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHistory>, Tagged {
 
     @NotBlank
     @Size(max = 255)
@@ -21,7 +21,6 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     private User user;
 
     @ManyToMany
-    @JoinColumn
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "doc")
@@ -64,10 +63,12 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
         this.user = user;
     }
 
+    @Override
     public Set<Tag> getTags() {
         return tags;
     }
 
+    @Override
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }

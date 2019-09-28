@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Person extends DataEntity implements Diffable<Person>, Historical<PersonHistory> {
+public class Person extends DataEntity implements Diffable<Person>, Historical<PersonHistory>, Tagged {
 
     @NotBlank
     @Size(max = 255)
@@ -25,6 +25,9 @@ public class Person extends DataEntity implements Diffable<Person>, Historical<P
 
     @ManyToMany
     private Set<User> users;
+
+    @ManyToMany
+    private Set<Tag> tags;
 
     @OneToMany(mappedBy = "person")
     private List<PersonHistory> history;
@@ -86,5 +89,15 @@ public class Person extends DataEntity implements Diffable<Person>, Historical<P
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @Override
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    @Override
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
 }
