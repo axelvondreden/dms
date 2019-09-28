@@ -12,13 +12,13 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
 
     @NotBlank
     @Size(max = 255)
-    private String title;
+    protected String title;
 
     @NotNull
-    private String guid;
+    protected String guid;
 
     @ManyToOne
-    private User user;
+    protected User user;
 
     @ManyToMany
     private Set<Tag> tags;

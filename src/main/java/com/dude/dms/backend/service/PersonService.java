@@ -1,6 +1,5 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.backend.data.entity.Person;
 import com.dude.dms.backend.data.entity.PersonHistory;
 import com.dude.dms.backend.data.entity.User;
@@ -10,19 +9,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PersonService implements CrudService<Person> {
+public class PersonService extends HistoricalCrudService<Person, PersonHistory> {
 
     private final PersonRepository personRepository;
 
     private final PersonHistoryService personHistoryService;
 
-    private final UserService userService;
-
     @Autowired
-    public PersonService(PersonRepository personRepository, PersonHistoryService personHistoryService, UserService userService) {
+    public PersonService(PersonRepository personRepository, PersonHistoryService personHistoryService) {
         this.personRepository = personRepository;
         this.personHistoryService = personHistoryService;
-        this.userService = userService;
     }
 
     @Override
@@ -31,18 +27,15 @@ public class PersonService implements CrudService<Person> {
     }
 
     @Override
-    public Person create(Person entity) {
-        Person person = CrudService.super.create(entity);
-        User currentUser = userService.findByLogin(SecurityUtils.getUsername()).orElseThrow(() -> new RuntimeException("No User!"));
-        personHistoryService.create(new PersonHistory(person, currentUser, "Created", true, false, false));
-        return person;
+    public PersonHistory createHistory(Person entity, User currentUser, String text, boolean created, boolean edited, boolean deleted) {
+        return new PersonHistory(entity, currentUser, text, created, edited, deleted);
     }
 
     /**
      * Special method for creating a Person from the register-view, without being logged in
      */
     public Person create(Person entity, User createdBy) {
-        Person person = CrudService.super.create(entity);
+        Person person = personRepository.saveAndFlush(entity);
         personHistoryService.create(new PersonHistory(person, createdBy, "Created", true, false, false));
         return person;
     }

@@ -1,10 +1,11 @@
 package com.dude.dms.ui.views.crud;
 
 import com.dude.dms.backend.data.entity.DataEntity;
+import com.dude.dms.backend.data.entity.Diffable;
 import com.dude.dms.backend.data.entity.Historical;
 import com.dude.dms.backend.data.entity.History;
-import com.dude.dms.backend.service.CrudService;
 import com.dude.dms.backend.service.HistoricalCrudService;
+import com.dude.dms.backend.service.HistoryCrudService;
 import com.dude.dms.ui.views.HasNotifications;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
@@ -17,7 +18,7 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import org.hibernate.Hibernate;
 
-public abstract class HistoricalCrudView<T extends DataEntity & Historical<U>, U extends History> extends SplitLayout implements AfterNavigationObserver, HasNotifications {
+public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & Diffable<T>, U extends History> extends SplitLayout implements AfterNavigationObserver, HasNotifications {
 
     protected Grid<T> grid;
 
@@ -25,11 +26,11 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U>, U
 
     private final CrudHistoryView<T, U> historyView;
 
-    protected final CrudService<T> service;
+    protected final HistoricalCrudService<T, U> service;
 
     protected abstract void defineProperties();
 
-    protected HistoricalCrudView(Class<T> clazz, CrudService<T> service, HistoricalCrudService<T, U> hisoryService) {
+    protected HistoricalCrudView(Class<T> clazz, HistoricalCrudService<T, U> service, HistoryCrudService<T, U> hisoryService) {
         this.service = service;
 
         setSizeFull();
@@ -44,12 +45,16 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U>, U
 
         crudForm = new CrudForm<>(clazz, service);
         crudForm.getElement().getStyle().set("padding", "10px");
-        crudForm.setCreateListener(() -> {
+        crudForm.setCreateListener(entity -> {
             fillGrid();
             clear();
             showNotification("Created!");
         });
-        crudForm.setSaveListener(() -> showNotification("Saved!"));
+        crudForm.setSaveListener(entity -> {
+            fillGrid();
+            grid.select(entity);
+            showNotification("Saved!");
+        });
         crudForm.setErrorListener(errors -> errors.forEach(e -> showNotification(e.getErrorMessage(), true)));
 
         historyView = new CrudHistoryView<>(hisoryService);

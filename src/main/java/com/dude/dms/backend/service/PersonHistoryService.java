@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class PersonHistoryService implements HistoricalCrudService<Person, PersonHistory> {
+public class PersonHistoryService extends HistoryCrudService<Person, PersonHistory> {
 
     private final PersonHistoryRepository personHistoryRepository;
 

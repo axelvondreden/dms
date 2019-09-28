@@ -1,6 +1,5 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.backend.data.entity.Account;
 import com.dude.dms.backend.data.entity.AccountHistory;
 import com.dude.dms.backend.data.entity.User;
@@ -10,19 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountService implements CrudService<Account> {
+public class AccountService extends HistoricalCrudService<Account, AccountHistory> {
 
     private final AccountRepository accountRepository;
 
-    private final AccountHistoryService accountHistoryService;
-
-    private final UserService userService;
-
     @Autowired
-    public AccountService(AccountRepository accountRepository, AccountHistoryService accountHistoryService, UserService userService) {
+    public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-        this.accountHistoryService = accountHistoryService;
-        this.userService = userService;
     }
 
     @Override
@@ -31,9 +24,7 @@ public class AccountService implements CrudService<Account> {
     }
 
     @Override
-    public Account create(Account entity) {
-        User currentUser = userService.findByLogin(SecurityUtils.getUsername()).orElseThrow(() -> new RuntimeException("No User!"));
-        accountHistoryService.create(new AccountHistory(entity, currentUser, "Created", true, false, false));
-        return CrudService.super.create(entity);
+    public AccountHistory createHistory(Account entity, User currentUser, String text, boolean created, boolean edited, boolean deleted) {
+        return new AccountHistory(entity, currentUser, text, created, edited, deleted);
     }
 }

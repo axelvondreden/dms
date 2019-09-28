@@ -1,8 +1,8 @@
 package com.dude.dms.ui.events;
 
 @FunctionalInterface
-public interface CrudFormCreateListener {
+public interface CrudFormCreateListener<T> {
 
-    void onCreate();
+    void onCreate(T entity);
 
 }

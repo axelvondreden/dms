@@ -12,6 +12,8 @@ public interface Diffable<T extends DataEntity> {
         Field[] fields = GenericTypeResolver.resolveTypeArgument(getClass(), Diffable.class).getDeclaredFields();
         for (Field field : fields) {
             try {
+                Object o1 = field.get(this);
+                Object o2 = field.get(other);
                 if (!Objects.equals(field.get(this), field.get(other))) {
                     diff.append(field.getName()).append(": ").append(field.get(this)).append(" -> ").append(field.get(other)).append('\n');
                 }

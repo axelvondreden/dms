@@ -12,13 +12,13 @@ public class Person extends DataEntity implements Diffable<Person>, Historical<P
 
     @NotBlank
     @Size(max = 255)
-    private String firstName;
+    protected String firstName;
 
     @NotBlank
     @Size(max = 255)
-    private String lastName;
+    protected String lastName;
 
-    private LocalDate dateOfBirth;
+    protected LocalDate dateOfBirth;
 
     @OneToOne(mappedBy = "person")
     private User user;

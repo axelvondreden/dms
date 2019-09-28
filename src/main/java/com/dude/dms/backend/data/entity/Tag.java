@@ -13,7 +13,7 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     @NotBlank
     @Size(max = 50)
-    private String name;
+    protected String name;
 
     @ManyToMany(mappedBy = "tags")
     private List<Doc> docs;

@@ -1,9 +1,10 @@
 package com.dude.dms.ui.views.crud;
 
 import com.dude.dms.backend.data.entity.DataEntity;
+import com.dude.dms.backend.data.entity.Diffable;
 import com.dude.dms.backend.data.entity.Historical;
 import com.dude.dms.backend.data.entity.History;
-import com.dude.dms.backend.service.CrudService;
+import com.dude.dms.backend.service.HistoricalCrudService;
 import com.dude.dms.ui.events.CrudFormCreateListener;
 import com.dude.dms.ui.events.CrudFormErrorListener;
 import com.dude.dms.ui.events.CrudFormSaveListener;
@@ -23,19 +24,19 @@ import com.vaadin.flow.function.ValueProvider;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
-public class CrudForm<T extends DataEntity & Historical<U>, U extends History> extends FormLayout {
+public class CrudForm<T extends DataEntity & Historical<U> & Diffable<T>, U extends History> extends FormLayout {
 
     private Binder<T> binder;
 
     private final Class<T> clazz;
 
-    private CrudFormCreateListener createListener;
-    private CrudFormSaveListener saveListener;
+    private CrudFormCreateListener<T> createListener;
+    private CrudFormSaveListener<T> saveListener;
     private CrudFormErrorListener errorListener;
 
-    private final CrudService<T> service;
+    private final HistoricalCrudService<T, U> service;
 
-    protected CrudForm(Class<T> clazz, CrudService<T> service) {
+    protected CrudForm(Class<T> clazz, HistoricalCrudService<T, U> service) {
         this.clazz = clazz;
         this.service = service;
 
@@ -66,7 +67,7 @@ public class CrudForm<T extends DataEntity & Historical<U>, U extends History> e
                 binder.writeBeanIfValid(instance);
                 service.create(instance);
                 if (createListener != null) {
-                    createListener.onCreate();
+                    createListener.onCreate(instance);
                 }
             }
         });
@@ -79,9 +80,10 @@ public class CrudForm<T extends DataEntity & Historical<U>, U extends History> e
                 errorListener.onError(status.getValidationErrors());
             }
         } else {
-            service.save(binder.getBean());
+            T bean = binder.getBean();
+            service.save(bean);
             if (saveListener != null) {
-                saveListener.onSave();
+                saveListener.onSave(bean);
             }
         }
     }
@@ -103,11 +105,11 @@ public class CrudForm<T extends DataEntity & Historical<U>, U extends History> e
         return binder;
     }
 
-    public void setCreateListener(CrudFormCreateListener createListener) {
+    public void setCreateListener(CrudFormCreateListener<T> createListener) {
         this.createListener = createListener;
     }
 
-    public void setSaveListener(CrudFormSaveListener saveListener) {
+    public void setSaveListener(CrudFormSaveListener<T> saveListener) {
         this.saveListener = saveListener;
     }
 

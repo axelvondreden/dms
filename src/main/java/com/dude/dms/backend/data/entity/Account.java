@@ -13,7 +13,7 @@ public class Account extends DataEntity implements Diffable<Account>, Historical
 
     @NotBlank
     @Size(max = 50)
-    private String name;
+    protected String name;
 
     @OneToMany(mappedBy = "account")
     @OrderBy("timestamp")

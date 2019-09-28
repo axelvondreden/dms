@@ -10,17 +10,14 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UserService implements CrudService<User> {
+public class UserService extends HistoricalCrudService<User, UserHistory> {
 
     private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
     private final UserRepository userRepository;
 
-    private final UserHistoryService userHistoryService;
-
     @Autowired
-    public UserService(UserRepository userRepository, UserHistoryService userHistoryService) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userHistoryService = userHistoryService;
     }
 
     @Override
@@ -31,24 +28,12 @@ public class UserService implements CrudService<User> {
     @Override
     public void delete(User entity) {
         throwIfDeletingSelf(entity);
-        CrudService.super.delete(entity);
+        super.delete(entity);
     }
 
     @Override
-    public User create(User entity) {
-        User user = CrudService.super.create(entity);
-        User currentUser = findByLogin(SecurityUtils.getUsername()).orElse(user);
-        userHistoryService.create(new UserHistory(user, currentUser, "Created", true, false, false));
-        return user;
-    }
-
-    @Override
-    public User save(User entity) {
-        User before = load(entity.getId());
-        User after = CrudService.super.save(entity);
-        User currentUser = findByLogin(SecurityUtils.getUsername()).orElse(after);
-        userHistoryService.create(new UserHistory(after, currentUser, before.diff(after), true, false, false));
-        return after;
+    public UserHistory createHistory(User entity, User currentUser, String text, boolean created, boolean edited, boolean deleted) {
+        return new UserHistory(entity, currentUser, text, created, edited, deleted);
     }
 
     public Optional<User> findByLogin(String login) {
@@ -59,5 +44,10 @@ public class UserService implements CrudService<User> {
         if (SecurityUtils.getUsername() == null || SecurityUtils.getUsername().equalsIgnoreCase(user.getLogin())) {
             throw new RuntimeException(DELETING_SELF_NOT_PERMITTED);
         }
+    }
+
+    @Override
+    protected User getCurrentUser(User entity) {
+        return findByLogin(SecurityUtils.getUsername()).orElse(entity);
     }
 }
