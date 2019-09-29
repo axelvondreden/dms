@@ -245,6 +245,16 @@
             <artifactId>hibernate-core</artifactId>
             <version>5.4.4.Final</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.appreciated</groupId>
+            <artifactId>card</artifactId>
+            <version>2.0.0.beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.appreciated</groupId>
+            <artifactId>swiper-flow</artifactId>
+            <version>2.0.0.alpha1</version>
+        </dependency>
     </dependencies>
 
 

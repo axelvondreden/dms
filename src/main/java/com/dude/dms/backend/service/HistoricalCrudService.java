@@ -25,14 +25,14 @@ public abstract class HistoricalCrudService<T extends DataEntity & Historical<U>
     @Override
     public T create(T entity) {
         T created = super.create(entity);
-        hiistoryService.create(createHistory(created, getCurrentUser(entity), "Created!", true, false, false));
+        hiistoryService.create(createHistory(created, getCurrentUser(entity), null, true, false, false));
         return created;
     }
 
     @Override
     public void delete(T entity) {
         super.delete(entity);
-        hiistoryService.create(createHistory(entity, getCurrentUser(entity), "Deleted!", false, false, true));
+        hiistoryService.create(createHistory(entity, getCurrentUser(entity), null, false, false, true));
     }
 
     protected User getCurrentUser(T entity) {

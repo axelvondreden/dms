@@ -1,4 +1,4 @@
-package com.dude.dms.ui.views.crud;
+package com.dude.dms.ui.views.components;
 
 import com.dude.dms.backend.data.entity.DataEntity;
 import com.dude.dms.backend.data.entity.Diffable;
@@ -36,20 +36,20 @@ public class CrudForm<T extends DataEntity & Historical<U> & Diffable<T>, U exte
 
     private final HistoricalCrudService<T, U> service;
 
-    protected CrudForm(Class<T> clazz, HistoricalCrudService<T, U> service) {
+    public CrudForm(Class<T> clazz, HistoricalCrudService<T, U> service) {
         this.clazz = clazz;
         this.service = service;
 
         binder = new Binder<>();
     }
 
-    protected <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
+    public <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
         addFormItem((Component) component, label);
         ((HasStyle) component).addClassName("full-width");
         binder.forField(component).bind(getter, setter);
     }
 
-    protected <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter, SerializablePredicate<? super R> validator, String errorMessage) {
+    public <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter, SerializablePredicate<? super R> validator, String errorMessage) {
         addFormItem((Component) component, label);
         ((HasStyle) component).addClassName("full-width");
         binder.forField(component).withValidator(validator, errorMessage).bind(getter, setter);
@@ -96,7 +96,7 @@ public class CrudForm<T extends DataEntity & Historical<U> & Diffable<T>, U exte
         }
     }
 
-    protected void clear() {
+    public void clear() {
         removeAll();
         binder = new Binder<>();
     }

@@ -2,7 +2,6 @@ package com.dude.dms.backend.data.entity;
 
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -14,7 +13,6 @@ public abstract class History extends DataEntity {
     @ManyToOne
     private User historyUser;
 
-    @NotBlank
     @Size(max = 255)
     protected String text;
 

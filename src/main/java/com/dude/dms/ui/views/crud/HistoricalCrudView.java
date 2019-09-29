@@ -7,6 +7,8 @@ import com.dude.dms.backend.data.entity.History;
 import com.dude.dms.backend.service.HistoricalCrudService;
 import com.dude.dms.backend.service.HistoryCrudService;
 import com.dude.dms.ui.views.HasNotifications;
+import com.dude.dms.ui.views.components.CrudForm;
+import com.dude.dms.ui.views.components.HistoryView;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
@@ -24,7 +26,7 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
 
     private final CrudForm<T, U> crudForm;
 
-    private final CrudHistoryView<T, U> historyView;
+    private final HistoryView<T, U> historyView;
 
     protected final HistoricalCrudService<T, U> service;
 
@@ -57,13 +59,16 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         });
         crudForm.setErrorListener(errors -> errors.forEach(e -> showNotification(e.getErrorMessage(), true)));
 
-        historyView = new CrudHistoryView<>(hisoryService);
+        historyView = new HistoryView<>(hisoryService);
         historyView.getElement().getStyle().set("padding", "10px");
 
         SplitLayout split = new SplitLayout(crudForm, historyView);
         split.setWidth("300px");
         split.setOrientation(Orientation.VERTICAL);
+        split.addSplitterDragendListener(event -> historyView.reload());
         addToSecondary(split);
+
+        addSplitterDragendListener(event -> historyView.reload());
     }
 
     protected void select(T entity) {
