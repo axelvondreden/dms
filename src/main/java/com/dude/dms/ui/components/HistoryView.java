@@ -32,8 +32,7 @@ public class HistoryView<T extends DataEntity & Historical<U>, U extends History
                 .withAlignment(FlexComponent.Alignment.CENTER)
                 .withJustifyContentMode(FlexComponent.JustifyContentMode.CENTER)
                 .withSlidesPerView("auto")
-                .withSpaceBetween(20.0)
-                .withPagination(PaginationBuilder.get().withEl(".swiper-pagination").build())
+                .withSpaceBetween(15.0)
                 .build()
         );
 
