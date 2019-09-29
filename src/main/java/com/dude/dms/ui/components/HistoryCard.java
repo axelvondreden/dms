@@ -1,4 +1,4 @@
-package com.dude.dms.ui.views.components;
+package com.dude.dms.ui.components;
 
 import com.dude.dms.backend.data.entity.History;
 import com.github.appreciated.card.RippleClickableCard;
