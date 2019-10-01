@@ -7,6 +7,7 @@ import com.dude.dms.backend.service.HistoryCrudService;
 import com.github.appreciated.Swiper;
 import com.github.appreciated.SwiperConfigBuilder;
 import com.github.appreciated.config.Direction;
+import com.github.appreciated.config.builder.MousewheelControlBuilder;
 import com.github.appreciated.config.builder.PaginationBuilder;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -32,6 +33,7 @@ public class HistoryView<T extends DataEntity & Historical<U>, U extends History
                 .withAlignment(FlexComponent.Alignment.CENTER)
                 .withJustifyContentMode(FlexComponent.JustifyContentMode.CENTER)
                 .withSlidesPerView("auto")
+                .withMousewheelControl(MousewheelControlBuilder.get().build())
                 .withSpaceBetween(15.0)
                 .build()
         );
