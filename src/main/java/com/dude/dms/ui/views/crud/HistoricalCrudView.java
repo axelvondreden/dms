@@ -1,14 +1,13 @@
 package com.dude.dms.ui.views.crud;
 
-import com.dude.dms.backend.data.entity.DataEntity;
-import com.dude.dms.backend.data.entity.Diffable;
-import com.dude.dms.backend.data.entity.Historical;
-import com.dude.dms.backend.data.entity.History;
+import com.dude.dms.app.security.SecurityUtils;
+import com.dude.dms.backend.data.entity.*;
 import com.dude.dms.backend.service.HistoricalCrudService;
 import com.dude.dms.backend.service.HistoryCrudService;
-import com.dude.dms.ui.views.HasNotifications;
+import com.dude.dms.backend.service.UserOptionService;
+import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.components.HistoricalCrudForm;
-import com.dude.dms.ui.components.HistoryView;
+import com.dude.dms.ui.views.HasNotifications;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
@@ -18,7 +17,7 @@ import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
-import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & Diffable<T>, U extends History> extends SplitLayout implements AfterNavigationObserver, HasNotifications {
 
@@ -27,6 +26,12 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
     private final HistoricalCrudForm<T, U> historicalCrudForm;
 
     protected final HistoricalCrudService<T, U> service;
+
+    @Autowired
+    private UserOptionService userOptionService;
+
+    @Autowired
+    private UserService userService;
 
     protected abstract void defineProperties();
 
@@ -78,6 +83,9 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         fillGrid();
         defineProperties();
         historicalCrudForm.addButtons();
+
+        UserOption splitterPos = userOptionService.findByUserAndKey(userService.findByLogin(SecurityUtils.getUsername()).get(), "splitterPos");
+        setSplitterPosition(splitterPos.getValue() != null ? Double.parseDouble(splitterPos.getValue()) : 80);
     }
 
 }

@@ -10,7 +10,6 @@ import com.dude.dms.ui.events.CrudFormCreateListener;
 import com.dude.dms.ui.events.CrudFormErrorListener;
 import com.dude.dms.ui.events.CrudFormSaveListener;
 import com.github.appreciated.IronCollapse;
-import com.github.appreciated.IronCollapseLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
@@ -146,6 +145,7 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
         historyView.getElement().getStyle().set("padding", "10px");
         IronCollapse collapse = new IronCollapse(historyView);
         collapse.setHeightFull();
+        collapse.setOpened(true);
         collapse.setHeight("20rem");
         collapse.getElement().getStyle().set("paddingTop", "20px");
         Button history = new Button("History", e -> {
