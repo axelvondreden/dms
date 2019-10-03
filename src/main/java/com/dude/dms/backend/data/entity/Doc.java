@@ -12,7 +12,10 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
 
     @NotBlank
     @Size(max = 255)
-    protected String title;
+    protected String importTitle;
+
+    @Size(max = 99999999)
+    protected String rawText;
 
     @NotNull
     protected String guid;
@@ -28,12 +31,26 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
 
     }
 
-    public String getTitle() {
-        return title;
+    public Doc(@NotBlank @Size(max = 255) String importTitle, String rawText, @NotNull String guid) {
+        this.importTitle = importTitle;
+        this.rawText = rawText;
+        this.guid = guid;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getImportTitle() {
+        return importTitle;
+    }
+
+    public void setImportTitle(String importTitle) {
+        this.importTitle = importTitle;
+    }
+
+    public String getRawText() {
+        return rawText;
+    }
+
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
     }
 
     public String getGuid() {

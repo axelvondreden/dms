@@ -6,6 +6,10 @@ import com.dude.dms.backend.service.DocHistoryService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.Const;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -24,7 +28,16 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
 
     @Override
     protected void defineProperties() {
-        addProperty("Title", new TextField(), Doc::getTitle, Doc::setTitle, s -> !s.isEmpty(), "Title can not be empty!");
+        addProperty("Title", new TextField(), Doc::getImportTitle, Doc::setImportTitle, s -> !s.isEmpty(), "Title can not be empty!");
+        grid.addComponentColumn(doc -> new Button(VaadinIcon.TEXT_LABEL.create(), e -> {
+            TextArea area = new TextArea();
+            area.setSizeFull();
+            area.setValue(doc.getRawText());
+            area.setReadOnly(true);
+            Dialog dialog = new Dialog(area);
+            dialog.setSizeFull();
+            dialog.open();
+        }));
         addProperty("GUID", new TextField(), Doc::getGuid, Doc::setGuid);
     }
 }
