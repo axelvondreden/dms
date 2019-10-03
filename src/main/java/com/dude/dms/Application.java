@@ -1,12 +1,11 @@
 package com.dude.dms;
 
 import com.dude.dms.app.security.SecurityConfiguration;
-import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.brain.polling.DocPollingService;
+import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.repositories.UserRepository;
 import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.MainView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
