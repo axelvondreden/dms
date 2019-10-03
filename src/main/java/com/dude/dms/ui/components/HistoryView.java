@@ -8,7 +8,6 @@ import com.github.appreciated.Swiper;
 import com.github.appreciated.SwiperConfigBuilder;
 import com.github.appreciated.config.Direction;
 import com.github.appreciated.config.builder.MousewheelControlBuilder;
-import com.github.appreciated.config.builder.PaginationBuilder;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 

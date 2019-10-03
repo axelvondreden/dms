@@ -1,7 +1,6 @@
 package com.dude.dms.backend.data.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.validation.constraints.NotBlank;
@@ -19,9 +18,6 @@ public class Account extends DataEntity implements Diffable<Account>, Historical
     @OrderBy("timestamp")
     private List<AccountHistory> history;
 
-    @ManyToMany
-    private List<User> users;
-
     public String getName() {
         return name;
     }
@@ -37,13 +33,5 @@ public class Account extends DataEntity implements Diffable<Account>, Historical
 
     public void setHistory(List<AccountHistory> history) {
         this.history = history;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
     }
 }

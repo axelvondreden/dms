@@ -14,8 +14,8 @@ public class DocHistory extends History {
 
     }
 
-    public DocHistory(Doc doc, User historyUser, String text, boolean created, boolean edited, boolean deleted) {
-        super(historyUser, text, created, edited, deleted);
+    public DocHistory(Doc doc, String text, boolean created, boolean edited, boolean deleted) {
+        super(text, created, edited, deleted);
         this.doc = doc;
     }
 

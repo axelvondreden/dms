@@ -2,7 +2,6 @@ package com.dude.dms.backend.service;
 
 import com.dude.dms.backend.data.entity.Account;
 import com.dude.dms.backend.data.entity.AccountHistory;
-import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +23,7 @@ public class AccountService extends HistoricalCrudService<Account, AccountHistor
     }
 
     @Override
-    public AccountHistory createHistory(Account entity, User currentUser, String text, boolean created, boolean edited, boolean deleted) {
-        return new AccountHistory(entity, currentUser, text, created, edited, deleted);
+    public AccountHistory createHistory(Account entity, String text, boolean created, boolean edited, boolean deleted) {
+        return new AccountHistory(entity, text, created, edited, deleted);
     }
 }

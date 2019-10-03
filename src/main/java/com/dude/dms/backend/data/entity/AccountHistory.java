@@ -14,8 +14,8 @@ public class AccountHistory extends History {
 
     }
 
-    public AccountHistory(Account account, User historyUser, String text, boolean created, boolean edited, boolean deleted) {
-        super(historyUser, text, created, edited, deleted);
+    public AccountHistory(Account account, String text, boolean created, boolean edited, boolean deleted) {
+        super(text, created, edited, deleted);
         this.account = account;
     }
 

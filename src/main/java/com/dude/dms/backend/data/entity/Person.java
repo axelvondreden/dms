@@ -20,12 +20,6 @@ public class Person extends DataEntity implements Diffable<Person>, Historical<P
 
     protected LocalDate dateOfBirth;
 
-    @OneToOne(mappedBy = "person")
-    private User user;
-
-    @ManyToMany
-    private Set<User> users;
-
     @ManyToMany
     private Set<Tag> tags;
 
@@ -74,22 +68,6 @@ public class Person extends DataEntity implements Diffable<Person>, Historical<P
 
     public void setHistory(List<PersonHistory> history) {
         this.history = history;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     @Override

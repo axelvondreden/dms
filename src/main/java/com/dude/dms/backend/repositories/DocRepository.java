@@ -11,10 +11,4 @@ public interface DocRepository extends JpaRepository<Doc, Long> {
 
     long countByTitleLikeIgnoreCase(String title);
 
-    //@Query("SELECT month(d.uploadDate) as month, count(*) as docs FROM docs d where year(uploadDate)=?1 group by month(uploadDate)")
-    //List<Object[]> countPerMonth(int year);
-
-    //@Query("SELECT day(d.uploadDate) as day, count(*) as docs FROM docs d where year(uploadDate)=?1 and month(uploadDate)=?2 group by day(uploadDate)")
-    //List<Object[]> countPerDay(int year, int month);
-
 }

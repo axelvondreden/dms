@@ -2,7 +2,6 @@ package com.dude.dms.backend.service;
 
 import com.dude.dms.backend.data.entity.Doc;
 import com.dude.dms.backend.data.entity.DocHistory;
-import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.repositories.DocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,8 +23,8 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
     }
 
     @Override
-    public DocHistory createHistory(Doc entity, User currentUser, String text, boolean created, boolean edited, boolean deleted) {
-        return new DocHistory(entity, currentUser, text, created, edited, deleted);
+    public DocHistory createHistory(Doc entity, String text, boolean created, boolean edited, boolean deleted) {
+        return new DocHistory(entity, text, created, edited, deleted);
     }
 
 }

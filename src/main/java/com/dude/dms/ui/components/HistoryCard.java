@@ -10,8 +10,6 @@ import java.time.format.DateTimeFormatter;
 
 public class HistoryCard<T extends History> extends RippleClickableCard {
 
-    private final SecondaryLabel userLabel;
-
     public HistoryCard(T entity) {
         setWidthFull();
 
@@ -34,10 +32,5 @@ public class HistoryCard<T extends History> extends RippleClickableCard {
             label.setWidthFull();
             add(label);
         }
-
-        userLabel = new SecondaryLabel(entity.getHistoryUser().getLogin());
-        add(userLabel);
-        userLabel.setVisible(false);
-        addClickListener(event -> userLabel.setVisible(!userLabel.isVisible()));
     }
 }

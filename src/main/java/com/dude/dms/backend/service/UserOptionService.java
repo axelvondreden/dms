@@ -1,6 +1,5 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.data.entity.UserOption;
 import com.dude.dms.backend.repositories.UserOptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,8 @@ public class UserOptionService extends CrudService<UserOption> {
         return userOptionRepository;
     }
 
-    public UserOption findByUserAndKey(User user, String key) {
-        return userOptionRepository.findByUserAndKey(user, key).orElse(new UserOption(key, null, user));
+    public UserOption findByKey(String key) {
+        return userOptionRepository.findByKey(key).orElse(new UserOption(key, null));
     }
 
 }

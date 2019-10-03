@@ -5,7 +5,7 @@ import com.dude.dms.backend.data.entity.PersonHistory;
 import com.dude.dms.backend.service.PersonHistoryService;
 import com.dude.dms.backend.service.PersonService;
 import com.dude.dms.ui.MainView;
-import com.dude.dms.ui.utils.Const;
+import com.dude.dms.ui.Const;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;

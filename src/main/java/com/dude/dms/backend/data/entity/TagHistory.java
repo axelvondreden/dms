@@ -14,8 +14,8 @@ public class TagHistory extends History {
 
     }
 
-    public TagHistory(Tag tag, User historyUser, String text, boolean created, boolean edited, boolean deleted) {
-        super(historyUser, text, created, edited, deleted);
+    public TagHistory(Tag tag, String text, boolean created, boolean edited, boolean deleted) {
+        super(text, created, edited, deleted);
         this.tag = tag;
     }
 

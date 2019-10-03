@@ -14,8 +14,8 @@ public class PersonHistory extends History {
 
     }
 
-    public PersonHistory(Person person, User historyUser, String text, boolean created, boolean edited, boolean deleted) {
-        super(historyUser, text, created, edited, deleted);
+    public PersonHistory(Person person, String text, boolean created, boolean edited, boolean deleted) {
+        super(text, created, edited, deleted);
         this.person = person;
     }
 

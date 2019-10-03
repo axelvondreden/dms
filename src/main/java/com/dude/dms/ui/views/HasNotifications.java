@@ -1,6 +1,6 @@
 package com.dude.dms.ui.views;
 
-import com.dude.dms.ui.utils.Const;
+import com.dude.dms.ui.Const;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;

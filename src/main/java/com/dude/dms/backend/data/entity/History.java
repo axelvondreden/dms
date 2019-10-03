@@ -1,6 +1,5 @@
 package com.dude.dms.backend.data.entity;
 
-import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -8,10 +7,6 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 public abstract class History extends DataEntity {
-
-    @NotNull
-    @ManyToOne
-    private User historyUser;
 
     @Size(max = 255)
     protected String text;
@@ -28,8 +23,7 @@ public abstract class History extends DataEntity {
     protected History() {
     }
 
-    protected History(User historyUser, String text, Boolean created, Boolean edited, Boolean deleted) {
-        this.historyUser = historyUser;
+    protected History(String text, Boolean created, Boolean edited, Boolean deleted) {
         this.text = text;
         this.created = created;
         this.edited = edited;
@@ -76,12 +70,4 @@ public abstract class History extends DataEntity {
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
-
-  public User getHistoryUser() {
-    return historyUser;
-  }
-
-  public void setHistoryUser(User historyUser) {
-    this.historyUser = historyUser;
-  }
 }

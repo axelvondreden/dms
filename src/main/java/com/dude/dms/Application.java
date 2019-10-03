@@ -1,11 +1,11 @@
 package com.dude.dms;
 
-import com.dude.dms.app.security.SecurityConfiguration;
 import com.dude.dms.backend.brain.BrainUtils;
-import com.dude.dms.backend.brain.polling.DocPollingService;
-import com.dude.dms.backend.data.entity.User;
-import com.dude.dms.backend.repositories.UserRepository;
-import com.dude.dms.backend.service.UserService;
+import com.dude.dms.backend.data.entity.Doc;
+import com.dude.dms.backend.data.entity.Person;
+import com.dude.dms.backend.repositories.DocRepository;
+import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.PersonService;
 import com.dude.dms.ui.MainView;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,12 +17,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class, UserService.class, BrainUtils.class }, exclude = ErrorMvcAutoConfiguration.class)
-@EnableJpaRepositories(basePackageClasses = UserRepository.class)
-@EntityScan(basePackageClasses = User.class)
+import java.time.LocalDate;
+
+@SpringBootApplication(scanBasePackageClasses = { MainView.class, Application.class, DocService.class, BrainUtils.class }, exclude = ErrorMvcAutoConfiguration.class)
+@EnableJpaRepositories(basePackageClasses = DocRepository.class)
+@EntityScan(basePackageClasses = Doc.class)
 @EnableTransactionManagement
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
@@ -37,11 +38,7 @@ public class Application extends SpringBootServletInitializer {
     }
 
     @Bean
-    public CommandLineRunner demoData(UserService userService, PasswordEncoder passwordEncoder) {
-        return args -> {
-            if (!userService.findByLogin("admin").isPresent()) {
-                userService.create(new User("admin", passwordEncoder.encode("admin"), "admin"));
-            }
-        };
+    public CommandLineRunner demoData(PersonService personService) {
+        return args -> personService.create(new Person("test", "tset", LocalDate.now()));
     }
 }

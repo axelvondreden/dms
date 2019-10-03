@@ -17,9 +17,6 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     @NotNull
     protected String guid;
 
-    @ManyToOne
-    protected User user;
-
     @ManyToMany
     private Set<Tag> tags;
 
@@ -54,14 +51,6 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
 
     public void setHistory(List<DocHistory> history) {
         this.history = history;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     @Override

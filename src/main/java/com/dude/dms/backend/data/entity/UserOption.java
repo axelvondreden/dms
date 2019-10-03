@@ -1,7 +1,6 @@
 package com.dude.dms.backend.data.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -15,17 +14,13 @@ public class UserOption extends DataEntity implements Diffable<UserOption> {
     @Size(max = 255)
     protected String value;
 
-    @OneToOne
-    private User user;
-
     public UserOption() {
 
     }
 
-    public UserOption(@NotBlank @Size(max = 255) String key, @Size(max = 255) String value, User user) {
+    public UserOption(@NotBlank @Size(max = 255) String key, @Size(max = 255) String value) {
         this.key = key;
         this.value = value;
-        this.user = user;
     }
 
     public String getKey() {
@@ -42,13 +37,5 @@ public class UserOption extends DataEntity implements Diffable<UserOption> {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

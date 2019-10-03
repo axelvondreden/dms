@@ -1,11 +1,9 @@
 package com.dude.dms.ui.views.crud;
 
-import com.dude.dms.app.security.SecurityUtils;
 import com.dude.dms.backend.data.entity.*;
 import com.dude.dms.backend.service.HistoricalCrudService;
 import com.dude.dms.backend.service.HistoryCrudService;
 import com.dude.dms.backend.service.UserOptionService;
-import com.dude.dms.backend.service.UserService;
 import com.dude.dms.ui.components.HistoricalCrudForm;
 import com.dude.dms.ui.views.HasNotifications;
 import com.vaadin.flow.component.HasValue;
@@ -29,9 +27,6 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
 
     @Autowired
     private UserOptionService userOptionService;
-
-    @Autowired
-    private UserService userService;
 
     protected abstract void defineProperties();
 
@@ -84,7 +79,7 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         defineProperties();
         historicalCrudForm.addButtons();
 
-        UserOption splitterPos = userOptionService.findByUserAndKey(userService.findByLogin(SecurityUtils.getUsername()).get(), "splitterPos");
+        UserOption splitterPos = userOptionService.findByKey("splitterPos");
         setSplitterPosition(splitterPos.getValue() != null ? Double.parseDouble(splitterPos.getValue()) : 80);
     }
 
