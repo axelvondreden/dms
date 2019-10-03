@@ -1,6 +1,8 @@
 package com.dude.dms.backend.brain.polling;
 
 import com.dude.dms.backend.brain.BrainUtils;
+import com.dude.dms.backend.brain.pdf.PdfToDocParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,9 @@ public class DocPollingService {
     private WatchService watcher;
 
     private final String docPath;
+
+    @Autowired
+    private PdfToDocParser pdfToDocParser;
 
     public DocPollingService() throws IOException {
         watcher = FileSystems.getDefault().newWatchService();
@@ -49,6 +54,11 @@ public class DocPollingService {
             // process files
             for (File file : files) {
                 System.out.println("Processing file: " + file.getName());
+                try {
+                    pdfToDocParser.parse(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

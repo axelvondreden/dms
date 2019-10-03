@@ -1,6 +1,7 @@
 package com.dude.dms;
 
 import com.dude.dms.app.security.SecurityConfiguration;
+import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.brain.polling.DocPollingService;
 import com.dude.dms.backend.data.entity.User;
 import com.dude.dms.backend.repositories.UserRepository;
@@ -19,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class, UserService.class, DocPollingService.class }, exclude = ErrorMvcAutoConfiguration.class)
+@SpringBootApplication(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class, UserService.class, BrainUtils.class }, exclude = ErrorMvcAutoConfiguration.class)
 @EnableJpaRepositories(basePackageClasses = UserRepository.class)
 @EntityScan(basePackageClasses = User.class)
 @EnableTransactionManagement
