@@ -17,13 +17,22 @@ public class PdfToDocParser {
     @Autowired
     private DocService docService;
 
-    public void parse(File file) throws IOException {
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        PDDocument pdDoc = PDDocument.load(file);
+    /**
+     * Creates a new {@link Doc} from a file.
+     *
+     * @param file the file used for parsing, this has a to be a pdf file.
+     */
+    public void parse(File file) {
+        try {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            PDDocument pdDoc = PDDocument.load(file);
 
-        Doc doc = new Doc(file.getName(), pdfStripper.getText(pdDoc), UUID.randomUUID().toString());
-        docService.create(doc);
+            Doc doc = new Doc(file.getName(), pdfStripper.getText(pdDoc), UUID.randomUUID().toString());
+            docService.create(doc);
 
-        pdDoc.close();
+            pdDoc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

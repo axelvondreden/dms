@@ -29,10 +29,11 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
     @Override
     protected void defineProperties() {
         addProperty("Title", new TextField(), Doc::getImportTitle, Doc::setImportTitle, s -> !s.isEmpty(), "Title can not be empty!");
-        grid.addComponentColumn(doc -> new Button(VaadinIcon.TEXT_LABEL.create(), e -> {
+        addGridColumn("Raw Text", doc -> new Button(VaadinIcon.TEXT_LABEL.create(), e -> {
             TextArea area = new TextArea();
-            area.setSizeFull();
+            area.setHeightFull();
             area.setValue(doc.getRawText());
+            area.setWidth("80vw");
             area.setReadOnly(true);
             Dialog dialog = new Dialog(area);
             dialog.setSizeFull();

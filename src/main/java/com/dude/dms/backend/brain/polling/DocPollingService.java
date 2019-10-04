@@ -54,11 +54,7 @@ public class DocPollingService {
             // process files
             for (File file : files) {
                 System.out.println("Processing file: " + file.getName());
-                try {
-                    pdfToDocParser.parse(file);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                pdfToDocParser.parse(file);
             }
         }
     }

@@ -6,6 +6,7 @@ import com.dude.dms.backend.service.HistoryCrudService;
 import com.dude.dms.backend.service.UserOptionService;
 import com.dude.dms.ui.components.HistoricalCrudForm;
 import com.dude.dms.ui.views.HasNotifications;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
@@ -61,15 +62,45 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         grid.setItems(service.findAll());
     }
 
-
+    /**
+     * Adds a new column to the grid and a new component to the CRUD form
+     *
+     * @param name      Grid header and form label
+     * @param component form component
+     * @param getter    valueprovider for column and formfield
+     * @param setter    value setter for column and formfield
+     * @param <R>       the component type
+     */
     protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
         grid.addColumn(getter).setHeader(name);
         historicalCrudForm.addFormField(name, component, getter, setter);
     }
 
+    /**
+     * Adds a new column to the grid and a new component to the CRUD form
+     *
+     * @param name         Grid header and form label
+     * @param component    form component
+     * @param getter       valueprovider for column and formfield
+     * @param setter       value setter for column and formfield
+     * @param validator    validation function for the value setter
+     * @param errorMessage error message in case the validator fails
+     * @param <R>          the component type
+     */
     protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter, SerializablePredicate<? super R> validator, String errorMessage) {
         grid.addColumn(getter).setHeader(name);
         historicalCrudForm.addFormField(name, component, getter, setter, validator, errorMessage);
+    }
+
+
+    /**
+     * Adds a new column to the grid
+     *
+     * @param header        grid header
+     * @param valueProvider component for column
+     */
+    protected void addGridColumn(String header, ValueProvider<T, Component> valueProvider) {
+        grid.addComponentColumn(valueProvider).setHeader(header);
     }
 
     @Override
