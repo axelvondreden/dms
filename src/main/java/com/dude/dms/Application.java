@@ -2,10 +2,10 @@ package com.dude.dms;
 
 import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.data.entity.Doc;
-import com.dude.dms.backend.data.entity.Person;
+import com.dude.dms.backend.data.entity.Tag;
 import com.dude.dms.backend.repositories.DocRepository;
 import com.dude.dms.backend.service.DocService;
-import com.dude.dms.backend.service.PersonService;
+import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.MainView;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,8 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.time.LocalDate;
 
 @SpringBootApplication(scanBasePackageClasses = { MainView.class, Application.class, DocService.class, BrainUtils.class }, exclude = ErrorMvcAutoConfiguration.class)
 @EnableJpaRepositories(basePackageClasses = DocRepository.class)
@@ -38,7 +36,9 @@ public class Application extends SpringBootServletInitializer {
     }
 
     @Bean
-    public CommandLineRunner demoData(PersonService personService) {
-        return args -> personService.create(new Person("test", "tset", LocalDate.now()));
+    public CommandLineRunner demoData(TagService tagService) {
+        return args -> {
+            tagService.create(new Tag("review"));
+        };
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHistory>, Tagged {
+public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHistory> {
 
     @NotBlank
     @Size(max = 255)
@@ -70,12 +70,10 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
         this.history = history;
     }
 
-    @Override
     public Set<Tag> getTags() {
         return tags;
     }
 
-    @Override
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }

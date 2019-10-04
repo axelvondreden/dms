@@ -21,20 +21,22 @@ public class DocPollingService implements PollingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocPollingService.class);
 
-    private final WatchService watcher;
+    private WatchService watcher;
 
-    private final String docPath;
+    private String docPath;
 
     @Autowired
     private PdfToDocParser pdfToDocParser;
 
-    public DocPollingService() throws IOException {
-        try (FileSystem fileSystem = FileSystems.getDefault()) {
-            watcher = fileSystem.newWatchService();
+    public DocPollingService() {
+        try {
+            watcher = FileSystems.getDefault().newWatchService();
             docPath = BrainUtils.getProperty("doc_path");
             if (docPath != null) {
                 Paths.get(docPath).register(watcher, ENTRY_CREATE);
             }
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
         }
 
         //TODO: check dir on startup

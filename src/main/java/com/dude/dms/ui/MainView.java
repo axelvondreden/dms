@@ -2,7 +2,6 @@ package com.dude.dms.ui;
 
 import com.dude.dms.ui.views.crud.AccountsView;
 import com.dude.dms.ui.views.crud.DocsView;
-import com.dude.dms.ui.views.crud.PersonsView;
 import com.dude.dms.ui.views.crud.TagsView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -67,7 +66,6 @@ public class MainView extends AppLayout {
     private static Tab[] getAvailableTabs() {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(createTab(VaadinIcon.EDIT, Const.TITLE_DOCS, DocsView.class));
-        tabs.add(createTab(VaadinIcon.USERS, Const.TITLE_PERSONS, PersonsView.class));
         tabs.add(createTab(VaadinIcon.ACCESSIBILITY, Const.TITLE_ACCOUNTS, AccountsView.class));
         tabs.add(createTab(VaadinIcon.CALENDAR, Const.TITLE_TAGS, TagsView.class));
         return tabs.toArray(new Tab[0]);

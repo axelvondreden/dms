@@ -18,15 +18,16 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
     @ManyToMany(mappedBy = "tags")
     private List<Doc> docs;
 
-    @ManyToMany(mappedBy = "tags")
-    private List<Person> persons;
-
     @OneToMany(mappedBy = "tag")
     @OrderBy("timestamp")
     private List<TagHistory> history;
 
     public Tag() {
 
+    }
+
+    public Tag(@NotBlank @Size(max = 50) String name) {
+        this.name = name;
     }
 
     public String getName() {
@@ -52,13 +53,5 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     public void setDocs(List<Doc> docs) {
         this.docs = docs;
-    }
-
-    public List<Person> getPersons() {
-        return persons;
-    }
-
-    public void setPersons(List<Person> persons) {
-        this.persons = persons;
     }
 }
