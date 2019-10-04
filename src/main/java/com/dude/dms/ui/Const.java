@@ -1,6 +1,6 @@
 package com.dude.dms.ui;
 
-public class Const {
+public final class Const {
 
     public static final String PAGE_ROOT = "";
     public static final String PAGE_DOCS = "docs";

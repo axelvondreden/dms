@@ -18,9 +18,9 @@ public abstract class DataEntity implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof DataEntity) {
-            return ((DataEntity) o).getId().equals(id);
+    public boolean equals(Object obj) {
+        if (obj instanceof DataEntity) {
+            return ((DataEntity) obj).getId().equals(id);
         }
         return false;
     }

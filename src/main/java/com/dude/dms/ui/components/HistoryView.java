@@ -15,7 +15,7 @@ public class HistoryView<T extends DataEntity & Historical<U>, U extends History
 
     private final HistoryCrudService<T, U> service;
 
-    private T entity;
+    private T loadedEntity;
 
     public HistoryView(HistoryCrudService<T, U> service) {
         this.service = service;
@@ -26,7 +26,7 @@ public class HistoryView<T extends DataEntity & Historical<U>, U extends History
     public void load(T entity) {
         clear();
 
-        this.entity = entity;
+        loadedEntity = entity;
         Swiper swiper = new Swiper(SwiperConfigBuilder.get()
                 .withDirection(Direction.VERTICAL)
                 .withAlignment(FlexComponent.Alignment.CENTER)
@@ -44,13 +44,13 @@ public class HistoryView<T extends DataEntity & Historical<U>, U extends History
     }
 
     public void reload() {
-        if (entity != null) {
-            load(entity);
+        if (loadedEntity != null) {
+            load(loadedEntity);
         }
     }
 
     public void clear() {
-        entity = null;
+        loadedEntity = null;
         removeAll();
     }
 }

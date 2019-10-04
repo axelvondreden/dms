@@ -111,7 +111,7 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         historicalCrudForm.addButtons();
 
         UserOption splitterPos = userOptionService.findByKey("splitterPos");
-        setSplitterPosition(splitterPos.getValue() != null ? Double.parseDouble(splitterPos.getValue()) : 80);
+        setSplitterPosition(splitterPos.getValue() != null ? Double.parseDouble(splitterPos.getValue()) : 80.0);
     }
 
 }

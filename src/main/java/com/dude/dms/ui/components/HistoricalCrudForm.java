@@ -42,10 +42,10 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
 
     private HistoryView<T, U> historyView;
 
-    public HistoricalCrudForm(Class<T> clazz, HistoricalCrudService<T, U> service, HistoryCrudService<T, U> hisoryService) {
+    public HistoricalCrudForm(Class<T> clazz, HistoricalCrudService<T, U> service, HistoryCrudService<T, U> historyService) {
         this.clazz = clazz;
         this.service = service;
-        this.historyService = hisoryService;
+        this.historyService = historyService;
 
         binder = new Binder<>();
     }
