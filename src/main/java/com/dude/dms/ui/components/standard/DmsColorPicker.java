@@ -6,18 +6,12 @@ public class DmsColorPicker extends ColorPickerFieldRaw {
 
     @Override
     public void setValue(String color) {
-        if (color == null) {
-            color = "";
-        }
-        super.setValue(color);
+        super.setValue(color == null ? "" : color);
     }
 
     @Override
     public void setPreviousValue(String color) {
-        if (color == null) {
-            color = "";
-        }
-        super.setPreviousValue(color);
+        super.setPreviousValue(color == null ? "" : color);
     }
 
 }
