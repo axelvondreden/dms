@@ -4,8 +4,9 @@ import com.dude.dms.backend.data.entity.Tag;
 import com.dude.dms.backend.data.entity.TagHistory;
 import com.dude.dms.backend.service.TagHistoryService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.Const;
+import com.dude.dms.ui.MainView;
+import com.dude.dms.ui.components.standard.DmsColorPicker;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -23,5 +24,6 @@ public class TagsView extends HistoricalCrudView<Tag, TagHistory> {
     @Override
     protected void defineProperties() {
         addProperty("Name", new TextField(), Tag::getName, Tag::setName, s -> !s.isEmpty(), "Name can not be empty!");
+        addProperty("Color", new DmsColorPicker(), Tag::getColor, Tag::setColor, s -> !s.isEmpty(), "Color can not be empty!");
     }
 }

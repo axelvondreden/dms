@@ -10,9 +10,7 @@ import com.dude.dms.ui.events.CrudFormCreateListener;
 import com.dude.dms.ui.events.CrudFormErrorListener;
 import com.dude.dms.ui.events.CrudFormSaveListener;
 import com.github.appreciated.IronCollapse;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -61,13 +59,13 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
 
     public <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
         addFormItem((Component) component, label);
-        ((HasStyle) component).addClassName("full-width");
+        ((HasElement) component).getElement().getStyle().set("boxSizing", "borderBox").set("width", "100%").set("minWidth", "0");
         binder.forField(component).bind(getter, setter);
     }
 
     public <R> void addFormField(String label, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter, SerializablePredicate<? super R> validator, String errorMessage) {
         addFormItem((Component) component, label);
-        ((HasStyle) component).addClassName("full-width");
+        ((HasElement) component).getElement().getStyle().set("boxSizing", "borderBox").set("width", "100%").set("minWidth", "0");
         binder.forField(component).withValidator(validator, errorMessage).bind(getter, setter);
     }
 

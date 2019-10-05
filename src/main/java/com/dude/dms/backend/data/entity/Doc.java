@@ -33,6 +33,10 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
 
     }
 
+    public Doc(@NotNull String guid) {
+        this.guid = guid;
+    }
+
     public Doc(String rawText, @NotNull String guid) {
         this.rawText = rawText;
         this.guid = guid;

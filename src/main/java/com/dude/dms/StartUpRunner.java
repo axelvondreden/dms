@@ -38,7 +38,7 @@ public class StartUpRunner implements CommandLineRunner {
 
     private void createTags() {
         if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
-            Tag reviewTag = tagService.create(new Tag("review"));
+            Tag reviewTag = tagService.create(new Tag("review", "red"));
             BrainUtils.setProperty(REVIEW_TAG_ID, String.valueOf(reviewTag.getId()));
         }
     }

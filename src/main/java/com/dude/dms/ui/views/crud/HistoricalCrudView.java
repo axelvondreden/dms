@@ -57,7 +57,9 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
 
         grid = new Grid<>();
         grid.setSizeFull();
-        grid.asSingleSelect().addValueChangeListener(event -> historicalCrudForm.load(event.getValue()));
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            historicalCrudForm.load(event.getValue());
+        });
         addToPrimary(grid);
 
         addSplitterDragendListener(event -> historicalCrudForm.reload());
@@ -140,7 +142,6 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         grid.addColumn(getter).setHeader(name);
         historicalCrudForm.addFormField(name, component, getter, setter, validator, errorMessage);
     }
-
 
     /**
      * Adds a new column to the grid

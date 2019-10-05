@@ -15,6 +15,9 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
     @Size(max = 50)
     protected String name;
 
+    @NotBlank
+    protected String color;
+
     @ManyToMany(mappedBy = "tags")
     private List<Doc> docs;
 
@@ -26,8 +29,9 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     }
 
-    public Tag(@NotBlank @Size(max = 50) String name) {
+    public Tag(@NotBlank @Size(max = 50) String name, String color) {
         this.name = name;
+        this.color = color;
     }
 
     public String getName() {
@@ -36,6 +40,14 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     @Override
