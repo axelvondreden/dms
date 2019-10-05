@@ -77,7 +77,21 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
      * @param <R>       the component type
      */
     protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter) {
-        addProperty(name, component, getter, setter, false);
+        addProperty(name, component, getter, getter, setter, false);
+    }
+
+    /**
+     * Adds a new column to the grid and a new component to the CRUD form
+     *
+     * @param name         Grid header and form label
+     * @param component    form component
+     * @param getter       valueprovider for column and formfield
+     * @param columnGetter special getter used in the grid, e.g. for date conversion
+     * @param setter       value setter for column and formfield
+     * @param <R>          the component type
+     */
+    protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, ValueProvider<T, ?> columnGetter, Setter<T, R> setter) {
+        addProperty(name, component, getter, columnGetter, setter, false);
     }
 
     /**
@@ -91,7 +105,22 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
      * @param <R>       the component type
      */
     protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, Setter<T, R> setter, boolean readOnly) {
-        grid.addColumn(getter).setHeader(name);
+        addProperty(name, component, getter, getter, setter, readOnly);
+    }
+
+    /**
+     * Adds a new column to the grid and a new component to the CRUD form
+     *
+     * @param name         Grid header and form label
+     * @param component    form component
+     * @param getter       valueprovider for column and formfield
+     * @param columnGetter special getter used in the grid, e.g. for date conversion
+     * @param setter       value setter for column and formfield
+     * @param readOnly     sets the component read-only
+     * @param <R>          the component type
+     */
+    protected <R> void addProperty(String name, HasValue<? extends ValueChangeEvent<R>, R> component, ValueProvider<T, R> getter, ValueProvider<T, ?> columnGetter, Setter<T, R> setter, boolean readOnly) {
+        grid.addColumn(columnGetter).setHeader(name);
         component.setReadOnly(readOnly);
         historicalCrudForm.addFormField(name, component, getter, setter);
     }

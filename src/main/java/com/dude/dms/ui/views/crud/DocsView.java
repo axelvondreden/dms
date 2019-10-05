@@ -4,10 +4,11 @@ import com.dude.dms.backend.data.entity.Doc;
 import com.dude.dms.backend.data.entity.DocHistory;
 import com.dude.dms.backend.service.DocHistoryService;
 import com.dude.dms.backend.service.DocService;
-import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.Const;
+import com.dude.dms.ui.MainView;
+import com.dude.dms.ui.components.standard.DmsDatePicker;
+import com.dude.dms.ui.converters.LocalDateConverter;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -30,7 +31,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
     @Override
     protected void defineProperties() {
         addProperty("GUID", new TextField(), Doc::getGuid, Doc::setGuid, true);
-        addProperty("Date", new DatePicker(), Doc::getDocumentDate, Doc::setDocumentDate);
+        addProperty("Date", new DmsDatePicker(), Doc::getDocumentDate, doc -> LocalDateConverter.convert(doc.getDocumentDate()), Doc::setDocumentDate);
         addGridColumn("Raw Text", doc -> new Button(VaadinIcon.TEXT_LABEL.create(), e -> {
             TextArea area = new TextArea();
             area.setHeightFull();
