@@ -1,9 +1,12 @@
 package com.dude.dms.backend.data.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,9 +14,7 @@ import java.util.Set;
 @Entity
 public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHistory> {
 
-    @NotBlank
-    @Size(max = 255)
-    protected String importTitle;
+    protected LocalDate documentDate;
 
     @Size(max = 99999999)
     protected String rawText;
@@ -32,18 +33,23 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
 
     }
 
-    public Doc(@NotBlank @Size(max = 255) String importTitle, String rawText, @NotNull String guid) {
-        this.importTitle = importTitle;
+    public Doc(String rawText, @NotNull String guid) {
         this.rawText = rawText;
         this.guid = guid;
     }
 
-    public String getImportTitle() {
-        return importTitle;
+    public Doc(LocalDate documentDate, @Size(max = 99999999) String rawText, @NotNull String guid) {
+        this.documentDate = documentDate;
+        this.rawText = rawText;
+        this.guid = guid;
     }
 
-    public void setImportTitle(String importTitle) {
-        this.importTitle = importTitle;
+    public LocalDate getDocumentDate() {
+        return documentDate;
+    }
+
+    public void setDocumentDate(LocalDate documentDate) {
+        this.documentDate = documentDate;
     }
 
     public String getRawText() {

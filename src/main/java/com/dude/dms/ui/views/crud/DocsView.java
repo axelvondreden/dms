@@ -7,6 +7,7 @@ import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.Const;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -28,7 +29,8 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
 
     @Override
     protected void defineProperties() {
-        addProperty("Title", new TextField(), Doc::getImportTitle, Doc::setImportTitle, s -> !s.isEmpty(), "Title can not be empty!");
+        addProperty("GUID", new TextField(), Doc::getGuid, Doc::setGuid, true);
+        addProperty("Date", new DatePicker(), Doc::getDocumentDate, Doc::setDocumentDate);
         addGridColumn("Raw Text", doc -> new Button(VaadinIcon.TEXT_LABEL.create(), e -> {
             TextArea area = new TextArea();
             area.setHeightFull();
@@ -39,9 +41,6 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
             dialog.setSizeFull();
             dialog.open();
         }));
-        TextField guidField = new TextField();
-        guidField.setReadOnly(true);
-        addProperty("GUID", guidField, Doc::getGuid, Doc::setGuid);
         showCreateButton(false);
     }
 }

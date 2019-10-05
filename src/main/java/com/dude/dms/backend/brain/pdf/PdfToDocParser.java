@@ -39,7 +39,7 @@ public class PdfToDocParser implements Parser {
         try (PDDocument pdDoc = PDDocument.load(file)) {
             PDFTextStripper pdfStripper = new PDFTextStripper();
 
-            Doc doc = docService.create(new Doc(file.getName(), pdfStripper.getText(pdDoc), UUID.randomUUID().toString()));
+            Doc doc = docService.create(new Doc(pdfStripper.getText(pdDoc), UUID.randomUUID().toString()));
             if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
                 tagService.findById(Long.parseLong(BrainUtils.getProperty(REVIEW_TAG_ID))).ifPresent(tag -> {
                     doc.getTags().add(tag);
