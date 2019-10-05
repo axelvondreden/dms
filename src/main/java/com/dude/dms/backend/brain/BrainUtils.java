@@ -3,9 +3,7 @@ package com.dude.dms.backend.brain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 public final class BrainUtils {
@@ -16,15 +14,47 @@ public final class BrainUtils {
 
     }
 
-    public static String getProperty(String key) {
-        LOGGER.debug("Retrieving property for key: '{}'", key);
-        try (InputStream input = new FileInputStream("src/main/resources/brain.properties")) {
-            Properties prop = new Properties();
+    public static String getProperty(OptionKey key) {
+        LOGGER.debug("Retrieving property for key: '{}'", key.key);
+        String userProperty = getUserProperty(key);
+        return userProperty != null ? userProperty : getDefaultProperty(key);
+    }
+
+    public static void setProperty(OptionKey key, String value) {
+        Properties prop = getUserProperties();
+        prop.setProperty(key.key, value);
+        try (OutputStream output = new FileOutputStream(new File("src/main/resources/options.properties"))) {
+            prop.store(output, null);
+        } catch (IOException io) {
+            LOGGER.error(io.getMessage());
+        }
+    }
+
+    private static String getDefaultProperty(OptionKey key) {
+        return getDefaultProperties().getProperty(key.key);
+    }
+
+    private static String getUserProperty(OptionKey key) {
+        return getUserProperties().getProperty(key.key);
+    }
+
+    private static Properties getUserProperties() {
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(new File("src/main/resources/options.properties"))) {
             prop.load(input);
-            return prop.getProperty(key);
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
-            return null;
         }
+        return prop;
+    }
+
+    private static Properties getDefaultProperties() {
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(new File("src/main/resources/options.default.properties"))) {
+            prop.load(input);
+        } catch (IOException ex) {
+            LOGGER.error(ex.getMessage());
+        }
+        return prop;
     }
 }

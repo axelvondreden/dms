@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     }
 
     public Set<Tag> getTags() {
-        return tags;
+        return tags != null ? tags : new HashSet<>();
     }
 
     public void setTags(Set<Tag> tags) {

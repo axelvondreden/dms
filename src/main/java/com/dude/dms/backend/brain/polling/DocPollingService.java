@@ -14,6 +14,7 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.dude.dms.backend.brain.OptionKey.DOC_PATH;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
 @Component
@@ -31,7 +32,7 @@ public class DocPollingService implements PollingService {
     public DocPollingService() {
         try {
             watcher = FileSystems.getDefault().newWatchService();
-            docPath = BrainUtils.getProperty("doc_path");
+            docPath = BrainUtils.getProperty(DOC_PATH);
             if (docPath != null) {
                 Paths.get(docPath).register(watcher, ENTRY_CREATE);
             }
