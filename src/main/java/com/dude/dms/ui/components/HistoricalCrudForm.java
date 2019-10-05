@@ -115,7 +115,9 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
     public void clear() {
         removeAll();
         binder = new Binder<>();
-        historyView.clear();
+        if (historyView != null) {
+            historyView.clear();
+        }
     }
 
     public void setCreateListener(CrudFormCreateListener<T> createListener) {

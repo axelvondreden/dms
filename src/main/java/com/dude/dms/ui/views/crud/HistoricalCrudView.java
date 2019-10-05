@@ -106,6 +106,7 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
+        historicalCrudForm.clear();
         grid.removeAllColumns();
         fillGrid();
         defineProperties();
