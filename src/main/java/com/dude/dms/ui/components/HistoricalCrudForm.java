@@ -132,17 +132,21 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
         this.errorListener = errorListener;
     }
 
-    public void addButtons() {
+    public void addCreateButton() {
         Button create = new Button("Create", e -> create());
         create.setWidthFull();
         create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         add(create);
+    }
 
+    public void addSaveButton() {
         Button save = new Button("Save", e -> save());
         save.setWidthFull();
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         add(save);
+    }
 
+    public void addHistory() {
         historyView = new HistoryView<>(historyService);
         historyView.getElement().getStyle().set("padding", "10px");
         IronCollapse collapse = new IronCollapse(historyView);

@@ -30,6 +30,10 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
 
     protected final HistoricalCrudService<T, U> service;
 
+    private boolean showCreate = true;
+    private boolean showSave = true;
+    private boolean showHistory = true;
+
     protected abstract void defineProperties();
 
     protected HistoricalCrudView(Class<T> clazz, HistoricalCrudService<T, U> service, HistoryCrudService<T, U> hisoryService) {
@@ -110,9 +114,29 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         grid.removeAllColumns();
         fillGrid();
         defineProperties();
-        historicalCrudForm.addButtons();
+        if (showSave) {
+            historicalCrudForm.addSaveButton();
+        }
+        if (showCreate) {
+            historicalCrudForm.addCreateButton();
+        }
+        if (showHistory) {
+            historicalCrudForm.addHistory();
+        }
 
         setSplitterPosition(Double.parseDouble(BrainUtils.getProperty(CRUD_VIEW_SPLITTER_POS)));
+    }
+
+    protected void showCreateButton(boolean show) {
+        showCreate = show;
+    }
+
+    protected void showSaveButton(boolean show) {
+        showSave = show;
+    }
+
+    protected void showHistory(boolean show) {
+        showHistory = show;
     }
 
 }

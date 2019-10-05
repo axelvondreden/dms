@@ -39,6 +39,9 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
             dialog.setSizeFull();
             dialog.open();
         }));
-        addProperty("GUID", new TextField(), Doc::getGuid, Doc::setGuid);
+        TextField guidField = new TextField();
+        guidField.setReadOnly(true);
+        addProperty("GUID", guidField, Doc::getGuid, Doc::setGuid);
+        showCreateButton(false);
     }
 }
