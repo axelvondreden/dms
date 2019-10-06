@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AccountService extends HistoricalCrudService<Account, AccountHistory> {
 
@@ -25,5 +27,9 @@ public class AccountService extends HistoricalCrudService<Account, AccountHistor
     @Override
     public AccountHistory createHistory(Account entity, String text, boolean created, boolean edited, boolean deleted) {
         return new AccountHistory(entity, text, created, edited, deleted);
+    }
+
+    public Optional<Account> findByName(String name) {
+        return accountRepository.findByName(name);
     }
 }

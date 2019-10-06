@@ -4,8 +4,10 @@ import com.dude.dms.backend.data.entity.Doc;
 import com.dude.dms.backend.data.entity.DocHistory;
 import com.dude.dms.backend.service.DocHistoryService;
 import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
+import com.dude.dms.ui.components.TagContainer;
 import com.dude.dms.ui.components.standard.DmsDatePicker;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.vaadin.flow.component.button.Button;
@@ -22,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView.class)
 @PageTitle(Const.TITLE_DOCS)
 public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
+
+    @Autowired
+    private TagService tagService;
 
     @Autowired
     public DocsView(DocService docService, DocHistoryService historyService) {
@@ -42,6 +47,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
             dialog.setSizeFull();
             dialog.open();
         }));
+        addGridColumn("Tags", doc -> new TagContainer(tagService.findByDoc(doc)));
         showCreateButton(false);
     }
 }

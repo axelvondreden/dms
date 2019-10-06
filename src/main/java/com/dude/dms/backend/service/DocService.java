@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class DocService extends HistoricalCrudService<Doc, DocHistory> {
 
@@ -27,4 +29,7 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
         return new DocHistory(entity, text, created, edited, deleted);
     }
 
+    public Optional<Doc> findByGuid(String guid) {
+        return docRepository.findByGuid(guid);
+    }
 }

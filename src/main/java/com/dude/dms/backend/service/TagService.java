@@ -1,5 +1,6 @@
 package com.dude.dms.backend.service;
 
+import com.dude.dms.backend.data.entity.Doc;
 import com.dude.dms.backend.data.entity.Tag;
 import com.dude.dms.backend.data.entity.TagHistory;
 import com.dude.dms.backend.repositories.TagRepository;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TagService extends HistoricalCrudService<Tag, TagHistory> {
@@ -44,5 +46,13 @@ public class TagService extends HistoricalCrudService<Tag, TagHistory> {
 
     public Optional<Tag> findById(long id) {
         return tagRepository.findById(id);
+    }
+
+    public Set<Tag> findByDoc(Doc doc) {
+        return tagRepository.findByDocs(doc);
+    }
+
+    public Optional<Tag> findByName(String name) {
+        return tagRepository.findByName(name);
     }
 }

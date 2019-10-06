@@ -2,6 +2,7 @@ package com.dude.dms.backend.brain.pdf;
 
 import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.data.entity.Doc;
+import com.dude.dms.backend.data.entity.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -48,10 +49,11 @@ public class PdfToDocParser implements Parser {
         }
 
         Doc doc = new Doc(UUID.randomUUID().toString());
+        Set<Tag> tags = new HashSet<>();
         if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
             tagService.findById(Long.parseLong(BrainUtils.getProperty(REVIEW_TAG_ID))).ifPresent(tag -> {
                 LOGGER.info("Adding tag: {}", tag.getName());
-                doc.getTags().add(tag);
+                tags.add(tag);
             });
         }
 
@@ -60,6 +62,7 @@ public class PdfToDocParser implements Parser {
             doc.setDocumentDate(discoverDates(rawText));
         }
 
+        doc.setTags(tags);
         docService.create(doc);
         LOGGER.info("Created doc with ID: {}", doc.getGuid());
     }
