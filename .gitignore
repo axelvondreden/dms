@@ -43,3 +43,5 @@ hs_err_pid*
 /build-tools/
 /src/main/resources/options.properties
 /db/
+/.vaadin/
+/docs/
