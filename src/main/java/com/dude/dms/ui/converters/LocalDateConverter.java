@@ -14,5 +14,4 @@ public final class LocalDateConverter {
     public static String convert(ChronoLocalDate localDate) {
         return localDate == null ? null : localDate.format(DateTimeFormatter.ofPattern(BrainUtils.getProperty(OptionKey.DATE_FORMAT)));
     }
-
 }

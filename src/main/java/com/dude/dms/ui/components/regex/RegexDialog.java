@@ -1,5 +1,6 @@
-package com.dude.dms.ui.components;
+package com.dude.dms.ui.components.regex;
 
+import com.dude.dms.ui.components.ValueProvider;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -21,8 +22,8 @@ public class RegexDialog extends Dialog {
     private final TextField callBack;
     private final TextField regexField;
     private final TextArea textArea;
-    private Grid<String> grid;
-    private List<String> matches;
+    private final Grid<String> grid;
+    private final List<String> matches;
 
     public RegexDialog(TextField callBack) {
         this.callBack = callBack;

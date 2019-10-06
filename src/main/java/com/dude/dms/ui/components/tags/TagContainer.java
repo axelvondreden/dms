@@ -9,5 +9,4 @@ public class TagContainer extends HorizontalLayout {
         getElement().getStyle().set("display", "inlineBlock");
         tags.forEach(tag -> add(new TagLabel(tag)));
     }
-
 }

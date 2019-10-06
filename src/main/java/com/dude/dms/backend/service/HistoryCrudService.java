@@ -9,5 +9,4 @@ import java.util.List;
 public abstract class HistoryCrudService<T extends DataEntity & Historical<U>, U extends History> extends CrudService<U> {
 
     public abstract List<U> getHistory(T entity);
-
 }

@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.rules;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.components.RegexField;
+import com.dude.dms.ui.components.regex.RegexField;
 import com.dude.dms.ui.views.HasNotifications;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -19,7 +19,8 @@ public class RegexRuleDialog extends Dialog implements HasNotifications {
 
     /**
      * Constructor for creating an empty dialog. Create button will be added
-     * @param tagService tag-service
+     *
+     * @param tagService       tag-service
      * @param regexRuleService regex-rule-service
      */
     public RegexRuleDialog(TagService tagService, RegexRuleService regexRuleService) {
@@ -37,8 +38,9 @@ public class RegexRuleDialog extends Dialog implements HasNotifications {
 
     /**
      * Constructor for creating a dialog for an existing rule. Save button will be added
-     * @param regexRule rule
-     * @param tagService tag-service
+     *
+     * @param regexRule        rule
+     * @param tagService       tag-service
      * @param regexRuleService regex-rule-service
      */
     public RegexRuleDialog(RegexRule regexRule, TagService tagService, RegexRuleService regexRuleService) {

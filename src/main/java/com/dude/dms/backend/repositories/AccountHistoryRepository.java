@@ -9,5 +9,4 @@ import java.util.List;
 public interface AccountHistoryRepository extends JpaRepository<AccountHistory, Long> {
 
     List<AccountHistory> findByAccount(Account account);
-
 }

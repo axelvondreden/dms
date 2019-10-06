@@ -4,5 +4,4 @@ package com.dude.dms.ui.events;
 public interface CrudFormSaveListener<T> {
 
     void onSave(T entity);
-
 }

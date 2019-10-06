@@ -8,5 +8,4 @@ import java.util.List;
 public interface CrudFormErrorListener {
 
     void onError(List<ValidationResult> errors);
-
 }

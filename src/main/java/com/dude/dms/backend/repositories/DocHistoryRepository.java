@@ -9,5 +9,4 @@ import java.util.List;
 public interface DocHistoryRepository extends JpaRepository<DocHistory, Long> {
 
     List<DocHistory> findByDoc(Doc doc);
-
 }

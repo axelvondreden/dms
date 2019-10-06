@@ -13,5 +13,4 @@ public class DmsColorPicker extends ColorPickerFieldRaw {
     public void setPreviousValue(String color) {
         super.setPreviousValue(color == null ? "" : color);
     }
-
 }

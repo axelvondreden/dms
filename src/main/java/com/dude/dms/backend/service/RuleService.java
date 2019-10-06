@@ -7,5 +7,4 @@ import java.util.List;
 public interface RuleService<T extends Rule> {
 
     List<T> getActiveRules();
-
 }

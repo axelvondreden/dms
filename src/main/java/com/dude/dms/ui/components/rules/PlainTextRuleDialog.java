@@ -16,10 +16,10 @@ public class PlainTextRuleDialog extends Dialog implements HasNotifications {
 
     private PlainTextRule plainTextRule;
 
-
     /**
      * Constructor for creating an empty dialog. Create button will be added
-     * @param tagService tag-service
+     *
+     * @param tagService           tag-service
      * @param plainTextRuleService plaintext-rule-service
      */
     public PlainTextRuleDialog(TagService tagService, PlainTextRuleService plainTextRuleService) {
@@ -37,8 +37,9 @@ public class PlainTextRuleDialog extends Dialog implements HasNotifications {
 
     /**
      * Constructor for creating a dialog for an existing rule. Save button will be added
-     * @param plainTextRule rule
-     * @param tagService tag-service
+     *
+     * @param plainTextRule        rule
+     * @param tagService           tag-service
      * @param plainTextRuleService plaintext-rule-service
      */
     public PlainTextRuleDialog(PlainTextRule plainTextRule, TagService tagService, PlainTextRuleService plainTextRuleService) {

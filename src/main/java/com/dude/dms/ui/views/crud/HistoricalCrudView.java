@@ -183,5 +183,4 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
     protected void showHistory(boolean show) {
         showHistory = show;
     }
-
 }

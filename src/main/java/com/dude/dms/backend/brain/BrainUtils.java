@@ -11,7 +11,6 @@ public final class BrainUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(BrainUtils.class);
 
     private BrainUtils() {
-
     }
 
     public static String getProperty(OptionKey key) {

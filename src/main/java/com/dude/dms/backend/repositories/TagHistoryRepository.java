@@ -9,5 +9,4 @@ import java.util.List;
 public interface TagHistoryRepository extends JpaRepository<TagHistory, Long> {
 
     List<TagHistory> findByTag(Tag tag);
-
 }

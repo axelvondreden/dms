@@ -11,5 +11,4 @@ public class DmsDatePicker extends DatePicker {
     public DmsDatePicker() {
         setLocale(Locale.forLanguageTag(BrainUtils.getProperty(OptionKey.LOCALE)));
     }
-
 }

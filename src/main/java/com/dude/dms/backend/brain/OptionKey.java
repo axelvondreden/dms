@@ -12,8 +12,7 @@ public enum OptionKey {
 
     public final String key;
 
-    private OptionKey(String key) {
+    OptionKey(String key) {
         this.key = key;
     }
-
 }
