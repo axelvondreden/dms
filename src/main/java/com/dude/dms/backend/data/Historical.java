@@ -1,4 +1,6 @@
-package com.dude.dms.backend.data.entity;
+package com.dude.dms.backend.data;
+
+import com.dude.dms.backend.data.history.History;
 
 import java.util.List;
 

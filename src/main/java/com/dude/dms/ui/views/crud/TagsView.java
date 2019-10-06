@@ -1,7 +1,7 @@
 package com.dude.dms.ui.views.crud;
 
-import com.dude.dms.backend.data.entity.Tag;
-import com.dude.dms.backend.data.entity.TagHistory;
+import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.history.TagHistory;
 import com.dude.dms.backend.service.TagHistoryService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
@@ -24,6 +24,6 @@ public class TagsView extends HistoricalCrudView<Tag, TagHistory> {
     @Override
     protected void defineProperties() {
         addProperty("Name", new TextField(), Tag::getName, Tag::setName, s -> !s.isEmpty(), "Name can not be empty!");
-        addProperty("Color", new DmsColorPicker(), Tag::getColor, Tag::setColor, s -> !s.isEmpty(), "Color can not be empty!");
+        addProperty("Color", new DmsColorPicker(), Tag::getColor, Tag::setColor, s -> s != null && !s.isEmpty(), "Color can not be empty!");
     }
 }

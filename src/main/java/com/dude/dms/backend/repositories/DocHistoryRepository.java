@@ -1,7 +1,7 @@
 package com.dude.dms.backend.repositories;
 
-import com.dude.dms.backend.data.entity.Doc;
-import com.dude.dms.backend.data.entity.DocHistory;
+import com.dude.dms.backend.data.base.Doc;
+import com.dude.dms.backend.data.history.DocHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

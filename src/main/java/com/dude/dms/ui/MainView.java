@@ -1,5 +1,6 @@
 package com.dude.dms.ui;
 
+import com.dude.dms.ui.views.RulesView;
 import com.dude.dms.ui.views.crud.AccountsView;
 import com.dude.dms.ui.views.crud.DocsView;
 import com.dude.dms.ui.views.crud.TagsView;
@@ -68,6 +69,7 @@ public class MainView extends AppLayout {
         tabs.add(createTab(VaadinIcon.EDIT, Const.TITLE_DOCS, DocsView.class));
         tabs.add(createTab(VaadinIcon.ACCESSIBILITY, Const.TITLE_ACCOUNTS, AccountsView.class));
         tabs.add(createTab(VaadinIcon.CALENDAR, Const.TITLE_TAGS, TagsView.class));
+        tabs.add(createTab(VaadinIcon.LIST, Const.TITLE_RULES, RulesView.class));
         return tabs.toArray(new Tab[0]);
     }
 

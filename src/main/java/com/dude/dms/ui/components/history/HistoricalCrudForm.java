@@ -1,9 +1,9 @@
-package com.dude.dms.ui.components;
+package com.dude.dms.ui.components.history;
 
-import com.dude.dms.backend.data.entity.DataEntity;
-import com.dude.dms.backend.data.entity.Diffable;
-import com.dude.dms.backend.data.entity.Historical;
-import com.dude.dms.backend.data.entity.History;
+import com.dude.dms.backend.data.DataEntity;
+import com.dude.dms.backend.data.Diffable;
+import com.dude.dms.backend.data.Historical;
+import com.dude.dms.backend.data.history.History;
 import com.dude.dms.backend.service.HistoricalCrudService;
 import com.dude.dms.backend.service.HistoryCrudService;
 import com.dude.dms.ui.events.CrudFormCreateListener;

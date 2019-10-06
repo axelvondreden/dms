@@ -1,6 +1,6 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.entity.DataEntity;
+import com.dude.dms.backend.data.DataEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.persistence.EntityNotFoundException;

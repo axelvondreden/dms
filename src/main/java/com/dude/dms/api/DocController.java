@@ -1,6 +1,6 @@
 package com.dude.dms.api;
 
-import com.dude.dms.backend.data.entity.Doc;
+import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.service.DocService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

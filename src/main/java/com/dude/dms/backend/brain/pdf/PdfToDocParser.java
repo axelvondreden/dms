@@ -1,8 +1,8 @@
 package com.dude.dms.backend.brain.pdf;
 
 import com.dude.dms.backend.brain.BrainUtils;
-import com.dude.dms.backend.data.entity.Doc;
-import com.dude.dms.backend.data.entity.Tag;
+import com.dude.dms.backend.data.base.Doc;
+import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import org.apache.pdfbox.pdmodel.PDDocument;

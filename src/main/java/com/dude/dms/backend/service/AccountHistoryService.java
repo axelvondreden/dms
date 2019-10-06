@@ -1,7 +1,7 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.entity.Account;
-import com.dude.dms.backend.data.entity.AccountHistory;
+import com.dude.dms.backend.data.base.Account;
+import com.dude.dms.backend.data.history.AccountHistory;
 import com.dude.dms.backend.repositories.AccountHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

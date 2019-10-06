@@ -1,5 +1,11 @@
-package com.dude.dms.backend.data.entity;
+package com.dude.dms.backend.data.base;
 
+import com.dude.dms.backend.data.DataEntity;
+import com.dude.dms.backend.data.Diffable;
+import com.dude.dms.backend.data.Historical;
+import com.dude.dms.backend.data.history.TagHistory;
+import com.dude.dms.backend.data.rules.PlainTextRule;
+import com.dude.dms.backend.data.rules.RegexRule;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -7,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Objects;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
@@ -21,6 +28,12 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     @ManyToMany(mappedBy = "tags")
     private List<Doc> docs;
+
+    @ManyToMany(mappedBy = "tags")
+    private List<PlainTextRule> plainTextRules;
+
+    @ManyToMany(mappedBy = "tags")
+    private List<RegexRule> regexRules;
 
     @OneToMany(mappedBy = "tag")
     @OrderBy("timestamp")
@@ -66,5 +79,41 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     public void setDocs(List<Doc> docs) {
         this.docs = docs;
+    }
+
+    public List<PlainTextRule> getPlainTextRules() {
+        return plainTextRules;
+    }
+
+    public void setPlainTextRules(List<PlainTextRule> plainTextRules) {
+        this.plainTextRules = plainTextRules;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        Tag tag = (Tag) obj;
+        return name.equals(tag.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name);
+    }
+
+    public List<RegexRule> getRegexRules() {
+        return regexRules;
+    }
+
+    public void setRegexRules(List<RegexRule> regexRules) {
+        this.regexRules = regexRules;
     }
 }

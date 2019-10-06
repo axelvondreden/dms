@@ -1,7 +1,7 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.entity.Tag;
-import com.dude.dms.backend.data.entity.TagHistory;
+import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.history.TagHistory;
 import com.dude.dms.backend.repositories.TagHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

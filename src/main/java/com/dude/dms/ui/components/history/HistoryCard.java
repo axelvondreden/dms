@@ -1,6 +1,6 @@
-package com.dude.dms.ui.components;
+package com.dude.dms.ui.components.history;
 
-import com.dude.dms.backend.data.entity.History;
+import com.dude.dms.backend.data.history.History;
 import com.github.appreciated.card.RippleClickableCard;
 import com.github.appreciated.card.content.IconItem;
 import com.github.appreciated.card.label.SecondaryLabel;

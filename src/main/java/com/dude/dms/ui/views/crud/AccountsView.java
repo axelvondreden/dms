@@ -1,7 +1,7 @@
 package com.dude.dms.ui.views.crud;
 
-import com.dude.dms.backend.data.entity.Account;
-import com.dude.dms.backend.data.entity.AccountHistory;
+import com.dude.dms.backend.data.base.Account;
+import com.dude.dms.backend.data.history.AccountHistory;
 import com.dude.dms.backend.service.AccountHistoryService;
 import com.dude.dms.backend.service.AccountService;
 import com.dude.dms.ui.MainView;

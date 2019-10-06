@@ -1,6 +1,6 @@
-package com.dude.dms.ui.components;
+package com.dude.dms.ui.components.tags;
 
-import com.dude.dms.backend.data.entity.Tag;
+import com.dude.dms.backend.data.base.Tag;
 import com.vaadin.flow.component.html.Div;
 
 public class TagLabel extends Div {

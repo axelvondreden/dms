@@ -1,13 +1,13 @@
 package com.dude.dms.ui.views.crud;
 
 import com.dude.dms.backend.brain.BrainUtils;
-import com.dude.dms.backend.data.entity.DataEntity;
-import com.dude.dms.backend.data.entity.Diffable;
-import com.dude.dms.backend.data.entity.Historical;
-import com.dude.dms.backend.data.entity.History;
+import com.dude.dms.backend.data.DataEntity;
+import com.dude.dms.backend.data.Diffable;
+import com.dude.dms.backend.data.Historical;
+import com.dude.dms.backend.data.history.History;
 import com.dude.dms.backend.service.HistoricalCrudService;
 import com.dude.dms.backend.service.HistoryCrudService;
-import com.dude.dms.ui.components.HistoricalCrudForm;
+import com.dude.dms.ui.components.history.HistoricalCrudForm;
 import com.dude.dms.ui.views.HasNotifications;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;

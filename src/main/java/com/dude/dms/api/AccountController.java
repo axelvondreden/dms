@@ -1,6 +1,6 @@
 package com.dude.dms.api;
 
-import com.dude.dms.backend.data.entity.Account;
+import com.dude.dms.backend.data.base.Account;
 import com.dude.dms.backend.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

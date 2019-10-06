@@ -1,7 +1,8 @@
 package com.dude.dms;
 
 import com.dude.dms.backend.brain.BrainUtils;
-import com.dude.dms.backend.data.entity.Doc;
+import com.dude.dms.backend.data.DataEntity;
+import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.repositories.DocRepository;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.MainView;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(scanBasePackageClasses = { MainView.class, Application.class, DocService.class, BrainUtils.class }, exclude = ErrorMvcAutoConfiguration.class)
 @EnableJpaRepositories(basePackageClasses = DocRepository.class)
-@EntityScan(basePackageClasses = Doc.class)
+@EntityScan(basePackageClasses = DataEntity.class)
 @EnableTransactionManagement
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {

@@ -1,7 +1,7 @@
 package com.dude.dms;
 
 import com.dude.dms.backend.brain.BrainUtils;
-import com.dude.dms.backend.data.entity.Tag;
+import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

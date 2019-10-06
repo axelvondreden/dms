@@ -1,4 +1,4 @@
-package com.dude.dms.backend.data.entity;
+package com.dude.dms.backend.data;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

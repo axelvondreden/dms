@@ -1,8 +1,8 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.entity.DataEntity;
-import com.dude.dms.backend.data.entity.Historical;
-import com.dude.dms.backend.data.entity.History;
+import com.dude.dms.backend.data.DataEntity;
+import com.dude.dms.backend.data.Historical;
+import com.dude.dms.backend.data.history.History;
 
 import java.util.List;
 

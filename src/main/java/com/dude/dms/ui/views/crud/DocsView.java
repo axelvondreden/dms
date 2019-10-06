@@ -1,13 +1,13 @@
 package com.dude.dms.ui.views.crud;
 
-import com.dude.dms.backend.data.entity.Doc;
-import com.dude.dms.backend.data.entity.DocHistory;
+import com.dude.dms.backend.data.base.Doc;
+import com.dude.dms.backend.data.history.DocHistory;
 import com.dude.dms.backend.service.DocHistoryService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
-import com.dude.dms.ui.components.TagContainer;
+import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.components.standard.DmsDatePicker;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.vaadin.flow.component.button.Button;

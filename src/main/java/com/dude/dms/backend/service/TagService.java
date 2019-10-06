@@ -1,8 +1,10 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.entity.Doc;
-import com.dude.dms.backend.data.entity.Tag;
-import com.dude.dms.backend.data.entity.TagHistory;
+import com.dude.dms.backend.data.base.Doc;
+import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.history.TagHistory;
+import com.dude.dms.backend.data.rules.PlainTextRule;
+import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.repositories.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,5 +56,13 @@ public class TagService extends HistoricalCrudService<Tag, TagHistory> {
 
     public Optional<Tag> findByName(String name) {
         return tagRepository.findByName(name);
+    }
+
+    public Set<Tag> findByPlainTextRule(PlainTextRule rule) {
+        return tagRepository.findByPlainTextRules(rule);
+    }
+
+    public Set<Tag> findByRegexRule(RegexRule rule) {
+        return tagRepository.findByRegexRules(rule);
     }
 }
