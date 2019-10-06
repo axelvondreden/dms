@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -32,6 +36,12 @@ public class PdfToDocParser implements Parser {
     @Autowired
     private TagService tagService;
 
+    private final String docSavePath;
+
+    public PdfToDocParser() {
+        docSavePath = BrainUtils.getProperty(DOC_SAVE_PATH);
+    }
+
     /**
      * Creates a new {@link Doc} from a file.
      *
@@ -39,8 +49,17 @@ public class PdfToDocParser implements Parser {
      */
     public void parse(File file) {
         LOGGER.info("Parsing file {}...", file.getName());
+        String guid = UUID.randomUUID().toString();
+        Path targetPath = Paths.get(docSavePath, guid + ".pdf");
+        LOGGER.info("Copying to {}...", targetPath);
+        try {
+            Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+
         String rawText = null;
-        try (PDDocument pdDoc = PDDocument.load(file)) {
+        try (PDDocument pdDoc = PDDocument.load(new File(targetPath.toUri()))) {
             PDFTextStripper pdfStripper = new PDFTextStripper();
             LOGGER.info("Stripping text...");
             rawText = pdfStripper.getText(pdDoc);
@@ -48,7 +67,7 @@ public class PdfToDocParser implements Parser {
             LOGGER.error(e.getMessage());
         }
 
-        Doc doc = new Doc(UUID.randomUUID().toString());
+        Doc doc = new Doc(guid);
         Set<Tag> tags = new HashSet<>();
         if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
             tagService.findById(Long.parseLong(BrainUtils.getProperty(REVIEW_TAG_ID))).ifPresent(tag -> {
