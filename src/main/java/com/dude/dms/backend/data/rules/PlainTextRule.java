@@ -1,17 +1,21 @@
 package com.dude.dms.backend.data.rules;
 
 import com.dude.dms.backend.data.base.Tag;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotBlank;
+import java.util.Locale;
 import java.util.Set;
 
 @Entity
 public class PlainTextRule extends Rule {
 
     @NotBlank
-    protected String text;
+    private String text;
+
+    private Boolean caseSensitive;
 
     @ManyToMany
     private Set<Tag> tags;
@@ -19,10 +23,11 @@ public class PlainTextRule extends Rule {
     public PlainTextRule() {
     }
 
-    public PlainTextRule(@NotBlank String text, Set<Tag> tags) {
+    public PlainTextRule(@NotBlank String text, boolean caseSensitive, Set<Tag> tags) {
         super(true);
-        this.tags = tags;
         this.text = text;
+        this.caseSensitive = caseSensitive;
+        this.tags = tags;
     }
 
     public String getText() {
@@ -35,7 +40,15 @@ public class PlainTextRule extends Rule {
 
     @Override
     public boolean validate(String line) {
-        return line != null && !line.isEmpty() && line.contains(text);
+        if (line != null && !line.isEmpty()) {
+            if (caseSensitive) {
+                return line.contains(text);
+            } else {
+                Locale locale = LocaleContextHolder.getLocale();
+                return line.toLowerCase(locale).contains(text.toLowerCase(locale));
+            }
+        }
+        return false;
     }
 
     @Override
@@ -51,5 +64,13 @@ public class PlainTextRule extends Rule {
     @Override
     public String toString() {
         return "PlainTextRule{text='" + text + "'}";
+    }
+
+    public Boolean getCaseSensitive() {
+        return caseSensitive;
+    }
+
+    public void setCaseSensitive(Boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
     }
 }

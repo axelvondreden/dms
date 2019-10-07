@@ -10,8 +10,8 @@ import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.components.rules.PlainTextRuleDialog;
 import com.dude.dms.ui.components.rules.RegexRuleDialog;
 import com.dude.dms.ui.components.rules.RuleCard;
-import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -23,7 +23,8 @@ import java.util.List;
 @PageTitle(Const.TITLE_RULES)
 public class RulesView extends VerticalLayout {
 
-    private final Accordion accordion;
+    private final Details plainTextDetails;
+    private final Details regexDetails;
 
     private final PlainTextRuleService plainTextRuleService;
     private final RegexRuleService regexRuleService;
@@ -35,14 +36,14 @@ public class RulesView extends VerticalLayout {
         this.regexRuleService = regexRuleService;
         this.tagService = tagService;
 
-        accordion = new Accordion();
-        accordion.setSizeFull();
+        plainTextDetails = new Details();
+        regexDetails = new Details();
 
         addPlaintext();
 
         addRegex();
 
-        add(accordion);
+        add(plainTextDetails);
     }
 
     private void addPlaintext() {
@@ -53,7 +54,8 @@ public class RulesView extends VerticalLayout {
         for (PlainTextRule rule : plainTextRules) {
             verticalLayout.add(new RuleCard<>(rule.getText(), tagService.findByPlainTextRule(rule), e -> new PlainTextRuleDialog(rule, tagService, plainTextRuleService).open()));
         }
-        accordion.add("Plaintext", verticalLayout);
+        plainTextDetails.setSummaryText("Plaintext");
+        plainTextDetails.setContent(verticalLayout);
     }
 
     private void addRegex() {
@@ -64,6 +66,7 @@ public class RulesView extends VerticalLayout {
         for (RegexRule rule : regexRules) {
             verticalLayout.add(new RuleCard<>(rule.getRegex(), tagService.findByRegexRule(rule), e -> new RegexRuleDialog(rule, tagService, regexRuleService).open()));
         }
-        accordion.add("Regex", verticalLayout);
+        regexDetails.setSummaryText("Regex");
+        regexDetails.setContent(verticalLayout);
     }
 }

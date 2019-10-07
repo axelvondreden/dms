@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
 
@@ -32,6 +34,7 @@ public class StartUpRunner implements CommandLineRunner {
         checkOptions();
         createTags();
         docPollingService.manualPoll();
+        LocaleContextHolder.setLocale(Locale.forLanguageTag(BrainUtils.getProperty(LOCALE)));
     }
 
     private static void checkOptions() {
