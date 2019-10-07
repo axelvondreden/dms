@@ -31,8 +31,9 @@ public class StartUpRunner implements CommandLineRunner {
 
     private static void checkOptions() throws IOException {
         File pollDir = new File(BrainUtils.getProperty(DOC_POLL_PATH));
-        if (!pollDir.exists() || !pollDir.isDirectory()) {
-            throw new IOException("Poll directory must be specified in 'option.properties'");
+        if (!pollDir.exists()) {
+            LOGGER.info("Creating input directory new docs {}", pollDir);
+            pollDir.mkdir();
         }
         File saveDir = new File(BrainUtils.getProperty(DOC_SAVE_PATH));
         if (!saveDir.exists()) {
