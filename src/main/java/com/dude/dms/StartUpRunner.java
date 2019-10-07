@@ -29,7 +29,7 @@ public class StartUpRunner implements CommandLineRunner {
         createTags();
     }
 
-    private static void checkOptions() throws IOException {
+    private static void checkOptions() {
         File pollDir = new File(BrainUtils.getProperty(DOC_POLL_PATH));
         if (!pollDir.exists()) {
             LOGGER.info("Creating input directory new docs {}", pollDir);
@@ -50,7 +50,7 @@ public class StartUpRunner implements CommandLineRunner {
     }
 
     private static void createOptionsFile() throws IOException {
-        File prop = new File("src/main/resources/options.properties");
+        File prop = new File("options.properties");
         if (!prop.exists()) {
             LOGGER.info("Creating user properties...");
             prop.createNewFile();

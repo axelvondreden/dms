@@ -41,7 +41,7 @@ hs_err_pid*
 /package-lock.json
 /webpack.generated.js
 /build-tools/
-/src/main/resources/options.properties
+/options.properties
 /db/
 /.vaadin/
 /docs/

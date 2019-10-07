@@ -45,7 +45,7 @@ public class DocPollingService implements PollingService {
 
     @Scheduled(fixedRate = 10000)
     public void poll() {
-        LOGGER.info("Polling...");
+        LOGGER.info("Polling {} for PDFs...", docPath);
         WatchKey key = watcher.poll();
         if (key != null) {
             Collection<File> files = pollForFiles(key);

@@ -22,7 +22,7 @@ public final class BrainUtils {
     public static void setProperty(OptionKey key, String value) {
         Properties prop = getUserProperties();
         prop.setProperty(key.key, value);
-        try (OutputStream output = new FileOutputStream(new File("src/main/resources/options.properties"))) {
+        try (OutputStream output = new FileOutputStream(new File("options.properties"))) {
             prop.store(output, null);
         } catch (IOException io) {
             LOGGER.error(io.getMessage());
@@ -39,7 +39,7 @@ public final class BrainUtils {
 
     private static Properties getUserProperties() {
         Properties prop = new Properties();
-        try (InputStream input = new FileInputStream(new File("src/main/resources/options.properties"))) {
+        try (InputStream input = new FileInputStream(new File("options.properties"))) {
             prop.load(input);
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
@@ -49,7 +49,7 @@ public final class BrainUtils {
 
     private static Properties getDefaultProperties() {
         Properties prop = new Properties();
-        try (InputStream input = new FileInputStream(new File("src/main/resources/options.default.properties"))) {
+        try (InputStream input = new FileInputStream(new File("options.default.properties"))) {
             prop.load(input);
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
