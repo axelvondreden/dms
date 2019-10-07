@@ -11,6 +11,11 @@ public abstract class Rule extends DataEntity {
 
     protected Boolean active;
 
+    /**
+     * Checks a line of text against the rule pattern.
+     * @param line line of text
+     * @return {@code true}, if the pattern found a match
+     */
     public abstract boolean validate(String line);
 
     public abstract Set<Tag> getTags();

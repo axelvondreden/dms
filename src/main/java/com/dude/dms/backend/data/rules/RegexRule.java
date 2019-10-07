@@ -57,4 +57,9 @@ public class RegexRule extends Rule {
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public String toString() {
+        return "RegexRule{regex='" + regex + "'}";
+    }
 }

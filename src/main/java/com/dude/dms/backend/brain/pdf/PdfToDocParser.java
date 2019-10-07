@@ -3,7 +3,11 @@ package com.dude.dms.backend.brain.pdf;
 import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.rules.PlainTextRule;
+import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.PlainTextRuleService;
+import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -22,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
 
@@ -35,6 +40,12 @@ public class PdfToDocParser implements Parser {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private PlainTextRuleService plainTextRuleService;
+
+    @Autowired
+    private RegexRuleService regexRuleService;
 
     private final String docSavePath;
 
@@ -50,24 +61,70 @@ public class PdfToDocParser implements Parser {
     public void parse(File file) {
         LOGGER.info("Parsing file {}...", file.getName());
         String guid = UUID.randomUUID().toString();
-        Path targetPath = Paths.get(docSavePath, guid + ".pdf");
-        LOGGER.info("Copying to {}...", targetPath);
-        try {
-            Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        String rawText = null;
-        try (PDDocument pdDoc = PDDocument.load(new File(targetPath.toUri()))) {
-            PDFTextStripper pdfStripper = new PDFTextStripper();
-            LOGGER.info("Stripping text...");
-            rawText = pdfStripper.getText(pdDoc);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
+        File savedFile = saveFile(file, guid + ".pdf");
 
         Doc doc = new Doc(guid);
+
+        String rawText = stripText(savedFile);
+        if (rawText != null && !rawText.isEmpty()) {
+            doc.setRawText(rawText);
+            doc.setDocumentDate(discoverDates(rawText));
+        }
+
+        doc.setTags(discoverTags(rawText));
+
+        docService.create(doc);
+        LOGGER.info("Created doc with ID: {}", doc.getGuid());
+    }
+
+    /**
+     * Tries to find tags for a doc by all available methods
+     * @param rawText raw text of the document
+     * @return list of tags
+     */
+    private Set<Tag> discoverTags(String rawText) {
+        Set<Tag> tags = discoverAutoTags();
+        tags.addAll(discoverRuleTags(rawText));
+        return tags;
+    }
+
+    /**
+     * Validates all active rules against the raw text and adds tags for matching rules.
+     * @param rawText raw text
+     * @return list of tags
+     */
+    private Set<Tag> discoverRuleTags(String rawText) {
+        Set<Tag> tags = new HashSet<>();
+
+        for (PlainTextRule rule : plainTextRuleService.getActiveRules()) {
+            for (String line : rawText.split("\n")) {
+                if (rule.validate(line)) {
+                    Set<Tag> ruleTags = tagService.findByPlainTextRule(rule);
+                    LOGGER.info("{} found a match! Adding tags[{}]...", rule, ruleTags.stream().map(Tag::getName).collect(Collectors.joining(",")));
+                    tags.addAll(ruleTags);
+                    break;
+                }
+            }
+        }
+
+        for (RegexRule rule : regexRuleService.getActiveRules()) {
+            for (String line : rawText.split("\n")) {
+                if (rule.validate(line)) {
+                    Set<Tag> ruleTags = tagService.findByRegexRule(rule);
+                    LOGGER.info("{} found a match! Adding tags[{}]...", rule, ruleTags.stream().map(Tag::getName).collect(Collectors.joining(",")));
+                    tags.addAll(ruleTags);
+                    break;
+                }
+            }
+        }
+        return tags;
+    }
+
+    /**
+     * Gets tags, wich are set to automatic in the user_settings
+     * @return list of tags
+     */
+    private Set<Tag> discoverAutoTags() {
         Set<Tag> tags = new HashSet<>();
         if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
             tagService.findById(Long.parseLong(BrainUtils.getProperty(REVIEW_TAG_ID))).ifPresent(tag -> {
@@ -75,15 +132,30 @@ public class PdfToDocParser implements Parser {
                 tags.add(tag);
             });
         }
+        return tags;
+    }
 
-        if (rawText != null && !rawText.isEmpty()) {
-            doc.setRawText(rawText);
-            doc.setDocumentDate(discoverDates(rawText));
+    private static String stripText(File file) {
+        String rawText = null;
+        try (PDDocument pdDoc = PDDocument.load(file)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            LOGGER.info("Stripping text...");
+            rawText = pdfStripper.getText(pdDoc);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
         }
+        return rawText;
+    }
 
-        doc.setTags(tags);
-        docService.create(doc);
-        LOGGER.info("Created doc with ID: {}", doc.getGuid());
+    private File saveFile(File file, String newName) {
+        Path targetPath = Paths.get(docSavePath, newName);
+        LOGGER.info("Copying to {}...", targetPath);
+        try {
+            Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return new File(targetPath.toUri());
     }
 
     private static LocalDate discoverDates(String rawText) {
@@ -91,7 +163,6 @@ public class PdfToDocParser implements Parser {
         String[] datePatterns = BrainUtils.getProperty(DATE_SCAN_FORMATS).split(",");
         Map<LocalDate, Integer> map = new HashMap<>();
         for (String pattern : datePatterns) {
-            LOGGER.info("Testing pattern: {}...", pattern);
             int count = 0;
             for (String line : rawText.split("\n")) {
                 for (int i = 0; i < (line.length() - pattern.length()); i++) {
@@ -104,7 +175,6 @@ public class PdfToDocParser implements Parser {
                     }
                 }
             }
-            LOGGER.info("...Found {}", count);
         }
         Optional<Map.Entry<LocalDate, Integer>> entry = map.entrySet().stream().max(Map.Entry.comparingByValue());
         if (entry.isPresent()) {

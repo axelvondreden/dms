@@ -47,4 +47,9 @@ public class PlainTextRule extends Rule {
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public String toString() {
+        return "PlainTextRule{text='" + text + "'}";
+    }
 }
