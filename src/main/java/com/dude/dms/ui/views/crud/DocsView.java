@@ -38,6 +38,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
     @Autowired
     public DocsView(DocService docService, DocHistoryService historyService) {
         super(Doc.class, docService, historyService);
+        canCreate(false);
     }
 
     @Override
@@ -51,7 +52,6 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
                     new Button(VaadinIcon.FILE_TEXT.create(), e -> UI.getCurrent().getPage().executeJs("window.open('file:" + path + "', '_blank');")));
         });
         addGridColumn("Tags", doc -> new TagContainer(tagService.findByDoc(doc)));
-        showCreateButton(false);
     }
 
     private static void openTextDialog(Doc doc) {

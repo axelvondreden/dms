@@ -40,17 +40,33 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
 
     private HistoryView<T, U> historyView;
 
+    private final Button saveButton;
+    private boolean canUpdate = true;
+    private boolean canCreate = true;
+
     public HistoricalCrudForm(Class<T> clazz, HistoricalCrudService<T, U> service, HistoryCrudService<T, U> historyService) {
         this.clazz = clazz;
         this.service = service;
         this.historyService = historyService;
 
         binder = new Binder<>();
+
+        saveButton = new Button("Create", e -> {
+            if (binder.getBean() != null) {
+                update();
+            } else {
+                create();
+            }
+        });
+        saveButton.setWidthFull();
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     }
 
     public void load(T entity) {
         binder.setBean(entity);
         historyView.load(entity);
+        saveButton.setText("Save");
+        checkPermissions();
     }
 
     public void reload() {
@@ -70,34 +86,38 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
     }
 
     private void create() {
-        Optional<T> opt = createEmpty();
-        opt.ifPresent(instance -> {
+        if (canCreate) {
+            Optional<T> opt = createEmpty();
+            opt.ifPresent(instance -> {
+                BinderValidationStatus<T> status = binder.validate();
+                if (status.hasErrors()) {
+                    if (errorListener != null) {
+                        errorListener.onError(status.getValidationErrors());
+                    }
+                } else {
+                    binder.writeBeanIfValid(instance);
+                    service.create(instance);
+                    if (createListener != null) {
+                        createListener.onCreate(instance);
+                    }
+                }
+            });
+        }
+    }
+
+    protected void update() {
+        if (canUpdate) {
             BinderValidationStatus<T> status = binder.validate();
             if (status.hasErrors()) {
                 if (errorListener != null) {
                     errorListener.onError(status.getValidationErrors());
                 }
             } else {
-                binder.writeBeanIfValid(instance);
-                service.create(instance);
-                if (createListener != null) {
-                    createListener.onCreate(instance);
+                T bean = binder.getBean();
+                service.save(bean);
+                if (saveListener != null) {
+                    saveListener.onSave(bean);
                 }
-            }
-        });
-    }
-
-    protected void save() {
-        BinderValidationStatus<T> status = binder.validate();
-        if (status.hasErrors()) {
-            if (errorListener != null) {
-                errorListener.onError(status.getValidationErrors());
-            }
-        } else {
-            T bean = binder.getBean();
-            service.save(bean);
-            if (saveListener != null) {
-                saveListener.onSave(bean);
             }
         }
     }
@@ -116,6 +136,8 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
         if (historyView != null) {
             historyView.clear();
         }
+        saveButton.setText("Create");
+        checkPermissions();
     }
 
     public void setCreateListener(CrudFormCreateListener<T> createListener) {
@@ -130,18 +152,17 @@ public class HistoricalCrudForm<T extends DataEntity & Historical<U> & Diffable<
         this.errorListener = errorListener;
     }
 
-    public void addCreateButton() {
-        Button create = new Button("Create", e -> create());
-        create.setWidthFull();
-        create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        add(create);
+    public void setPermissions(boolean canUpdate, boolean canCreate) {
+        if (canUpdate || canCreate) {
+            add(saveButton);
+        }
+        this.canUpdate = canUpdate;
+        this.canCreate = canCreate;
+        checkPermissions();
     }
 
-    public void addSaveButton() {
-        Button save = new Button("Save", e -> save());
-        save.setWidthFull();
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        add(save);
+    private void checkPermissions() {
+        saveButton.setEnabled((binder.getBean() != null && canUpdate) || (binder.getBean() == null && canCreate));
     }
 
     public void addHistory() {

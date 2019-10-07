@@ -30,8 +30,8 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
 
     protected final HistoricalCrudService<T, U> service;
 
-    private boolean showCreate = true;
-    private boolean showSave = true;
+    private boolean canUpdate = true;
+    private boolean canCreate = true;
     private boolean showHistory = true;
 
     protected abstract void defineProperties();
@@ -57,9 +57,7 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
 
         grid = new Grid<>();
         grid.setSizeFull();
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            historicalCrudForm.load(event.getValue());
-        });
+        grid.asSingleSelect().addValueChangeListener(event -> historicalCrudForm.load(event.getValue()));
         addToPrimary(grid);
 
         addSplitterDragendListener(event -> historicalCrudForm.reload());
@@ -159,12 +157,7 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         grid.removeAllColumns();
         fillGrid();
         defineProperties();
-        if (showSave) {
-            historicalCrudForm.addSaveButton();
-        }
-        if (showCreate) {
-            historicalCrudForm.addCreateButton();
-        }
+        historicalCrudForm.setPermissions(canUpdate, canCreate);
         if (showHistory) {
             historicalCrudForm.addHistory();
         }
@@ -172,12 +165,12 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         setSplitterPosition(Double.parseDouble(BrainUtils.getProperty(CRUD_VIEW_SPLITTER_POS)));
     }
 
-    protected void showCreateButton(boolean show) {
-        showCreate = show;
+    protected void canUpdate(boolean canUpdate) {
+        this.canUpdate = canUpdate;
     }
 
-    protected void showSaveButton(boolean show) {
-        showSave = show;
+    protected void canCreate(boolean canCreate) {
+        this.canCreate = canCreate;
     }
 
     protected void showHistory(boolean show) {
