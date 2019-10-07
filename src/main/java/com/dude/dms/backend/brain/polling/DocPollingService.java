@@ -39,8 +39,15 @@ public class DocPollingService implements PollingService {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
+    }
 
-        //TODO: check dir on startup
+    public void manualPoll() {
+        File [] files = new File(docPath).listFiles((file, name) -> name.endsWith(".pdf"));
+        if (files != null) {
+            for (File file : files) {
+                processFile(file);
+            }
+        }
     }
 
     @Scheduled(fixedRate = 10000)
@@ -51,11 +58,13 @@ public class DocPollingService implements PollingService {
             Collection<File> files = pollForFiles(key);
 
             // process files
-            for (File file : files) {
-                LOGGER.info("Processing file: {}", file.getName());
-                pdfToDocParser.parse(file);
-            }
+            files.forEach(this::processFile);
         }
+    }
+
+    private void processFile(File file) {
+        LOGGER.info("Processing file: {}", file.getName());
+        pdfToDocParser.parse(file);
     }
 
     @SuppressWarnings("unchecked")

@@ -1,6 +1,7 @@
 package com.dude.dms;
 
 import com.dude.dms.backend.brain.BrainUtils;
+import com.dude.dms.backend.brain.polling.DocPollingService;
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.TagService;
 import org.slf4j.Logger;
@@ -22,11 +23,15 @@ public class StartUpRunner implements CommandLineRunner {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private DocPollingService docPollingService;
+
     @Override
     public void run(String... args) throws IOException {
         createOptionsFile();
         checkOptions();
         createTags();
+        docPollingService.manualPoll();
     }
 
     private static void checkOptions() {

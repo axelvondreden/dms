@@ -163,14 +163,12 @@ public class PdfToDocParser implements Parser {
         String[] datePatterns = BrainUtils.getProperty(DATE_SCAN_FORMATS).split(",");
         Map<LocalDate, Integer> map = new HashMap<>();
         for (String pattern : datePatterns) {
-            int count = 0;
             for (String line : rawText.split("\n")) {
                 for (int i = 0; i < (line.length() - pattern.length()); i++) {
                     String snippet = line.substring(i, i + pattern.length());
                     try {
                         LocalDate date = LocalDate.parse(snippet, DateTimeFormatter.ofPattern(pattern));
                         map.put(date, map.getOrDefault(date, 0) + 1);
-                        count++;
                     } catch (DateTimeParseException ignored) {
                     }
                 }
