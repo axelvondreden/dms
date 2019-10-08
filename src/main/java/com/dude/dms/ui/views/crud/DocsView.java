@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 
 @Route(value = Const.PAGE_DOCS, layout = MainView.class)
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView.class)
-@PageTitle(Const.TITLE_DOCS)
+@PageTitle("Docs")
 public class DocsView extends HistoricalCrudView<Doc, DocHistory> {
 
     @Autowired

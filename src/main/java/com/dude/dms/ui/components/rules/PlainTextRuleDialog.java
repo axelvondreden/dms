@@ -3,15 +3,20 @@ package com.dude.dms.ui.components.rules;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.views.HasNotifications;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class PlainTextRuleDialog extends Dialog implements HasNotifications {
+public class PlainTextRuleDialog extends Dialog {
 
     private final TextField plainText;
-    private final RuleTagger<PlainTextRule> ruleTagger;
+    private final RuleTagger ruleTagger;
+    private final Checkbox caseSensitive;
+
     private final PlainTextRuleService plainTextRuleService;
 
     private PlainTextRule plainTextRule;
@@ -26,11 +31,15 @@ public class PlainTextRuleDialog extends Dialog implements HasNotifications {
         this.plainTextRuleService = plainTextRuleService;
         plainText = new TextField("Text", "");
         plainText.setWidthFull();
-        ruleTagger = new RuleTagger<>(tagService);
+        ruleTagger = new RuleTagger(tagService);
         ruleTagger.setHeight("80%");
+        caseSensitive = new Checkbox("case sensitive");
+        HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
+        hLayout.setWidthFull();
+        hLayout.setAlignItems(FlexComponent.Alignment.END);
         Button button = new Button("Create", e -> save());
         button.setWidthFull();
-        add(plainText, ruleTagger, button);
+        add(hLayout, ruleTagger, button);
         setWidth("70vw");
         setHeight("70vh");
     }
@@ -47,32 +56,36 @@ public class PlainTextRuleDialog extends Dialog implements HasNotifications {
         this.plainTextRule = plainTextRule;
         plainText = new TextField("Text", plainTextRule.getText(), "");
         plainText.setWidthFull();
-        ruleTagger = new RuleTagger<>(tagService.findByPlainTextRule(plainTextRule), tagService);
+        ruleTagger = new RuleTagger(tagService.findByPlainTextRule(plainTextRule), tagService);
         ruleTagger.setHeight("80%");
+        caseSensitive = new Checkbox("case sensitive");
+        HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
+        hLayout.setWidthFull();
+        hLayout.setAlignItems(FlexComponent.Alignment.END);
         Button button = new Button("Save", e -> save());
         button.setWidthFull();
-        add(plainText, ruleTagger, button);
+        add(hLayout, ruleTagger, button);
         setWidth("70vw");
         setHeight("70vh");
     }
 
     private void save() {
         if (plainText.isEmpty()) {
-            showNotification("Text can not be empty!", true);
+            Notification.show("Text can not be empty!");
             return;
         }
         if (!ruleTagger.validate()) {
-            showNotification("At least on tag must be selected!", true);
+            Notification.show("At least on tag must be selected!");
             return;
         }
         if (plainTextRule == null) {
-            plainTextRuleService.save(new PlainTextRule(plainText.getValue(), ruleTagger.getRuleTags()));
-            showNotification("Created new rule!");
+            plainTextRuleService.save(new PlainTextRule(plainText.getValue(), caseSensitive.getValue(), ruleTagger.getRuleTags()));
+            Notification.show("Created new rule!");
         } else {
             plainTextRule.setText(plainText.getValue());
             plainTextRule.setTags(ruleTagger.getRuleTags());
             plainTextRuleService.save(plainTextRule);
-            showNotification("Edited rule!");
+            Notification.show("Edited rule!");
         }
         close();
     }

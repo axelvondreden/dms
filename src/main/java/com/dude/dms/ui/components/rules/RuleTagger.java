@@ -1,7 +1,6 @@
 package com.dude.dms.ui.components.rules;
 
 import com.dude.dms.backend.data.base.Tag;
-import com.dude.dms.backend.data.rules.Rule;
 import com.dude.dms.backend.service.TagService;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -11,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RuleTagger<T extends Rule> extends HorizontalLayout {
+public class RuleTagger extends HorizontalLayout {
 
     private final Set<Tag> ruleTags;
     private final List<Tag> availableTags;

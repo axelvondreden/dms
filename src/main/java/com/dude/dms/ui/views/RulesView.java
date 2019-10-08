@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Route(value = Const.PAGE_RULES, layout = MainView.class)
-@PageTitle(Const.TITLE_RULES)
+@PageTitle("Rules")
 public class RulesView extends VerticalLayout {
 
     private final Details plainTextDetails;
@@ -43,7 +43,7 @@ public class RulesView extends VerticalLayout {
 
         addRegex();
 
-        add(plainTextDetails);
+        add(plainTextDetails, regexDetails);
     }
 
     private void addPlaintext() {
@@ -52,7 +52,7 @@ public class RulesView extends VerticalLayout {
         verticalLayout.setSizeFull();
         List<PlainTextRule> plainTextRules = plainTextRuleService.getActiveRules();
         for (PlainTextRule rule : plainTextRules) {
-            verticalLayout.add(new RuleCard<>(rule.getText(), tagService.findByPlainTextRule(rule), e -> new PlainTextRuleDialog(rule, tagService, plainTextRuleService).open()));
+            verticalLayout.add(new RuleCard(rule.getText(), tagService.findByPlainTextRule(rule), e -> new PlainTextRuleDialog(rule, tagService, plainTextRuleService).open()));
         }
         plainTextDetails.setSummaryText("Plaintext");
         plainTextDetails.setContent(verticalLayout);
@@ -64,7 +64,7 @@ public class RulesView extends VerticalLayout {
         verticalLayout.setSizeFull();
         List<RegexRule> regexRules = regexRuleService.getActiveRules();
         for (RegexRule rule : regexRules) {
-            verticalLayout.add(new RuleCard<>(rule.getRegex(), tagService.findByRegexRule(rule), e -> new RegexRuleDialog(rule, tagService, regexRuleService).open()));
+            verticalLayout.add(new RuleCard(rule.getRegex(), tagService.findByRegexRule(rule), e -> new RegexRuleDialog(rule, tagService, regexRuleService).open()));
         }
         regexDetails.setSummaryText("Regex");
         regexDetails.setContent(verticalLayout);

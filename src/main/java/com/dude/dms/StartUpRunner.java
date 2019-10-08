@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.Random;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
 
@@ -28,6 +30,8 @@ public class StartUpRunner implements CommandLineRunner {
     @Autowired
     private DocPollingService docPollingService;
 
+    private Random random;
+
     @Override
     public void run(String... args) throws IOException {
         createOptionsFile();
@@ -35,6 +39,8 @@ public class StartUpRunner implements CommandLineRunner {
         createTags();
         docPollingService.manualPoll();
         LocaleContextHolder.setLocale(Locale.forLanguageTag(BrainUtils.getProperty(LOCALE)));
+
+        createDemoData();
     }
 
     private static void checkOptions() {
@@ -52,7 +58,7 @@ public class StartUpRunner implements CommandLineRunner {
 
     private void createTags() {
         if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
-            Tag reviewTag = tagService.create(new Tag("review", "red"));
+            Tag reviewTag = tagService.create(new Tag("Review", "red"));
             BrainUtils.setProperty(REVIEW_TAG_ID, String.valueOf(reviewTag.getId()));
         }
     }
@@ -63,5 +69,18 @@ public class StartUpRunner implements CommandLineRunner {
             LOGGER.info("Creating user properties...");
             prop.createNewFile();
         }
+    }
+
+    private void createDemoData() {
+        random = new SecureRandom();
+        tagService.create(new Tag("Rechnung", randomColor()));
+        tagService.create(new Tag("Auto", randomColor()));
+        tagService.create(new Tag("Beleg", randomColor()));
+        tagService.create(new Tag("Test", randomColor()));
+        tagService.create(new Tag("Test 2", randomColor()));
+    }
+
+    private String randomColor() {
+        return String.format("#%06x", random.nextInt(0xffffff + 1));
     }
 }

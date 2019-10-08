@@ -1,12 +1,14 @@
 package com.dude.dms.backend.service;
 
 import com.dude.dms.backend.data.base.Doc;
+import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.data.history.DocHistory;
 import com.dude.dms.backend.repositories.DocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,5 +33,13 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
 
     public Optional<Doc> findByGuid(String guid) {
         return docRepository.findByGuid(guid);
+    }
+
+    public List<Doc> findByTag(Tag tag) {
+        return docRepository.findByTags(tag);
+    }
+
+    public long countByTag(Tag tag) {
+        return docRepository.countByTags(tag);
     }
 }

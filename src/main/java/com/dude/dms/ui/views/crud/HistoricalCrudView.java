@@ -1,6 +1,5 @@
 package com.dude.dms.ui.views.crud;
 
-import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.data.Diffable;
 import com.dude.dms.backend.data.Historical;
@@ -8,11 +7,11 @@ import com.dude.dms.backend.data.history.History;
 import com.dude.dms.backend.service.HistoricalCrudService;
 import com.dude.dms.backend.service.HistoryCrudService;
 import com.dude.dms.ui.components.history.HistoricalCrudForm;
-import com.dude.dms.ui.views.HasNotifications;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -20,9 +19,7 @@ import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 
-import static com.dude.dms.backend.brain.OptionKey.CRUD_VIEW_SPLITTER_POS;
-
-public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & Diffable<T>, U extends History> extends SplitLayout implements AfterNavigationObserver, HasNotifications {
+public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & Diffable<T>, U extends History> extends SplitLayout implements AfterNavigationObserver {
 
     protected Grid<T> grid;
 
@@ -45,14 +42,14 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         historicalCrudForm.getElement().getStyle().set("padding", "10px");
         historicalCrudForm.setCreateListener(entity -> {
             fillGrid();
-            showNotification("Created!");
+            Notification.show("Created!");
         });
         historicalCrudForm.setSaveListener(entity -> {
             fillGrid();
             grid.select(entity);
-            showNotification("Saved!");
+            Notification.show("Saved!");
         });
-        historicalCrudForm.setErrorListener(errors -> errors.forEach(e -> showNotification(e.getErrorMessage(), true)));
+        historicalCrudForm.setErrorListener(errors -> errors.forEach(e -> Notification.show(e.getErrorMessage())));
         addToSecondary(historicalCrudForm);
 
         grid = new Grid<>();
@@ -161,8 +158,6 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
         if (showHistory) {
             historicalCrudForm.addHistory();
         }
-
-        setSplitterPosition(Double.parseDouble(BrainUtils.getProperty(CRUD_VIEW_SPLITTER_POS)));
     }
 
     protected void canUpdate(boolean canUpdate) {

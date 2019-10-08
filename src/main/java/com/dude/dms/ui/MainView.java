@@ -1,92 +1,87 @@
 package com.dude.dms.ui;
 
+import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
-import com.dude.dms.ui.views.crud.AccountsView;
 import com.dude.dms.ui.views.crud.DocsView;
-import com.dude.dms.ui.views.crud.TagsView;
+import com.github.appreciated.app.layout.component.appbar.AppBarBuilder;
+import com.github.appreciated.app.layout.component.applayout.LeftLayouts;
+import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder;
+import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu;
+import com.github.appreciated.app.layout.component.menu.left.builder.LeftAppMenuBuilder;
+import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem;
+import com.github.appreciated.app.layout.component.menu.left.items.LeftHeaderItem;
+import com.github.appreciated.app.layout.component.menu.left.items.LeftNavigationItem;
+import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout;
+import com.github.appreciated.app.layout.entity.DefaultBadgeHolder;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.page.Viewport;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.TabVariant;
-import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.component.tabs.Tabs.Orientation;
-import com.vaadin.flow.router.NotFoundException;
-import com.vaadin.flow.router.RouteConfiguration;
-import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.theme.Theme;
-import com.vaadin.flow.theme.lumo.Lumo;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.component.textfield.TextField;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-@Theme(value = Lumo.class, variant = Lumo.DARK)
-@Viewport(Const.VIEWPORT)
-public class MainView extends AppLayout {
+import static com.github.appreciated.app.layout.entity.Section.FOOTER;
+import static com.github.appreciated.app.layout.entity.Section.HEADER;
 
-    private final Tabs menu;
+@Push
+public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybrid> {
 
-    public MainView() {
-        setDrawerOpened(false);
+    private final DocService docService;
 
-        menu = createMenuTabs();
+    private final TagService tagService;
 
-        addToNavbar(true, menu);
+    @Autowired
+    public MainView(DocService docService, TagService tagService) {
+        this.docService = docService;
+        this.tagService = tagService;
+        init(AppLayoutBuilder.get(LeftLayouts.LeftResponsiveHybrid.class)
+                .withTitle("dms")
+                .withAppBar(buildAppBar())
+                .withAppMenu(buildAppMenu())
+                .build());
     }
 
-    @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
+    private Component buildAppMenu() {
+        DefaultBadgeHolder docsBadge = new DefaultBadgeHolder((int) docService.count());
+        LeftNavigationItem docsEntry = new LeftNavigationItem("Docs", VaadinIcon.FILE_TEXT.create(), DocsView.class);
+        docsBadge.bind(docsEntry.getBadge());
 
-        String target = null;
-        try {
-            target = RouteConfiguration.forSessionScope().getUrl(getContent().getClass());
-        } catch (IllegalArgumentException | NotFoundException e) {
-            //TODO
+        LeftSubmenu tagsEntry = createTagsEntry();
+        LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
+
+        return LeftAppMenuBuilder.get()
+                .addToSection(HEADER, new LeftHeaderItem("Header Text", "Subtitle", null))
+                .add(docsEntry, tagsEntry, rulesEntry)
+                .addToSection(FOOTER, new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
+                .build();
+    }
+
+    private LeftSubmenu createTagsEntry() {
+        List<Component> tagEntries = new ArrayList<>();
+        for (Tag tag: tagService.findAll()) {
+            DefaultBadgeHolder badgeHolder = new DefaultBadgeHolder((int) docService.countByTag(tag));
+            Icon icon = VaadinIcon.TAG.create();
+            icon.setColor(tag.getColor());
+            LeftClickableItem entry = new LeftClickableItem(tag.getName(), icon, clickEvent -> {});
+            tagEntries.add(entry);
+            badgeHolder.bind(entry.getBadge());
         }
-        if (target != null) {
-            String finalTarget = target;
-            Optional<Component> tabToSelect = menu.getChildren().filter(tab -> {
-                Component child = tab.getChildren().findFirst().get();
-                return child instanceof RouterLink && ((RouterLink) child).getHref().equals(finalTarget);
-            }).findFirst();
-            tabToSelect.ifPresent(tab -> menu.setSelectedTab((Tab) tab));
-        }
+
+        return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);
     }
 
-    private static Tabs createMenuTabs() {
-        Tabs tabs = new Tabs();
-        tabs.setOrientation(Orientation.HORIZONTAL);
-        tabs.add(getAvailableTabs());
-        return tabs;
-    }
-
-    private static Tab[] getAvailableTabs() {
-        List<Tab> tabs = new ArrayList<>();
-        tabs.add(createTab(VaadinIcon.EDIT, Const.TITLE_DOCS, DocsView.class));
-        tabs.add(createTab(VaadinIcon.ACCESSIBILITY, Const.TITLE_ACCOUNTS, AccountsView.class));
-        tabs.add(createTab(VaadinIcon.CALENDAR, Const.TITLE_TAGS, TagsView.class));
-        tabs.add(createTab(VaadinIcon.LIST, Const.TITLE_RULES, RulesView.class));
-        return tabs.toArray(new Tab[0]);
-    }
-
-    private static Tab createTab(VaadinIcon icon, String title, Class<? extends Component> viewClass) {
-        return createTab(populateLink(new RouterLink(null, viewClass), icon, title));
-    }
-
-    private static Tab createTab(Component content) {
-        Tab tab = new Tab();
-        tab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
-        tab.add(content);
-        return tab;
-    }
-
-    private static <T extends HasComponents> T populateLink(T a, VaadinIcon icon, String title) {
-        a.add(icon.create());
-        a.add(title);
-        return a;
+    private FlexLayout buildAppBar() {
+        TextField searchBar = new TextField("", "Search");
+        searchBar.setWidthFull();
+        FlexLayout flexLayout = AppBarBuilder.get().add(searchBar).build();
+        flexLayout.getElement().getStyle().set("width", "60vw");
+        return flexLayout;
     }
 }
