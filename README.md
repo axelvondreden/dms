@@ -14,6 +14,6 @@
 
  ```
 
-Lexa-DMS is super geil !
-Lexa braucht einfach jeder der Ordnung in seinem Leben will !
-Vote for Lexa and you'll get the world domination DMS Power
+Lexa-DMS is super geil ! <br>
+Lexa braucht einfach jeder der Ordnung in seinem Leben will ! <br>
+Vote for Lexa and you'll get the world domination DMS Power <br>
