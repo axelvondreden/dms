@@ -3,6 +3,7 @@ package com.dude.dms.ui;
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.components.crud.TagCreateDialog;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
 import com.dude.dms.ui.views.crud.DocsView;
@@ -54,11 +55,12 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
         docsBadge.bind(docsEntry.getBadge());
 
         LeftSubmenu tagsEntry = createTagsEntry();
+        LeftClickableItem newTagEntry = new LeftClickableItem("Create Tag", VaadinIcon.TAG.create(), event -> new TagCreateDialog(tagService).open());
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
 
         return LeftAppMenuBuilder.get()
                 .addToSection(HEADER, new LeftHeaderItem("Header Text", "Subtitle", null))
-                .add(docsEntry, tagsEntry, rulesEntry)
+                .add(docsEntry, tagsEntry, newTagEntry, rulesEntry)
                 .addToSection(FOOTER, new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
                 .build();
     }

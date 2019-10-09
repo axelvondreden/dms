@@ -2,7 +2,9 @@ package com.dude.dms;
 
 import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.brain.polling.DocPollingService;
+import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +16,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.Locale;
-import java.util.Random;
+import java.time.LocalDate;
+import java.util.*;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
 
@@ -26,6 +28,9 @@ public class StartUpRunner implements CommandLineRunner {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private DocService docService;
 
     @Autowired
     private DocPollingService docPollingService;
@@ -73,11 +78,28 @@ public class StartUpRunner implements CommandLineRunner {
 
     private void createDemoData() {
         random = new SecureRandom();
-        tagService.create(new Tag("Rechnung", randomColor()));
-        tagService.create(new Tag("Auto", randomColor()));
-        tagService.create(new Tag("Beleg", randomColor()));
-        tagService.create(new Tag("Test", randomColor()));
-        tagService.create(new Tag("Test 2", randomColor()));
+        Collection<Tag> tags = new HashSet<>();
+        tags.add(tagService.create(new Tag("Rechnung", randomColor())));
+        tags.add(tagService.create(new Tag("Auto", randomColor())));
+        tags.add(tagService.create(new Tag("Beleg", randomColor())));
+        tags.add(tagService.create(new Tag("Einkauf", randomColor())));
+        tags.add(tagService.create(new Tag("Steuer", randomColor())));
+        tags.add(tagService.create(new Tag("Arbeit", randomColor())));
+        tags.add(tagService.create(new Tag("Test", randomColor())));
+
+        if (docService.count() == 0) {
+            LOGGER.info("Creating demo docs...");
+            for (int i = 0; i < 500; i++) {
+                Set<Tag> rngTags = new HashSet<>();
+                for (Tag tag : tags) {
+                    if (random.nextFloat() > 0.7) {
+                        rngTags.add(tag);
+                    }
+                }
+                LocalDate date = LocalDate.of(2016 + random.nextInt(4), 1 + random.nextInt(12), 1 + random.nextInt(28));
+                docService.create(new Doc(date, "", UUID.randomUUID().toString(), rngTags));
+            }
+        }
     }
 
     private String randomColor() {

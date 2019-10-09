@@ -53,6 +53,13 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
         this.guid = guid;
     }
 
+    public Doc(LocalDate documentDate, @Size(max = 99999999) String rawText, @NotNull String guid, Set<Tag> tags) {
+        this.documentDate = documentDate;
+        this.rawText = rawText;
+        this.guid = guid;
+        this.tags = tags;
+    }
+
     public LocalDate getDocumentDate() {
         return documentDate;
     }

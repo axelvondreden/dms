@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.rules;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -14,7 +15,7 @@ import com.vaadin.flow.component.textfield.TextField;
 public class PlainTextRuleDialog extends Dialog {
 
     private final TextField plainText;
-    private final RuleTagger ruleTagger;
+    private final Tagger ruleTagger;
     private final Checkbox caseSensitive;
 
     private final PlainTextRuleService plainTextRuleService;
@@ -31,7 +32,7 @@ public class PlainTextRuleDialog extends Dialog {
         this.plainTextRuleService = plainTextRuleService;
         plainText = new TextField("Text", "");
         plainText.setWidthFull();
-        ruleTagger = new RuleTagger(tagService);
+        ruleTagger = new Tagger(tagService);
         ruleTagger.setHeight("80%");
         caseSensitive = new Checkbox("case sensitive");
         HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
@@ -56,8 +57,9 @@ public class PlainTextRuleDialog extends Dialog {
         this.plainTextRule = plainTextRule;
         plainText = new TextField("Text", plainTextRule.getText(), "");
         plainText.setWidthFull();
-        ruleTagger = new RuleTagger(tagService.findByPlainTextRule(plainTextRule), tagService);
+        ruleTagger = new Tagger(tagService);
         ruleTagger.setHeight("80%");
+        ruleTagger.setSelectedTags(tagService.findByPlainTextRule(plainTextRule));
         caseSensitive = new Checkbox("case sensitive");
         HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
         hLayout.setWidthFull();
@@ -74,16 +76,16 @@ public class PlainTextRuleDialog extends Dialog {
             Notification.show("Text can not be empty!");
             return;
         }
-        if (!ruleTagger.validate()) {
+        if (ruleTagger.getSelectedTags().isEmpty()) {
             Notification.show("At least on tag must be selected!");
             return;
         }
         if (plainTextRule == null) {
-            plainTextRuleService.save(new PlainTextRule(plainText.getValue(), caseSensitive.getValue(), ruleTagger.getRuleTags()));
+            plainTextRuleService.save(new PlainTextRule(plainText.getValue(), caseSensitive.getValue(), ruleTagger.getSelectedTags()));
             Notification.show("Created new rule!");
         } else {
             plainTextRule.setText(plainText.getValue());
-            plainTextRule.setTags(ruleTagger.getRuleTags());
+            plainTextRule.setTags(ruleTagger.getSelectedTags());
             plainTextRuleService.save(plainTextRule);
             Notification.show("Edited rule!");
         }
