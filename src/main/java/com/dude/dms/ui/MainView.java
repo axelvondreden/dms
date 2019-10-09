@@ -4,14 +4,13 @@ import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.components.crud.TagCreateDialog;
+import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
+import com.dude.dms.ui.components.search.DmsSearchOverlayButtonBuilder;
 import com.dude.dms.ui.components.search.DocSearchResult;
 import com.dude.dms.ui.components.search.SearchResult;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
 import com.dude.dms.ui.views.crud.DocsView;
-import com.github.appreciated.app.layout.addons.search.SearchButton;
-import com.github.appreciated.app.layout.addons.search.overlay.SearchOverlayButton;
-import com.github.appreciated.app.layout.addons.search.overlay.SearchOverlayButtonBuilder;
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder;
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts;
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder;
@@ -23,24 +22,18 @@ import com.github.appreciated.app.layout.component.menu.left.items.LeftNavigatio
 import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout;
 import com.github.appreciated.app.layout.entity.DefaultBadgeHolder;
 import com.github.appreciated.card.RippleClickableCard;
-import com.github.appreciated.card.content.Item;
+import com.github.appreciated.card.label.SecondaryLabel;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.ListDataProvider;
-import com.vaadin.flow.data.provider.Query;
-import com.vaadin.flow.function.SerializablePredicate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.github.appreciated.app.layout.entity.Section.FOOTER;
 import static com.github.appreciated.app.layout.entity.Section.HEADER;
@@ -95,29 +88,35 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
     }
 
     private FlexLayout buildAppBar() {
-        SearchOverlayButton<SearchResult> searchOverlayButton = initSearchOverlayButton();
-        SearchButton searchButton = new SearchButton().withValueChangeListener(event -> {
-            /* React manually to user inputs */
-        });
-        FlexLayout flexLayout = AppBarBuilder.get().add(searchOverlayButton).build();
-        //flexLayout.getElement().getStyle().set("width", "60vw");
-        return flexLayout;
+        DmsSearchOverlayButton<SearchResult> searchOverlayButton = initSearchOverlayButton();
+        return AppBarBuilder.get().add(searchOverlayButton).build();
     }
 
-    private SearchOverlayButton<SearchResult> initSearchOverlayButton() {
-        List<SearchResult> list = docService.findAll().stream().map(DocSearchResult::new).collect(Collectors.toList());
-        ListDataProvider<SearchResult> listDataProvider = new ListDataProvider<>(list);
-        return new SearchOverlayButtonBuilder<SearchResult>()
-                .withDataProvider(listDataProvider)
-                // Set the query that is executed to filter the Entities above
-                .withQueryProvider(s -> new Query<>(searchResult -> !s.isEmpty() && searchResult.getSearchtext().contains(s)))
-                .withDataViewProvider(queryResult -> {
-                    RippleClickableCard card = new RippleClickableCard(new Item(queryResult.getHeader(), queryResult.getDescription()));
+    private DmsSearchOverlayButton<SearchResult> initSearchOverlayButton() {
+        return new DmsSearchOverlayButtonBuilder<SearchResult>()
+                .withDataProvider(createDataProvider())
+                .withDataViewProvider(result -> {
+                    RippleClickableCard card = new RippleClickableCard(new SecondaryLabel(result.getHeader()), result.getBody());
                     card.setWidthFull();
                     card.setBackground("var(--lumo-base-color)");
                     return card;
                 })
-                .withQueryResultListener(testSearchResult -> Notification.show(testSearchResult.getHeader()))
+                .withQueryResultListener(searchResult -> searchResult.onClick())
                 .build();
+    }
+
+    DataProvider<SearchResult, String> createDataProvider() {
+        return DataProvider.fromFilteringCallbacks(query -> {
+            if (query.getFilter().isPresent()) {
+                String filter = query.getFilter().get();
+                return docService.findTop10ByRawTextLike("%" + filter + "%").stream().map(doc -> new DocSearchResult(doc, filter));
+            }
+            return null;
+        }, query -> {
+            if (query.getFilter().isPresent()) {
+                return (int) docService.countByRawTextLike("%" + query.getFilter().get() + "%");
+            }
+            return 0;
+        });
     }
 }

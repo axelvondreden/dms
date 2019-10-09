@@ -17,5 +17,5 @@ public interface DocRepository extends JpaRepository<Doc, Long> {
 
     long countByRawTextLike(String rawText);
 
-    List<Doc> findByRawTextLike(String rawText);
+    List<Doc> findTop10ByRawTextLike(String rawText);
 }

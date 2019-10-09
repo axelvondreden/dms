@@ -6,7 +6,12 @@ import com.vaadin.flow.component.html.Div;
 public class TagLabel extends Div {
 
     public TagLabel(Tag tag) {
-        getElement().getStyle().set("display", "inlineBlock").set("border", "1px solid black").set("backgroundColor", tag.getColor());
+        getElement().getStyle()
+                .set("display", "inline")
+                .set("border", "2px solid #CCF")
+                .set("backgroundColor", tag.getColor())
+                .set("borderRadius", "30px")
+                .set("padding", "2px 5px");
         setText(tag.getName());
     }
 }

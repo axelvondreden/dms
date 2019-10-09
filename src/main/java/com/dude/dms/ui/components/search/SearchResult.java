@@ -1,10 +1,12 @@
 package com.dude.dms.ui.components.search;
 
+import com.vaadin.flow.component.Component;
+
 public abstract class SearchResult {
 
     public abstract String getHeader();
 
-    public abstract String getDescription();
+    public abstract Component getBody();
 
-    public abstract String getSearchtext();
+    public abstract void onClick();
 }

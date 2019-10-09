@@ -27,7 +27,7 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     @NotNull
     protected String guid;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "doc")
