@@ -42,4 +42,12 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
     public long countByTag(Tag tag) {
         return docRepository.countByTags(tag);
     }
+
+    public long countByRawTextLike(String rawText) {
+        return docRepository.countByRawTextLike(rawText);
+    }
+
+    public List<Doc> findByRawTextLike(String rawText) {
+        return docRepository.findByRawTextLike(rawText);
+    }
 }

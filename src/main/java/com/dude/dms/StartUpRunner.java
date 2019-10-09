@@ -15,9 +15,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
 
@@ -89,6 +93,17 @@ public class StartUpRunner implements CommandLineRunner {
 
         if (docService.count() == 0) {
             LOGGER.info("Creating demo docs...");
+
+            StringBuilder contentBuilder = new StringBuilder();
+            try (Stream<String> stream = Files.lines( Paths.get("lipsum.txt"), StandardCharsets.UTF_8))
+            {
+                stream.forEach(s -> contentBuilder.append(s).append(' '));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            String txt = contentBuilder.toString();
             for (int i = 0; i < 500; i++) {
                 Set<Tag> rngTags = new HashSet<>();
                 for (Tag tag : tags) {
@@ -97,7 +112,9 @@ public class StartUpRunner implements CommandLineRunner {
                     }
                 }
                 LocalDate date = LocalDate.of(2016 + random.nextInt(4), 1 + random.nextInt(12), 1 + random.nextInt(28));
-                docService.create(new Doc(date, "", UUID.randomUUID().toString(), rngTags));
+                int r1 = random.nextInt(txt.length());
+                int r2 = r1 + (random.nextInt(txt.length() - r1));
+                docService.create(new Doc(date, txt.substring(r1, r2), UUID.randomUUID().toString(), rngTags));
             }
         }
     }

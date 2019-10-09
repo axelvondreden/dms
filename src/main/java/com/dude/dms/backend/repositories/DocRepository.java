@@ -14,4 +14,8 @@ public interface DocRepository extends JpaRepository<Doc, Long> {
     List<Doc> findByTags(Tag tag);
 
     long countByTags(Tag tag);
+
+    long countByRawTextLike(String rawText);
+
+    List<Doc> findByRawTextLike(String rawText);
 }
