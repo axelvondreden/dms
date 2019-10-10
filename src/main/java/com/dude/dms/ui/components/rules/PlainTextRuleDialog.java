@@ -3,16 +3,18 @@ package com.dude.dms.ui.components.rules;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class PlainTextRuleDialog extends Dialog {
+public class PlainTextRuleDialog extends RuleDialog {
 
     private final TextField plainText;
     private final Tagger ruleTagger;
@@ -64,14 +66,20 @@ public class PlainTextRuleDialog extends Dialog {
         HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
         hLayout.setWidthFull();
         hLayout.setAlignItems(FlexComponent.Alignment.END);
-        Button button = new Button("Save", e -> save());
-        button.setWidthFull();
-        add(hLayout, ruleTagger, button);
+        Button saveButton = new Button("Save", e -> save());
+        saveButton.setWidthFull();
+        Button deleteButton = new Button("Delete", e -> delete());
+        deleteButton.setWidthFull();
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, deleteButton);
+        buttonLayout.setWidthFull();
+        add(hLayout, ruleTagger, buttonLayout);
         setWidth("70vw");
         setHeight("70vh");
     }
 
-    private void save() {
+    @Override
+    protected void save() {
         if (plainText.isEmpty()) {
             Notification.show("Text can not be empty!");
             return;
@@ -89,6 +97,18 @@ public class PlainTextRuleDialog extends Dialog {
             plainTextRuleService.save(plainTextRule);
             Notification.show("Edited rule!");
         }
+        eventListener.ifPresent(EntityEventListener::onChange);
         close();
+    }
+
+    @Override
+    protected void delete() {
+        ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
+            plainTextRuleService.delete(plainTextRule);
+            eventListener.ifPresent(EntityEventListener::onChange);
+            close();
+        }, "Cancel", event -> {});
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.open();
     }
 }

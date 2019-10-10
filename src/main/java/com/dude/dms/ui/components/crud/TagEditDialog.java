@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.crud;
 
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.standard.DmsColorPicker;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -60,6 +61,7 @@ public class TagEditDialog extends CrudEditDialog<Tag> {
         tag.setName(name.getValue());
         tag.setColor(colorPicker.getValue());
         tagService.save(tag);
+        eventListener.ifPresent(EntityEventListener::onChange);
         close();
     }
 

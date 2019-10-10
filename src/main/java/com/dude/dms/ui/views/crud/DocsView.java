@@ -49,6 +49,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
                     new Button(VaadinIcon.FILE_TEXT.create(), e -> UI.getCurrent().getPage().executeJs("window.open('file:" + path + "', '_blank');")));
         });
         DocEditDialog docEditDialog = new DocEditDialog(docService, tagService);
+        docEditDialog.setEventListener(() -> grid.getDataProvider().refreshAll());
         addEditDialog(docEditDialog);
     }
 

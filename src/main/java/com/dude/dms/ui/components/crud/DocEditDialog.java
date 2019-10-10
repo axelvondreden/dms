@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.crud;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -59,6 +60,7 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         doc.setDocumentDate(datePicker.getValue());
         doc.setTags(tagger.getSelectedTags());
         docService.save(doc);
+        eventListener.ifPresent(EntityEventListener::onChange);
         close();
     }
 

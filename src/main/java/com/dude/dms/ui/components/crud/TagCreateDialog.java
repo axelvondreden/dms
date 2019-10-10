@@ -2,10 +2,10 @@ package com.dude.dms.ui.components.crud;
 
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.standard.DmsColorPicker;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -61,6 +61,7 @@ public class TagCreateDialog extends CrudCreateDialog<Tag> {
             return;
         }
         tagService.create(new Tag(name.getValue(), colorPicker.getValue()));
+        eventListener.ifPresent(EntityEventListener::onChange);
         close();
     }
 }

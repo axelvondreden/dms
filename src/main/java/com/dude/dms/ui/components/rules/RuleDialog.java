@@ -1,18 +1,19 @@
-package com.dude.dms.ui.components.crud;
+package com.dude.dms.ui.components.rules;
 
-import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.ui.EntityEventListener;
 import com.vaadin.flow.component.dialog.Dialog;
 
 import java.util.Optional;
 
-public abstract class CrudCreateDialog<T extends DataEntity> extends Dialog {
+public abstract class RuleDialog extends Dialog {
 
-    protected abstract void create();
+    protected abstract void save();
+
+    protected abstract void delete();
 
     protected Optional<EntityEventListener> eventListener;
 
-    protected CrudCreateDialog() {
+    protected RuleDialog() {
         eventListener = Optional.empty();
     }
 

@@ -65,7 +65,11 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
         docsBadge.bind(docsEntry.getBadge());
 
         LeftSubmenu tagsEntry = createTagsEntry();
-        LeftClickableItem newTagEntry = new LeftClickableItem("Create Tag", VaadinIcon.TAG.create(), event -> new TagCreateDialog(tagService).open());
+        LeftClickableItem newTagEntry = new LeftClickableItem("Create Tag", VaadinIcon.TAG.create(), event -> {
+            TagCreateDialog dialog = new TagCreateDialog(tagService);
+            dialog.setEventListener(() -> UI.getCurrent().getPage().reload());
+            dialog.open();
+        });
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
 
         return LeftAppMenuBuilder.get()
@@ -87,7 +91,11 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
 
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setTarget(entry);
-            contextMenu.addItem("Edit", e -> new TagEditDialog(tagService).open(tag));
+            contextMenu.addItem("Edit", e -> {
+                TagEditDialog dialog = new TagEditDialog(tagService);
+                dialog.setEventListener(() -> UI.getCurrent().getPage().reload());
+                dialog.open(tag);
+            });
         }
 
         return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);

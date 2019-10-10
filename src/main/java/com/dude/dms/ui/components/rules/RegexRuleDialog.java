@@ -3,13 +3,16 @@ package com.dude.dms.ui.components.rules;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.regex.RegexField;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-public class RegexRuleDialog extends Dialog {
+public class RegexRuleDialog extends RuleDialog {
 
     private final RegexField regex;
     private final Tagger ruleTagger;
@@ -52,14 +55,19 @@ public class RegexRuleDialog extends Dialog {
         ruleTagger = new Tagger(tagService);
         ruleTagger.setSelectedTags(tagService.findByRegexRule(regexRule));
         ruleTagger.setHeight("80%");
-        Button button = new Button("Save", e -> save());
-        button.setWidthFull();
-        add(regex, ruleTagger, button);
+        Button saveButton = new Button("Save", e -> save());
+        saveButton.setWidthFull();
+        Button deleteButton = new Button("Delete", e -> delete());
+        deleteButton.setWidthFull();
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, deleteButton);
+        buttonLayout.setWidthFull();
+        add(regex, ruleTagger, buttonLayout);
         setWidth("70vw");
         setHeight("70vh");
     }
 
-    private void save() {
+    public void save() {
         if (regex.isEmpty()) {
             Notification.show("Regex can not be empty!");
             return;
@@ -77,6 +85,18 @@ public class RegexRuleDialog extends Dialog {
             regexRuleService.save(regexRule);
             Notification.show("Edited rule!");
         }
+        eventListener.ifPresent(EntityEventListener::onChange);
         close();
+    }
+
+    @Override
+    protected void delete() {
+        ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
+            regexRuleService.delete(regexRule);
+            eventListener.ifPresent(EntityEventListener::onChange);
+            close();
+        }, "Cancel", event -> {});
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.open();
     }
 }

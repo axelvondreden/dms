@@ -39,32 +39,52 @@ public class RulesView extends VerticalLayout {
         plainTextDetails = new Details();
         regexDetails = new Details();
 
+        add(plainTextDetails, regexDetails);
+
+        fillContent();
+    }
+
+    private void fillContent() {
         addPlaintext();
 
         addRegex();
-
-        add(plainTextDetails, regexDetails);
     }
 
     private void addPlaintext() {
-        Button create = new Button("Create", e -> new PlainTextRuleDialog(tagService, plainTextRuleService).open());
+        Button create = new Button("Create", e -> {
+            PlainTextRuleDialog dialog = new PlainTextRuleDialog(tagService, plainTextRuleService);
+            dialog.setEventListener(this::fillContent);
+            dialog.open();
+        });
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
         List<PlainTextRule> plainTextRules = plainTextRuleService.getActiveRules();
         for (PlainTextRule rule : plainTextRules) {
-            verticalLayout.add(new RuleCard(rule.getText(), tagService.findByPlainTextRule(rule), e -> new PlainTextRuleDialog(rule, tagService, plainTextRuleService).open()));
+            verticalLayout.add(new RuleCard(rule.getText(), tagService.findByPlainTextRule(rule), e -> {
+                PlainTextRuleDialog dialog = new PlainTextRuleDialog(rule, tagService, plainTextRuleService);
+                dialog.setEventListener(this::fillContent);
+                dialog.open();
+            }));
         }
         plainTextDetails.setSummaryText("Plaintext");
         plainTextDetails.setContent(verticalLayout);
     }
 
     private void addRegex() {
-        Button create = new Button("Create", e -> new RegexRuleDialog(tagService, regexRuleService).open());
+        Button create = new Button("Create", e -> {
+            RegexRuleDialog dialog = new RegexRuleDialog(tagService, regexRuleService);
+            dialog.setEventListener(this::fillContent);
+            dialog.open();
+        });
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
         List<RegexRule> regexRules = regexRuleService.getActiveRules();
         for (RegexRule rule : regexRules) {
-            verticalLayout.add(new RuleCard(rule.getRegex(), tagService.findByRegexRule(rule), e -> new RegexRuleDialog(rule, tagService, regexRuleService).open()));
+            verticalLayout.add(new RuleCard(rule.getRegex(), tagService.findByRegexRule(rule), e -> {
+                RegexRuleDialog dialog = new RegexRuleDialog(rule, tagService, regexRuleService);
+                dialog.setEventListener(this::fillContent);
+                dialog.open();
+            }));
         }
         regexDetails.setSummaryText("Regex");
         regexDetails.setContent(verticalLayout);
