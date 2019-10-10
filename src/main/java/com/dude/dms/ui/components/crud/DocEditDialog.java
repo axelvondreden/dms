@@ -64,6 +64,7 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
 
     @Override
     public void open(Doc item) {
+        tagger.clear();
         doc = item;
         guidTextField.setValue(doc.getGuid());
         datePicker.setValue(doc.getDocumentDate());

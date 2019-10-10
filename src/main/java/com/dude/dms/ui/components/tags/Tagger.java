@@ -26,6 +26,10 @@ public class Tagger extends Grid<Tag> {
         asMultiSelect().select(tags);
     }
 
+    public void clear() {
+        asMultiSelect().clear();
+    }
+
     public Set<Tag> getSelectedTags() {
         return asMultiSelect().getSelectedItems();
     }
