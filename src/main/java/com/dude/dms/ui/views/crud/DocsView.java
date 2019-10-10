@@ -12,15 +12,18 @@ import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.components.crud.DocEditDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
-import com.vaadin.flow.component.UI;
+import com.helger.commons.io.file.FileHelper;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -38,19 +41,27 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         super(docService);
         this.docService = docService;
         this.tagService = tagService;
-
         addColumn("GUID", Doc::getGuid);
         addColumn("Date", doc -> LocalDateConverter.convert(doc.getDocumentDate()));
         addComponentColumn("Tags", doc -> new TagContainer(doc.getTags()));
-        addComponentColumn("", doc -> {
-            Path path = Paths.get(BrainUtils.getProperty(OptionKey.DOC_SAVE_PATH), doc.getGuid() + ".pdf").toAbsolutePath();
-            return new HorizontalLayout(
-                    new Button(VaadinIcon.TEXT_LABEL.create(), e -> openTextDialog(doc)),
-                    new Button(VaadinIcon.FILE_TEXT.create(), e -> UI.getCurrent().getPage().executeJs("window.open('file:" + path + "', '_blank');")));
-        });
+        addComponentColumn("", DocsView::createGridActions);
         DocEditDialog docEditDialog = new DocEditDialog(docService, tagService);
         docEditDialog.setEventListener(() -> grid.getDataProvider().refreshAll());
         addEditDialog(docEditDialog);
+    }
+
+    private static HorizontalLayout createGridActions(Doc doc) {
+        Path path = Paths.get(BrainUtils.getProperty(OptionKey.DOC_SAVE_PATH), doc.getGuid() + ".pdf").toAbsolutePath();
+        File file = path.toFile();
+        Anchor download = new Anchor();
+        download.add(new Button(VaadinIcon.FILE_TEXT.create()));
+        download.setEnabled(false);
+        if (file.exists()) {
+            download.setEnabled(true);
+            download.setHref(new StreamResource("pdf.pdf", () -> FileHelper.getInputStream(file)));
+            download.getElement().setAttribute("download", true);
+        }
+        return new HorizontalLayout(new Button(VaadinIcon.TEXT_LABEL.create(), e -> openTextDialog(doc)), download);
     }
 
     private static void openTextDialog(Doc doc) {
