@@ -95,12 +95,9 @@ public class StartUpRunner implements CommandLineRunner {
             LOGGER.info("Creating demo docs...");
 
             StringBuilder contentBuilder = new StringBuilder();
-            try (Stream<String> stream = Files.lines( Paths.get("lipsum.txt"), StandardCharsets.UTF_8))
-            {
+            try (Stream<String> stream = Files.lines( Paths.get("lipsum.txt"), StandardCharsets.UTF_8)) {
                 stream.forEach(s -> contentBuilder.append(s).append(' '));
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             String txt = contentBuilder.toString();
@@ -113,7 +110,7 @@ public class StartUpRunner implements CommandLineRunner {
                 }
                 LocalDate date = LocalDate.of(2016 + random.nextInt(4), 1 + random.nextInt(12), 1 + random.nextInt(28));
                 int r1 = random.nextInt(txt.length());
-                int r2 = r1 + (random.nextInt(txt.length() - r1));
+                int r2 = r1 + Math.min(random.nextInt(txt.length() - r1), 5000);
                 docService.create(new Doc(date, txt.substring(r1, r2), UUID.randomUUID().toString(), rngTags));
             }
         }

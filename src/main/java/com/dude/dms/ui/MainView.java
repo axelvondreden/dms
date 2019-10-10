@@ -107,7 +107,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
                     card.setBackground("var(--lumo-base-color)");
                     return card;
                 })
-                .withQueryResultListener(searchResult -> searchResult.onClick())
+                .withQueryResultListener(SearchResult::onClick)
                 .build();
     }
 
@@ -115,12 +115,12 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
         return DataProvider.fromFilteringCallbacks(query -> {
             if (query.getFilter().isPresent()) {
                 String filter = query.getFilter().get();
-                return docService.findTop10ByRawTextLike("%" + filter + "%").stream().map(doc -> new DocSearchResult(doc, filter));
+                return docService.findTop10ByRawTextLike('%' + filter + '%').stream().map(doc -> new DocSearchResult(doc, filter));
             }
             return null;
         }, query -> {
             if (query.getFilter().isPresent()) {
-                return (int) docService.countByRawTextLike("%" + query.getFilter().get() + "%");
+                return (int) docService.countByRawTextLike('%' + query.getFilter().get() + '%');
             }
             return 0;
         });
