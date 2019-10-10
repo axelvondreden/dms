@@ -13,8 +13,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 
     Optional<Tag> findByName(String name);
 
-    Set<Tag> findByDocs(Doc doc);
-
     Set<Tag> findByPlainTextRules(PlainTextRule rule);
 
     Set<Tag> findByRegexRules(RegexRule rule);

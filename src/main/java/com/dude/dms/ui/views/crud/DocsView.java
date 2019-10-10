@@ -5,7 +5,6 @@ import com.dude.dms.backend.brain.OptionKey;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.data.history.DocHistory;
-import com.dude.dms.backend.service.DocHistoryService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
@@ -42,7 +41,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
 
         addColumn("GUID", Doc::getGuid);
         addColumn("Date", doc -> LocalDateConverter.convert(doc.getDocumentDate()));
-        addComponentColumn("Tags", doc -> new TagContainer(tagService.findByDoc(doc)));
+        addComponentColumn("Tags", doc -> new TagContainer(doc.getTags()));
         addComponentColumn("", doc -> {
             Path path = Paths.get(BrainUtils.getProperty(OptionKey.DOC_SAVE_PATH), doc.getGuid() + ".pdf").toAbsolutePath();
             return new HorizontalLayout(

@@ -20,11 +20,9 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
     private Doc doc;
 
     private final DocService docService;
-    private final TagService tagService;
 
     public DocEditDialog(DocService docService, TagService tagService) {
         this.docService = docService;
-        this.tagService = tagService;
 
         guidTextField = new TextField("GUID");
         guidTextField.setWidthFull();
@@ -68,7 +66,7 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         doc = item;
         guidTextField.setValue(doc.getGuid());
         datePicker.setValue(doc.getDocumentDate());
-        tagger.setSelectedTags(tagService.findByDoc(doc));
+        tagger.setSelectedTags(doc.getTags());
         open();
     }
 }

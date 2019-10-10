@@ -50,10 +50,6 @@ public class TagService extends HistoricalCrudService<Tag, TagHistory> {
         return tagRepository.findById(id);
     }
 
-    public Set<Tag> findByDoc(Doc doc) {
-        return tagRepository.findByDocs(doc);
-    }
-
     public Optional<Tag> findByName(String name) {
         return tagRepository.findByName(name);
     }
