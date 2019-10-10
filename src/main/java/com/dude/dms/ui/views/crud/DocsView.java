@@ -71,6 +71,9 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
                 Optional<Tag> tag = tagService.findByName(parts[1]);
                 tag.ifPresent(t -> grid.setItems(docService.findByTag(t)));
             }
+            if ("doc".equalsIgnoreCase(parts[0])) {
+                grid.setItems(docService.load(Long.parseLong(parts[1])));
+            }
         } else {
             grid.setItems(docService.findAll());
         }

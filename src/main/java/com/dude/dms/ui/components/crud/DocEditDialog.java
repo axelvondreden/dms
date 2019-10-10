@@ -32,6 +32,7 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         datePicker.setWidthFull();
 
         tagger = new Tagger(tagService);
+        tagger.setHeight("25vw");
 
         Button saveButton = new Button("Save", e -> save());
         saveButton.setWidthFull();
