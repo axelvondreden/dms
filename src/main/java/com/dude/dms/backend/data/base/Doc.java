@@ -31,6 +31,9 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "doc")
+    private Set<Word> words;
+
+    @OneToMany(mappedBy = "doc")
     @OrderBy("timestamp")
     private List<DocHistory> history;
 
@@ -99,5 +102,18 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Set<Word> getWords() {
+        return words;
+    }
+
+    public void setWords(Set<Word> words) {
+        this.words = words;
+    }
+
+    @Override
+    public String toString() {
+        return "Doc{guid='" + guid + "'}";
     }
 }

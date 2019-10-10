@@ -3,14 +3,11 @@ package com.dude.dms.backend.brain.pdf;
 import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.base.Word;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
-import com.dude.dms.backend.service.DocService;
-import com.dude.dms.backend.service.PlainTextRuleService;
-import com.dude.dms.backend.service.RegexRuleService;
-import com.dude.dms.backend.service.TagService;
+import com.dude.dms.backend.service.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +39,17 @@ public class PdfToDocParser implements Parser {
     private TagService tagService;
 
     @Autowired
+    private WordService wordService;
+
+    @Autowired
     private PlainTextRuleService plainTextRuleService;
 
     @Autowired
     private RegexRuleService regexRuleService;
 
     private final String docSavePath;
+
+    private List<Word> wordList;
 
     public PdfToDocParser() {
         docSavePath = BrainUtils.getProperty(DOC_SAVE_PATH);
@@ -75,6 +77,12 @@ public class PdfToDocParser implements Parser {
 
         docService.create(doc);
         LOGGER.info("Created doc with ID: {}", doc.getGuid());
+
+        wordList.forEach(word -> {
+            word.setDoc(doc);
+            wordService.create(word);
+            LOGGER.info("Created word {} for doc {}", word, doc);
+        });
     }
 
     /**
@@ -135,12 +143,13 @@ public class PdfToDocParser implements Parser {
         return tags;
     }
 
-    private static String stripText(File file) {
+    private String stripText(File file) {
         String rawText = null;
         try (PDDocument pdDoc = PDDocument.load(file)) {
-            PDFTextStripper pdfStripper = new PDFTextStripper();
+            DmsPdfTextStripper pdfStripper = new DmsPdfTextStripper();
             LOGGER.info("Stripping text...");
-            rawText = pdfStripper.getText(pdDoc);
+            wordList = new ArrayList<>();
+            rawText = pdfStripper.getTextWithPositions(pdDoc, wordList);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
