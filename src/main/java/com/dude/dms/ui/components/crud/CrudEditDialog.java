@@ -10,7 +10,5 @@ public abstract class CrudEditDialog<T extends DataEntity> extends Dialog {
     public abstract void open(T item);
 
     protected CrudEditDialog() {
-        setWidth("60vw");
-        setHeight("60vh");
     }
 }

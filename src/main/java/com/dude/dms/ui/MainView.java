@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.components.crud.TagCreateDialog;
+import com.dude.dms.ui.components.crud.TagEditDialog;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButtonBuilder;
 import com.dude.dms.ui.components.search.DocSearchResult;
@@ -25,6 +26,7 @@ import com.github.appreciated.card.RippleClickableCard;
 import com.github.appreciated.card.label.SecondaryLabel;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -82,6 +84,10 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
             LeftClickableItem entry = new LeftClickableItem(tag.getName(), icon, clickEvent -> UI.getCurrent().navigate(DocsView.class, "tag:" + tag.getName()));
             tagEntries.add(entry);
             badgeHolder.bind(entry.getBadge());
+
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.setTarget(entry);
+            contextMenu.addItem("Edit", e -> new TagEditDialog(tagService).open(tag));
         }
 
         return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);
