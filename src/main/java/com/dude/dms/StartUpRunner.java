@@ -1,6 +1,5 @@
 package com.dude.dms;
 
-import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.brain.polling.DocPollingService;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
@@ -44,31 +43,33 @@ public class StartUpRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
         createOptionsFile();
-        checkOptions();
+        createDirectories();
         createTags();
         docPollingService.manualPoll();
-        LocaleContextHolder.setLocale(Locale.forLanguageTag(BrainUtils.getProperty(LOCALE)));
+        LocaleContextHolder.setLocale(Locale.forLanguageTag(LOCALE.getString()));
 
         createDemoData();
     }
 
-    private static void checkOptions() {
-        File pollDir = new File(BrainUtils.getProperty(DOC_POLL_PATH));
+    private static void createDirectories() {
+        File pollDir = new File(DOC_POLL_PATH.getString());
         if (!pollDir.exists()) {
             LOGGER.info("Creating input directory new docs {}", pollDir);
             pollDir.mkdir();
         }
-        File saveDir = new File(BrainUtils.getProperty(DOC_SAVE_PATH));
+        File saveDir = new File(DOC_SAVE_PATH.getString());
         if (!saveDir.exists()) {
             LOGGER.info("Creating directory for saved docs {}", saveDir);
             saveDir.mkdir();
+            new File(saveDir, "pdf").mkdir();
+            new File(saveDir, "img").mkdir();
         }
     }
 
     private void createTags() {
-        if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
+        if (AUTO_REVIEW_TAG.getBoolean()) {
             Tag reviewTag = tagService.create(new Tag("Review", "red"));
-            BrainUtils.setProperty(REVIEW_TAG_ID, String.valueOf(reviewTag.getId()));
+            REVIEW_TAG_ID.setFloat(reviewTag.getId());
         }
     }
 
@@ -91,7 +92,7 @@ public class StartUpRunner implements CommandLineRunner {
         tags.add(tagService.create(new Tag("Arbeit", randomColor())));
         tags.add(tagService.create(new Tag("Test", randomColor())));
 
-        if (docService.count() == 0) {
+        if (docService.count() == 0L) {
             LOGGER.info("Creating demo docs...");
 
             StringBuilder contentBuilder = new StringBuilder();
@@ -101,10 +102,10 @@ public class StartUpRunner implements CommandLineRunner {
                 e.printStackTrace();
             }
             String txt = contentBuilder.toString();
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < DEMO_DOCS.getInt(); i++) {
                 Set<Tag> rngTags = new HashSet<>();
                 for (Tag tag : tags) {
-                    if (random.nextFloat() > 0.7) {
+                    if (random.nextFloat() > 0.7F) {
                         rngTags.add(tag);
                     }
                 }

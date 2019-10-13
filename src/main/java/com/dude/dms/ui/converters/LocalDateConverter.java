@@ -1,10 +1,9 @@
 package com.dude.dms.ui.converters;
 
-import com.dude.dms.backend.brain.BrainUtils;
-import com.dude.dms.backend.brain.OptionKey;
-
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
+
+import static com.dude.dms.backend.brain.OptionKey.DATE_FORMAT;
 
 public final class LocalDateConverter {
 
@@ -12,6 +11,6 @@ public final class LocalDateConverter {
     }
 
     public static String convert(ChronoLocalDate localDate) {
-        return localDate == null ? null : localDate.format(DateTimeFormatter.ofPattern(BrainUtils.getProperty(OptionKey.DATE_FORMAT)));
+        return localDate == null ? null : localDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT.getString()));
     }
 }

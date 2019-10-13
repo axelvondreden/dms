@@ -1,7 +1,5 @@
 package com.dude.dms.ui.views.crud;
 
-import com.dude.dms.backend.brain.BrainUtils;
-import com.dude.dms.backend.brain.OptionKey;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.data.history.DocHistory;
@@ -12,7 +10,9 @@ import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.components.crud.DocEditDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
+import com.dude.dms.ui.views.DocView;
 import com.helger.commons.io.file.FileHelper;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
@@ -28,6 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
+
 @Route(value = Const.PAGE_DOCS, layout = MainView.class)
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView.class)
 @PageTitle("Docs")
@@ -41,17 +43,16 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         super(docService);
         this.docService = docService;
         this.tagService = tagService;
-        addColumn("GUID", Doc::getGuid);
         addColumn("Date", doc -> LocalDateConverter.convert(doc.getDocumentDate()));
         addComponentColumn("Tags", doc -> new TagContainer(doc.getTags()));
-        addComponentColumn("", DocsView::createGridActions);
-        DocEditDialog docEditDialog = new DocEditDialog(docService, tagService);
-        docEditDialog.setEventListener(() -> grid.getDataProvider().refreshAll());
-        addEditDialog(docEditDialog);
+        addComponentColumn("", this::createGridActions);
+        addColumn("GUID", Doc::getGuid);
+
+        grid.addItemClickListener(event -> UI.getCurrent().navigate(DocView.class, String.valueOf(event.getItem().getId())));
     }
 
-    private static HorizontalLayout createGridActions(Doc doc) {
-        Path path = Paths.get(BrainUtils.getProperty(OptionKey.DOC_SAVE_PATH), doc.getGuid() + ".pdf").toAbsolutePath();
+    private HorizontalLayout createGridActions(Doc doc) {
+        Path path = Paths.get(DOC_SAVE_PATH.getString(), "pdf", doc.getGuid() + ".pdf").toAbsolutePath();
         File file = path.toFile();
         Anchor download = new Anchor();
         download.add(new Button(VaadinIcon.FILE_TEXT.create()));
@@ -61,7 +62,15 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
             download.setHref(new StreamResource("pdf.pdf", () -> FileHelper.getInputStream(file)));
             download.getElement().setAttribute("download", true);
         }
-        return new HorizontalLayout(new Button(VaadinIcon.TEXT_LABEL.create(), e -> openTextDialog(doc)), download);
+
+        DocEditDialog docEditDialog = new DocEditDialog(docService, tagService);
+        docEditDialog.setEventListener(() -> grid.getDataProvider().refreshAll());
+
+        return new HorizontalLayout(
+                new Button(VaadinIcon.TEXT_LABEL.create(), e -> openTextDialog(doc)),
+                download,
+                new Button(VaadinIcon.EDIT.create(), e -> docEditDialog.open(doc))
+        );
     }
 
     private static void openTextDialog(Doc doc) {
@@ -82,9 +91,6 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
             if ("tag".equalsIgnoreCase(parts[0])) {
                 Optional<Tag> tag = tagService.findByName(parts[1]);
                 tag.ifPresent(t -> grid.setItems(docService.findByTag(t)));
-            }
-            if ("doc".equalsIgnoreCase(parts[0])) {
-                grid.setItems(docService.load(Long.parseLong(parts[1])));
             }
         } else {
             grid.setItems(docService.findAll());

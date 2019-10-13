@@ -4,10 +4,10 @@ import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;
+import com.dude.dms.ui.components.standard.DmsDatePicker;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -15,7 +15,7 @@ import com.vaadin.flow.component.textfield.TextField;
 public class DocEditDialog extends CrudEditDialog<Doc> {
 
     private final TextField guidTextField;
-    private final DatePicker datePicker;
+    private final DmsDatePicker datePicker;
     private final Tagger tagger;
 
     private Doc doc;
@@ -29,7 +29,7 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         guidTextField.setWidthFull();
         guidTextField.setReadOnly(true);
 
-        datePicker = new DatePicker("Date");
+        datePicker = new DmsDatePicker("Date");
         datePicker.setWidthFull();
 
         tagger = new Tagger(tagService);
@@ -71,6 +71,7 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         guidTextField.setValue(doc.getGuid());
         datePicker.setValue(doc.getDocumentDate());
         tagger.setSelectedTags(doc.getTags());
+        tagger.setContainedTags(doc.getRawText());
         open();
     }
 }

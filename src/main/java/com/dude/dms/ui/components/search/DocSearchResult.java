@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.search;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
-import com.dude.dms.ui.views.crud.DocsView;
+import com.dude.dms.ui.views.DocView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.UI;
@@ -46,6 +46,6 @@ public class DocSearchResult extends SearchResult {
 
     @Override
     public void onClick() {
-        UI.getCurrent().navigate(DocsView.class, "doc:" + doc.getId());
+        UI.getCurrent().navigate(DocView.class, String.valueOf(doc.getId()));
     }
 }

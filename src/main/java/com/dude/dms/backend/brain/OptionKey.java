@@ -8,11 +8,53 @@ public enum OptionKey {
     REVIEW_TAG_ID("review_tag_id"),
     DATE_FORMAT("date_format"),
     DATE_SCAN_FORMATS("date_scan_formats"),
+    IMAGE_PARSER_DPI("image_parser_dpi"),
+    DEMO_DOCS("demo_docs"),
     LOCALE("locale");
 
     public final String key;
 
     OptionKey(String key) {
         this.key = key;
+    }
+
+    public String getString() {
+        return BrainUtils.getProperty(this);
+    }
+
+    public float getFloat() {
+        return Float.parseFloat(BrainUtils.getProperty(this));
+    }
+
+    public int getInt() {
+        return (int) Float.parseFloat(BrainUtils.getProperty(this));
+    }
+
+    public boolean getBoolean() {
+        return Boolean.parseBoolean(BrainUtils.getProperty(this));
+    }
+
+    public long getLong() {
+        return (long) Float.parseFloat(BrainUtils.getProperty(this));
+    }
+
+    public void setString(String value) {
+        BrainUtils.setProperty(this, value);
+    }
+
+    public void setFloat(float value) {
+        BrainUtils.setProperty(this, String.valueOf(value));
+    }
+
+    public void setInt(int value) {
+        BrainUtils.setProperty(this, String.valueOf(value));
+    }
+
+    public void setBoolean(boolean value) {
+        BrainUtils.setProperty(this, String.valueOf(value));
+    }
+
+    public void setLong(long value) {
+        BrainUtils.setProperty(this, String.valueOf(value));
     }
 }

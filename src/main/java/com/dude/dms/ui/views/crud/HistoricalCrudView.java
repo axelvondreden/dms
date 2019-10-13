@@ -36,7 +36,7 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
      * @param valueProvider component for column
      */
     protected void addComponentColumn(String header, ValueProvider<T, ? extends Component> valueProvider) {
-        grid.addComponentColumn(valueProvider).setHeader(header);
+        grid.addComponentColumn(valueProvider).setHeader(header).setResizable(true).setAutoWidth(true);
     }
 
     /**
@@ -46,14 +46,6 @@ public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & 
      * @param valueProvider component for column
      */
     protected void addColumn(String header, ValueProvider<T, ?> valueProvider) {
-        grid.addColumn(valueProvider).setHeader(header);
-    }
-
-    protected void addEditDialog(CrudEditDialog<? super T> editDialog) {
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            if (!event.getHasValue().isEmpty()) {
-                editDialog.open(event.getValue());
-            }
-        });
+        grid.addColumn(valueProvider).setHeader(header).setResizable(true).setAutoWidth(true);
     }
 }

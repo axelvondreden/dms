@@ -26,17 +26,25 @@ public class DmsPdfTextStripper extends PDFTextStripper {
         super.writeString(text, textPositions);
     }
 
-    private void createWordEntity(String text, Iterable<TextPosition> textPositions) {
-        float xMin = Float.MAX_VALUE;
-        float yMin = Float.MAX_VALUE;
-        float xMax = Float.MIN_VALUE;
-        float yMax = Float.MIN_VALUE;
-        for (TextPosition textPosition : textPositions) {
-            xMin = Math.min(xMin, textPosition.getX());
-            yMin = Math.min(yMin, textPosition.getY());
-            xMax = Math.max(xMax, textPosition.getEndX());
-            yMax = Math.max(yMax, textPosition.getEndY());
+    private void createWordEntity(String text, List<TextPosition> textPositions) {
+        if (text != null && !text.isEmpty() && textPositions != null && !textPositions.isEmpty()) {
+            float xMin = Float.MAX_VALUE;
+            float yMin = Float.MAX_VALUE;
+            float xMax = Float.MIN_VALUE;
+            float yMax = Float.MIN_VALUE;
+            float pageWidth = textPositions.get(0).getPageWidth();
+            float pageHeight = textPositions.get(0).getPageHeight();
+            for (TextPosition textPosition : textPositions) {
+                xMin = Math.min(xMin, textPosition.getXDirAdj());
+                yMin = Math.min(yMin, textPosition.getYDirAdj());
+                xMax = Math.max(xMax, textPosition.getXDirAdj() + textPosition.getWidthDirAdj());
+                yMax = Math.max(yMax, textPosition.getYDirAdj() + textPosition.getHeightDir());
+            }
+            float width = ((xMax - xMin) / pageWidth) * 100.0F;
+            float height = ((yMax - yMin) / pageHeight) * 100.0F;
+            float x = (xMin / pageWidth) * 100.0F;
+            float y = ((yMin / pageHeight) * 100.0F) - height * 2.0F;
+            wordListOut.add(new Word(text, x, y, width, height * 2.0F));
         }
-        wordListOut.add(new Word(text, xMin, yMin, xMax - xMin, yMax - yMin));
     }
 }

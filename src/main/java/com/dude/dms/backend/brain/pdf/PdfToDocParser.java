@@ -1,6 +1,5 @@
 package com.dude.dms.backend.brain.pdf;
 
-import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.data.base.Word;
@@ -8,11 +7,14 @@ import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,7 +54,7 @@ public class PdfToDocParser implements Parser {
     private List<Word> wordList;
 
     public PdfToDocParser() {
-        docSavePath = BrainUtils.getProperty(DOC_SAVE_PATH);
+        docSavePath = DOC_SAVE_PATH.getString();
     }
 
     /**
@@ -63,41 +65,58 @@ public class PdfToDocParser implements Parser {
     public void parse(File file) {
         LOGGER.info("Parsing file {}...", file.getName());
         String guid = UUID.randomUUID().toString();
-        File savedFile = saveFile(file, guid + ".pdf");
+        String rawText = null;
 
-        Doc doc = new Doc(guid);
+        Optional<File> savedFile = savePdf(file, guid);
+        if (savedFile.isPresent()) {
+            try (PDDocument pdDoc = PDDocument.load(savedFile.get())) {
+                saveImage(pdDoc, guid);
+                rawText = stripText(pdDoc);
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
 
-        String rawText = stripText(savedFile);
-        if (rawText != null && !rawText.isEmpty()) {
-            doc.setRawText(rawText);
-            doc.setDocumentDate(discoverDates(rawText));
+            Doc doc = new Doc(guid);
+
+            if (rawText != null && !rawText.isEmpty()) {
+                doc.setRawText(rawText);
+                doc.setDocumentDate(discoverDates(rawText));
+            }
+
+            doc.setTags(discoverTags(rawText));
+
+            docService.create(doc);
+            LOGGER.info("Created doc with ID: {}", doc.getGuid());
+
+            if (wordList != null) {
+                wordList.forEach(word -> {
+                    word.setDoc(doc);
+                    wordService.create(word);
+                    LOGGER.info("Created word {} for doc {}", word, doc);
+                });
+            }
+        } else {
+            LOGGER.error("Could not save file {}", file.getAbsolutePath());
         }
-
-        doc.setTags(discoverTags(rawText));
-
-        docService.create(doc);
-        LOGGER.info("Created doc with ID: {}", doc.getGuid());
-
-        wordList.forEach(word -> {
-            word.setDoc(doc);
-            wordService.create(word);
-            LOGGER.info("Created word {} for doc {}", word, doc);
-        });
     }
 
     /**
      * Tries to find tags for a doc by all available methods
+     *
      * @param rawText raw text of the document
      * @return list of tags
      */
     private Set<Tag> discoverTags(String rawText) {
         Set<Tag> tags = discoverAutoTags();
-        tags.addAll(discoverRuleTags(rawText));
+        if (rawText != null && !rawText.isEmpty()) {
+            tags.addAll(discoverRuleTags(rawText));
+        }
         return tags;
     }
 
     /**
      * Validates all active rules against the raw text and adds tags for matching rules.
+     *
      * @param rawText raw text
      * @return list of tags
      */
@@ -130,12 +149,13 @@ public class PdfToDocParser implements Parser {
 
     /**
      * Gets tags, wich are set to automatic in the user_settings
+     *
      * @return list of tags
      */
     private Set<Tag> discoverAutoTags() {
         Set<Tag> tags = new HashSet<>();
-        if (Boolean.parseBoolean(BrainUtils.getProperty(AUTO_REVIEW_TAG))) {
-            tagService.findById(Long.parseLong(BrainUtils.getProperty(REVIEW_TAG_ID))).ifPresent(tag -> {
+        if (AUTO_REVIEW_TAG.getBoolean()) {
+            tagService.findById(REVIEW_TAG_ID.getLong()).ifPresent(tag -> {
                 LOGGER.info("Adding tag: {}", tag.getName());
                 tags.add(tag);
             });
@@ -143,33 +163,37 @@ public class PdfToDocParser implements Parser {
         return tags;
     }
 
-    private String stripText(File file) {
-        String rawText = null;
-        try (PDDocument pdDoc = PDDocument.load(file)) {
-            DmsPdfTextStripper pdfStripper = new DmsPdfTextStripper();
-            LOGGER.info("Stripping text...");
-            wordList = new ArrayList<>();
-            rawText = pdfStripper.getTextWithPositions(pdDoc, wordList);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-        return rawText;
+    private String stripText(PDDocument pdDoc) throws IOException {
+        DmsPdfTextStripper pdfStripper = new DmsPdfTextStripper();
+        LOGGER.info("Stripping text...");
+        wordList = new ArrayList<>();
+        return pdfStripper.getTextWithPositions(pdDoc, wordList);
     }
 
-    private File saveFile(File file, String newName) {
-        Path targetPath = Paths.get(docSavePath, newName);
-        LOGGER.info("Copying to {}...", targetPath);
+    private Optional<File> savePdf(File file, String guid) {
+        Path targetPath = Paths.get(docSavePath, "pdf", guid + ".pdf");
+        LOGGER.info("Saving PDF {}...", targetPath);
         try {
-            Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+            return Optional.of(Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING).toFile());
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
+            return Optional.empty();
         }
-        return new File(targetPath.toUri());
+    }
+
+    private void saveImage(PDDocument pdDoc, String guid) throws IOException {
+        PDFRenderer pr = new PDFRenderer(pdDoc);
+        for (int i = 0; i < pdDoc.getNumberOfPages(); i++) {
+            BufferedImage bi = pr.renderImageWithDPI(i, IMAGE_PARSER_DPI.getFloat());
+            File out = new File(docSavePath, String.format("img/%s_%02d.png", guid, i));
+            LOGGER.info("Saving Image {}...", out.getAbsolutePath());
+            ImageIO.write(bi, "PNG", out);
+        }
     }
 
     private static LocalDate discoverDates(String rawText) {
         LOGGER.info("Trying to find date...");
-        String[] datePatterns = BrainUtils.getProperty(DATE_SCAN_FORMATS).split(",");
+        String[] datePatterns = DATE_SCAN_FORMATS.getString().split(",");
         Map<LocalDate, Integer> map = new HashMap<>();
         for (String pattern : datePatterns) {
             for (String line : rawText.split("\n")) {

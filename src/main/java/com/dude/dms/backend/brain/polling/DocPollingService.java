@@ -1,6 +1,5 @@
 package com.dude.dms.backend.brain.polling;
 
-import com.dude.dms.backend.brain.BrainUtils;
 import com.dude.dms.backend.brain.pdf.PdfToDocParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class DocPollingService implements PollingService {
     public DocPollingService() {
         try {
             watcher = FileSystems.getDefault().newWatchService();
-            docPath = BrainUtils.getProperty(DOC_POLL_PATH);
+            docPath = DOC_POLL_PATH.getString();
             if (docPath != null) {
                 Paths.get(docPath).register(watcher, ENTRY_CREATE);
             }

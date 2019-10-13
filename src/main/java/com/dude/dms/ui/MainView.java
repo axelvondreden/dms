@@ -41,7 +41,7 @@ import static com.github.appreciated.app.layout.entity.Section.FOOTER;
 import static com.github.appreciated.app.layout.entity.Section.HEADER;
 
 @Push
-public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybrid> {
+public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private final DocService docService;
 
@@ -52,7 +52,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHy
         this.docService = docService;
         this.tagService = tagService;
 
-        init(AppLayoutBuilder.get(LeftLayouts.LeftResponsiveHybrid.class)
+        init(AppLayoutBuilder.get(LeftLayouts.LeftHybrid.class)
                 .withTitle("dms")
                 .withAppBar(buildAppBar())
                 .withAppMenu(buildAppMenu())
