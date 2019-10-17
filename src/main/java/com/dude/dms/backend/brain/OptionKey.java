@@ -10,6 +10,8 @@ public enum OptionKey {
     DATE_SCAN_FORMATS("date_scan_formats"),
     IMAGE_PARSER_DPI("image_parser_dpi"),
     DEMO_DOCS("demo_docs"),
+    GITHUB_USER("github_user"),
+    GITHUB_PASSWORD("github_password"),
     LOCALE("locale");
 
     public final String key;

@@ -5,12 +5,17 @@ import com.dude.dms.backend.data.base.Doc;
 import com.dude.dms.backend.data.base.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.updater.Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +45,12 @@ public class StartUpRunner implements CommandLineRunner {
 
     private Random random;
 
+    @Value("${build.version}")
+    private String buildVersion;
+
     @Override
     public void run(String... args) throws IOException {
+        checkForUpdate();
         createOptionsFile();
         createDirectories();
         createTags();
@@ -49,6 +58,18 @@ public class StartUpRunner implements CommandLineRunner {
         LocaleContextHolder.setLocale(Locale.forLanguageTag(LOCALE.getString()));
 
         createDemoData();
+    }
+
+    private static void checkForUpdate() {
+        LOGGER.info("Checking for updates...");
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(GITHUB_USER.getString(), GITHUB_PASSWORD.getString()));
+            Release[] releases = restTemplate.getForObject("https://api.github.com/repos/axelvondreden/dms/releases", Release[].class);
+            LOGGER.info("Length " + releases.length);
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage());
+        }
     }
 
     private static void createDirectories() {
