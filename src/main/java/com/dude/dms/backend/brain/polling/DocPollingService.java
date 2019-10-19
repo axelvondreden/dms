@@ -1,6 +1,6 @@
 package com.dude.dms.backend.brain.polling;
 
-import com.dude.dms.backend.brain.pdf.PdfToDocParser;
+import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

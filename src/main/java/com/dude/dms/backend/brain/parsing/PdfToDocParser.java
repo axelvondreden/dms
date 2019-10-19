@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain.pdf;
+package com.dude.dms.backend.brain.parsing;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.tags.Tag;

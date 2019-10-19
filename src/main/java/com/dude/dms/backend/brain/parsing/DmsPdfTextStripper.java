@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain.pdf;
+package com.dude.dms.backend.brain.parsing;
 
 import com.dude.dms.backend.data.docs.TextBlock;
 import org.apache.pdfbox.pdmodel.PDDocument;

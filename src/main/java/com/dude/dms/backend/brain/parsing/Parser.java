@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain.pdf;
+package com.dude.dms.backend.brain.parsing;
 
 import java.io.File;
 

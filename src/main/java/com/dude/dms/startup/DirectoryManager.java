@@ -10,7 +10,7 @@ import static com.dude.dms.backend.brain.OptionKey.DOC_POLL_PATH;
 import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
 
 @Component
-class DirectoryManager {
+public class DirectoryManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryManager.class);
 

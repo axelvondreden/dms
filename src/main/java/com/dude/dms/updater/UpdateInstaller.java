@@ -1,5 +1,6 @@
-package com.dude.dms.startup;
+package com.dude.dms.updater;
 
+import com.dude.dms.startup.ShutdownManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Component
-class UpdateInstaller {
+public class UpdateInstaller {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateInstaller.class);
 

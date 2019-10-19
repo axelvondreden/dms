@@ -1,6 +1,7 @@
 package com.dude.dms.startup;
 
 import com.dude.dms.backend.brain.polling.DocPollingService;
+import com.dude.dms.updater.UpdateChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

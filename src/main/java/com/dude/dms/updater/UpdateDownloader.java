@@ -1,7 +1,5 @@
-package com.dude.dms.startup;
+package com.dude.dms.updater;
 
-import com.dude.dms.updater.Asset;
-import com.dude.dms.updater.Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 
 @Component
-class UpdateDownloader {
+public class UpdateDownloader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateDownloader.class);
 

@@ -1,9 +1,7 @@
-package com.dude.dms.startup;
+package com.dude.dms.updater;
 
 import com.dude.dms.backend.data.updater.Changelog;
 import com.dude.dms.backend.service.ChangelogService;
-import com.dude.dms.updater.Release;
-import com.dude.dms.updater.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,7 @@ import static com.dude.dms.backend.brain.OptionKey.GITHUB_PASSWORD;
 import static com.dude.dms.backend.brain.OptionKey.GITHUB_USER;
 
 @Component
-class UpdateChecker {
+public class UpdateChecker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateChecker.class);
 

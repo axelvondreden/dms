@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import static com.dude.dms.backend.brain.OptionKey.*;
 
 @Component
-class DemoDataManager {
+public class DemoDataManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DemoDataManager.class);
 
