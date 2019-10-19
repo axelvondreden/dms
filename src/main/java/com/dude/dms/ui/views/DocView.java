@@ -1,12 +1,12 @@
 package com.dude.dms.ui.views;
 
 import com.dude.dms.backend.data.docs.Doc;
-import com.dude.dms.backend.data.docs.Word;
+import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.service.DocService;
-import com.dude.dms.backend.service.WordService;
+import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
-import com.dude.dms.ui.components.dialogs.crud.WordEditDialog;
+import com.dude.dms.ui.components.dialogs.crud.TextBlockEditDialog;
 import com.helger.commons.io.file.FileHelper;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -30,14 +30,14 @@ public class DocView extends VerticalLayout implements HasUrlParameter<String> {
 
     private final DocService docService;
 
-    private final WordService wordService;
+    private final TextBlockService textBlockService;
 
     private final Element container;
 
     @Autowired
-    public DocView(DocService docService, WordService wordService) {
+    public DocView(DocService docService, TextBlockService textBlockService) {
         this.docService = docService;
-        this.wordService = wordService;
+        this.textBlockService = textBlockService;
 
         container = ElementFactory.createDiv();
         container.getStyle().set("width", "100%").set("height", "100%").set("position", "relative");
@@ -57,21 +57,21 @@ public class DocView extends VerticalLayout implements HasUrlParameter<String> {
             image.setAttribute("data", resource);
             container.appendChild(image);
 
-            List<Word> words = wordService.findByDoc(doc);
-            for (Word word : words) {
+            List<TextBlock> textBlocks = textBlockService.findByDoc(doc);
+            for (TextBlock textBlock : textBlocks) {
                 Element div = ElementFactory.createDiv();
                 div.getStyle()
                         .set("border", "2px solid gray")
                         .set("position", "absolute")
-                        .set("top", word.getY() + "%")
-                        .set("left", word.getX() + "%")
-                        .set("width", word.getWidth() + "%")
-                        .set("height", word.getHeight() + "%");
-                div.setAttribute("title", word.toString());
-                div.setAttribute("id", String.valueOf(word.getId()));
+                        .set("top", textBlock.getY() + "%")
+                        .set("left", textBlock.getX() + "%")
+                        .set("width", textBlock.getWidth() + "%")
+                        .set("height", textBlock.getHeight() + "%");
+                div.setAttribute("title", textBlock.toString());
+                div.setAttribute("id", String.valueOf(textBlock.getId()));
                 div.addEventListener("mouseenter", event -> event.getSource().getStyle().set("border", "3px solid black"));
                 div.addEventListener("mouseleave", event -> event.getSource().getStyle().set("border", "2px solid gray"));
-                div.addEventListener("click", event -> new WordEditDialog(wordService).open(wordService.load(Long.parseLong(event.getSource().getAttribute("id")))));
+                div.addEventListener("click", event -> new TextBlockEditDialog(textBlockService).open(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))));
                 container.appendChild(div);
             }
         } else {

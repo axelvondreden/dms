@@ -2,7 +2,7 @@ package com.dude.dms.backend.brain.pdf;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.tags.Tag;
-import com.dude.dms.backend.data.docs.Word;
+import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.*;
@@ -41,7 +41,7 @@ public class PdfToDocParser implements Parser {
     private TagService tagService;
 
     @Autowired
-    private WordService wordService;
+    private TextBlockService textBlockService;
 
     @Autowired
     private PlainTextRuleService plainTextRuleService;
@@ -51,7 +51,7 @@ public class PdfToDocParser implements Parser {
 
     private final String docSavePath;
 
-    private List<Word> wordList;
+    private List<TextBlock> textBlockList;
 
     public PdfToDocParser() {
         docSavePath = DOC_SAVE_PATH.getString();
@@ -88,11 +88,11 @@ public class PdfToDocParser implements Parser {
             docService.create(doc);
             LOGGER.info("Created doc with ID: {}", doc.getGuid());
 
-            if (wordList != null) {
-                wordList.forEach(word -> {
-                    word.setDoc(doc);
-                    wordService.create(word);
-                    LOGGER.info("Created word {} for doc {}", word, doc);
+            if (textBlockList != null) {
+                textBlockList.forEach(textBlock -> {
+                    textBlock.setDoc(doc);
+                    textBlockService.create(textBlock);
+                    LOGGER.info("Created textblock {} for doc {}", textBlock, doc);
                 });
             }
         } else {
@@ -166,8 +166,8 @@ public class PdfToDocParser implements Parser {
     private String stripText(PDDocument pdDoc) throws IOException {
         DmsPdfTextStripper pdfStripper = new DmsPdfTextStripper();
         LOGGER.info("Stripping text...");
-        wordList = new ArrayList<>();
-        return pdfStripper.getTextWithPositions(pdDoc, wordList);
+        textBlockList = new ArrayList<>();
+        return pdfStripper.getTextWithPositions(pdDoc, textBlockList);
     }
 
     private Optional<File> savePdf(File file, String guid) {

@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
-public class Word extends DataEntity {
+public class TextBlock extends DataEntity {
 
     @NotNull
     @ManyToOne
@@ -31,25 +31,40 @@ public class Word extends DataEntity {
     @NotNull
     protected Float height;
 
-    public Word() {
+    @NotNull
+    protected Float fontSize;
+
+    @NotNull
+    protected Float pageWidth;
+
+    @NotNull
+    protected Float pagHeight;
+
+    public TextBlock() {
 
     }
 
-    public Word(@NotNull String text, @NotNull Float x, @NotNull Float y, @NotNull Float width, @NotNull Float height) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
-    public Word(@NotNull Doc doc, @NotNull String text, @NotNull Float x, @NotNull Float y, @NotNull Float width, @NotNull Float height) {
+    public TextBlock(@NotNull Doc doc, @NotNull String text, @NotNull Float x, @NotNull Float y, @NotNull Float width, @NotNull Float height, @NotNull Float fontSize, @NotNull Float pageWidth, @NotNull Float pagHeight) {
         this.doc = doc;
         this.text = text;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.fontSize = fontSize;
+        this.pageWidth = pageWidth;
+        this.pagHeight = pagHeight;
+    }
+
+    public TextBlock(@NotNull String text, @NotNull Float x, @NotNull Float y, @NotNull Float width, @NotNull Float height, @NotNull Float fontSize, @NotNull Float pageWidth, @NotNull Float pagHeight) {
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.fontSize = fontSize;
+        this.pageWidth = pageWidth;
+        this.pagHeight = pagHeight;
     }
 
     public Doc getDoc() {
@@ -100,8 +115,32 @@ public class Word extends DataEntity {
         this.height = height;
     }
 
+    public Float getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(Float fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public Float getPageWidth() {
+        return pageWidth;
+    }
+
+    public void setPageWidth(Float pageWidth) {
+        this.pageWidth = pageWidth;
+    }
+
+    public Float getPagHeight() {
+        return pagHeight;
+    }
+
+    public void setPagHeight(Float pagHeight) {
+        this.pagHeight = pagHeight;
+    }
+
     @Override
     public String toString() {
-        return "Word{text='" + text + "', x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + '}';
+        return "TextBlock{text='" + text + "', x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + '}';
     }
 }

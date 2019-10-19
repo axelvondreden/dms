@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.dialogs.crud;
 
-import com.dude.dms.backend.data.docs.Word;
-import com.dude.dms.backend.service.WordService;
+import com.dude.dms.backend.data.docs.TextBlock;
+import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.EntityEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -14,20 +14,20 @@ import com.vaadin.flow.component.textfield.TextField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordEditDialog extends CrudEditDialog<Word> {
+public class TextBlockEditDialog extends CrudEditDialog<TextBlock> {
 
     private final TextField text;
 
     private final RadioButtonGroup<String> group;
 
-    private Word word;
+    private TextBlock textBlock;
 
     private String originalText;
 
-    private final WordService wordService;
+    private final TextBlockService textBlockService;
 
-    public WordEditDialog(WordService wordService) {
-        this.wordService = wordService;
+    public TextBlockEditDialog(TextBlockService textBlockService) {
+        this.textBlockService = textBlockService;
 
         text = new TextField("Text");
         text.setWidthFull();
@@ -60,31 +60,31 @@ public class WordEditDialog extends CrudEditDialog<Word> {
             return;
         }
         String newText = text.getValue();
-        word.setText(newText);
-        wordService.save(word);
-        List<Word> words = new ArrayList<>();
+        textBlock.setText(newText);
+        textBlockService.save(textBlock);
+        List<TextBlock> textBlocks = new ArrayList<>();
         if (group.getValue().startsWith("change all in doc")) {
-            words = wordService.findByTextAndDoc(originalText, word.getDoc());
+            textBlocks = textBlockService.findByTextAndDoc(originalText, textBlock.getDoc());
         } else if (group.getValue().startsWith("change all (")) {
-            words = wordService.findByText(originalText);
+            textBlocks = textBlockService.findByText(originalText);
         }
-        words.forEach(word -> {
-            word.setText(newText);
-            wordService.save(word);
+        textBlocks.forEach(textBlock -> {
+            textBlock.setText(newText);
+            textBlockService.save(textBlock);
         });
         eventListener.ifPresent(EntityEventListener::onChange);
         close();
     }
 
     @Override
-    public void open(Word item) {
-        word = item;
-        originalText = word.getText();
+    public void open(TextBlock item) {
+        textBlock = item;
+        originalText = textBlock.getText();
         text.setValue(originalText);
         group.setItems(
                 "change this",
-                "change all in document (" + wordService.countByTextAndDoc(originalText, word.getDoc()) + ")",
-                "change all (" + wordService.countByext(originalText) + ")"
+                "change all in document (" + textBlockService.countByTextAndDoc(originalText, textBlock.getDoc()) + ")",
+                "change all (" + textBlockService.countByext(originalText) + ")"
         );
         group.setValue("change this");
         open();

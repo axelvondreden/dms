@@ -1,16 +1,17 @@
-package com.dude.dms.ui.views.crud;
+package com.dude.dms.ui.views;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.data.history.DocHistory;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
+import com.dude.dms.ui.components.dialogs.DocTextDialog;
 import com.dude.dms.ui.components.dialogs.crud.DocEditDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
-import com.dude.dms.ui.views.DocView;
 import com.helger.commons.io.file.FileHelper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -37,12 +38,14 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
 
     private final DocService docService;
     private final TagService tagService;
+    private final TextBlockService textBlockService;
 
     @Autowired
-    public DocsView(DocService docService, TagService tagService) {
+    public DocsView(DocService docService, TagService tagService, TextBlockService textBlockService) {
         super(docService);
         this.docService = docService;
         this.tagService = tagService;
+        this.textBlockService = textBlockService;
         addColumn("Date", doc -> LocalDateConverter.convert(doc.getDocumentDate()));
         addComponentColumn("Tags", doc -> new TagContainer(doc.getTags()));
         addComponentColumn("", this::createGridActions);
@@ -67,7 +70,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         docEditDialog.setEventListener(() -> grid.getDataProvider().refreshAll());
 
         return new HorizontalLayout(
-                new Button(VaadinIcon.TEXT_LABEL.create(), e -> openTextDialog(doc)),
+                new Button(VaadinIcon.TEXT_LABEL.create(), e ->new DocTextDialog().open(textBlockService.findByDoc(doc))),
                 download,
                 new Button(VaadinIcon.EDIT.create(), e -> docEditDialog.open(doc))
         );

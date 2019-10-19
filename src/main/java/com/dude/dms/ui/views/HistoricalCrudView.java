@@ -1,4 +1,4 @@
-package com.dude.dms.ui.views.crud;
+package com.dude.dms.ui.views;
 
 import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.data.Diffable;
