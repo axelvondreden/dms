@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.regex;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.ui.components.ValueProvider;
 import com.vaadin.flow.component.button.Button;

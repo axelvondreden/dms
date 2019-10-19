@@ -1,10 +1,11 @@
-package com.dude.dms.ui.components.rules;
+package com.dude.dms.ui.components.dialogs.crud;
 
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;
-import com.dude.dms.ui.components.regex.RegexField;
+import com.dude.dms.ui.components.standard.RegexField;
+import com.dude.dms.ui.components.dialogs.RuleDialog;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

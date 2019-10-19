@@ -6,7 +6,7 @@ import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.WordService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
-import com.dude.dms.ui.components.crud.WordEditDialog;
+import com.dude.dms.ui.components.dialogs.crud.WordEditDialog;
 import com.helger.commons.io.file.FileHelper;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;

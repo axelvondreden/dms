@@ -4,9 +4,10 @@ import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.components.changelog.ChangelogDialog;
-import com.dude.dms.ui.components.crud.TagCreateDialog;
-import com.dude.dms.ui.components.crud.TagEditDialog;
+import com.dude.dms.ui.components.dialogs.AddDocDialog;
+import com.dude.dms.ui.components.dialogs.ChangelogDialog;
+import com.dude.dms.ui.components.dialogs.crud.TagCreateDialog;
+import com.dude.dms.ui.components.dialogs.crud.TagEditDialog;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButtonBuilder;
 import com.dude.dms.ui.components.search.DocSearchResult;
@@ -20,7 +21,7 @@ import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder;
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu;
 import com.github.appreciated.app.layout.component.menu.left.builder.LeftAppMenuBuilder;
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem;
-import com.github.appreciated.app.layout.component.menu.left.items.LeftHeaderItem;
+import com.github.appreciated.app.layout.component.menu.left.items.LeftIconItem;
 import com.github.appreciated.app.layout.component.menu.left.items.LeftNavigationItem;
 import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout;
 import com.github.appreciated.app.layout.entity.DefaultBadgeHolder;
@@ -80,9 +81,8 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
             dialog.open();
         });
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
-
         return LeftAppMenuBuilder.get()
-                .addToSection(HEADER, new LeftHeaderItem("Header Text", "Subtitle", null))
+                .addToSection(HEADER, new LeftClickableItem("Add doc",VaadinIcon.PLUS_CIRCLE.create(), e -> new AddDocDialog().open()))
                 .add(docsEntry, tagsEntry, newTagEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,

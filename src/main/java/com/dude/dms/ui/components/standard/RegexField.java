@@ -1,6 +1,7 @@
-package com.dude.dms.ui.components.regex;
+package com.dude.dms.ui.components.standard;
 
 import com.dude.dms.ui.components.ValueProvider;
+import com.dude.dms.ui.components.dialogs.RegexDialog;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;

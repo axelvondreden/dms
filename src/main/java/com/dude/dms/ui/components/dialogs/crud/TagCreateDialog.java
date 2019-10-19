@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.crud;
+package com.dude.dms.ui.components.dialogs.crud;
 
 import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.TagService;
@@ -10,16 +10,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class TagEditDialog extends CrudEditDialog<Tag> {
+public class TagCreateDialog extends CrudCreateDialog<Tag> {
 
     private final TextField name;
     private final DmsColorPicker colorPicker;
 
-    private Tag tag;
-
     private final TagService tagService;
 
-    public TagEditDialog(TagService tagService) {
+    public TagCreateDialog(TagService tagService) {
         this.tagService = tagService;
 
         name = new TextField("Name");
@@ -28,7 +26,7 @@ public class TagEditDialog extends CrudEditDialog<Tag> {
         colorPicker = new DmsColorPicker("Color");
         colorPicker.setWidthFull();
 
-        Button createButton = new Button("Save", e -> save());
+        Button createButton = new Button("Create", e -> create());
         createButton.setWidthFull();
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -49,7 +47,7 @@ public class TagEditDialog extends CrudEditDialog<Tag> {
     }
 
     @Override
-    protected void save() {
+    protected void create() {
         if (name.isEmpty()) {
             name.setErrorMessage("Name can not be empty!");
             return;
@@ -58,18 +56,12 @@ public class TagEditDialog extends CrudEditDialog<Tag> {
             colorPicker.setErrorMessage("Color can not be empty!");
             return;
         }
-        tag.setName(name.getValue());
-        tag.setColor(colorPicker.getValue());
-        tagService.save(tag);
+        if (tagService.findByName(name.getValue()).isPresent()) {
+            name.setErrorMessage("Tag '" + name.getValue() + "' already exists!");
+            return;
+        }
+        tagService.create(new Tag(name.getValue(), colorPicker.getValue()));
         eventListener.ifPresent(EntityEventListener::onChange);
         close();
-    }
-
-    @Override
-    public void open(Tag item) {
-        tag = item;
-        name.setValue(tag.getName());
-        colorPicker.setValue(tag.getColor());
-        open();
     }
 }

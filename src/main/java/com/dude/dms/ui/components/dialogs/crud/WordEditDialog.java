@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.crud;
+package com.dude.dms.ui.components.dialogs.crud;
 
 import com.dude.dms.backend.data.docs.Word;
 import com.dude.dms.backend.service.WordService;

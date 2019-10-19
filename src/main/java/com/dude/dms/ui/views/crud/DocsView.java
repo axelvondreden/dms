@@ -7,7 +7,7 @@ import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
-import com.dude.dms.ui.components.crud.DocEditDialog;
+import com.dude.dms.ui.components.dialogs.crud.DocEditDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.dude.dms.ui.views.DocView;

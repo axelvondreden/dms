@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.rules;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.ui.EntityEventListener;
 import com.vaadin.flow.component.dialog.Dialog;

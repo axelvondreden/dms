@@ -5,7 +5,6 @@ import com.dude.dms.backend.data.Diffable;
 import com.dude.dms.backend.data.Historical;
 import com.dude.dms.backend.data.history.History;
 import com.dude.dms.backend.service.HistoricalCrudService;
-import com.dude.dms.ui.components.crud.CrudEditDialog;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
