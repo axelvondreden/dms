@@ -88,6 +88,7 @@ public class StartUpRunner implements CommandLineRunner {
                 Release newestRelease = null;
                 for (Release release : releases) {
                     if (!changelogService.findByVersion(release.getTag_name()).isPresent()) {
+                        LOGGER.info("Saving Changelog for {}", release.getTag_name());
                         changelogService.create(new Changelog(release.getPublished_at(), release.getBody(), release.getTag_name()));
                     }
                     Version v = new Version(release.getTag_name());
@@ -212,7 +213,7 @@ public class StartUpRunner implements CommandLineRunner {
         tags.add(tagService.create(new Tag("Arbeit", randomColor())));
         tags.add(tagService.create(new Tag("Test", randomColor())));
 
-        if (docService.count() == 0L) {
+        if (docService.count() == 0L && DEMO_DOCS.getInt() > 0) {
             LOGGER.info("Creating demo docs...");
 
             StringBuilder contentBuilder = new StringBuilder();

@@ -1,8 +1,10 @@
 package com.dude.dms.ui;
 
 import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.components.changelog.ChangelogDialog;
 import com.dude.dms.ui.components.crud.TagCreateDialog;
 import com.dude.dms.ui.components.crud.TagEditDialog;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
@@ -33,6 +35,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.data.provider.DataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,10 +50,16 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private final TagService tagService;
 
+    private final ChangelogService changelogService;
+
+    private final String buildVersion;
+
     @Autowired
-    public MainView(DocService docService, TagService tagService) {
+    public MainView(DocService docService, TagService tagService, ChangelogService changelogService, @Value("${build.version}") String buildVersion) {
         this.docService = docService;
         this.tagService = tagService;
+        this.changelogService = changelogService;
+        this.buildVersion = buildVersion;
 
         init(AppLayoutBuilder.get(LeftLayouts.LeftHybrid.class)
                 .withTitle("dms")
@@ -75,7 +84,10 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
         return LeftAppMenuBuilder.get()
                 .addToSection(HEADER, new LeftHeaderItem("Header Text", "Subtitle", null))
                 .add(docsEntry, tagsEntry, newTagEntry, rulesEntry)
-                .addToSection(FOOTER, new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
+                .withStickyFooter()
+                .addToSection(FOOTER,
+                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> new ChangelogDialog(changelogService).open()),
+                        new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
                 .build();
     }
 

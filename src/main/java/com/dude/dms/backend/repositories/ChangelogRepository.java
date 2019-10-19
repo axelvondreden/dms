@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface ChangelogRepository extends JpaRepository<Changelog, Long> {
 
     Optional<Changelog> findByVersion(String version);
-
 }
