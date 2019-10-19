@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dude.dms</groupId>
     <artifactId>dms</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <packaging>jar</packaging>
     <name>dms</name>
     <parent>
@@ -281,6 +281,7 @@
     </dependencies>
 
     <build>
+        <finalName>dms</finalName>
         <defaultGoal>spring-boot:run</defaultGoal>
         <!-- The `pluginManagement` section allows listing plugin versions and their global
              configuration in one place. -->
@@ -339,7 +340,6 @@
 
     <profiles>
         <profile>
-            <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
             <properties>
                 <vaadin.productionMode>true</vaadin.productionMode>
@@ -355,12 +355,13 @@
                     <plugin>
                         <groupId>com.vaadin</groupId>
                         <artifactId>vaadin-maven-plugin</artifactId>
+                        <version>${vaadin.version}</version>
                         <executions>
                             <execution>
                                 <goals>
+                                    <goal>prepare-frontend</goal>
                                     <goal>build-frontend</goal>
                                 </goals>
-                                <phase>compile</phase>
                             </execution>
                         </executions>
                     </plugin>

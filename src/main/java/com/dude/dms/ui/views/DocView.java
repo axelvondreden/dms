@@ -1,7 +1,7 @@
 package com.dude.dms.ui.views;
 
-import com.dude.dms.backend.data.base.Doc;
-import com.dude.dms.backend.data.base.Word;
+import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.data.docs.Word;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.WordService;
 import com.dude.dms.ui.Const;

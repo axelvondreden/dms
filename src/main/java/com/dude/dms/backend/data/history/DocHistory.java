@@ -1,6 +1,6 @@
 package com.dude.dms.backend.data.history;
 
-import com.dude.dms.backend.data.base.Doc;
+import com.dude.dms.backend.data.docs.Doc;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

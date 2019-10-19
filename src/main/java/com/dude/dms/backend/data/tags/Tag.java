@@ -1,8 +1,9 @@
-package com.dude.dms.backend.data.base;
+package com.dude.dms.backend.data.tags;
 
 import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.data.Diffable;
 import com.dude.dms.backend.data.Historical;
+import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.TagHistory;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;

@@ -1,11 +1,10 @@
 package com.dude.dms.ui.components.tags;
 
-import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.TagService;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 

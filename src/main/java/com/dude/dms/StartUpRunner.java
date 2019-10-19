@@ -1,31 +1,42 @@
 package com.dude.dms;
 
 import com.dude.dms.backend.brain.polling.DocPollingService;
-import com.dude.dms.backend.data.base.Doc;
-import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.updater.Changelog;
+import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.updater.Asset;
 import com.dude.dms.updater.Release;
+import com.dude.dms.updater.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
 
@@ -42,6 +53,12 @@ public class StartUpRunner implements CommandLineRunner {
 
     @Autowired
     private DocPollingService docPollingService;
+
+    @Autowired
+    private ChangelogService changelogService;
+
+    @Autowired
+    private ShutdownManager shutdownManager;
 
     private Random random;
 
@@ -60,16 +77,98 @@ public class StartUpRunner implements CommandLineRunner {
         createDemoData();
     }
 
-    private static void checkForUpdate() {
+    private void checkForUpdate() {
         LOGGER.info("Checking for updates...");
         try {
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(GITHUB_USER.getString(), GITHUB_PASSWORD.getString()));
             Release[] releases = restTemplate.getForObject("https://api.github.com/repos/axelvondreden/dms/releases", Release[].class);
-            LOGGER.info("Length " + releases.length);
+            if (releases != null) {
+                Version newest = new Version(buildVersion);
+                Release newestRelease = null;
+                for (Release release : releases) {
+                    if (!changelogService.findByVersion(release.getTag_name()).isPresent()) {
+                        changelogService.create(new Changelog(release.getPublished_at(), release.getBody(), release.getTag_name()));
+                    }
+                    Version v = new Version(release.getTag_name());
+                    if (v.isAfter(newest)) {
+                        newest = v;
+                        newestRelease = release;
+                    }
+                }
+                if (newestRelease != null) {
+                    LOGGER.info("New version found: {}", newest.get());
+                    downloadRelease(newestRelease, restTemplate);
+                } else {
+                    LOGGER.info("Already running latest version: {}", buildVersion);
+                }
+            }
         } catch (RestClientException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    private void downloadRelease(Release newestRelease, RestTemplate restTemplate) {
+        File old = new File("update");
+        if (old.exists() && old.isDirectory()) {
+            old.delete();
+        }
+        RequestCallback requestCallback = request -> request.getHeaders().setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+
+        for (Asset asset : newestRelease.getAssets()) {
+            ResponseExtractor<Void> responseExtractor = response -> {
+                Files.copy(response.getBody(), Paths.get(asset.getName()), StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.info("Download finished: {}", asset.getName());
+                unzip(asset.getName());
+                return null;
+            };
+            LOGGER.info("Starting download: {}", asset.getName());
+            restTemplate.execute(URI.create(asset.getUrl()), HttpMethod.GET, requestCallback, responseExtractor);
+        }
+    }
+
+    private void unzip(String name) {
+        LOGGER.info("Extracting {}...", name);
+        File destDir = new File("update");
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+        byte[] buffer = new byte[1024];
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(name))) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                File newFile = newFile(destDir, zipEntry);
+                try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                }
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+            update();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    private void update() {
+        LOGGER.info("Processing update...");
+        shutdownManager.initiateShutdown(1337);
+    }
+
+    public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+        File destFile = new File(destinationDir, zipEntry.getName());
+
+        String destDirPath = destinationDir.getCanonicalPath();
+        String destFilePath = destFile.getCanonicalPath();
+
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+        }
+        destFile.createNewFile();
+        return destFile;
     }
 
     private static void createDirectories() {
@@ -120,7 +219,7 @@ public class StartUpRunner implements CommandLineRunner {
             try (Stream<String> stream = Files.lines( Paths.get("lipsum.txt"), StandardCharsets.UTF_8)) {
                 stream.forEach(s -> contentBuilder.append(s).append(' '));
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
             String txt = contentBuilder.toString();
             for (int i = 0; i < DEMO_DOCS.getInt(); i++) {

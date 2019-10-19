@@ -1,7 +1,6 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.base.Doc;
-import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.data.history.TagHistory;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
@@ -17,8 +16,6 @@ import java.util.Set;
 @Service
 public class TagService extends HistoricalCrudService<Tag, TagHistory> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TagService.class);
-
     private final TagRepository tagRepository;
 
     @Autowired
@@ -29,11 +26,7 @@ public class TagService extends HistoricalCrudService<Tag, TagHistory> {
     @Override
     public Tag create(Tag entity) {
         Optional<Tag> tag = tagRepository.findByName(entity.getName());
-        if (tag.isPresent()) {
-            LOGGER.warn("Tag with name '{}' already exists", entity.getName());
-            return tag.get();
-        }
-        return super.create(entity);
+        return tag.orElseGet(() -> super.create(entity));
     }
 
     @Override

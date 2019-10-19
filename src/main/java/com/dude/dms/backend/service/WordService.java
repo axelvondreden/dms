@@ -1,7 +1,7 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.base.Doc;
-import com.dude.dms.backend.data.base.Word;
+import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.data.docs.Word;
 import com.dude.dms.backend.repositories.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.dude.dms.backend.data.base;
+package com.dude.dms.backend.data.docs;
 
 import com.dude.dms.backend.data.DataEntity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;

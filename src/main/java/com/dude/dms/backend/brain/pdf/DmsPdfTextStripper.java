@@ -1,6 +1,6 @@
 package com.dude.dms.backend.brain.pdf;
 
-import com.dude.dms.backend.data.base.Word;
+import com.dude.dms.backend.data.docs.Word;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;

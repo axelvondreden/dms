@@ -1,8 +1,8 @@
 package com.dude.dms.backend.brain.pdf;
 
-import com.dude.dms.backend.data.base.Doc;
-import com.dude.dms.backend.data.base.Tag;
-import com.dude.dms.backend.data.base.Word;
+import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.docs.Word;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.*;

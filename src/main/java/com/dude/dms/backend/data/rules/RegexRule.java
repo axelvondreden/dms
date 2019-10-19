@@ -1,6 +1,6 @@
 package com.dude.dms.backend.data.rules;
 
-import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.tags.Tag;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;

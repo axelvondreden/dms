@@ -1,7 +1,7 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.base.Doc;
-import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.data.history.DocHistory;
 import com.dude.dms.backend.repositories.DocRepository;
 import org.springframework.beans.factory.annotation.Autowired;

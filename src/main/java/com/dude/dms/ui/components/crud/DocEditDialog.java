@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.crud;
 
-import com.dude.dms.backend.data.base.Doc;
+import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;

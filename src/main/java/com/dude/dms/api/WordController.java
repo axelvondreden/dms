@@ -1,6 +1,6 @@
 package com.dude.dms.api;
 
-import com.dude.dms.backend.data.base.Word;
+import com.dude.dms.backend.data.docs.Word;
 import com.dude.dms.backend.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

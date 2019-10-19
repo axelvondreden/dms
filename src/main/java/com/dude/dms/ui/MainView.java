@@ -1,6 +1,6 @@
 package com.dude.dms.ui;
 
-import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.components.crud.TagCreateDialog;

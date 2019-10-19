@@ -1,7 +1,6 @@
 package com.dude.dms.backend.repositories;
 
-import com.dude.dms.backend.data.base.Doc;
-import com.dude.dms.backend.data.base.Tag;
+import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
 import org.springframework.data.jpa.repository.JpaRepository;
