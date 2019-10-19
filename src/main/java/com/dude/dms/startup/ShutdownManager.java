@@ -1,4 +1,4 @@
-package com.dude.dms;
+package com.dude.dms.startup;
 
 import org.springframework.stereotype.Component;
 
