@@ -13,12 +13,11 @@ public class ChangelogDialog extends Dialog {
     public ChangelogDialog(ChangelogService changelogService) {
         setWidth("70vw");
         setHeight("70vh");
-        setSizeFull();
         List<Changelog> changelogs = changelogService.findAll().stream().sorted((o1, o2) -> o2.getPublished().compareTo(o1.getPublished())).collect(Collectors.toList());
         for (Changelog changelog : changelogs) {
             TextArea area = new TextArea(changelog.getVersion(), changelog.getBody(), "");
             area.setReadOnly(true);
-            area.setSizeFull();
+            area.setWidthFull();
             add(area);
         }
     }
