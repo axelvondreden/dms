@@ -20,10 +20,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 
 import java.io.*;
 import java.net.URI;
@@ -104,6 +101,8 @@ public class StartUpRunner implements CommandLineRunner {
                     LOGGER.info("Already running latest version: {}", buildVersion);
                 }
             }
+        } catch (HttpClientErrorException.Unauthorized e) {
+            LOGGER.warn("401 Unauthorized: Wrong github credentials!");
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
         }
