@@ -1,10 +1,10 @@
 package com.dude.dms.backend.brain.parsing;
 
 import com.dude.dms.backend.data.docs.Doc;
-import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
+import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -53,6 +53,8 @@ public class PdfToDocParser implements Parser {
 
     private List<TextBlock> textBlockList;
 
+    private ParserEventListener eventListener;
+
     public PdfToDocParser() {
         docSavePath = DOC_SAVE_PATH.getString();
     }
@@ -95,8 +97,14 @@ public class PdfToDocParser implements Parser {
                     LOGGER.info("Created textblock {} for doc {}", textBlock, doc);
                 });
             }
+            if (eventListener != null) {
+                eventListener.onParse(true);
+            }
         } else {
             LOGGER.error("Could not save file {}", file.getAbsolutePath());
+            if (eventListener != null) {
+                eventListener.onParse(false);
+            }
         }
     }
 
@@ -214,5 +222,9 @@ public class PdfToDocParser implements Parser {
         }
         LOGGER.info("No date found on document");
         return null;
+    }
+
+    public void setEventListener(ParserEventListener eventListener) {
+        this.eventListener = eventListener;
     }
 }

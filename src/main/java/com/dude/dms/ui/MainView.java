@@ -1,5 +1,6 @@
 package com.dude.dms.ui;
 
+import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.backend.service.DocService;
@@ -12,9 +13,9 @@ import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButtonBuilder;
 import com.dude.dms.ui.components.search.DocSearchResult;
 import com.dude.dms.ui.components.search.SearchResult;
+import com.dude.dms.ui.views.DocsView;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
-import com.dude.dms.ui.views.DocsView;
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder;
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts;
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder;
@@ -31,6 +32,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -54,8 +56,10 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private final String buildVersion;
 
+    private DefaultBadgeHolder docsBadge;
+
     @Autowired
-    public MainView(DocService docService, TagService tagService, ChangelogService changelogService, @Value("${build.version}") String buildVersion) {
+    public MainView(DocService docService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, @Value("${build.version}") String buildVersion) {
         this.docService = docService;
         this.tagService = tagService;
         this.changelogService = changelogService;
@@ -66,10 +70,20 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 .withAppBar(buildAppBar())
                 .withAppMenu(buildAppMenu())
                 .build());
+
+        UI ui = UI.getCurrent();
+        pdfToDocParser.setEventListener(success -> {
+            if (success) {
+                ui.access(() -> {
+                    docsBadge.increase();
+                    Notification.show("New doc added!");
+                });
+            }
+        });
     }
 
     private Component buildAppMenu() {
-        DefaultBadgeHolder docsBadge = new DefaultBadgeHolder((int) docService.count());
+        docsBadge = new DefaultBadgeHolder((int) docService.count());
         LeftNavigationItem docsEntry = new LeftNavigationItem("Docs", VaadinIcon.FILE_TEXT.create(), DocsView.class);
         docsBadge.bind(docsEntry.getBadge());
 
@@ -81,7 +95,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
         });
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
         return LeftAppMenuBuilder.get()
-                .addToSection(HEADER, new LeftClickableItem("Add doc",VaadinIcon.PLUS_CIRCLE.create(), e -> new AddDocDialog().open()))
+                .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> new AddDocDialog().open()))
                 .add(docsEntry, tagsEntry, newTagEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
@@ -92,7 +106,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private LeftSubmenu createTagsEntry() {
         List<Component> tagEntries = new ArrayList<>();
-        for (Tag tag: tagService.findAll()) {
+        for (Tag tag : tagService.findAll()) {
             DefaultBadgeHolder badgeHolder = new DefaultBadgeHolder((int) docService.countByTag(tag));
             Icon icon = VaadinIcon.TAG.create();
             icon.setColor(tag.getColor());
