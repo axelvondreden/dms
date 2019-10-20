@@ -72,7 +72,9 @@ public class TextBlockEditDialog extends CrudEditDialog<TextBlock> {
             textBlock.setText(newText);
             textBlockService.save(textBlock);
         });
-        eventListener.ifPresent(EntityEventListener::onChange);
+        if (eventListener != null) {
+            eventListener.onChange();
+        }
         close();
     }
 

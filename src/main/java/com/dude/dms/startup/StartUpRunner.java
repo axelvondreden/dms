@@ -38,7 +38,7 @@ public class StartUpRunner implements CommandLineRunner {
         createOptionsFile();
         directoryManager.checkDirectories();
         demoDataManager.createDemoData();
-        docPollingService.manualPoll();
+        docPollingService.poll();
         LocaleContextHolder.setLocale(Locale.forLanguageTag(LOCALE.getString()));
     }
 

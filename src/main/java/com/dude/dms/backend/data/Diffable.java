@@ -9,14 +9,17 @@ public interface Diffable<T extends DataEntity> {
 
     default String diff(T other) {
         StringBuilder diff = new StringBuilder();
-        Field[] fields = GenericTypeResolver.resolveTypeArgument(getClass(), Diffable.class).getDeclaredFields();
-        for (Field field : fields) {
-            try {
-                if (!Objects.equals(field.get(this), field.get(other))) {
-                    diff.append(field.getName()).append(": ").append(field.get(this)).append(" -> ").append(field.get(other)).append('\n');
+        Class<?> clazz = GenericTypeResolver.resolveTypeArgument(getClass(), Diffable.class);
+        if (clazz != null) {
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                try {
+                    if (!Objects.equals(field.get(this), field.get(other))) {
+                        diff.append(field.getName()).append(": ").append(field.get(this)).append(" -> ").append(field.get(other)).append('\n');
+                    }
+                } catch (IllegalAccessException e) {
+                    // ignore private fields
                 }
-            } catch (IllegalAccessException e) {
-                // ignore private fields
             }
         }
         return diff.toString();

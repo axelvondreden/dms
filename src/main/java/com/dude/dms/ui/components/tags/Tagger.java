@@ -10,10 +10,8 @@ import java.util.Set;
 
 public class Tagger extends Grid<Tag> {
 
-    private final List<Tag> tags;
-
     public Tagger(TagService tagService) {
-        tags = tagService.findAll();
+        List<Tag> tags = tagService.findAll();
 
         setItems(tags);
         addColumn(Tag::getName).setHeader("Tags").setAutoWidth(true);
@@ -22,7 +20,7 @@ public class Tagger extends Grid<Tag> {
         setSelectionMode(SelectionMode.MULTI);
         addItemClickListener(event -> {
             if (asMultiSelect().isSelected(event.getItem())) {
-                deselect(event.getItem());;
+                deselect(event.getItem());
             } else {
                 select(event.getItem());
             }

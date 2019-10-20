@@ -25,15 +25,6 @@ public class DocPollingService implements PollingService {
         docPath = DOC_POLL_PATH.getString();
     }
 
-    public void manualPoll() {
-        File [] files = new File(docPath).listFiles((file, name) -> name.endsWith(".pdf"));
-        if (files != null) {
-            for (File file : files) {
-                processFile(file);
-            }
-        }
-    }
-
     @Scheduled(fixedRate = 10000)
     public void poll() {
         LOGGER.info("Polling {} for PDFs...", docPath);

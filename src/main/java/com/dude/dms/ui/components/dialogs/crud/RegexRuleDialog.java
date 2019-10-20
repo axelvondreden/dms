@@ -3,9 +3,8 @@ package com.dude.dms.ui.components.dialogs.crud;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.EntityEventListener;
-import com.dude.dms.ui.components.standard.RegexField;
 import com.dude.dms.ui.components.dialogs.RuleDialog;
+import com.dude.dms.ui.components.standard.RegexField;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -86,7 +85,9 @@ public class RegexRuleDialog extends RuleDialog {
             regexRuleService.save(regexRule);
             Notification.show("Edited rule!");
         }
-        eventListener.ifPresent(EntityEventListener::onChange);
+        if (eventListener != null) {
+            eventListener.onChange();
+        }
         close();
     }
 
@@ -94,7 +95,9 @@ public class RegexRuleDialog extends RuleDialog {
     protected void delete() {
         ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
             regexRuleService.delete(regexRule);
-            eventListener.ifPresent(EntityEventListener::onChange);
+            if (eventListener != null) {
+                eventListener.onChange();
+            }
             close();
         }, "Cancel", event -> {});
         dialog.setConfirmButtonTheme("error primary");

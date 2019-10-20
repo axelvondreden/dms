@@ -61,7 +61,9 @@ public class TagCreateDialog extends CrudCreateDialog<Tag> {
             return;
         }
         tagService.create(new Tag(name.getValue(), colorPicker.getValue()));
-        eventListener.ifPresent(EntityEventListener::onChange);
+        if (eventListener != null) {
+            eventListener.onChange();
+        }
         close();
     }
 }

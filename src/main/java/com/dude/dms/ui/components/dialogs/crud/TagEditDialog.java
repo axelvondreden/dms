@@ -61,7 +61,9 @@ public class TagEditDialog extends CrudEditDialog<Tag> {
         tag.setName(name.getValue());
         tag.setColor(colorPicker.getValue());
         tagService.save(tag);
-        eventListener.ifPresent(EntityEventListener::onChange);
+        if (eventListener != null) {
+            eventListener.onChange();
+        }
         close();
     }
 

@@ -130,7 +130,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 .build();
     }
 
-    DataProvider<SearchResult, String> createDataProvider() {
+    private DataProvider<SearchResult, String> createDataProvider() {
         return DataProvider.fromFilteringCallbacks(query -> {
             if (query.getFilter().isPresent()) {
                 String filter = query.getFilter().get();

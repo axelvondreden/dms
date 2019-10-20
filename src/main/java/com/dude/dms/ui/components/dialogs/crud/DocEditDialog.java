@@ -60,7 +60,9 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         doc.setDocumentDate(datePicker.getValue());
         doc.setTags(tagger.getSelectedTags());
         docService.save(doc);
-        eventListener.ifPresent(EntityEventListener::onChange);
+        if (eventListener != null) {
+            eventListener.onChange();
+        }
         close();
     }
 

@@ -1,6 +1,5 @@
 package com.dude.dms.updater;
 
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -11,7 +11,7 @@ public abstract class HistoricalCrudService<T extends DataEntity & Historical<U>
     @Autowired
     private HistoryCrudService<T, U> historyService;
 
-    public abstract U createHistory(T entity, String text, boolean created, boolean edited, boolean deleted);
+    protected abstract U createHistory(T entity, String text, boolean created, boolean edited, boolean deleted);
 
     @Override
     public T save(T entity) {

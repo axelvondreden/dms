@@ -1,7 +1,6 @@
 package com.dude.dms.ui.components.search;
 
 import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.provider.DataProvider;
 
 import java.util.function.Consumer;

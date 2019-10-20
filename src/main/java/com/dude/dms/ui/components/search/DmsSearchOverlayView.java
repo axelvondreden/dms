@@ -34,6 +34,7 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
     private Consumer<T> queryResultListener;
     private boolean closeOnQueryResult = true;
 
+    @SuppressWarnings("unchecked")
     public DmsSearchOverlayView() {
         getElement().getStyle().set("width", "100%");
         setVerticalAlign(VerticalOrientation.TOP);

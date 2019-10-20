@@ -4,7 +4,6 @@ import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.data.Diffable;
 import com.dude.dms.backend.data.Historical;
 import com.dude.dms.backend.data.history.History;
-import com.dude.dms.backend.service.HistoricalCrudService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,13 +11,9 @@ import com.vaadin.flow.function.ValueProvider;
 
 public abstract class HistoricalCrudView<T extends DataEntity & Historical<U> & Diffable<T>, U extends History> extends VerticalLayout {
 
-    protected Grid<T> grid;
+    protected final Grid<T> grid;
 
-    protected final HistoricalCrudService<T, U> service;
-
-    protected HistoricalCrudView(HistoricalCrudService<T, U> service) {
-        this.service = service;
-
+    protected HistoricalCrudView() {
         setSizeFull();
         setPadding(false);
         setSpacing(false);

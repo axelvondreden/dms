@@ -98,7 +98,9 @@ public class PlainTextRuleDialog extends RuleDialog {
             plainTextRuleService.save(plainTextRule);
             Notification.show("Edited rule!");
         }
-        eventListener.ifPresent(EntityEventListener::onChange);
+        if (eventListener != null) {
+            eventListener.onChange();
+        }
         close();
     }
 
@@ -106,7 +108,9 @@ public class PlainTextRuleDialog extends RuleDialog {
     protected void delete() {
         ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
             plainTextRuleService.delete(plainTextRule);
-            eventListener.ifPresent(EntityEventListener::onChange);
+            if (eventListener != null) {
+                eventListener.onChange();
+            }
             close();
         }, "Cancel", event -> {});
         dialog.setConfirmButtonTheme("error primary");
