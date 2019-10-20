@@ -1,18 +1,22 @@
 package com.dude.dms.ui.components.search;
 
 import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.service.TextBlockService;
+import com.dude.dms.ui.components.dialogs.DocImageDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
-import com.dude.dms.ui.views.DocView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DocSearchResult extends SearchResult {
 
     private final Doc doc;
     private final String search;
+
+    @Autowired
+    private TextBlockService textBlockService;
 
     public DocSearchResult(Doc doc, String search) {
         this.doc = doc;
@@ -46,6 +50,6 @@ public class DocSearchResult extends SearchResult {
 
     @Override
     public void onClick() {
-        UI.getCurrent().navigate(DocView.class, String.valueOf(doc.getId()));
+        new DocImageDialog(textBlockService).open(doc);
     }
 }
