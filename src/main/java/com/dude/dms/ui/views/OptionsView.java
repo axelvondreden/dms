@@ -53,7 +53,7 @@ public class OptionsView extends VerticalLayout {
         viewDetails.setOpened(true);
         add(viewDetails);
 
-        dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString());
+        dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
         imageParserDpi = new TextField("Image Parser DPI", IMAGE_PARSER_DPI.getString(), "");
         Details docsDetails = new Details("Docs", new FormLayout(dateScanFormats, imageParserDpi));
         docsDetails.setOpened(true);
