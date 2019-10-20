@@ -10,14 +10,15 @@ import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.components.dialogs.DocTextDialog;
 import com.dude.dms.ui.components.dialogs.crud.DocEditDialog;
+import com.dude.dms.ui.components.dialogs.DocImageDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.helger.commons.io.file.FileHelper;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         addComponentColumn("", this::createGridActions);
         addColumn("GUID", Doc::getGuid);
 
-        grid.addItemClickListener(event -> UI.getCurrent().navigate(DocView.class, String.valueOf(event.getItem().getId())));
+        grid.addItemClickListener(event -> new DocImageDialog(textBlockService).open(event.getItem()));
     }
 
     private HorizontalLayout createGridActions(Doc doc) {
