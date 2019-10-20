@@ -88,15 +88,10 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
         docsBadge.bind(docsEntry.getBadge());
 
         LeftSubmenu tagsEntry = createTagsEntry();
-        LeftClickableItem newTagEntry = new LeftClickableItem("Create Tag", VaadinIcon.TAG.create(), event -> {
-            TagCreateDialog dialog = new TagCreateDialog(tagService);
-            dialog.setEventListener(() -> UI.getCurrent().getPage().reload());
-            dialog.open();
-        });
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
         return LeftAppMenuBuilder.get()
                 .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> new AddDocDialog().open()))
-                .add(docsEntry, tagsEntry, newTagEntry, rulesEntry)
+                .add(docsEntry, tagsEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
                         new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> new ChangelogDialog(changelogService).open()),
@@ -106,6 +101,11 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private LeftSubmenu createTagsEntry() {
         List<Component> tagEntries = new ArrayList<>();
+        tagEntries.add(new LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create(), event -> {
+            TagCreateDialog dialog = new TagCreateDialog(tagService);
+            dialog.setEventListener(() -> UI.getCurrent().getPage().reload());
+            dialog.open();
+        }));
         for (Tag tag : tagService.findAll()) {
             DefaultBadgeHolder badgeHolder = new DefaultBadgeHolder((int) docService.countByTag(tag));
             Icon icon = VaadinIcon.TAG.create();
