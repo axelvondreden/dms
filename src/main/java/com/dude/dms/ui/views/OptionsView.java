@@ -3,6 +3,7 @@ package com.dude.dms.ui.views;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,6 +22,7 @@ public class OptionsView extends VerticalLayout {
     private final TextField dateScanFormats;
     private final TextField imageParserDpi;
     private final ComboBox<Locale> locale;
+    private final Checkbox simpleColors;
 
     public OptionsView() {
         dateFormat = new TextField("Date format", DATE_FORMAT.getString(), "");
@@ -31,8 +33,9 @@ public class OptionsView extends VerticalLayout {
         locale.setValue(Locale.forLanguageTag(LOCALE.getString()));
         locale.setAllowCustomValue(false);
         locale.setPreventInvalidInput(true);
+        simpleColors = new Checkbox("Simple tag colors", SIMPLE_TAG_COLORS.getBoolean());
         Button save = new Button("Save", e -> save());
-        add(dateFormat, dateScanFormats, imageParserDpi, locale, save);
+        add(dateFormat, dateScanFormats, imageParserDpi, locale, simpleColors, save);
     }
 
     private void save() {
@@ -51,5 +54,6 @@ public class OptionsView extends VerticalLayout {
             } catch (NumberFormatException ignored) {
             }
         }
+        SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
     }
 }

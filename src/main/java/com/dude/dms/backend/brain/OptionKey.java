@@ -12,6 +12,7 @@ public enum OptionKey {
     DEMO_DOCS("demo_docs"),
     GITHUB_USER("github_user"),
     GITHUB_PASSWORD("github_password"),
+    SIMPLE_TAG_COLORS("simple_tag_colors"),
     LOCALE("locale");
 
     public final String key;

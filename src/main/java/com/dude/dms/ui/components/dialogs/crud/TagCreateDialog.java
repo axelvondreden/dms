@@ -2,18 +2,24 @@ package com.dude.dms.ui.components.dialogs.crud;
 
 import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.standard.DmsColorPicker;
+import com.dude.dms.ui.components.standard.DmsColorPickerSimple;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
+import static com.dude.dms.backend.brain.OptionKey.SIMPLE_TAG_COLORS;
+
 public class TagCreateDialog extends CrudCreateDialog<Tag> {
 
     private final TextField name;
-    private final DmsColorPicker colorPicker;
+
+    private final Component colorPicker;
 
     private final TagService tagService;
 
@@ -23,8 +29,12 @@ public class TagCreateDialog extends CrudCreateDialog<Tag> {
         name = new TextField("Name");
         name.setWidthFull();
 
-        colorPicker = new DmsColorPicker("Color");
-        colorPicker.setWidthFull();
+        if (SIMPLE_TAG_COLORS.getBoolean()) {
+            colorPicker = new DmsColorPickerSimple("Color");
+        } else {
+            colorPicker = new DmsColorPicker("Color");
+        }
+        ((HasSize) colorPicker).setWidthFull();
 
         Button createButton = new Button("Create", e -> create());
         createButton.setWidthFull();
@@ -52,15 +62,15 @@ public class TagCreateDialog extends CrudCreateDialog<Tag> {
             name.setErrorMessage("Name can not be empty!");
             return;
         }
-        if (colorPicker.isEmpty()) {
-            colorPicker.setErrorMessage("Color can not be empty!");
+        if (((HasValue) colorPicker).isEmpty()) {
+            name.setErrorMessage("Color can not be empty!");
             return;
         }
         if (tagService.findByName(name.getValue()).isPresent()) {
             name.setErrorMessage("Tag '" + name.getValue() + "' already exists!");
             return;
         }
-        tagService.create(new Tag(name.getValue(), colorPicker.getValue()));
+        tagService.create(new Tag(name.getValue(), (String) ((HasValue) colorPicker).getValue()));
         if (eventListener != null) {
             eventListener.onChange();
         }
