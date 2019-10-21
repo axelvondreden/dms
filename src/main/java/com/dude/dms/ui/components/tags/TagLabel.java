@@ -33,9 +33,4 @@ public class TagLabel extends Div {
                 "this.style.color = (r * 0.299 + g * 0.587 + b * 0.114) > 186 ? '#000000' : '#FFFFFF';"
         );
     }
-
-    @PostConstruct
-    public void init() {
-
-    }
 }
