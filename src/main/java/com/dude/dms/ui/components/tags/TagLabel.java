@@ -5,7 +5,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ElementFactory;
 
-import javax.annotation.PostConstruct;
 import java.util.UUID;
 
 public class TagLabel extends Div {
