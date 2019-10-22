@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.search;
 
 import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.TextBlockService;
 import com.github.appreciated.app.layout.addons.search.overlay.QueryPair;
 import com.github.appreciated.app.layout.component.appbar.IconButton;
 import com.github.appreciated.ironoverlay.IronOverlay;
@@ -41,6 +42,8 @@ public class DmsSearchOverlayView extends IronOverlay {
     private DataProvider<SearchResult, String> dataProvider;
 
     private DocService docService;
+
+    private TextBlockService textBlockService;
 
     private Consumer<SearchResult> queryResultListener;
 
@@ -134,8 +137,9 @@ public class DmsSearchOverlayView extends IronOverlay {
         searchField.focus();
     }
 
-    public void initDataprovider(DocService docService) {
+    public void initDataprovider(DocService docService, TextBlockService textBlockService) {
         this.docService = docService;
+        this.textBlockService = textBlockService;
         dataProvider = DataProvider.fromFilteringCallbacks(query -> {
             if (query.getFilter().isPresent()) {
                 return search(query.getFilter().get());
@@ -151,9 +155,9 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private Stream<SearchResult> search(String filter) {
         if (caseSensitiveCheckbox.getValue()) {
-            return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> new DocSearchResult(doc, filter));
+            return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> new DocSearchResult(textBlockService, doc, filter));
         } else {
-            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> new DocSearchResult(doc, filter));
+            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> new DocSearchResult(textBlockService, doc, filter));
         }
     }
 

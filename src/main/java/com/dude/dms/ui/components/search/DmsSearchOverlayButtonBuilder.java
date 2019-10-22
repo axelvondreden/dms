@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.search;
 
 import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.TextBlockService;
 import com.vaadin.flow.component.ClickNotifier;
 
 import java.util.function.Consumer;
@@ -16,8 +17,11 @@ public class DmsSearchOverlayButtonBuilder {
 
     private final DocService docService;
 
-    public DmsSearchOverlayButtonBuilder(DocService docService) {
+    private final TextBlockService textBlockService;
+
+    public DmsSearchOverlayButtonBuilder(DocService docService, TextBlockService textBlockService) {
         this.docService = docService;
+        this.textBlockService = textBlockService;
     }
 
     public DmsSearchOverlayButtonBuilder withDataViewProvider(Function<SearchResult, ClickNotifier> dataViewProvider) {
@@ -32,7 +36,7 @@ public class DmsSearchOverlayButtonBuilder {
         if (closeOnQueryResult != null) {
             appBarSearchButton.setCloseOnQueryResult(closeOnQueryResult);
         }
-        appBarSearchButton.getSearchView().initDataprovider(docService);;
+        appBarSearchButton.getSearchView().initDataprovider(docService, textBlockService);
         return appBarSearchButton;
     }
 

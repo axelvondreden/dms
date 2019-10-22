@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.components.dialogs.AddDocDialog;
 import com.dude.dms.ui.components.dialogs.ChangelogDialog;
 import com.dude.dms.ui.components.dialogs.crud.TagCreateDialog;
@@ -48,6 +49,8 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private final DocService docService;
 
+    private final TextBlockService textBlockService;
+
     private final TagService tagService;
 
     private final ChangelogService changelogService;
@@ -57,8 +60,9 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
     private DefaultBadgeHolder docsBadge;
 
     @Autowired
-    public MainView(DocService docService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, @Value("${build.version}") String buildVersion) {
+    public MainView(DocService docService, TextBlockService textBlockService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, @Value("${build.version}") String buildVersion) {
         this.docService = docService;
+        this.textBlockService = textBlockService;
         this.tagService = tagService;
         this.changelogService = changelogService;
         this.buildVersion = buildVersion;
@@ -129,7 +133,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
     }
 
     private DmsSearchOverlayButton initSearchOverlayButton() {
-        return new DmsSearchOverlayButtonBuilder(docService)
+        return new DmsSearchOverlayButtonBuilder(docService, textBlockService)
                 .withDataViewProvider(result -> {
                     RippleClickableCard card = new RippleClickableCard(new SecondaryLabel(result.getHeader()), result.getBody());
                     card.setWidthFull();

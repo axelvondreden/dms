@@ -8,17 +8,16 @@ import com.dude.dms.ui.converters.LocalDateConverter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class DocSearchResult extends SearchResult {
 
     private final Doc doc;
     private final String search;
 
-    @Autowired
-    private TextBlockService textBlockService;
+    private final TextBlockService textBlockService;
 
-    public DocSearchResult(Doc doc, String search) {
+    public DocSearchResult(TextBlockService textBlockService, Doc doc, String search) {
+        this.textBlockService = textBlockService;
         this.doc = doc;
         this.search = search;
     }
