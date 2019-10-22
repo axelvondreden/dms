@@ -7,7 +7,7 @@ import com.github.appreciated.ironoverlay.VerticalOrientation;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -89,11 +89,19 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
         searchFieldWrapper.setWidthFull();
         searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        Div div = new Div();
-        div.setText("adfas fddsfsfgsd fsf sdf sfdsdf sfsd fsdfsdd fsdfsd fsdfsdf sdfsdf sdfsf sdfsdf");
-        div.setWidthFull();
+        Checkbox caseSensitive = new Checkbox("case sensitive");
+        Checkbox regex = new Checkbox("Regex");
 
-        wrapper = new VerticalLayout(searchFieldWrapper, div, results);
+        HorizontalLayout configWrapper = new HorizontalLayout(caseSensitive, regex);
+        configWrapper.setWidthFull();
+        configWrapper.getStyle()
+                .set("background", "var(--app-layout-bar-background-base-color)")
+                .set("box-shadow", "var(--app-layout-bar-shadow)")
+                .set("padding", "var(--app-layout-bar-padding)")
+                .set("flex-shrink", "0")
+                .set("z-index", "1");
+
+        wrapper = new VerticalLayout(searchFieldWrapper, configWrapper, results);
         wrapper.setSizeFull();
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
         wrapper.setMargin(false);
