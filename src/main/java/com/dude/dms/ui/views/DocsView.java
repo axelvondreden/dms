@@ -40,7 +40,6 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
 
     @Autowired
     public DocsView(DocService docService, TagService tagService, TextBlockService textBlockService) {
-        super();
         this.docService = docService;
         this.tagService = tagService;
         this.textBlockService = textBlockService;
@@ -49,7 +48,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         addComponentColumn("", this::createGridActions);
         addColumn("GUID", Doc::getGuid);
 
-        grid.addItemClickListener(event -> new DocImageDialog(textBlockService).open(event.getItem()));
+        grid.addItemDoubleClickListener(event -> new DocImageDialog(textBlockService).open(event.getItem()));
     }
 
     private HorizontalLayout createGridActions(Doc doc) {
