@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DmsSearchOverlayButton<T> extends IconButton {
+
     private final DmsSearchOverlayView<T> searchView;
 
     public DmsSearchOverlayButton() {

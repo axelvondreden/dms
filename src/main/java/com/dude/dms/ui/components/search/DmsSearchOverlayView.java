@@ -7,6 +7,7 @@ import com.github.appreciated.ironoverlay.VerticalOrientation;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -22,31 +23,34 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DmsSearchOverlayView<T> extends IronOverlay {
-    private final TextField searchField = new TextField();
-    private final IconButton closeButton = new IconButton(VaadinIcon.ARROW_LEFT.create());
-    private final VerticalLayout results = new VerticalLayout();
-    private final HorizontalLayout searchFieldWrapper = new HorizontalLayout(closeButton, searchField);
-    private final VerticalLayout wrapper = new VerticalLayout(searchFieldWrapper, results);
+
+    private final TextField searchField;
+
+    private final IconButton closeButton;
+
+    private final VerticalLayout results;
+
+    private final VerticalLayout wrapper;
 
     private Function<T, ClickNotifier> dataViewProvider;
+
     private DataProvider<T, String> dataProvider;
 
     private Consumer<T> queryResultListener;
+
     private boolean closeOnQueryResult = true;
 
     @SuppressWarnings("unchecked")
     public DmsSearchOverlayView() {
         getElement().getStyle().set("width", "100%");
         setVerticalAlign(VerticalOrientation.TOP);
-        searchFieldWrapper.getStyle()
-                .set("background", "var(--app-layout-bar-background-base-color)")
-                .set("height", "var(--app-bar-height)")
-                .set("box-shadow", "var(--app-layout-bar-shadow)")
-                .set("padding", "var(--app-layout-bar-padding)")
-                .set("flex-shrink", "0")
-                .set("z-index", "1");
-        searchFieldWrapper.setWidthFull();
-        searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        results = new VerticalLayout();
+        results.setSizeFull();
+        results.setMargin(false);
+        results.getStyle().set("overflow", "auto");
+
+        searchField = new TextField();
         searchField.getStyle().set("--lumo-contrast-10pct", "transparent");
         searchField.addValueChangeListener(event -> {
             results.removeAll();
@@ -67,13 +71,29 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
         });
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setWidthFull();
-        results.setSizeFull();
-        results.setMargin(false);
-        results.getStyle().set("overflow", "auto");
+
+        closeButton = new IconButton(VaadinIcon.ARROW_LEFT.create());
         closeButton.addClickListener(event -> {
             searchField.clear();
             close();
         });
+
+        HorizontalLayout searchFieldWrapper = new HorizontalLayout(closeButton, searchField);
+        searchFieldWrapper.getStyle()
+                .set("background", "var(--app-layout-bar-background-base-color)")
+                .set("height", "var(--app-bar-height)")
+                .set("box-shadow", "var(--app-layout-bar-shadow)")
+                .set("padding", "var(--app-layout-bar-padding)")
+                .set("flex-shrink", "0")
+                .set("z-index", "1");
+        searchFieldWrapper.setWidthFull();
+        searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        Div div = new Div();
+        div.setText("adfas fddsfsfgsd fsf sdf sfdsdf sfsd fsdfsdd fsdfsd fsdfsdf sdfsdf sdfsf sdfsdf");
+        div.setWidthFull();
+
+        wrapper = new VerticalLayout(searchFieldWrapper, div, results);
         wrapper.setSizeFull();
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
         wrapper.setMargin(false);
@@ -82,6 +102,7 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
         wrapper.getStyle()
                 .set("max-width", "100vw")
                 .set("height", "100vh");
+
         results.getStyle()
                 .set("overflow-y", "auto")
                 .set("max-width", "100%")
