@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dude.dms</groupId>
     <artifactId>dms</artifactId>
-    <version>0.0.12</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
     <name>dms</name>
     <parent>
@@ -20,7 +20,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <!-- Dependencies -->
-        <vaadin.version>14.0.9</vaadin.version>
+        <vaadin.version>14.0.10</vaadin.version>
 
         <!-- Overrides the old version specified by the Spring Boot parent -->
         <selenium.version>3.141.59</selenium.version>
