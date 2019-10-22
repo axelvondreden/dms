@@ -1,5 +1,6 @@
 package com.dude.dms.ui.components.search;
 
+import com.dude.dms.backend.service.DocService;
 import com.github.appreciated.app.layout.addons.search.overlay.QueryPair;
 import com.github.appreciated.app.layout.component.appbar.IconButton;
 import com.github.appreciated.ironoverlay.IronOverlay;
@@ -21,8 +22,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class DmsSearchOverlayView<T> extends IronOverlay {
+public class DmsSearchOverlayView extends IronOverlay {
 
     private final TextField searchField;
 
@@ -32,15 +34,18 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
 
     private final VerticalLayout wrapper;
 
-    private Function<T, ClickNotifier> dataViewProvider;
+    private final Checkbox caseSensitiveCheckbox;
 
-    private DataProvider<T, String> dataProvider;
+    private Function<SearchResult, ClickNotifier> dataViewProvider;
 
-    private Consumer<T> queryResultListener;
+    private DataProvider<SearchResult, String> dataProvider;
+
+    private DocService docService;
+
+    private Consumer<SearchResult> queryResultListener;
 
     private boolean closeOnQueryResult = true;
 
-    @SuppressWarnings("unchecked")
     public DmsSearchOverlayView() {
         getElement().getStyle().set("width", "100%");
         setVerticalAlign(VerticalOrientation.TOP);
@@ -52,23 +57,7 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
 
         searchField = new TextField();
         searchField.getStyle().set("--lumo-contrast-10pct", "transparent");
-        searchField.addValueChangeListener(event -> {
-            results.removeAll();
-            List<T> result = dataProvider.fetch(new Query<>(event.getValue())).collect(Collectors.toList());
-            result.stream()
-                    .map(t -> new QueryPair<>(t, dataViewProvider.apply(t)))
-                    .forEach(clickNotifier -> {
-                        results.add((Component) clickNotifier.getNotifier());
-                        clickNotifier.getNotifier().addClickListener(clickEvent -> {
-                            if (closeOnQueryResult) {
-                                close();
-                            }
-                            if (queryResultListener != null) {
-                                queryResultListener.accept(clickNotifier.getQuery());
-                            }
-                        });
-                    });
-        });
+        searchField.addValueChangeListener(event -> showResults(event.getValue()));
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setWidthFull();
 
@@ -89,10 +78,9 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
         searchFieldWrapper.setWidthFull();
         searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        Checkbox caseSensitive = new Checkbox("case sensitive");
-        Checkbox regex = new Checkbox("Regex");
+        caseSensitiveCheckbox = new Checkbox("case sensitive");
 
-        HorizontalLayout configWrapper = new HorizontalLayout(caseSensitive, regex);
+        HorizontalLayout configWrapper = new HorizontalLayout(caseSensitiveCheckbox);
         configWrapper.setWidthFull();
         configWrapper.getStyle()
                 .set("background", "var(--app-layout-bar-background-base-color)")
@@ -122,26 +110,67 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
         add(wrapper);
     }
 
+    private void showResults(String value) {
+        results.removeAll();
+        List<SearchResult> result = dataProvider.fetch(new Query<>(value)).collect(Collectors.toList());
+        result.stream()
+                .map(t -> new QueryPair<>(t, dataViewProvider.apply(t)))
+                .forEach(clickNotifier -> {
+                    results.add((Component) clickNotifier.getNotifier());
+                    clickNotifier.getNotifier().addClickListener(clickEvent -> {
+                        if (closeOnQueryResult) {
+                            close();
+                        }
+                        if (queryResultListener != null) {
+                            queryResultListener.accept(clickNotifier.getQuery());
+                        }
+                    });
+                });
+    }
+
     @Override
     public void open() {
         super.open();
         searchField.focus();
     }
 
-    public Function<T, ClickNotifier> getDataViewProvider() {
+    public void initDataprovider(DocService docService) {
+        this.docService = docService;
+        dataProvider = DataProvider.fromFilteringCallbacks(query -> {
+            if (query.getFilter().isPresent()) {
+                return search(query.getFilter().get());
+            }
+            return null;
+        }, query -> {
+            if (query.getFilter().isPresent()) {
+                return count(query.getFilter().get());
+            }
+            return 0;
+        });
+    }
+
+    private Stream<SearchResult> search(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> new DocSearchResult(doc, filter));
+        } else {
+            return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> new DocSearchResult(doc, filter));
+        }
+    }
+
+    private int count(String filter) {
+        return (int) docService.countByRawTextLike('%' + filter + '%');
+    }
+
+    public Function<SearchResult, ClickNotifier> getDataViewProvider() {
         return dataViewProvider;
     }
 
-    public void setDataViewProvider(Function<T, ClickNotifier> dataViewProvider) {
+    public void setDataViewProvider(Function<SearchResult, ClickNotifier> dataViewProvider) {
         this.dataViewProvider = dataViewProvider;
     }
 
-    public DataProvider<T, String> getDataProvider() {
+    public DataProvider<SearchResult, String> getDataProvider() {
         return dataProvider;
-    }
-
-    public void setDataProvider(DataProvider<T, String> dataProvider) {
-        this.dataProvider = dataProvider;
     }
 
     public VerticalLayout getResults() {
@@ -156,7 +185,7 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
         return searchField;
     }
 
-    public void setQueryResultListener(Consumer<T> queryResultListener) {
+    public void setQueryResultListener(Consumer<SearchResult> queryResultListener) {
         this.queryResultListener = queryResultListener;
     }
 

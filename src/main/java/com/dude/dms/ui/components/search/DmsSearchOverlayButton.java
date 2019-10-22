@@ -6,14 +6,13 @@ import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.data.provider.DataProvider;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class DmsSearchOverlayButton<T> extends IconButton {
+public class DmsSearchOverlayButton extends IconButton {
 
-    private final DmsSearchOverlayView<T> searchView;
+    private final DmsSearchOverlayView searchView;
 
     public DmsSearchOverlayButton() {
         this(VaadinIcon.SEARCH);
@@ -25,7 +24,7 @@ public class DmsSearchOverlayButton<T> extends IconButton {
 
     public DmsSearchOverlayButton(Component icon) {
         super(icon);
-        searchView = new DmsSearchOverlayView<>();
+        searchView = new DmsSearchOverlayView();
         addClickListener(event -> searchView.open());
     }
 
@@ -41,19 +40,15 @@ public class DmsSearchOverlayButton<T> extends IconButton {
         attachEvent.getUI().add(searchView);
     }
 
-    public DmsSearchOverlayView<T> getSearchView() {
+    public DmsSearchOverlayView getSearchView() {
         return searchView;
     }
 
-    public void setDataViewProvider(Function<T, ClickNotifier> provider) {
+    public void setDataViewProvider(Function<SearchResult, ClickNotifier> provider) {
         searchView.setDataViewProvider(provider);
     }
 
-    public void setDataProvider(DataProvider<T, String> dataProvider) {
-        searchView.setDataProvider(dataProvider);
-    }
-
-    public void setQueryResultListener(Consumer<T> queryResultListener) {
+    public void setQueryResultListener(Consumer<SearchResult> queryResultListener) {
         searchView.setQueryResultListener(queryResultListener);
     }
 

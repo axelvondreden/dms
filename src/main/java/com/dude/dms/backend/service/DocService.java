@@ -47,7 +47,11 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
         return docRepository.countByRawTextLike(rawText);
     }
 
-    public List<Doc> findTop10ByRawTextLike(String rawText) {
-        return docRepository.findTop10ByRawTextLike(rawText);
+    public List<Doc> findTop10ByRawTextContaining(String rawText) {
+        return docRepository.findTop10ByRawTextContaining(rawText);
+    }
+
+    public List<Doc> findTop10ByRawTextContainingIgnoreCase(String rawText) {
+        return docRepository.findTop10ByRawTextContainingIgnoreCase(rawText);
     }
 }

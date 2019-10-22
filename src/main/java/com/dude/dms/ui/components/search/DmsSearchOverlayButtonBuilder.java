@@ -1,48 +1,47 @@
 package com.dude.dms.ui.components.search;
 
+import com.dude.dms.backend.service.DocService;
 import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.data.provider.DataProvider;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class DmsSearchOverlayButtonBuilder<T> {
+public class DmsSearchOverlayButtonBuilder {
 
-    private Function<T, ClickNotifier> dataViewProvider;
-    private DataProvider<T, String> dataProvider;
-    private Consumer<T> queryResultListener;
+    private Function<SearchResult, ClickNotifier> dataViewProvider;
+
+    private Consumer<SearchResult> queryResultListener;
+
     private Boolean closeOnQueryResult;
 
-    public DmsSearchOverlayButtonBuilder() {
+    private final DocService docService;
+
+    public DmsSearchOverlayButtonBuilder(DocService docService) {
+        this.docService = docService;
     }
 
-    public DmsSearchOverlayButtonBuilder<T> withDataViewProvider(Function<T, ClickNotifier> dataViewProvider) {
+    public DmsSearchOverlayButtonBuilder withDataViewProvider(Function<SearchResult, ClickNotifier> dataViewProvider) {
         this.dataViewProvider = dataViewProvider;
         return this;
     }
 
-    public DmsSearchOverlayButtonBuilder<T> withDataProvider(DataProvider<T, String> dataProvider) {
-        this.dataProvider = dataProvider;
-        return this;
-    }
-
-    public DmsSearchOverlayButton<T> build() {
-        DmsSearchOverlayButton<T> appBarSearchButton = new DmsSearchOverlayButton<>();
+    public DmsSearchOverlayButton build() {
+        DmsSearchOverlayButton appBarSearchButton = new DmsSearchOverlayButton();
         appBarSearchButton.setDataViewProvider(dataViewProvider);
-        appBarSearchButton.setDataProvider(dataProvider);
         appBarSearchButton.setQueryResultListener(queryResultListener);
         if (closeOnQueryResult != null) {
             appBarSearchButton.setCloseOnQueryResult(closeOnQueryResult);
         }
+        appBarSearchButton.getSearchView().initDataprovider(docService);;
         return appBarSearchButton;
     }
 
-    public DmsSearchOverlayButtonBuilder<T> withQueryResultListener(Consumer<T> queryResultListener) {
+    public DmsSearchOverlayButtonBuilder withQueryResultListener(Consumer<SearchResult> queryResultListener) {
         this.queryResultListener = queryResultListener;
         return this;
     }
 
-    public DmsSearchOverlayButtonBuilder<T> withCloseOnQueryResult(boolean closeOnQueryResult) {
+    public DmsSearchOverlayButtonBuilder withCloseOnQueryResult(boolean closeOnQueryResult) {
         this.closeOnQueryResult = closeOnQueryResult;
         return this;
     }

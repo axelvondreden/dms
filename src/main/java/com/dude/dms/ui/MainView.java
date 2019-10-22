@@ -11,7 +11,6 @@ import com.dude.dms.ui.components.dialogs.crud.TagCreateDialog;
 import com.dude.dms.ui.components.dialogs.crud.TagEditDialog;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButtonBuilder;
-import com.dude.dms.ui.components.search.DocSearchResult;
 import com.dude.dms.ui.components.search.SearchResult;
 import com.dude.dms.ui.views.DocsView;
 import com.dude.dms.ui.views.OptionsView;
@@ -35,7 +34,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.data.provider.DataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -127,13 +125,12 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
     }
 
     private FlexLayout buildAppBar() {
-        DmsSearchOverlayButton<SearchResult> searchOverlayButton = initSearchOverlayButton();
+        DmsSearchOverlayButton searchOverlayButton = initSearchOverlayButton();
         return AppBarBuilder.get().add(searchOverlayButton).build();
     }
 
-    private DmsSearchOverlayButton<SearchResult> initSearchOverlayButton() {
-        return new DmsSearchOverlayButtonBuilder<SearchResult>()
-                .withDataProvider(createDataProvider())
+    private DmsSearchOverlayButton initSearchOverlayButton() {
+        return new DmsSearchOverlayButtonBuilder(docService)
                 .withDataViewProvider(result -> {
                     RippleClickableCard card = new RippleClickableCard(new SecondaryLabel(result.getHeader()), result.getBody());
                     card.setWidthFull();
@@ -142,20 +139,5 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 })
                 .withQueryResultListener(SearchResult::onClick)
                 .build();
-    }
-
-    private DataProvider<SearchResult, String> createDataProvider() {
-        return DataProvider.fromFilteringCallbacks(query -> {
-            if (query.getFilter().isPresent()) {
-                String filter = query.getFilter().get();
-                return docService.findTop10ByRawTextLike('%' + filter + '%').stream().map(doc -> new DocSearchResult(doc, filter));
-            }
-            return null;
-        }, query -> {
-            if (query.getFilter().isPresent()) {
-                return (int) docService.countByRawTextLike('%' + query.getFilter().get() + '%');
-            }
-            return 0;
-        });
     }
 }
