@@ -120,7 +120,6 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 dialog.open(tag);
             });
         }
-
         return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);
     }
 

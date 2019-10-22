@@ -151,9 +151,9 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private Stream<SearchResult> search(String filter) {
         if (caseSensitiveCheckbox.getValue()) {
-            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> new DocSearchResult(doc, filter));
-        } else {
             return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> new DocSearchResult(doc, filter));
+        } else {
+            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> new DocSearchResult(doc, filter));
         }
     }
 
