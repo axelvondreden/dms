@@ -133,7 +133,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
     }
 
     private DmsSearchOverlayButton initSearchOverlayButton() {
-        return new DmsSearchOverlayButtonBuilder(docService, textBlockService)
+        return new DmsSearchOverlayButtonBuilder(docService, textBlockService, tagService)
                 .withDataViewProvider(result -> {
                     RippleClickableCard card = new RippleClickableCard(new SecondaryLabel(result.getHeader()), result.getBody());
                     card.setWidthFull();

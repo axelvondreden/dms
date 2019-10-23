@@ -15,9 +15,11 @@ public interface DocRepository extends JpaRepository<Doc, Long> {
 
     long countByTags(Tag tag);
 
-    long countByRawTextLike(String rawText);
-
     List<Doc> findTop10ByRawTextContaining(String rawText);
 
+    long countByRawTextContaining(String rawText);
+
     List<Doc> findTop10ByRawTextContainingIgnoreCase(String rawText);
+
+    long countByRawTextContainingIgnoreCase(String rawText);
 }

@@ -1,6 +1,8 @@
 package com.dude.dms.ui.components.search;
 
+import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.TagService;
 import com.dude.dms.backend.service.TextBlockService;
 import com.github.appreciated.app.layout.addons.search.overlay.QueryPair;
 import com.github.appreciated.app.layout.component.appbar.IconButton;
@@ -10,6 +12,7 @@ import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -42,11 +45,12 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private Function<SearchResult, ClickNotifier> dataViewProvider;
 
-    private DataProvider<SearchResult, String> dataProvider;
+    private DataProvider<DocSearchResult, String> docDataProvider;
+    private DataProvider<TagSearchResult, String> tagDataProvider;
 
     private DocService docService;
-
     private TextBlockService textBlockService;
+    private TagService tagService;
 
     private Consumer<SearchResult> queryResultListener;
 
@@ -84,15 +88,16 @@ public class DmsSearchOverlayView extends IronOverlay {
         searchFieldWrapper.setWidthFull();
         searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        entityMultiselect = new MultiselectComboBox<>("Search in:");
+        entityMultiselect = new MultiselectComboBox<>();
         entityMultiselect.setItems("Docs", "Tags", "Rules");
         entityMultiselect.select("Docs", "Tags", "Rules");
-        entityMultiselect.setWidthFull();
+        entityMultiselect.setWidth("30%");
 
         caseSensitiveCheckbox = new Checkbox("case sensitive");
 
-        HorizontalLayout configWrapper = new HorizontalLayout(entityMultiselect, caseSensitiveCheckbox);
+        HorizontalLayout configWrapper = new HorizontalLayout(new Label("Search in:"), entityMultiselect, caseSensitiveCheckbox);
         configWrapper.setWidthFull();
+        configWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
         configWrapper.getStyle()
                 .set("background", "var(--app-layout-bar-background-base-color)")
                 .set("box-shadow", "var(--app-layout-bar-shadow)")
@@ -123,7 +128,7 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private void showResults(String value) {
         results.removeAll();
-        List<SearchResult> result = dataProvider.fetch(new Query<>(value)).collect(Collectors.toList());
+        List<SearchResult> result = docDataProvider.fetch(new Query<>(value)).collect(Collectors.toList());
         result.stream()
                 .map(t -> new QueryPair<>(t, dataViewProvider.apply(t)))
                 .forEach(clickNotifier -> {
@@ -139,29 +144,37 @@ public class DmsSearchOverlayView extends IronOverlay {
                 });
     }
 
-    @Override
-    public void open() {
-        super.open();
-        searchField.focus();
-    }
-
-    public void initDataprovider(DocService docService, TextBlockService textBlockService) {
+    public void initDataproviders(DocService docService, TextBlockService textBlockService, TagService tagService) {
         this.docService = docService;
         this.textBlockService = textBlockService;
-        dataProvider = DataProvider.fromFilteringCallbacks(query -> {
+        this.tagService = tagService;
+
+        docDataProvider = DataProvider.fromFilteringCallbacks(query -> {
             if (query.getFilter().isPresent()) {
-                return search(query.getFilter().get());
+                return searchDocs(query.getFilter().get());
             }
             return null;
         }, query -> {
             if (query.getFilter().isPresent()) {
-                return count(query.getFilter().get());
+                return countDocs(query.getFilter().get());
+            }
+            return 0;
+        });
+
+        tagDataProvider = DataProvider.fromFilteringCallbacks(query -> {
+            if (query.getFilter().isPresent()) {
+                return searchTags(query.getFilter().get());
+            }
+            return null;
+        }, query -> {
+            if (query.getFilter().isPresent()) {
+                return countTags(query.getFilter().get());
             }
             return 0;
         });
     }
 
-    private Stream<SearchResult> search(String filter) {
+    private Stream<DocSearchResult> searchDocs(String filter) {
         if (caseSensitiveCheckbox.getValue()) {
             return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> new DocSearchResult(textBlockService, doc, filter));
         } else {
@@ -169,8 +182,34 @@ public class DmsSearchOverlayView extends IronOverlay {
         }
     }
 
-    private int count(String filter) {
-        return (int) docService.countByRawTextLike('%' + filter + '%');
+    private int countDocs(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return (int) docService.countByRawTextContaining(filter);
+        } else {
+            return (int) docService.countByRawTextContainingIgnoreCase(filter);
+        }
+    }
+
+    private Stream<TagSearchResult> searchTags(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return tagService.findTop10ByNameContaining(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService));
+        } else {
+            return tagService.findTop10ByNameContainingIgnoreCase(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService));
+        }
+    }
+
+    private int countTags(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return (int) tagService.countByNameContaining(filter);
+        } else {
+            return (int) tagService.countByNameContainingIgnoreCase(filter);
+        }
+    }
+
+    @Override
+    public void open() {
+        super.open();
+        searchField.focus();
     }
 
     public Function<SearchResult, ClickNotifier> getDataViewProvider() {
@@ -179,10 +218,6 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     public void setDataViewProvider(Function<SearchResult, ClickNotifier> dataViewProvider) {
         this.dataViewProvider = dataViewProvider;
-    }
-
-    public DataProvider<SearchResult, String> getDataProvider() {
-        return dataProvider;
     }
 
     public VerticalLayout getResults() {
