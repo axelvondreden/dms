@@ -18,6 +18,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -34,6 +35,8 @@ public class DmsSearchOverlayView extends IronOverlay {
     private final VerticalLayout results;
 
     private final VerticalLayout wrapper;
+
+    private final MultiselectComboBox<String> entityMultiselect;
 
     private final Checkbox caseSensitiveCheckbox;
 
@@ -81,9 +84,14 @@ public class DmsSearchOverlayView extends IronOverlay {
         searchFieldWrapper.setWidthFull();
         searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
+        entityMultiselect = new MultiselectComboBox<>("Search in:");
+        entityMultiselect.setItems("Docs", "Tags", "Rules");
+        entityMultiselect.select("Docs", "Tags", "Rules");
+        entityMultiselect.setWidthFull();
+
         caseSensitiveCheckbox = new Checkbox("case sensitive");
 
-        HorizontalLayout configWrapper = new HorizontalLayout(caseSensitiveCheckbox);
+        HorizontalLayout configWrapper = new HorizontalLayout(entityMultiselect, caseSensitiveCheckbox);
         configWrapper.setWidthFull();
         configWrapper.getStyle()
                 .set("background", "var(--app-layout-bar-background-base-color)")
