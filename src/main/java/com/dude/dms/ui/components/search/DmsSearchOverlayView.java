@@ -5,8 +5,10 @@ import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.backend.service.TextBlockService;
 import com.github.appreciated.app.layout.component.appbar.IconButton;
+import com.github.appreciated.card.Card;
 import com.github.appreciated.card.RippleClickableCard;
 import com.github.appreciated.card.label.SecondaryLabel;
+import com.github.appreciated.card.label.TitleLabel;
 import com.github.appreciated.ironoverlay.IronOverlay;
 import com.github.appreciated.ironoverlay.VerticalOrientation;
 import com.vaadin.flow.component.button.Button;
@@ -82,8 +84,10 @@ public class DmsSearchOverlayView extends IronOverlay {
         entityMultiselect.setItems("Docs", "Tags");
         entityMultiselect.select("Docs", "Tags");
         entityMultiselect.setWidth("30%");
+        entityMultiselect.addValueChangeListener(event -> showResults(searchField.getValue()));
 
         caseSensitiveCheckbox = new Checkbox("case sensitive");
+        caseSensitiveCheckbox.addValueChangeListener(event -> showResults(searchField.getValue()));
 
         HorizontalLayout configWrapper = new HorizontalLayout(new Label("Search in:"), entityMultiselect, caseSensitiveCheckbox);
         configWrapper.setWidthFull();
@@ -118,8 +122,11 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private void showResults(String value) {
         resultsWrapper.removeAll();
+        if (value == null || value.isEmpty()) {
+            return;
+        }
         if (entityMultiselect.getSelectedItems().contains("Docs")) {
-            resultsWrapper.add(new H2("Docs"));
+            resultsWrapper.add(new Card(new TitleLabel("Docs")));
             docDataProvider.fetch(new Query<>(value)).forEach(result -> {
                 RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
                 card.setWidthFull();
@@ -128,7 +135,7 @@ public class DmsSearchOverlayView extends IronOverlay {
             });
         }
         if (entityMultiselect.getSelectedItems().contains("Tags")) {
-            resultsWrapper.add(new H2("Tags"));
+            resultsWrapper.add(new Card(new TitleLabel("Tags")));
             tagDataProvider.fetch(new Query<>(value)).forEach(result -> {
                 RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
                 card.setWidthFull();
