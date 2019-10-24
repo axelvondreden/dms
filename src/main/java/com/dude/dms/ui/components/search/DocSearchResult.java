@@ -3,10 +3,15 @@ package com.dude.dms.ui.components.search;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.components.dialogs.DocImageDialog;
+import com.dude.dms.ui.components.dialogs.DocTextDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class DocSearchResult extends SearchResult {
@@ -30,8 +35,13 @@ public class DocSearchResult extends SearchResult {
     @Override
     public Component getBody() {
         TagContainer tagContainer = new TagContainer(doc.getTags());
+        Button pdfButton = new Button(VaadinIcon.FILE_TEXT.create(), event -> new DocImageDialog(textBlockService).open(doc));
+        Button textButton = new Button(VaadinIcon.TEXT_LABEL.create(), e ->new DocTextDialog().open(textBlockService.findByDoc(doc)));
+        HorizontalLayout buttonWrapper = new HorizontalLayout(pdfButton, textButton);
+        buttonWrapper.setWidthFull();
+        buttonWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        VerticalLayout verticalLayout = new VerticalLayout(tagContainer, getTextSnippet());
+        VerticalLayout verticalLayout = new VerticalLayout(tagContainer, getTextSnippet(), buttonWrapper);
         verticalLayout.setSizeFull();
         return verticalLayout;
     }
