@@ -105,9 +105,7 @@ public class DmsSearchOverlayView extends IronOverlay {
         wrapper.setMargin(false);
         wrapper.setPadding(false);
         wrapper.setSpacing(false);
-        wrapper.getStyle()
-                .set("max-width", "100vw")
-                .set("height", "100vh");
+        wrapper.getStyle().set("max-width", "100vw").set("height", "100vh");
 
         resultsWrapper.getStyle()
                 .set("overflow-y", "auto")
@@ -199,9 +197,9 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private Stream<TagSearchResult> searchTags(String filter) {
         if (caseSensitiveCheckbox.getValue()) {
-            return tagService.findTop10ByNameContaining(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService));
+            return tagService.findTop10ByNameContaining(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService, docService));
         } else {
-            return tagService.findTop10ByNameContainingIgnoreCase(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService));
+            return tagService.findTop10ByNameContainingIgnoreCase(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService, docService));
         }
     }
 
