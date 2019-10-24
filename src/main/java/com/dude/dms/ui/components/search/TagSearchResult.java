@@ -7,7 +7,6 @@ import com.dude.dms.ui.components.dialogs.crud.TagEditDialog;
 import com.github.appreciated.card.label.PrimaryLabel;
 import com.github.appreciated.card.label.TitleLabel;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
