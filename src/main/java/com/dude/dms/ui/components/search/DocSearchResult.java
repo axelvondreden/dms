@@ -39,6 +39,9 @@ public class DocSearchResult extends SearchResult {
     private Html getTextSnippet() {
         String raw = doc.getRawText();
         int index = raw.indexOf(search);
+        if (index < 0) {
+            index = raw.toLowerCase().indexOf(search.toLowerCase());
+        }
         int length = search.length();
         int start = Math.max(0, index - 40);
         int end = Math.min(raw.length(), index + length + 40);
