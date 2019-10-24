@@ -126,7 +126,10 @@ public class DmsSearchOverlayView extends IronOverlay {
             return;
         }
         if (entityMultiselect.getSelectedItems().contains("Docs")) {
-            resultsWrapper.add(new Card(new TitleLabel("Docs")));
+            Card title = new Card(new TitleLabel("Docs"));
+            title.setWidthFull();
+            title.setBackground("var(--lumo-base-color)");
+            resultsWrapper.add(title);
             docDataProvider.fetch(new Query<>(value)).forEach(result -> {
                 RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
                 card.setWidthFull();
@@ -135,7 +138,10 @@ public class DmsSearchOverlayView extends IronOverlay {
             });
         }
         if (entityMultiselect.getSelectedItems().contains("Tags")) {
-            resultsWrapper.add(new Card(new TitleLabel("Tags")));
+            Card title = new Card(new TitleLabel("Tags"));
+            title.setWidthFull();
+            title.setBackground("var(--lumo-base-color)");
+            resultsWrapper.add(title);
             tagDataProvider.fetch(new Query<>(value)).forEach(result -> {
                 RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
                 card.setWidthFull();
