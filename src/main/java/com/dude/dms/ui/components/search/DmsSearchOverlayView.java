@@ -4,14 +4,14 @@ import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.backend.service.TextBlockService;
-import com.github.appreciated.app.layout.addons.search.overlay.QueryPair;
 import com.github.appreciated.app.layout.component.appbar.IconButton;
+import com.github.appreciated.card.RippleClickableCard;
+import com.github.appreciated.card.label.SecondaryLabel;
 import com.github.appreciated.ironoverlay.IronOverlay;
 import com.github.appreciated.ironoverlay.VerticalOrientation;
-import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -23,10 +23,6 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DmsSearchOverlayView extends IronOverlay {
@@ -35,15 +31,13 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private final IconButton closeButton;
 
-    private final VerticalLayout results;
-
     private final VerticalLayout wrapper;
+
+    private final VerticalLayout resultsWrapper;
 
     private final MultiselectComboBox<String> entityMultiselect;
 
     private final Checkbox caseSensitiveCheckbox;
-
-    private Function<SearchResult, ClickNotifier> dataViewProvider;
 
     private DataProvider<DocSearchResult, String> docDataProvider;
     private DataProvider<TagSearchResult, String> tagDataProvider;
@@ -52,18 +46,14 @@ public class DmsSearchOverlayView extends IronOverlay {
     private TextBlockService textBlockService;
     private TagService tagService;
 
-    private Consumer<SearchResult> queryResultListener;
-
-    private boolean closeOnQueryResult = true;
-
     public DmsSearchOverlayView() {
         getElement().getStyle().set("width", "100%");
         setVerticalAlign(VerticalOrientation.TOP);
 
-        results = new VerticalLayout();
-        results.setSizeFull();
-        results.setMargin(false);
-        results.getStyle().set("overflow", "auto");
+        resultsWrapper = new VerticalLayout();
+        resultsWrapper.setSizeFull();
+        resultsWrapper.setMargin(false);
+        resultsWrapper.getStyle().set("overflow", "auto");
 
         searchField = new TextField();
         searchField.getStyle().set("--lumo-contrast-10pct", "transparent");
@@ -89,8 +79,8 @@ public class DmsSearchOverlayView extends IronOverlay {
         searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
         entityMultiselect = new MultiselectComboBox<>();
-        entityMultiselect.setItems("Docs", "Tags", "Rules");
-        entityMultiselect.select("Docs", "Tags", "Rules");
+        entityMultiselect.setItems("Docs", "Tags");
+        entityMultiselect.select("Docs", "Tags");
         entityMultiselect.setWidth("30%");
 
         caseSensitiveCheckbox = new Checkbox("case sensitive");
@@ -105,7 +95,7 @@ public class DmsSearchOverlayView extends IronOverlay {
                 .set("flex-shrink", "0")
                 .set("z-index", "1");
 
-        wrapper = new VerticalLayout(searchFieldWrapper, configWrapper, results);
+        wrapper = new VerticalLayout(searchFieldWrapper, configWrapper, resultsWrapper);
         wrapper.setSizeFull();
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
         wrapper.setMargin(false);
@@ -115,33 +105,37 @@ public class DmsSearchOverlayView extends IronOverlay {
                 .set("max-width", "100vw")
                 .set("height", "100vh");
 
-        results.getStyle()
+        resultsWrapper.getStyle()
                 .set("overflow-y", "auto")
                 .set("max-width", "100%")
                 .set("min-width", "40%")
                 .set("--lumo-size-m", "var(--lumo-size-xl)")
                 .set("--lumo-contrast-10pct", "transparent");
-        results.setHeightFull();
-        results.setWidth("unset");
+        resultsWrapper.setHeightFull();
+        resultsWrapper.setWidth("unset");
         add(wrapper);
     }
 
     private void showResults(String value) {
-        results.removeAll();
-        List<SearchResult> result = docDataProvider.fetch(new Query<>(value)).collect(Collectors.toList());
-        result.stream()
-                .map(t -> new QueryPair<>(t, dataViewProvider.apply(t)))
-                .forEach(clickNotifier -> {
-                    results.add((Component) clickNotifier.getNotifier());
-                    clickNotifier.getNotifier().addClickListener(clickEvent -> {
-                        if (closeOnQueryResult) {
-                            close();
-                        }
-                        if (queryResultListener != null) {
-                            queryResultListener.accept(clickNotifier.getQuery());
-                        }
-                    });
-                });
+        resultsWrapper.removeAll();
+        if (entityMultiselect.getSelectedItems().contains("Docs")) {
+            resultsWrapper.add(new H2("Docs"));
+            docDataProvider.fetch(new Query<>(value)).forEach(result -> {
+                RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
+                card.setWidthFull();
+                card.setBackground("var(--lumo-base-color)");
+                resultsWrapper.add(card);
+            });
+        }
+        if (entityMultiselect.getSelectedItems().contains("Tags")) {
+            resultsWrapper.add(new H2("Tags"));
+            tagDataProvider.fetch(new Query<>(value)).forEach(result -> {
+                RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
+                card.setWidthFull();
+                card.setBackground("var(--lumo-base-color)");
+                resultsWrapper.add(card);
+            });
+        }
     }
 
     public void initDataproviders(DocService docService, TextBlockService textBlockService, TagService tagService) {
@@ -212,16 +206,8 @@ public class DmsSearchOverlayView extends IronOverlay {
         searchField.focus();
     }
 
-    public Function<SearchResult, ClickNotifier> getDataViewProvider() {
-        return dataViewProvider;
-    }
-
-    public void setDataViewProvider(Function<SearchResult, ClickNotifier> dataViewProvider) {
-        this.dataViewProvider = dataViewProvider;
-    }
-
-    public VerticalLayout getResults() {
-        return results;
+    public VerticalLayout getResultsWrapper() {
+        return resultsWrapper;
     }
 
     public VerticalLayout getWrapper() {
@@ -230,14 +216,6 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     public TextField getSearchField() {
         return searchField;
-    }
-
-    public void setQueryResultListener(Consumer<SearchResult> queryResultListener) {
-        this.queryResultListener = queryResultListener;
-    }
-
-    public void setCloseOnQueryResult(boolean closeOnQueryResult) {
-        this.closeOnQueryResult = closeOnQueryResult;
     }
 
     public Button getCloseButton() {

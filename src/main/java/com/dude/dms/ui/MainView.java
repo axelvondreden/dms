@@ -11,8 +11,6 @@ import com.dude.dms.ui.components.dialogs.ChangelogDialog;
 import com.dude.dms.ui.components.dialogs.crud.TagCreateDialog;
 import com.dude.dms.ui.components.dialogs.crud.TagEditDialog;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
-import com.dude.dms.ui.components.search.DmsSearchOverlayButtonBuilder;
-import com.dude.dms.ui.components.search.SearchResult;
 import com.dude.dms.ui.views.DocsView;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
@@ -25,8 +23,6 @@ import com.github.appreciated.app.layout.component.menu.left.items.LeftClickable
 import com.github.appreciated.app.layout.component.menu.left.items.LeftNavigationItem;
 import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout;
 import com.github.appreciated.app.layout.entity.DefaultBadgeHolder;
-import com.github.appreciated.card.RippleClickableCard;
-import com.github.appreciated.card.label.SecondaryLabel;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
@@ -133,14 +129,8 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
     }
 
     private DmsSearchOverlayButton initSearchOverlayButton() {
-        return new DmsSearchOverlayButtonBuilder(docService, textBlockService, tagService)
-                .withDataViewProvider(result -> {
-                    RippleClickableCard card = new RippleClickableCard(new SecondaryLabel(result.getHeader()), result.getBody());
-                    card.setWidthFull();
-                    card.setBackground("var(--lumo-base-color)");
-                    return card;
-                })
-                .withQueryResultListener(SearchResult::onClick)
-                .build();
+        DmsSearchOverlayButton button = new DmsSearchOverlayButton();
+        button.getSearchView().initDataproviders(docService, textBlockService, tagService);
+        return button;
     }
 }

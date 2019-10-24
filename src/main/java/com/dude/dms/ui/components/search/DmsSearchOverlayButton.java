@@ -2,13 +2,9 @@ package com.dude.dms.ui.components.search;
 
 import com.github.appreciated.app.layout.component.appbar.IconButton;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.icon.VaadinIcon;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class DmsSearchOverlayButton extends IconButton {
 
@@ -42,17 +38,5 @@ public class DmsSearchOverlayButton extends IconButton {
 
     public DmsSearchOverlayView getSearchView() {
         return searchView;
-    }
-
-    public void setDataViewProvider(Function<SearchResult, ClickNotifier> provider) {
-        searchView.setDataViewProvider(provider);
-    }
-
-    public void setQueryResultListener(Consumer<SearchResult> queryResultListener) {
-        searchView.setQueryResultListener(queryResultListener);
-    }
-
-    public void setCloseOnQueryResult(boolean closeOnQueryResult) {
-        searchView.setCloseOnQueryResult(closeOnQueryResult);
     }
 }

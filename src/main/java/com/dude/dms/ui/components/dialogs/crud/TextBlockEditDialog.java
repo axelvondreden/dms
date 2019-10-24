@@ -2,11 +2,9 @@ package com.dude.dms.ui.components.dialogs.crud;
 
 import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.service.TextBlockService;
-import com.dude.dms.ui.EntityEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextField;
@@ -29,6 +27,8 @@ public class TextBlockEditDialog extends CrudEditDialog<TextBlock> {
     public TextBlockEditDialog(TextBlockService textBlockService) {
         this.textBlockService = textBlockService;
 
+        setWidth("40vw");
+
         text = new TextField("Text");
         text.setWidthFull();
 
@@ -45,12 +45,8 @@ public class TextBlockEditDialog extends CrudEditDialog<TextBlock> {
 
         HorizontalLayout buttonLayout = new HorizontalLayout(createButton, cancelButton);
         buttonLayout.setWidthFull();
-        VerticalLayout vLayout = new VerticalLayout(text, group, buttonLayout);
-        vLayout.setSizeFull();
-        vLayout.setPadding(false);
-        vLayout.setSpacing(false);
 
-        add(vLayout);
+        add(text, group, buttonLayout);
     }
 
     @Override
