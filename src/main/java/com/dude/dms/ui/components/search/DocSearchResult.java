@@ -3,22 +3,26 @@ package com.dude.dms.ui.components.search;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.components.dialogs.DocImageDialog;
+import com.dude.dms.ui.components.dialogs.DocTextDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class DocSearchResult extends SearchResult {
 
     private final Doc doc;
     private final String search;
 
-    @Autowired
-    private TextBlockService textBlockService;
+    private final TextBlockService textBlockService;
 
-    public DocSearchResult(Doc doc, String search) {
+    public DocSearchResult(TextBlockService textBlockService, Doc doc, String search) {
+        this.textBlockService = textBlockService;
         this.doc = doc;
         this.search = search;
     }
@@ -31,8 +35,13 @@ public class DocSearchResult extends SearchResult {
     @Override
     public Component getBody() {
         TagContainer tagContainer = new TagContainer(doc.getTags());
+        Button pdfButton = new Button(VaadinIcon.FILE_TEXT.create(), event -> new DocImageDialog(textBlockService).open(doc));
+        Button textButton = new Button(VaadinIcon.TEXT_LABEL.create(), e ->new DocTextDialog().open(textBlockService.findByDoc(doc)));
+        HorizontalLayout buttonWrapper = new HorizontalLayout(pdfButton, textButton);
+        buttonWrapper.setWidthFull();
+        buttonWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        VerticalLayout verticalLayout = new VerticalLayout(tagContainer, getTextSnippet());
+        VerticalLayout verticalLayout = new VerticalLayout(tagContainer, getTextSnippet(), buttonWrapper);
         verticalLayout.setSizeFull();
         return verticalLayout;
     }
@@ -40,6 +49,9 @@ public class DocSearchResult extends SearchResult {
     private Html getTextSnippet() {
         String raw = doc.getRawText();
         int index = raw.indexOf(search);
+        if (index < 0) {
+            index = raw.toLowerCase().indexOf(search.toLowerCase());
+        }
         int length = search.length();
         int start = Math.max(0, index - 40);
         int end = Math.min(raw.length(), index + length + 40);
@@ -50,6 +62,6 @@ public class DocSearchResult extends SearchResult {
 
     @Override
     public void onClick() {
-        new DocImageDialog(textBlockService).open(doc);
+
     }
 }

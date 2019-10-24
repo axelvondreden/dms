@@ -5,14 +5,12 @@ import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.components.dialogs.AddDocDialog;
 import com.dude.dms.ui.components.dialogs.ChangelogDialog;
 import com.dude.dms.ui.components.dialogs.crud.TagCreateDialog;
 import com.dude.dms.ui.components.dialogs.crud.TagEditDialog;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
-import com.dude.dms.ui.components.search.DmsSearchOverlayButtonBuilder;
-import com.dude.dms.ui.components.search.DocSearchResult;
-import com.dude.dms.ui.components.search.SearchResult;
 import com.dude.dms.ui.views.DocsView;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
@@ -25,8 +23,6 @@ import com.github.appreciated.app.layout.component.menu.left.items.LeftClickable
 import com.github.appreciated.app.layout.component.menu.left.items.LeftNavigationItem;
 import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout;
 import com.github.appreciated.app.layout.entity.DefaultBadgeHolder;
-import com.github.appreciated.card.RippleClickableCard;
-import com.github.appreciated.card.label.SecondaryLabel;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
@@ -35,7 +31,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.data.provider.DataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -50,6 +45,8 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private final DocService docService;
 
+    private final TextBlockService textBlockService;
+
     private final TagService tagService;
 
     private final ChangelogService changelogService;
@@ -59,8 +56,9 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
     private DefaultBadgeHolder docsBadge;
 
     @Autowired
-    public MainView(DocService docService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, @Value("${build.version}") String buildVersion) {
+    public MainView(DocService docService, TextBlockService textBlockService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, @Value("${build.version}") String buildVersion) {
         this.docService = docService;
+        this.textBlockService = textBlockService;
         this.tagService = tagService;
         this.changelogService = changelogService;
         this.buildVersion = buildVersion;
@@ -122,40 +120,17 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 dialog.open(tag);
             });
         }
-
         return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);
     }
 
     private FlexLayout buildAppBar() {
-        DmsSearchOverlayButton<SearchResult> searchOverlayButton = initSearchOverlayButton();
+        DmsSearchOverlayButton searchOverlayButton = initSearchOverlayButton();
         return AppBarBuilder.get().add(searchOverlayButton).build();
     }
 
-    private DmsSearchOverlayButton<SearchResult> initSearchOverlayButton() {
-        return new DmsSearchOverlayButtonBuilder<SearchResult>()
-                .withDataProvider(createDataProvider())
-                .withDataViewProvider(result -> {
-                    RippleClickableCard card = new RippleClickableCard(new SecondaryLabel(result.getHeader()), result.getBody());
-                    card.setWidthFull();
-                    card.setBackground("var(--lumo-base-color)");
-                    return card;
-                })
-                .withQueryResultListener(SearchResult::onClick)
-                .build();
-    }
-
-    private DataProvider<SearchResult, String> createDataProvider() {
-        return DataProvider.fromFilteringCallbacks(query -> {
-            if (query.getFilter().isPresent()) {
-                String filter = query.getFilter().get();
-                return docService.findTop10ByRawTextLike('%' + filter + '%').stream().map(doc -> new DocSearchResult(doc, filter));
-            }
-            return null;
-        }, query -> {
-            if (query.getFilter().isPresent()) {
-                return (int) docService.countByRawTextLike('%' + query.getFilter().get() + '%');
-            }
-            return 0;
-        });
+    private DmsSearchOverlayButton initSearchOverlayButton() {
+        DmsSearchOverlayButton button = new DmsSearchOverlayButton();
+        button.getSearchView().initDataproviders(docService, textBlockService, tagService);
+        return button;
     }
 }

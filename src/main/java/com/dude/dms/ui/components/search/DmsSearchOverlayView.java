@@ -1,13 +1,19 @@
 package com.dude.dms.ui.components.search;
 
-import com.github.appreciated.app.layout.addons.search.overlay.QueryPair;
+import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.TagService;
+import com.dude.dms.backend.service.TextBlockService;
 import com.github.appreciated.app.layout.component.appbar.IconButton;
+import com.github.appreciated.card.Card;
+import com.github.appreciated.card.RippleClickableCard;
+import com.github.appreciated.card.label.SecondaryLabel;
+import com.github.appreciated.card.label.TitleLabel;
 import com.github.appreciated.ironoverlay.IronOverlay;
 import com.github.appreciated.ironoverlay.VerticalOrientation;
-import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,59 +22,44 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.Element;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class DmsSearchOverlayView<T> extends IronOverlay {
+public class DmsSearchOverlayView extends IronOverlay {
 
     private final TextField searchField;
 
     private final IconButton closeButton;
 
-    private final VerticalLayout results;
-
     private final VerticalLayout wrapper;
 
-    private Function<T, ClickNotifier> dataViewProvider;
+    private final VerticalLayout resultsWrapper;
 
-    private DataProvider<T, String> dataProvider;
+    private final MultiselectComboBox<String> entityMultiselect;
 
-    private Consumer<T> queryResultListener;
+    private final Checkbox caseSensitiveCheckbox;
 
-    private boolean closeOnQueryResult = true;
+    private DataProvider<DocSearchResult, String> docDataProvider;
+    private DataProvider<TagSearchResult, String> tagDataProvider;
 
-    @SuppressWarnings("unchecked")
+    private DocService docService;
+    private TextBlockService textBlockService;
+    private TagService tagService;
+
     public DmsSearchOverlayView() {
         getElement().getStyle().set("width", "100%");
         setVerticalAlign(VerticalOrientation.TOP);
 
-        results = new VerticalLayout();
-        results.setSizeFull();
-        results.setMargin(false);
-        results.getStyle().set("overflow", "auto");
+        resultsWrapper = new VerticalLayout();
+        resultsWrapper.setSizeFull();
+        resultsWrapper.setMargin(false);
+        resultsWrapper.getStyle().set("overflow", "auto");
 
         searchField = new TextField();
         searchField.getStyle().set("--lumo-contrast-10pct", "transparent");
-        searchField.addValueChangeListener(event -> {
-            results.removeAll();
-            List<T> result = dataProvider.fetch(new Query<>(event.getValue())).collect(Collectors.toList());
-            result.stream()
-                    .map(t -> new QueryPair<>(t, dataViewProvider.apply(t)))
-                    .forEach(clickNotifier -> {
-                        results.add((Component) clickNotifier.getNotifier());
-                        clickNotifier.getNotifier().addClickListener(clickEvent -> {
-                            if (closeOnQueryResult) {
-                                close();
-                            }
-                            if (queryResultListener != null) {
-                                queryResultListener.accept(clickNotifier.getQuery());
-                            }
-                        });
-                    });
-        });
+        searchField.addValueChangeListener(event -> showResults(event.getValue()));
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setWidthFull();
 
@@ -89,55 +80,146 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
         searchFieldWrapper.setWidthFull();
         searchFieldWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        Div div = new Div();
-        div.setText("adfas fddsfsfgsd fsf sdf sfdsdf sfsd fsdfsdd fsdfsd fsdfsdf sdfsdf sdfsf sdfsdf");
-        div.setWidthFull();
+        entityMultiselect = new MultiselectComboBox<>();
+        entityMultiselect.setItems("Docs", "Tags");
+        entityMultiselect.select("Docs", "Tags");
+        entityMultiselect.setWidth("30%");
+        entityMultiselect.addValueChangeListener(event -> showResults(searchField.getValue()));
 
-        wrapper = new VerticalLayout(searchFieldWrapper, div, results);
+        caseSensitiveCheckbox = new Checkbox("case sensitive");
+        caseSensitiveCheckbox.addValueChangeListener(event -> showResults(searchField.getValue()));
+
+        HorizontalLayout configWrapper = new HorizontalLayout(new Label("Search in:"), entityMultiselect, caseSensitiveCheckbox);
+        configWrapper.setWidthFull();
+        configWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
+        configWrapper.getStyle()
+                .set("background", "var(--app-layout-bar-background-base-color)")
+                .set("box-shadow", "var(--app-layout-bar-shadow)")
+                .set("padding", "var(--app-layout-bar-padding)")
+                .set("flex-shrink", "0")
+                .set("z-index", "1");
+
+        wrapper = new VerticalLayout(searchFieldWrapper, configWrapper, resultsWrapper);
         wrapper.setSizeFull();
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
         wrapper.setMargin(false);
         wrapper.setPadding(false);
         wrapper.setSpacing(false);
-        wrapper.getStyle()
-                .set("max-width", "100vw")
-                .set("height", "100vh");
+        wrapper.getStyle().set("max-width", "100vw").set("height", "100vh");
 
-        results.getStyle()
+        resultsWrapper.getStyle()
                 .set("overflow-y", "auto")
                 .set("max-width", "100%")
                 .set("min-width", "40%")
                 .set("--lumo-size-m", "var(--lumo-size-xl)")
                 .set("--lumo-contrast-10pct", "transparent");
-        results.setHeightFull();
-        results.setWidth("unset");
+        resultsWrapper.setHeightFull();
+        resultsWrapper.setWidth("unset");
         add(wrapper);
+    }
+
+    private void showResults(String value) {
+        resultsWrapper.removeAll();
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        if (entityMultiselect.getSelectedItems().contains("Docs")) {
+            Card title = new Card(new TitleLabel("Docs " + docDataProvider.size(new Query<>(value))));
+            title.setWidthFull();
+            title.setBackground("var(--lumo-base-color)");
+            resultsWrapper.add(title);
+            docDataProvider.fetch(new Query<>(value)).forEach(result -> {
+                RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
+                card.setWidthFull();
+                card.setBackground("var(--lumo-base-color)");
+                resultsWrapper.add(card);
+            });
+        }
+        if (entityMultiselect.getSelectedItems().contains("Tags")) {
+            Card title = new Card(new TitleLabel("Tags " + tagDataProvider.size(new Query<>(value))));
+            title.setWidthFull();
+            title.setBackground("var(--lumo-base-color)");
+            resultsWrapper.add(title);
+            tagDataProvider.fetch(new Query<>(value)).forEach(result -> {
+                RippleClickableCard card = new RippleClickableCard(event -> result.onClick(), new SecondaryLabel(result.getHeader()), result.getBody());
+                card.setWidthFull();
+                card.setBackground("var(--lumo-base-color)");
+                resultsWrapper.add(card);
+            });
+        }
+    }
+
+    public void initDataproviders(DocService docService, TextBlockService textBlockService, TagService tagService) {
+        this.docService = docService;
+        this.textBlockService = textBlockService;
+        this.tagService = tagService;
+
+        docDataProvider = DataProvider.fromFilteringCallbacks(query -> {
+            if (query.getFilter().isPresent()) {
+                return searchDocs(query.getFilter().get());
+            }
+            return null;
+        }, query -> {
+            if (query.getFilter().isPresent()) {
+                return countDocs(query.getFilter().get());
+            }
+            return 0;
+        });
+
+        tagDataProvider = DataProvider.fromFilteringCallbacks(query -> {
+            if (query.getFilter().isPresent()) {
+                return searchTags(query.getFilter().get());
+            }
+            return null;
+        }, query -> {
+            if (query.getFilter().isPresent()) {
+                return countTags(query.getFilter().get());
+            }
+            return 0;
+        });
+    }
+
+    private Stream<DocSearchResult> searchDocs(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> new DocSearchResult(textBlockService, doc, filter));
+        } else {
+            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> new DocSearchResult(textBlockService, doc, filter));
+        }
+    }
+
+    private int countDocs(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return (int) docService.countByRawTextContaining(filter);
+        } else {
+            return (int) docService.countByRawTextContainingIgnoreCase(filter);
+        }
+    }
+
+    private Stream<TagSearchResult> searchTags(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return tagService.findTop10ByNameContaining(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService, docService));
+        } else {
+            return tagService.findTop10ByNameContainingIgnoreCase(filter).stream().map((Tag tag) -> new TagSearchResult(tag, tagService, docService));
+        }
+    }
+
+    private int countTags(String filter) {
+        if (caseSensitiveCheckbox.getValue()) {
+            return (int) tagService.countByNameContaining(filter);
+        } else {
+            return (int) tagService.countByNameContainingIgnoreCase(filter);
+        }
     }
 
     @Override
     public void open() {
         super.open();
-        searchField.focus();
+        Element element = searchField.getElement();
+        element.executeJs("setTimeout(function() { $0.focus() }, 50)", element);
     }
 
-    public Function<T, ClickNotifier> getDataViewProvider() {
-        return dataViewProvider;
-    }
-
-    public void setDataViewProvider(Function<T, ClickNotifier> dataViewProvider) {
-        this.dataViewProvider = dataViewProvider;
-    }
-
-    public DataProvider<T, String> getDataProvider() {
-        return dataProvider;
-    }
-
-    public void setDataProvider(DataProvider<T, String> dataProvider) {
-        this.dataProvider = dataProvider;
-    }
-
-    public VerticalLayout getResults() {
-        return results;
+    public VerticalLayout getResultsWrapper() {
+        return resultsWrapper;
     }
 
     public VerticalLayout getWrapper() {
@@ -146,14 +228,6 @@ public class DmsSearchOverlayView<T> extends IronOverlay {
 
     public TextField getSearchField() {
         return searchField;
-    }
-
-    public void setQueryResultListener(Consumer<T> queryResultListener) {
-        this.queryResultListener = queryResultListener;
-    }
-
-    public void setCloseOnQueryResult(boolean closeOnQueryResult) {
-        this.closeOnQueryResult = closeOnQueryResult;
     }
 
     public Button getCloseButton() {

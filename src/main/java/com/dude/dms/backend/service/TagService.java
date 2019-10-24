@@ -8,6 +8,7 @@ import com.dude.dms.backend.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,5 +52,21 @@ public class TagService extends HistoricalCrudService<Tag, TagHistory> {
 
     public Set<Tag> findByRegexRule(RegexRule rule) {
         return tagRepository.findByRegexRules(rule);
+    }
+
+    public List<Tag> findTop10ByNameContaining(String name) {
+        return tagRepository.findTop10ByNameContaining(name);
+    }
+
+    public long countByNameContaining(String name) {
+        return tagRepository.countByNameContaining(name);
+    }
+
+    public List<Tag> findTop10ByNameContainingIgnoreCase(String name) {
+        return tagRepository.findTop10ByNameContainingIgnoreCase(name);
+    }
+
+    public long countByNameContainingIgnoreCase(String name) {
+        return tagRepository.countByNameContainingIgnoreCase(name);
     }
 }
