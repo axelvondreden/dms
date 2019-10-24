@@ -13,7 +13,6 @@ import com.github.appreciated.ironoverlay.IronOverlay;
 import com.github.appreciated.ironoverlay.VerticalOrientation;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -23,6 +22,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.Element;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.stream.Stream;
@@ -216,7 +216,8 @@ public class DmsSearchOverlayView extends IronOverlay {
     @Override
     public void open() {
         super.open();
-        searchField.focus();
+        Element element = searchField.getElement();
+        element.executeJs("setTimeout(function() { $0.focus() }, 50)", element);
     }
 
     public VerticalLayout getResultsWrapper() {
