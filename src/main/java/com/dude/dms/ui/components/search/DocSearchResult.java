@@ -62,6 +62,6 @@ public class DocSearchResult extends SearchResult {
 
     @Override
     public void onClick() {
-        new DocImageDialog(textBlockService).open(doc);
+
     }
 }
