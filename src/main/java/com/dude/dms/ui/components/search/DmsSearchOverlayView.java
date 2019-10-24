@@ -126,7 +126,7 @@ public class DmsSearchOverlayView extends IronOverlay {
             return;
         }
         if (entityMultiselect.getSelectedItems().contains("Docs")) {
-            Card title = new Card(new TitleLabel("Docs"));
+            Card title = new Card(new TitleLabel("Docs " + docDataProvider.size(new Query<>(value))));
             title.setWidthFull();
             title.setBackground("var(--lumo-base-color)");
             resultsWrapper.add(title);
@@ -138,7 +138,7 @@ public class DmsSearchOverlayView extends IronOverlay {
             });
         }
         if (entityMultiselect.getSelectedItems().contains("Tags")) {
-            Card title = new Card(new TitleLabel("Tags"));
+            Card title = new Card(new TitleLabel("Tags " + tagDataProvider.size(new Query<>(value))));
             title.setWidthFull();
             title.setBackground("var(--lumo-base-color)");
             resultsWrapper.add(title);
