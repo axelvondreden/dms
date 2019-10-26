@@ -164,8 +164,8 @@ public class PdfToDocParser implements Parser {
      */
     private Set<Tag> discoverAutoTags() {
         Set<Tag> tags = new HashSet<>();
-        if (AUTO_REVIEW_TAG.getBoolean()) {
-            tagService.findById(REVIEW_TAG_ID.getLong()).ifPresent(tag -> {
+        if (AUTO_TAG.getBoolean()) {
+            tagService.findById(AUTO_TAG_ID.getLong()).ifPresent(tag -> {
                 LOGGER.info("Adding tag: {}", tag.getName());
                 tags.add(tag);
             });

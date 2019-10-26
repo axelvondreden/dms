@@ -85,9 +85,9 @@ public class DemoDataManager {
     }
 
     private void createReviewTag() {
-        if (AUTO_REVIEW_TAG.getBoolean()) {
+        if (AUTO_TAG.getBoolean()) {
             Tag reviewTag = tagService.create(new Tag("Review", "red"));
-            REVIEW_TAG_ID.setFloat(reviewTag.getId());
+            AUTO_TAG_ID.setFloat(reviewTag.getId());
         }
     }
 }

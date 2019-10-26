@@ -14,6 +14,7 @@ import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.views.DocsView;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
+import com.dude.dms.updater.UpdateChecker;
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder;
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts;
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder;
@@ -51,16 +52,19 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
     private final ChangelogService changelogService;
 
+    private final UpdateChecker updateChecker;
+
     private final String buildVersion;
 
     private DefaultBadgeHolder docsBadge;
 
     @Autowired
-    public MainView(DocService docService, TextBlockService textBlockService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, @Value("${build.version}") String buildVersion) {
+    public MainView(DocService docService, TextBlockService textBlockService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, UpdateChecker updateChecker, @Value("${build.version}") String buildVersion) {
         this.docService = docService;
         this.textBlockService = textBlockService;
         this.tagService = tagService;
         this.changelogService = changelogService;
+        this.updateChecker = updateChecker;
         this.buildVersion = buildVersion;
 
         init(AppLayoutBuilder.get(LeftLayouts.LeftHybrid.class)
@@ -92,7 +96,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 .add(docsEntry, tagsEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
-                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> new ChangelogDialog(changelogService).open()),
+                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> new ChangelogDialog(changelogService, updateChecker).open()),
                         new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
                 .build();
     }

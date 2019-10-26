@@ -20,7 +20,7 @@ public class AddDocDialog extends Dialog {
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
         Upload upload = new Upload(buffer);
         upload.setAcceptedFileTypes(".pdf");
-        upload.setMaxFileSize(1048576000);
+        upload.setMaxFileSize(OptionKey.MAX_UPLOAD_FILE_SIZE.getInt() * 1024 * 1024);
         upload.addFinishedListener(e -> {
             for (String file : buffer.getFiles()) {
                 try (InputStream inputStream = buffer.getInputStream(file)) {
