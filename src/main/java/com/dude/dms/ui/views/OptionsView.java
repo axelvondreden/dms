@@ -10,6 +10,7 @@ import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -27,7 +28,9 @@ public class OptionsView extends VerticalLayout {
 
     private final TextField dateScanFormats;
 
-    private final TextField imageParserDpi;
+    private final NumberField imageParserDpi;
+
+    private final NumberField pollingInterval;
 
     private final ComboBox<Locale> locale;
 
@@ -51,12 +54,19 @@ public class OptionsView extends VerticalLayout {
         simpleColors = new Checkbox("Simple tag colors", SIMPLE_TAG_COLORS.getBoolean());
         Details viewDetails = new Details("View", new FormLayout(locale, dateFormat, simpleColors));
         viewDetails.setOpened(true);
+        viewDetails.getElement().getStyle().set("padding", "5px")
+                .set("border", "2px solid darkgray").set("borderRadius", "5px")
+                .set("width", "100%").set("backgroundColor", "ghostwhite");
         add(viewDetails);
 
         dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
-        imageParserDpi = new TextField("Image Parser DPI", IMAGE_PARSER_DPI.getString(), "");
-        Details docsDetails = new Details("Docs", new FormLayout(dateScanFormats, imageParserDpi));
+        imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
+        pollingInterval = new NumberField("Polling interval (seconds)", POLL_INTERVAL.getDouble(), e -> {});
+        Details docsDetails = new Details("Docs", new FormLayout(dateScanFormats, imageParserDpi, pollingInterval));
         docsDetails.setOpened(true);
+        docsDetails.getElement().getStyle().set("padding", "5px")
+                .set("border", "2px solid darkgray").set("borderRadius", "5px")
+                .set("width", "100%").set("backgroundColor", "ghostwhite");
         add(docsDetails);
 
         githubUser = new TextField("Github User", GITHUB_USER.getString(), "");
@@ -64,6 +74,9 @@ public class OptionsView extends VerticalLayout {
         githubPassword.setValue(GITHUB_PASSWORD.getString());
         Details updateDetails = new Details("Update", new FormLayout(githubUser, githubPassword));
         updateDetails.setOpened(true);
+        updateDetails.getElement().getStyle().set("padding", "5px")
+                .set("border", "2px solid darkgray").set("borderRadius", "5px")
+                .set("width", "100%").set("backgroundColor", "ghostwhite");
         add(updateDetails);
     }
 
@@ -79,9 +92,12 @@ public class OptionsView extends VerticalLayout {
         }
         if (!imageParserDpi.isEmpty()) {
             try {
-                IMAGE_PARSER_DPI.setFloat(Float.parseFloat(imageParserDpi.getValue()));
+                IMAGE_PARSER_DPI.setDouble(imageParserDpi.getValue());
             } catch (NumberFormatException ignored) {
             }
+        }
+        if (!pollingInterval.isEmpty() && pollingInterval.getValue() > 0) {
+            POLL_INTERVAL.setInt(pollingInterval.getValue().intValue());
         }
         SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
         GITHUB_USER.setString(githubUser.getValue());

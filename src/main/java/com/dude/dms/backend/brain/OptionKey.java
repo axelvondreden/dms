@@ -13,6 +13,7 @@ public enum OptionKey {
     GITHUB_USER("github_user"),
     GITHUB_PASSWORD("github_password"),
     SIMPLE_TAG_COLORS("simple_tag_colors"),
+    POLL_INTERVAL("poll_interval"),
     LOCALE("locale");
 
     public final String key;
@@ -27,6 +28,10 @@ public enum OptionKey {
 
     public float getFloat() {
         return Float.parseFloat(BrainUtils.getProperty(this));
+    }
+
+    public double getDouble() {
+        return Double.parseDouble(BrainUtils.getProperty(this));
     }
 
     public int getInt() {
@@ -46,6 +51,10 @@ public enum OptionKey {
     }
 
     public void setFloat(float value) {
+        BrainUtils.setProperty(this, String.valueOf(value));
+    }
+
+    public void setDouble(double value) {
         BrainUtils.setProperty(this, String.valueOf(value));
     }
 
