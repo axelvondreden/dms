@@ -53,10 +53,11 @@ public class PdfToDocParser implements Parser {
 
     private List<TextBlock> textBlockList;
 
-    private ParserEventListener eventListener;
+    private final Map<String, ParserEventListener> eventListeners;
 
     public PdfToDocParser() {
         docSavePath = DOC_SAVE_PATH.getString();
+        eventListeners = new HashMap<>();
     }
 
     /**
@@ -97,13 +98,13 @@ public class PdfToDocParser implements Parser {
                     LOGGER.info("Created textblock {} for doc {}", textBlock, doc);
                 });
             }
-            if (eventListener != null) {
-                eventListener.onParse(true);
+            if (eventListeners != null) {
+                eventListeners.values().forEach(listener -> listener.onParse(true));
             }
         } else {
             LOGGER.error("Could not save file {}", file.getAbsolutePath());
-            if (eventListener != null) {
-                eventListener.onParse(false);
+            if (eventListeners != null) {
+                eventListeners.values().forEach(listener -> listener.onParse(false));
             }
         }
     }
@@ -224,7 +225,7 @@ public class PdfToDocParser implements Parser {
         return null;
     }
 
-    public void setEventListener(ParserEventListener eventListener) {
-        this.eventListener = eventListener;
+    public void addEventListener(String key, ParserEventListener eventListener) {
+        eventListeners.put(key, eventListener);
     }
 }

@@ -70,7 +70,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 .build());
 
         UI ui = UI.getCurrent();
-        pdfToDocParser.setEventListener(success -> {
+        pdfToDocParser.addEventListener("main", success -> {
             if (success) {
                 ui.access(() -> {
                     docsBadge.increase();

@@ -1,5 +1,6 @@
 package com.dude.dms.ui.views;
 
+import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.DocHistory;
 import com.dude.dms.backend.data.tags.Tag;
@@ -14,6 +15,7 @@ import com.dude.dms.ui.components.dialogs.crud.DocEditDialog;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.helger.commons.io.file.FileHelper;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -38,11 +40,19 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
     private final TagService tagService;
     private final TextBlockService textBlockService;
 
+    private String param;
+
     @Autowired
-    public DocsView(DocService docService, TagService tagService, TextBlockService textBlockService) {
+    public DocsView(DocService docService, TagService tagService, TextBlockService textBlockService, PdfToDocParser pdfToDocParser) {
         this.docService = docService;
         this.tagService = tagService;
         this.textBlockService = textBlockService;
+        UI ui = UI.getCurrent();
+        pdfToDocParser.addEventListener("docs", success -> {
+            if (success) {
+                ui.access(this::fillGrid);
+            }
+        });
         addColumn("Date", doc -> LocalDateConverter.convert(doc.getDocumentDate()));
         addComponentColumn("Tags", doc -> new TagContainer(doc.getTags()));
         addComponentColumn("", this::createGridActions);
@@ -73,10 +83,9 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         );
     }
 
-    @Override
-    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
-        if (parameter != null && !parameter.isEmpty()) {
-            String[] parts = parameter.split(":");
+    private void fillGrid() {
+        if (param != null && !param.isEmpty()) {
+            String[] parts = param.split(":");
             if ("tag".equalsIgnoreCase(parts[0])) {
                 Optional<Tag> tag = tagService.findByName(parts[1]);
                 tag.ifPresent(t -> grid.setItems(docService.findByTag(t)));
@@ -84,5 +93,11 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         } else {
             grid.setItems(docService.findAll());
         }
+    }
+
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
+        param = parameter;
+        fillGrid();
     }
 }
