@@ -32,17 +32,22 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dude.dms.backend.brain.OptionKey.DARK_MODE;
 import static com.github.appreciated.app.layout.entity.Section.FOOTER;
 import static com.github.appreciated.app.layout.entity.Section.HEADER;
 
 @Push
-public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
+public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> implements AfterNavigationObserver {
 
     private final DocService docService;
 
@@ -136,5 +141,12 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
         DmsSearchOverlayButton button = new DmsSearchOverlayButton();
         button.getSearchView().initDataproviders(docService, textBlockService, tagService);
         return button;
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+        themeList.clear();
+        themeList.add(DARK_MODE.getBoolean() ? Lumo.DARK : Lumo.LIGHT);
     }
 }

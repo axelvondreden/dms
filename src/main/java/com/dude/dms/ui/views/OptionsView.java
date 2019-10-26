@@ -4,7 +4,9 @@ import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
+import com.github.appreciated.card.Card;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -17,8 +19,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,6 +53,8 @@ public class OptionsView extends VerticalLayout {
 
     private final Checkbox simpleColors;
 
+    private final Checkbox darkMode;
+
     private final Checkbox autoTag;
 
     private final ComboBox<Tag> autoTagId;
@@ -72,6 +78,12 @@ public class OptionsView extends VerticalLayout {
         locale.setAllowCustomValue(false);
         locale.setPreventInvalidInput(true);
         simpleColors = new Checkbox("Simple tag colors", SIMPLE_TAG_COLORS.getBoolean());
+        darkMode = new Checkbox("Dark mode", DARK_MODE.getBoolean());
+        darkMode.addValueChangeListener(event -> {
+            ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+            themeList.clear();
+            themeList.add(event.getValue() ? Lumo.DARK : Lumo.LIGHT);
+        });
         add(createSection("View", locale, dateFormat, simpleColors));
 
         dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
@@ -99,13 +111,13 @@ public class OptionsView extends VerticalLayout {
         add(createSection("Update", githubUser, githubPassword, updateCheckInterval));
     }
 
-    private Details createSection(String title, Component... components) {
+    private Card createSection(String title, Component... components) {
         Details details = new Details(title, new FormLayout(components));
         details.setOpened(true);
-        details.getElement().getStyle().set("padding", "5px")
-                .set("border", "2px solid darkgray").set("borderRadius", "5px")
-                .set("width", "100%").set("backgroundColor", "ghostwhite");
-        return details;
+        details.getElement().getStyle().set("padding", "5px").set("width", "100%");
+        Card card = new Card(details);
+        card.setWidthFull();
+        return card;
     }
 
     private void save() {
@@ -152,6 +164,7 @@ public class OptionsView extends VerticalLayout {
         }
         AUTO_TAG.setBoolean(autoTag.getValue());
         AUTO_TAG_ID.setLong(autoTagId.getValue().getId());
+        DARK_MODE.setBoolean(darkMode.getValue());
         SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
         GITHUB_USER.setString(githubUser.getValue());
         GITHUB_PASSWORD.setString(githubPassword.getValue());

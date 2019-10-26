@@ -2,21 +2,22 @@ package com.dude.dms.backend.brain;
 
 public enum OptionKey {
 
-    DOC_POLL_PATH("doc_poll_path"),
-    DOC_SAVE_PATH("doc_save_path"),
     AUTO_TAG("auto_tag"),
     AUTO_TAG_ID("auto_tag_id"),
+    DARK_MODE("dark_mode"),
     DATE_FORMAT("date_format"),
     DATE_SCAN_FORMATS("date_scan_formats"),
-    IMAGE_PARSER_DPI("image_parser_dpi"),
+    DOC_POLL_PATH("doc_poll_path"),
+    DOC_SAVE_PATH("doc_save_path"),
     DEMO_DOCS("demo_docs"),
-    GITHUB_USER("github_user"),
     GITHUB_PASSWORD("github_password"),
-    SIMPLE_TAG_COLORS("simple_tag_colors"),
-    POLL_INTERVAL("poll_interval"),
+    GITHUB_USER("github_user"),
+    IMAGE_PARSER_DPI("image_parser_dpi"),
+    LOCALE("locale"),
     MAX_UPLOAD_FILE_SIZE("max_upload_file_size"),
-    UPDATE_CHECK_INTERVAL("update_check_interval"),
-    LOCALE("locale");
+    POLL_INTERVAL("poll_interval"),
+    SIMPLE_TAG_COLORS("simple_tag_colors"),
+    UPDATE_CHECK_INTERVAL("update_check_interval");
 
     public final String key;
 
