@@ -2,23 +2,36 @@ package com.dude.dms.updater;
 
 import com.dude.dms.backend.data.updater.Changelog;
 import com.dude.dms.backend.service.ChangelogService;
+import com.dude.dms.startup.ShutdownManager;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H6;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import static com.dude.dms.backend.brain.OptionKey.GITHUB_PASSWORD;
-import static com.dude.dms.backend.brain.OptionKey.GITHUB_USER;
+import static com.dude.dms.backend.brain.OptionKey.*;
 
 @Component
 public class UpdateChecker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateChecker.class);
+
+    private int tick;
 
     @Value("${api.releases}")
     private String releaseApi;
@@ -26,13 +39,31 @@ public class UpdateChecker {
     @Value("${build.version}")
     private String buildVersion;
 
-    @Autowired
-    private ChangelogService changelogService;
+    private final ChangelogService changelogService;
+
+    private final UpdateDownloader updateDownloader;
+
+    private final ShutdownManager shutdownManager;
 
     @Autowired
-    private UpdateDownloader updateDownloader;
+    public UpdateChecker(ChangelogService changelogService, UpdateDownloader updateDownloader, ShutdownManager shutdownManager) {
+        this.changelogService = changelogService;
+        this.updateDownloader = updateDownloader;
+        this.shutdownManager = shutdownManager;
+        tick = 1;
+    }
 
-    public void check() {
+    @Scheduled(fixedRate = 1000 * 60)
+    public void scheduledCheck() {
+        if (tick < UPDATE_CHECK_INTERVAL.getInt()) {
+            tick++;
+        } else {
+            tick = 1;
+            check(false);
+        }
+    }
+
+    public void check(boolean force) {
         LOGGER.info("Checking for updates...");
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -54,7 +85,26 @@ public class UpdateChecker {
                 }
                 if (newestRelease != null) {
                     LOGGER.info("New version found: {}", newest.get());
-                    updateDownloader.download(newestRelease, restTemplate);
+                    if (force) {
+                        updateDownloader.download(newestRelease, restTemplate);
+                    } else {
+                        UI current = UI.getCurrent();
+                        if (current != null) {
+                            Version finalNewest = newest;
+                            current.access(() -> {
+                                Button b = new Button("Restart now", e -> shutdownManager.initiateShutdown(1337));
+                                b.addThemeVariants(ButtonVariant.LUMO_ERROR);
+                                HorizontalLayout h = new HorizontalLayout();
+                                h.setAlignItems(FlexComponent.Alignment.CENTER);
+                                h.setWidthFull();
+                                Notification n = new Notification(h);
+                                n.setDuration(0);
+                                n.setPosition(Notification.Position.BOTTOM_STRETCH);
+                                h.add(new Label("New Version available: " + finalNewest.get()), b, new Button(VaadinIcon.CLOSE.create(), e -> n.close()));
+                                n.open();
+                            });
+                        }
+                    }
                 } else {
                     LOGGER.info("Already running latest version: {}", buildVersion);
                 }

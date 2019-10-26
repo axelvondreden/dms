@@ -49,6 +49,8 @@ public class OptionsView extends VerticalLayout {
 
     private final PasswordField githubPassword;
 
+    private final NumberField updateCheckInterval;
+
     public OptionsView() {
         Button save = new Button("Save Settings", e -> save());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -69,12 +71,9 @@ public class OptionsView extends VerticalLayout {
         add(viewDetails);
 
         dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
-        imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {
-        });
-        pollingInterval = new NumberField("Polling interval (seconds)", POLL_INTERVAL.getDouble(), e -> {
-        });
-        maxUploadFileSize = new NumberField("Maximum upload file size (MB)", MAX_UPLOAD_FILE_SIZE.getDouble(), e -> {
-        });
+        imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
+        pollingInterval = new NumberField("Polling interval (seconds)", POLL_INTERVAL.getDouble(), e -> {});
+        maxUploadFileSize = new NumberField("Maximum upload file size (MB)", MAX_UPLOAD_FILE_SIZE.getDouble(), e -> {});
         docSavePath = new TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + "'", DOC_SAVE_PATH.getString(), "");
         Details docsDetails = new Details("Docs", new FormLayout(dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize, docSavePath));
         docsDetails.setOpened(true);
@@ -86,7 +85,8 @@ public class OptionsView extends VerticalLayout {
         githubUser = new TextField("Github User", GITHUB_USER.getString(), "");
         githubPassword = new PasswordField("Github Password");
         githubPassword.setValue(GITHUB_PASSWORD.getString());
-        Details updateDetails = new Details("Update", new FormLayout(githubUser, githubPassword));
+        updateCheckInterval = new NumberField("Update check interval (minutes)", UPDATE_CHECK_INTERVAL.getDouble(), e -> {});
+        Details updateDetails = new Details("Update", new FormLayout(githubUser, githubPassword, updateCheckInterval));
         updateDetails.setOpened(true);
         updateDetails.getElement().getStyle().set("padding", "5px")
                 .set("border", "2px solid darkgray").set("borderRadius", "5px")
@@ -132,6 +132,9 @@ public class OptionsView extends VerticalLayout {
         }
         if (!maxUploadFileSize.isEmpty() && maxUploadFileSize.getValue() > 0) {
             MAX_UPLOAD_FILE_SIZE.setInt(maxUploadFileSize.getValue().intValue());
+        }
+        if (!updateCheckInterval.isEmpty() && updateCheckInterval.getValue() > 0) {
+            UPDATE_CHECK_INTERVAL.setInt(updateCheckInterval.getValue().intValue());
         }
         SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
         GITHUB_USER.setString(githubUser.getValue());
