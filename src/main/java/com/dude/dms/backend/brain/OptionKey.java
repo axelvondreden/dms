@@ -4,8 +4,8 @@ public enum OptionKey {
 
     DOC_POLL_PATH("doc_poll_path"),
     DOC_SAVE_PATH("doc_save_path"),
-    AUTO_REVIEW_TAG("auto_review_tag"),
-    REVIEW_TAG_ID("review_tag_id"),
+    AUTO_TAG("auto_tag"),
+    AUTO_TAG_ID("auto_tag_id"),
     DATE_FORMAT("date_format"),
     DATE_SCAN_FORMATS("date_scan_formats"),
     IMAGE_PARSER_DPI("image_parser_dpi"),

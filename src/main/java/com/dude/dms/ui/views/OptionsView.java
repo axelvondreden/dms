@@ -1,7 +1,10 @@
 package com.dude.dms.ui.views;
 
+import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -17,6 +20,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,13 +49,18 @@ public class OptionsView extends VerticalLayout {
 
     private final Checkbox simpleColors;
 
+    private final Checkbox autoTag;
+
+    private final ComboBox<Tag> autoTagId;
+
     private final TextField githubUser;
 
     private final PasswordField githubPassword;
 
     private final NumberField updateCheckInterval;
 
-    public OptionsView() {
+    @Autowired
+    public OptionsView(TagService tagService) {
         Button save = new Button("Save Settings", e -> save());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         add(save);
@@ -63,35 +72,40 @@ public class OptionsView extends VerticalLayout {
         locale.setAllowCustomValue(false);
         locale.setPreventInvalidInput(true);
         simpleColors = new Checkbox("Simple tag colors", SIMPLE_TAG_COLORS.getBoolean());
-        Details viewDetails = new Details("View", new FormLayout(locale, dateFormat, simpleColors));
-        viewDetails.setOpened(true);
-        viewDetails.getElement().getStyle().set("padding", "5px")
-                .set("border", "2px solid darkgray").set("borderRadius", "5px")
-                .set("width", "100%").set("backgroundColor", "ghostwhite");
-        add(viewDetails);
+        add(createSection("View", locale, dateFormat, simpleColors));
 
         dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
         imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
         pollingInterval = new NumberField("Polling interval (seconds)", POLL_INTERVAL.getDouble(), e -> {});
         maxUploadFileSize = new NumberField("Maximum upload file size (MB)", MAX_UPLOAD_FILE_SIZE.getDouble(), e -> {});
         docSavePath = new TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + "'", DOC_SAVE_PATH.getString(), "");
-        Details docsDetails = new Details("Docs", new FormLayout(dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize, docSavePath));
-        docsDetails.setOpened(true);
-        docsDetails.getElement().getStyle().set("padding", "5px")
-                .set("border", "2px solid darkgray").set("borderRadius", "5px")
-                .set("width", "100%").set("backgroundColor", "ghostwhite");
-        add(docsDetails);
+        add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize, docSavePath));
+
+        autoTag = new Checkbox("Auto tag", AUTO_TAG.getBoolean());
+        autoTagId = new ComboBox<>("Auto tag");
+        autoTagId.setPreventInvalidInput(true);
+        autoTagId.setAllowCustomValue(false);
+        autoTagId.setItems(tagService.findAll());
+        autoTagId.setValue(tagService.load(AUTO_TAG_ID.getLong()));
+        autoTagId.setReadOnly(!autoTag.getValue());
+        autoTagId.setItemLabelGenerator(Tag::getName);
+        autoTag.addValueChangeListener(event -> autoTagId.setReadOnly(!event.getValue()));
+        add(createSection("Tags", autoTag, autoTagId));
 
         githubUser = new TextField("Github User", GITHUB_USER.getString(), "");
         githubPassword = new PasswordField("Github Password");
         githubPassword.setValue(GITHUB_PASSWORD.getString());
         updateCheckInterval = new NumberField("Update check interval (minutes)", UPDATE_CHECK_INTERVAL.getDouble(), e -> {});
-        Details updateDetails = new Details("Update", new FormLayout(githubUser, githubPassword, updateCheckInterval));
-        updateDetails.setOpened(true);
-        updateDetails.getElement().getStyle().set("padding", "5px")
+        add(createSection("Update", githubUser, githubPassword, updateCheckInterval));
+    }
+
+    private Details createSection(String title, Component... components) {
+        Details details = new Details(title, new FormLayout(components));
+        details.setOpened(true);
+        details.getElement().getStyle().set("padding", "5px")
                 .set("border", "2px solid darkgray").set("borderRadius", "5px")
                 .set("width", "100%").set("backgroundColor", "ghostwhite");
-        add(updateDetails);
+        return details;
     }
 
     private void save() {
@@ -136,6 +150,8 @@ public class OptionsView extends VerticalLayout {
         if (!updateCheckInterval.isEmpty() && updateCheckInterval.getValue() > 0) {
             UPDATE_CHECK_INTERVAL.setInt(updateCheckInterval.getValue().intValue());
         }
+        AUTO_TAG.setBoolean(autoTag.getValue());
+        AUTO_TAG_ID.setLong(autoTagId.getValue().getId());
         SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
         GITHUB_USER.setString(githubUser.getValue());
         GITHUB_PASSWORD.setString(githubPassword.getValue());
