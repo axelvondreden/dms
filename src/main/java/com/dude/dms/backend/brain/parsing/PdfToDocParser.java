@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -193,10 +194,14 @@ public class PdfToDocParser implements Parser {
     private void saveImage(PDDocument pdDoc, String guid) throws IOException {
         PDFRenderer pr = new PDFRenderer(pdDoc);
         for (int i = 0; i < pdDoc.getNumberOfPages(); i++) {
-            BufferedImage bi = pr.renderImageWithDPI(i, IMAGE_PARSER_DPI.getFloat());
-            File out = new File(docSavePath, String.format("img/%s_%02d.png", guid, i));
-            LOGGER.info("Saving Image {}...", out.getAbsolutePath());
-            ImageIO.write(bi, "PNG", out);
+            try {
+                BufferedImage bi = pr.renderImageWithDPI(i, IMAGE_PARSER_DPI.getFloat());
+                File out = new File(docSavePath, String.format("img/%s_%02d.png", guid, i));
+                LOGGER.info("Saving Image {}...", out.getAbsolutePath());
+                ImageIO.write(bi, "PNG", out);
+            } catch (EOFException e) {
+                LOGGER.error("Error when saving image: EOFException {}", e.getMessage());
+            }
         }
     }
 
