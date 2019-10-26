@@ -14,6 +14,7 @@ public enum OptionKey {
     GITHUB_PASSWORD("github_password"),
     SIMPLE_TAG_COLORS("simple_tag_colors"),
     POLL_INTERVAL("poll_interval"),
+    MAX_UPLOAD_FILE_SIZE("max_upload_file_size"),
     LOCALE("locale");
 
     public final String key;

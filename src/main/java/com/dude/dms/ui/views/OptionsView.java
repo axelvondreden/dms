@@ -32,6 +32,8 @@ public class OptionsView extends VerticalLayout {
 
     private final NumberField pollingInterval;
 
+    private final NumberField maxUploadFileSize;
+
     private final ComboBox<Locale> locale;
 
     private final Checkbox simpleColors;
@@ -62,7 +64,8 @@ public class OptionsView extends VerticalLayout {
         dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
         imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
         pollingInterval = new NumberField("Polling interval (seconds)", POLL_INTERVAL.getDouble(), e -> {});
-        Details docsDetails = new Details("Docs", new FormLayout(dateScanFormats, imageParserDpi, pollingInterval));
+        maxUploadFileSize = new NumberField("Maximum upload file size (MB)", MAX_UPLOAD_FILE_SIZE.getDouble(), e -> {});
+        Details docsDetails = new Details("Docs", new FormLayout(dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize));
         docsDetails.setOpened(true);
         docsDetails.getElement().getStyle().set("padding", "5px")
                 .set("border", "2px solid darkgray").set("borderRadius", "5px")
@@ -98,6 +101,9 @@ public class OptionsView extends VerticalLayout {
         }
         if (!pollingInterval.isEmpty() && pollingInterval.getValue() > 0) {
             POLL_INTERVAL.setInt(pollingInterval.getValue().intValue());
+        }
+        if (!maxUploadFileSize.isEmpty() && maxUploadFileSize.getValue() > 0) {
+            MAX_UPLOAD_FILE_SIZE.setInt(maxUploadFileSize.getValue().intValue());
         }
         SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
         GITHUB_USER.setString(githubUser.getValue());
