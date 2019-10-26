@@ -84,7 +84,7 @@ public class OptionsView extends VerticalLayout {
             themeList.clear();
             themeList.add(event.getValue() ? Lumo.DARK : Lumo.LIGHT);
         });
-        add(createSection("View", locale, dateFormat, simpleColors));
+        add(createSection("View", locale, dateFormat, simpleColors, darkMode));
 
         dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
         imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
