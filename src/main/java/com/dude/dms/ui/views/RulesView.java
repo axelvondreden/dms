@@ -10,6 +10,7 @@ import com.dude.dms.ui.MainView;
 import com.dude.dms.ui.components.dialogs.crud.PlainTextRuleDialog;
 import com.dude.dms.ui.components.dialogs.crud.RegexRuleDialog;
 import com.dude.dms.ui.components.rules.RuleCard;
+import com.github.appreciated.card.Card;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,8 +24,8 @@ import java.util.List;
 @PageTitle("Rules")
 public class RulesView extends VerticalLayout {
 
-    private final Details plainTextDetails;
-    private final Details regexDetails;
+    private final Card plainTextWrapperCard;
+    private final Card regexWrapperCard;
 
     private final PlainTextRuleService plainTextRuleService;
     private final RegexRuleService regexRuleService;
@@ -36,10 +37,12 @@ public class RulesView extends VerticalLayout {
         this.regexRuleService = regexRuleService;
         this.tagService = tagService;
 
-        plainTextDetails = new Details();
-        regexDetails = new Details();
+        plainTextWrapperCard = new Card();
+        plainTextWrapperCard.setWidthFull();
+        regexWrapperCard = new Card();
+        regexWrapperCard.setWidthFull();
 
-        add(plainTextDetails, regexDetails);
+        add(plainTextWrapperCard, regexWrapperCard);
 
         fillContent();
     }
@@ -51,6 +54,7 @@ public class RulesView extends VerticalLayout {
     }
 
     private void addPlaintext() {
+        plainTextWrapperCard.removeAll();
         Button create = new Button("Create", e -> {
             PlainTextRuleDialog dialog = new PlainTextRuleDialog(tagService, plainTextRuleService);
             dialog.setEventListener(this::fillContent);
@@ -66,11 +70,14 @@ public class RulesView extends VerticalLayout {
                 dialog.open();
             }));
         }
-        plainTextDetails.setSummaryText("Plaintext");
-        plainTextDetails.setContent(verticalLayout);
+        Details details = new Details("Text", verticalLayout);
+        details.setOpened(true);
+        details.getElement().getStyle().set("padding", "5px").set("width", "100%");
+        plainTextWrapperCard.add(details);
     }
 
     private void addRegex() {
+        regexWrapperCard.removeAll();
         Button create = new Button("Create", e -> {
             RegexRuleDialog dialog = new RegexRuleDialog(tagService, regexRuleService);
             dialog.setEventListener(this::fillContent);
@@ -86,7 +93,9 @@ public class RulesView extends VerticalLayout {
                 dialog.open();
             }));
         }
-        regexDetails.setSummaryText("Regex");
-        regexDetails.setContent(verticalLayout);
+        Details details = new Details("Regex", verticalLayout);
+        details.setOpened(true);
+        details.getElement().getStyle().set("padding", "5px").set("width", "100%");
+        regexWrapperCard.add(details);
     }
 }
