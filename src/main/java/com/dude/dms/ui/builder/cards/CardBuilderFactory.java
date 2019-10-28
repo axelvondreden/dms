@@ -1,5 +1,7 @@
 package com.dude.dms.ui.builder.cards;
 
+import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator;
+import com.dude.dms.backend.brain.parsing.RegexRuleValidator;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.TagService;
@@ -10,16 +12,22 @@ public class CardBuilderFactory extends Factory {
 
     private final TagService tagService;
 
-    public CardBuilderFactory(BuilderFactory builderFactory, TagService tagService) {
+    private final PlainTextRuleValidator plainTextRuleValidator;
+
+    private final RegexRuleValidator regexRuleValidator;
+
+    public CardBuilderFactory(BuilderFactory builderFactory, TagService tagService, PlainTextRuleValidator plainTextRuleValidator, RegexRuleValidator regexRuleValidator) {
         super(builderFactory);
         this.tagService = tagService;
+        this.plainTextRuleValidator = plainTextRuleValidator;
+        this.regexRuleValidator = regexRuleValidator;
     }
 
     public PlainTextRuleCardBuilder plainTextRule(PlainTextRule rule) {
-        return new PlainTextRuleCardBuilder(builderFactory, rule, tagService);
+        return new PlainTextRuleCardBuilder(builderFactory, rule, plainTextRuleValidator, tagService);
     }
 
     public RegexRuleCardBuilder regexRule(RegexRule rule) {
-        return new RegexRuleCardBuilder(builderFactory, rule, tagService);
+        return new RegexRuleCardBuilder(builderFactory, rule, regexRuleValidator, tagService);
     }
 }

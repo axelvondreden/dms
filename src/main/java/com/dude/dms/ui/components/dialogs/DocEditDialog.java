@@ -7,6 +7,7 @@ import com.dude.dms.ui.components.standard.DmsDatePicker;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -40,11 +41,11 @@ public class DocEditDialog extends EventDialog {
         tagger.setContainedTags(doc.getRawText());
 
 
-        Button saveButton = new Button("Save", e -> save());
+        Button saveButton = new Button("Save", VaadinIcon.DISC.create(), e -> save());
         saveButton.setWidthFull();
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button cancelButton = new Button("Close", e -> close());
+        Button cancelButton = new Button("Close", VaadinIcon.CLOSE.create(), e -> close());
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
@@ -64,9 +65,7 @@ public class DocEditDialog extends EventDialog {
         doc.setDocumentDate(datePicker.getValue());
         doc.setTags(tagger.getSelectedTags());
         docService.save(doc);
-        if (eventListener != null) {
-            eventListener.onChange();
-        }
+        triggerEvent();
         close();
     }
 }

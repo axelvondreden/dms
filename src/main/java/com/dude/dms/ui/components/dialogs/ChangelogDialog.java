@@ -6,6 +6,7 @@ import com.dude.dms.updater.UpdateChecker;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextArea;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class ChangelogDialog extends Dialog {
     public ChangelogDialog(ChangelogService changelogService, UpdateChecker updateChecker) {
         setWidth("70vw");
         setHeight("70vh");
-        Button b = new Button("Check for updates", e -> updateChecker.check(false));
+        Button b = new Button("Check for updates", VaadinIcon.REFRESH.create(), e -> updateChecker.check(false));
         b.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         add(b);
         List<Changelog> changelogs = changelogService.findAll().stream().sorted((o1, o2) -> o2.getPublished().compareTo(o1.getPublished())).collect(Collectors.toList());

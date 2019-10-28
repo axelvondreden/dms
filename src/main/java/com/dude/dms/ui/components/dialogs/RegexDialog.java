@@ -4,6 +4,7 @@ import com.dude.dms.ui.components.ValueProvider;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -44,7 +45,7 @@ public class RegexDialog extends Dialog {
         grid.setItems(matches);
         grid.setHeight("30%");
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(regexField, new Button("OK", e -> save()));
+        HorizontalLayout horizontalLayout = new HorizontalLayout(regexField, new Button(VaadinIcon.CHECK.create(), e -> save()));
         horizontalLayout.setAlignItems(FlexComponent.Alignment.END);
 
         SplitLayout splitLayout = new SplitLayout(textArea, grid);

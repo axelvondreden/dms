@@ -69,9 +69,7 @@ public class TagEditDialog extends EventDialog {
         tag.setName(name.getValue());
         tag.setColor((String) ((HasValue) colorPicker).getValue());
         tagService.save(tag);
-        if (eventListener != null) {
-            eventListener.onChange();
-        }
+        triggerEvent();
         close();
     }
 }

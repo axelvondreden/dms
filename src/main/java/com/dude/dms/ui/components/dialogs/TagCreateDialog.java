@@ -9,6 +9,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -31,11 +32,11 @@ public class TagCreateDialog extends EventDialog {
         colorPicker = SIMPLE_TAG_COLORS.getBoolean() ? new DmsColorPickerSimple("Color") : new DmsColorPicker("Color");
         ((HasSize) colorPicker).setWidthFull();
 
-        Button createButton = new Button("Create", e -> create());
+        Button createButton = new Button("Create", VaadinIcon.PLUS.create(), e -> create());
         createButton.setWidthFull();
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button cancelButton = new Button("Close", e -> close());
+        Button cancelButton = new Button("Close", VaadinIcon.CLOSE.create(), e -> close());
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
@@ -65,9 +66,7 @@ public class TagCreateDialog extends EventDialog {
             return;
         }
         tagService.create(new Tag(name.getValue(), (String) ((HasValue) colorPicker).getValue()));
-        if (eventListener != null) {
-            eventListener.onChange();
-        }
+        triggerEvent();
         close();
     }
 }

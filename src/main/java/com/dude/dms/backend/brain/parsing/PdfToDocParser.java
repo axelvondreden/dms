@@ -2,8 +2,6 @@ package com.dude.dms.backend.brain.parsing;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.docs.TextBlock;
-import com.dude.dms.backend.data.rules.PlainTextRule;
-import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -26,7 +24,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
 
@@ -35,20 +32,15 @@ public class PdfToDocParser implements Parser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PdfToDocParser.class);
 
-    @Autowired
-    private DocService docService;
+    private final DocService docService;
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
 
-    @Autowired
-    private TextBlockService textBlockService;
+    private final TextBlockService textBlockService;
 
-    @Autowired
-    private PlainTextRuleService plainTextRuleService;
+    private final PlainTextRuleValidator plainTextRuleValidator;
 
-    @Autowired
-    private RegexRuleService regexRuleService;
+    private final RegexRuleValidator regexRuleValidator;
 
     private final String docSavePath;
 
@@ -56,7 +48,14 @@ public class PdfToDocParser implements Parser {
 
     private final Map<String, ParserEventListener> eventListeners;
 
-    public PdfToDocParser() {
+    @Autowired
+    public PdfToDocParser(DocService docService, TagService tagService, TextBlockService textBlockService,
+                          PlainTextRuleValidator plainTextRuleValidator, RegexRuleValidator regexRuleValidator) {
+        this.docService = docService;
+        this.tagService = tagService;
+        this.textBlockService = textBlockService;
+        this.plainTextRuleValidator = plainTextRuleValidator;
+        this.regexRuleValidator = regexRuleValidator;
         docSavePath = DOC_SAVE_PATH.getString();
         eventListeners = new HashMap<>();
     }
@@ -117,58 +116,16 @@ public class PdfToDocParser implements Parser {
      * @return list of tags
      */
     private Set<Tag> discoverTags(String rawText) {
-        Set<Tag> tags = discoverAutoTags();
-        if (rawText != null && !rawText.isEmpty()) {
-            tags.addAll(discoverRuleTags(rawText));
-        }
-        return tags;
-    }
-
-    /**
-     * Validates all active rules against the raw text and adds tags for matching rules.
-     *
-     * @param rawText raw text
-     * @return list of tags
-     */
-    private Set<Tag> discoverRuleTags(String rawText) {
-        Set<Tag> tags = new HashSet<>();
-
-        for (PlainTextRule rule : plainTextRuleService.getActiveRules()) {
-            for (String line : rawText.split("\n")) {
-                if (rule.validate(line)) {
-                    Set<Tag> ruleTags = tagService.findByPlainTextRule(rule);
-                    LOGGER.info("{} found a match! Adding tags[{}]...", rule, ruleTags.stream().map(Tag::getName).collect(Collectors.joining(",")));
-                    tags.addAll(ruleTags);
-                    break;
-                }
-            }
-        }
-
-        for (RegexRule rule : regexRuleService.getActiveRules()) {
-            for (String line : rawText.split("\n")) {
-                if (rule.validate(line)) {
-                    Set<Tag> ruleTags = tagService.findByRegexRule(rule);
-                    LOGGER.info("{} found a match! Adding tags[{}]...", rule, ruleTags.stream().map(Tag::getName).collect(Collectors.joining(",")));
-                    tags.addAll(ruleTags);
-                    break;
-                }
-            }
-        }
-        return tags;
-    }
-
-    /**
-     * Gets tags, wich are set to automatic in the user_settings
-     *
-     * @return list of tags
-     */
-    private Set<Tag> discoverAutoTags() {
         Set<Tag> tags = new HashSet<>();
         if (AUTO_TAG.getBoolean()) {
             tagService.findById(AUTO_TAG_ID.getLong()).ifPresent(tag -> {
                 LOGGER.info("Adding tag: {}", tag.getName());
                 tags.add(tag);
             });
+        }
+        if (rawText != null && !rawText.isEmpty()) {
+            tags.addAll(plainTextRuleValidator.getTags(rawText));
+            tags.addAll(regexRuleValidator.getTags(rawText));
         }
         return tags;
     }

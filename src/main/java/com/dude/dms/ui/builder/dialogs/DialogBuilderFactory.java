@@ -8,6 +8,9 @@ import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.builder.Factory;
 import com.dude.dms.updater.UpdateChecker;
 
+import java.util.Map;
+import java.util.Set;
+
 public class DialogBuilderFactory extends Factory {
 
     private final DocService docService;
@@ -57,6 +60,10 @@ public class DialogBuilderFactory extends Factory {
 
     public RegexRuleDialogBuilder regexRule() {
         return new RegexRuleDialogBuilder(tagService, regexRuleService);
+    }
+
+    public RuleRunnerDialogBuilder ruleRunner(Map<Doc, Set<Tag>> result) {
+        return new RuleRunnerDialogBuilder(result, docService);
     }
 
     public TagCreateDialogBuilder tagCreate() {

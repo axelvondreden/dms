@@ -14,6 +14,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -67,7 +68,7 @@ public class OptionsView extends VerticalLayout {
 
     @Autowired
     public OptionsView(TagService tagService) {
-        Button save = new Button("Save Settings", e -> save());
+        Button save = new Button("Save Settings", VaadinIcon.DISC.create(), e -> save());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         add(save);
 

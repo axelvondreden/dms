@@ -1,5 +1,7 @@
 package com.dude.dms.ui.builder;
 
+import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator;
+import com.dude.dms.backend.brain.parsing.RegexRuleValidator;
 import com.dude.dms.backend.service.*;
 import com.dude.dms.ui.builder.cards.CardBuilderFactory;
 import com.dude.dms.ui.builder.dialogs.DialogBuilderFactory;
@@ -18,9 +20,13 @@ public class BuilderFactory {
     private final ChangelogService changelogService;
     private final UpdateChecker updateChecker;
     private final TextBlockService textBlockService;
+    private final PlainTextRuleValidator plainTextRuleValidator;
+    private final RegexRuleValidator regexRuleValidator;
 
     @Autowired
-    public BuilderFactory(DocService docService, TagService tagService, PlainTextRuleService plainTextRuleService, RegexRuleService regexRuleService, ChangelogService changelogService, UpdateChecker updateChecker, TextBlockService textBlockService) {
+    public BuilderFactory(DocService docService, TagService tagService, PlainTextRuleService plainTextRuleService,
+                          RegexRuleService regexRuleService, ChangelogService changelogService, UpdateChecker updateChecker,
+                          TextBlockService textBlockService, PlainTextRuleValidator plainTextRuleValidator, RegexRuleValidator regexRuleValidator) {
         this.docService = docService;
         this.tagService = tagService;
         this.plainTextRuleService = plainTextRuleService;
@@ -28,10 +34,12 @@ public class BuilderFactory {
         this.changelogService = changelogService;
         this.updateChecker = updateChecker;
         this.textBlockService = textBlockService;
+        this.plainTextRuleValidator = plainTextRuleValidator;
+        this.regexRuleValidator = regexRuleValidator;
     }
 
     public CardBuilderFactory cards() {
-        return new CardBuilderFactory(this, tagService);
+        return new CardBuilderFactory(this, tagService, plainTextRuleValidator, regexRuleValidator);
     }
 
     public DialogBuilderFactory dialogs() {
