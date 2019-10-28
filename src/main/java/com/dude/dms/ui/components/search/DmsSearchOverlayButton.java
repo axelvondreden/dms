@@ -1,5 +1,6 @@
 package com.dude.dms.ui.components.search;
 
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.github.appreciated.app.layout.component.appbar.IconButton;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -9,9 +10,9 @@ public class DmsSearchOverlayButton extends IconButton {
 
     private final DmsSearchOverlayView searchView;
 
-    public DmsSearchOverlayButton() {
+    public DmsSearchOverlayButton(BuilderFactory builderFactory) {
         super(VaadinIcon.SEARCH.create());
-        searchView = new DmsSearchOverlayView();
+        searchView = new DmsSearchOverlayView(builderFactory);
         addClickListener(event -> searchView.open());
     }
 

@@ -1,7 +1,6 @@
 package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.brain.OptionKey;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import org.slf4j.Logger;
@@ -9,11 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public class AddDocDialog extends Dialog {
+public class DocCreateDialog extends EventDialog {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddDocDialog.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocCreateDialog.class);
 
-    public AddDocDialog() {
+    public DocCreateDialog() {
         setWidth("40vw");
         setHeight("40vh");
 

@@ -1,9 +1,8 @@
-package com.dude.dms.ui.components.dialogs.crud;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.components.dialogs.RuleDialog;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -14,7 +13,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class PlainTextRuleDialog extends RuleDialog {
+public class PlainTextRuleDialog extends EventDialog {
 
     private final TextField plainText;
     private final Tagger ruleTagger;
@@ -24,12 +23,6 @@ public class PlainTextRuleDialog extends RuleDialog {
 
     private PlainTextRule plainTextRule;
 
-    /**
-     * Constructor for creating an empty dialog. Create button will be added
-     *
-     * @param tagService           tag-service
-     * @param plainTextRuleService plaintext-rule-service
-     */
     public PlainTextRuleDialog(TagService tagService, PlainTextRuleService plainTextRuleService) {
         this.plainTextRuleService = plainTextRuleService;
         plainText = new TextField("Text", "");
@@ -47,26 +40,21 @@ public class PlainTextRuleDialog extends RuleDialog {
         setHeight("70vh");
     }
 
-    /**
-     * Constructor for creating a dialog for an existing rule. Save button will be added
-     *
-     * @param plainTextRule        rule
-     * @param tagService           tag-service
-     * @param plainTextRuleService plaintext-rule-service
-     */
     public PlainTextRuleDialog(PlainTextRule plainTextRule, TagService tagService, PlainTextRuleService plainTextRuleService) {
         this.plainTextRuleService = plainTextRuleService;
         this.plainTextRule = plainTextRule;
-        plainText = new TextField("Text", plainTextRule.getText(), "");
+        plainText = new TextField("Text", "");
+        plainText.setValue(plainTextRule.getText());
         plainText.setWidthFull();
         ruleTagger = new Tagger(tagService);
         ruleTagger.setHeight("80%");
         ruleTagger.setSelectedTags(tagService.findByPlainTextRule(plainTextRule));
         caseSensitive = new Checkbox("case sensitive");
+        caseSensitive.setValue(plainTextRule.getCaseSensitive());
         HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
         hLayout.setWidthFull();
         hLayout.setAlignItems(FlexComponent.Alignment.END);
-        Button saveButton = new Button("Save", e -> save());
+        Button saveButton = new Button("Create", e -> save());
         saveButton.setWidthFull();
         Button deleteButton = new Button("Delete", e -> delete());
         deleteButton.setWidthFull();
@@ -78,8 +66,7 @@ public class PlainTextRuleDialog extends RuleDialog {
         setHeight("70vh");
     }
 
-    @Override
-    protected void save() {
+    private void save() {
         if (plainText.isEmpty()) {
             Notification.show("Text can not be empty!");
             return;
@@ -103,8 +90,7 @@ public class PlainTextRuleDialog extends RuleDialog {
         close();
     }
 
-    @Override
-    protected void delete() {
+    private void delete() {
         ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
             plainTextRuleService.delete(plainTextRule);
             if (eventListener != null) {

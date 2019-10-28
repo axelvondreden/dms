@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.dialogs;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.service.TextBlockService;
-import com.dude.dms.ui.components.dialogs.crud.TextBlockEditDialog;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.helger.commons.io.file.FileHelper;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -19,11 +19,17 @@ import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
 
 public class DocImageDialog extends Dialog {
 
+    private final BuilderFactory builderFactory;
+
+    private final Doc doc;
+
     private final TextBlockService textBlockService;
 
     private final Element container;
 
-    public DocImageDialog(TextBlockService textBlockService) {
+    public DocImageDialog(BuilderFactory builderFactory, Doc doc, TextBlockService textBlockService) {
+        this.builderFactory = builderFactory;
+        this.doc = doc;
         this.textBlockService = textBlockService;
 
         VerticalLayout verticalLayout = new VerticalLayout();
@@ -34,9 +40,11 @@ public class DocImageDialog extends Dialog {
         container.getStyle().set("width", "100%").set("height", "100%").set("position", "relative").set("maxWidth", "100%").set("maxHeight", "100%");
         verticalLayout.getElement().appendChild(container);
         add(verticalLayout);
+
+        fill();
     }
 
-    public void open(Doc doc) {
+    private void fill() {
         container.removeAllChildren();
 
         File img = new File(DOC_SAVE_PATH.getString() + "/img/" + doc.getGuid() + "_00.png");
@@ -63,12 +71,11 @@ public class DocImageDialog extends Dialog {
                 div.setAttribute("id", String.valueOf(textBlock.getId()));
                 div.addEventListener("mouseenter", event -> event.getSource().getStyle().set("border", "3px solid black"));
                 div.addEventListener("mouseleave", event -> event.getSource().getStyle().set("border", "2px solid gray"));
-                div.addEventListener("click", event -> new TextBlockEditDialog(textBlockService).open(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))));
+                div.addEventListener("click", event -> builderFactory.dialogs().textBlockEdit(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))).build().open());
                 container.appendChild(div);
             }
         } else {
             add(new Text("No image found!"));
         }
-        open();
     }
 }

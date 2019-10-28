@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.dialogs.crud;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;
@@ -11,28 +11,34 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class DocEditDialog extends CrudEditDialog<Doc> {
+public class DocEditDialog extends EventDialog {
 
-    private final TextField guidTextField;
+    private final Doc doc;
+
     private final DmsDatePicker datePicker;
     private final Tagger tagger;
 
-    private Doc doc;
 
     private final DocService docService;
 
-    public DocEditDialog(DocService docService, TagService tagService) {
+    public DocEditDialog(Doc doc, DocService docService, TagService tagService) {
+        this.doc = doc;
         this.docService = docService;
 
-        guidTextField = new TextField("GUID");
+        TextField guidTextField = new TextField("GUID");
         guidTextField.setWidthFull();
         guidTextField.setReadOnly(true);
+        guidTextField.setValue(doc.getGuid());
 
         datePicker = new DmsDatePicker("Date");
         datePicker.setWidthFull();
+        datePicker.setValue(doc.getDocumentDate());
 
         tagger = new Tagger(tagService);
         tagger.setHeight("25vw");
+        tagger.setSelectedTags(doc.getTags());
+        tagger.setContainedTags(doc.getRawText());
+
 
         Button saveButton = new Button("Save", e -> save());
         saveButton.setWidthFull();
@@ -54,8 +60,7 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         add(vLayout);
     }
 
-    @Override
-    protected void save() {
+    private void save() {
         doc.setDocumentDate(datePicker.getValue());
         doc.setTags(tagger.getSelectedTags());
         docService.save(doc);
@@ -63,16 +68,5 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
             eventListener.onChange();
         }
         close();
-    }
-
-    @Override
-    public void open(Doc item) {
-        tagger.clear();
-        doc = item;
-        guidTextField.setValue(doc.getGuid());
-        datePicker.setValue(doc.getDocumentDate());
-        tagger.setSelectedTags(doc.getTags());
-        tagger.setContainedTags(doc.getRawText());
-        open();
     }
 }

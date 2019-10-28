@@ -1,29 +1,27 @@
 package com.dude.dms.ui.components.dialogs;
 
+import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.docs.TextBlock;
+import com.dude.dms.backend.service.TextBlockService;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ElementFactory;
 
+import java.util.List;
+
 public class DocTextDialog extends Dialog {
 
-    private final Element container;
-
-    public DocTextDialog() {
+    public DocTextDialog(Doc doc, TextBlockService textBlockService) {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
-
-        container = ElementFactory.createDiv();
+        Element container = ElementFactory.createDiv();
         container.getStyle().set("width", "100%").set("height", "100%").set("position", "relative").set("maxWidth", "100%").set("maxHeight", "100%");
         verticalLayout.getElement().appendChild(container);
         add(verticalLayout);
-    }
-
-    public void open(Iterable<TextBlock> textBlocks) {
-        container.removeAllChildren();
 
         boolean first = true;
+        List<TextBlock> textBlocks = textBlockService.findByDoc(doc);
         for (TextBlock textBlock : textBlocks) {
             if (first) {
                 first = false;
@@ -40,7 +38,6 @@ public class DocTextDialog extends Dialog {
                     .set("height", textBlock.getHeight() + "%");
             container.appendChild(div);
         }
-        open();
     }
 
     private void setSize(float pageWidth, float pagHeight) {

@@ -1,9 +1,8 @@
-package com.dude.dms.ui.components.dialogs.crud;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.components.dialogs.RuleDialog;
 import com.dude.dms.ui.components.standard.RegexField;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
@@ -12,7 +11,7 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-public class RegexRuleDialog extends RuleDialog {
+public class RegexRuleDialog extends EventDialog {
 
     private final RegexField regex;
     private final Tagger ruleTagger;
@@ -20,13 +19,6 @@ public class RegexRuleDialog extends RuleDialog {
 
     private RegexRule regexRule;
 
-
-    /**
-     * Constructor for creating an empty dialog. Create button will be added
-     *
-     * @param tagService       tag-service
-     * @param regexRuleService regex-rule-service
-     */
     public RegexRuleDialog(TagService tagService, RegexRuleService regexRuleService) {
         this.regexRuleService = regexRuleService;
         regex = new RegexField("Regex");
@@ -40,13 +32,6 @@ public class RegexRuleDialog extends RuleDialog {
         setHeight("70vh");
     }
 
-    /**
-     * Constructor for creating a dialog for an existing rule. Save button will be added
-     *
-     * @param regexRule        rule
-     * @param tagService       tag-service
-     * @param regexRuleService regex-rule-service
-     */
     public RegexRuleDialog(RegexRule regexRule, TagService tagService, RegexRuleService regexRuleService) {
         this.regexRuleService = regexRuleService;
         this.regexRule = regexRule;
@@ -67,7 +52,7 @@ public class RegexRuleDialog extends RuleDialog {
         setHeight("70vh");
     }
 
-    public void save() {
+    private void save() {
         if (regex.isEmpty()) {
             Notification.show("Regex can not be empty!");
             return;
@@ -91,8 +76,7 @@ public class RegexRuleDialog extends RuleDialog {
         close();
     }
 
-    @Override
-    protected void delete() {
+    private void delete() {
         ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
             regexRuleService.delete(regexRule);
             if (eventListener != null) {

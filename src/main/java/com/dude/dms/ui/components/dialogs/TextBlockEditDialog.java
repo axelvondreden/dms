@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.dialogs.crud;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.service.TextBlockService;
@@ -12,28 +12,38 @@ import com.vaadin.flow.component.textfield.TextField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextBlockEditDialog extends CrudEditDialog<TextBlock> {
+public class TextBlockEditDialog extends EventDialog {
 
     private final TextField text;
 
     private final RadioButtonGroup<String> group;
 
-    private TextBlock textBlock;
+    private final TextBlock textBlock;
 
-    private String originalText;
+    private final String originalText;
 
     private final TextBlockService textBlockService;
 
-    public TextBlockEditDialog(TextBlockService textBlockService) {
+    public TextBlockEditDialog(TextBlock textBlock, TextBlockService textBlockService) {
+        this.textBlock = textBlock;
         this.textBlockService = textBlockService;
+
+        originalText = textBlock.getText();
 
         setWidth("40vw");
 
         text = new TextField("Text");
         text.setWidthFull();
+        text.setValue(originalText);
 
         group = new RadioButtonGroup<>();
         group.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        group.setItems(
+                "change this",
+                "change all in document (" + textBlockService.countByTextAndDoc(originalText, textBlock.getDoc()) + ')',
+                "change all (" + textBlockService.countByext(originalText) + ')'
+        );
+        group.setValue("change this");
 
         Button createButton = new Button("Save", e -> save());
         createButton.setWidthFull();
@@ -49,8 +59,7 @@ public class TextBlockEditDialog extends CrudEditDialog<TextBlock> {
         add(text, group, buttonLayout);
     }
 
-    @Override
-    protected void save() {
+    private void save() {
         if (text.isEmpty()) {
             text.setErrorMessage("Text can not be empty!");
             return;
@@ -64,27 +73,13 @@ public class TextBlockEditDialog extends CrudEditDialog<TextBlock> {
         } else if (group.getValue().startsWith("change all (")) {
             textBlocks = textBlockService.findByText(originalText);
         }
-        textBlocks.forEach(textBlock -> {
-            textBlock.setText(newText);
-            textBlockService.save(textBlock);
+        textBlocks.forEach(block -> {
+            block.setText(newText);
+            textBlockService.save(block);
         });
         if (eventListener != null) {
             eventListener.onChange();
         }
         close();
-    }
-
-    @Override
-    public void open(TextBlock item) {
-        textBlock = item;
-        originalText = textBlock.getText();
-        text.setValue(originalText);
-        group.setItems(
-                "change this",
-                "change all in document (" + textBlockService.countByTextAndDoc(originalText, textBlock.getDoc()) + ")",
-                "change all (" + textBlockService.countByext(originalText) + ")"
-        );
-        group.setValue("change this");
-        open();
     }
 }
