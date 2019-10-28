@@ -35,5 +35,6 @@ public class RuleRunnerDialog extends EventDialog {
             docService.save(doc);
             triggerEvent();
         });
+        close();
     }
 }

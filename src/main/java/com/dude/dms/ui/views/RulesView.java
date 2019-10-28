@@ -31,6 +31,7 @@ public class RulesView extends FormLayout {
         this.plainTextRuleService = plainTextRuleService;
         this.regexRuleService = regexRuleService;
 
+        getElement().getStyle().set("padding", "10px");
         fillContent();
     }
 
@@ -53,6 +54,7 @@ public class RulesView extends FormLayout {
         details.getElement().getStyle().set("padding", "5px").set("width", "100%");
         Card card = new Card(details);
         card.setSizeFull();
+        card.getElement().getStyle().set("height", "100%");
         add(card);
     }
 
@@ -69,6 +71,7 @@ public class RulesView extends FormLayout {
         details.getElement().getStyle().set("padding", "5px").set("width", "100%");
         Card card = new Card(details);
         card.setSizeFull();
+        card.getElement().getStyle().set("height", "100%");
         add(card);
     }
 }

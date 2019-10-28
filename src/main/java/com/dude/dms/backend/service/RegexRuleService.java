@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RegexRuleService extends CrudService<RegexRule> implements RuleService<RegexRule> {
@@ -26,9 +25,5 @@ public class RegexRuleService extends CrudService<RegexRule> implements RuleServ
     @Override
     public List<RegexRule> getActiveRules() {
         return regexRuleRepository.findByActive(true);
-    }
-
-    public Optional<RegexRule> findById(Long id) {
-        return regexRuleRepository.findById(id);
     }
 }
