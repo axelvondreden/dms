@@ -10,4 +10,10 @@ public abstract class EventDialog extends Dialog {
     public void setEventListener(EntityEventListener eventListener) {
         this.eventListener = eventListener;
     }
+
+    protected void triggerEvent() {
+        if (eventListener != null) {
+            eventListener.onChange();
+        }
+    }
 }

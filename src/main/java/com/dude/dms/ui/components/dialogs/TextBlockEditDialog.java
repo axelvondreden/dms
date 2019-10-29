@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.service.TextBlockService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
@@ -45,11 +46,11 @@ public class TextBlockEditDialog extends EventDialog {
         );
         group.setValue("change this");
 
-        Button createButton = new Button("Save", e -> save());
+        Button createButton = new Button("Save", VaadinIcon.DISC.create(), e -> save());
         createButton.setWidthFull();
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button cancelButton = new Button("Close", e -> close());
+        Button cancelButton = new Button("Close", VaadinIcon.CLOSE.create(), e -> close());
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
@@ -77,9 +78,7 @@ public class TextBlockEditDialog extends EventDialog {
             block.setText(newText);
             textBlockService.save(block);
         });
-        if (eventListener != null) {
-            eventListener.onChange();
-        }
+        triggerEvent();
         close();
     }
 }

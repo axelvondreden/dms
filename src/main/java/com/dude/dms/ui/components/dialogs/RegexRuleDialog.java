@@ -8,6 +8,7 @@ import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
@@ -25,7 +26,7 @@ public class RegexRuleDialog extends EventDialog {
         regex.setWidthFull();
         ruleTagger = new Tagger(tagService);
         ruleTagger.setHeight("80%");
-        Button button = new Button("Create", e -> save());
+        Button button = new Button("Create", VaadinIcon.PLUS.create(), e -> save());
         button.setWidthFull();
         add(regex, ruleTagger, button);
         setWidth("70vw");
@@ -40,9 +41,9 @@ public class RegexRuleDialog extends EventDialog {
         ruleTagger = new Tagger(tagService);
         ruleTagger.setSelectedTags(tagService.findByRegexRule(regexRule));
         ruleTagger.setHeight("80%");
-        Button saveButton = new Button("Save", e -> save());
+        Button saveButton = new Button("Save", VaadinIcon.DISC.create(), e -> save());
         saveButton.setWidthFull();
-        Button deleteButton = new Button("Delete", e -> delete());
+        Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create(), e -> delete());
         deleteButton.setWidthFull();
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, deleteButton);
@@ -70,18 +71,14 @@ public class RegexRuleDialog extends EventDialog {
             regexRuleService.save(regexRule);
             Notification.show("Edited rule!");
         }
-        if (eventListener != null) {
-            eventListener.onChange();
-        }
+        triggerEvent();
         close();
     }
 
     private void delete() {
         ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
             regexRuleService.delete(regexRule);
-            if (eventListener != null) {
-                eventListener.onChange();
-            }
+            triggerEvent();
             close();
         }, "Cancel", event -> {});
         dialog.setConfirmButtonTheme("error primary");

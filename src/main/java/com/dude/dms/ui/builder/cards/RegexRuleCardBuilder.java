@@ -1,34 +1,29 @@
 package com.dude.dms.ui.builder.cards;
 
+import com.dude.dms.backend.brain.parsing.RegexRuleValidator;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.cards.RegexRuleCard;
-import com.dude.dms.ui.components.tags.TagContainer;
 
 public final class RegexRuleCardBuilder {
 
     private final BuilderFactory builderFactory;
 
-    private final TagService tagService;
-
     private final RegexRule rule;
 
-    private String title;
+    private final RegexRuleValidator regexRuleValidator;
+
+    private final TagService tagService;
 
     private EntityEventListener eventListener;
 
-    RegexRuleCardBuilder(BuilderFactory builderFactory, RegexRule rule, TagService tagService) {
+    RegexRuleCardBuilder(BuilderFactory builderFactory, RegexRule rule, RegexRuleValidator regexRuleValidator, TagService tagService) {
         this.builderFactory = builderFactory;
-        this.tagService = tagService;
         this.rule = rule;
-        title = rule.getRegex();
-    }
-
-    public RegexRuleCardBuilder withTitle(String title) {
-        this.title = title;
-        return this;
+        this.regexRuleValidator = regexRuleValidator;
+        this.tagService = tagService;
     }
 
     public RegexRuleCardBuilder withDialogEventListener(EntityEventListener eventListener) {
@@ -37,7 +32,7 @@ public final class RegexRuleCardBuilder {
     }
 
     public RegexRuleCard build() {
-        RegexRuleCard card = new RegexRuleCard(title, new TagContainer(tagService.findByRegexRule(rule)));
+        RegexRuleCard card = new RegexRuleCard(builderFactory, rule, regexRuleValidator, tagService);
         card.addClickListener(e -> builderFactory.dialogs().regexRule().forRule(rule).withEventListener(eventListener).build().open());
         return card;
     }

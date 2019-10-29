@@ -20,6 +20,6 @@ public final class TagSearchResultBuilder {
     }
 
     public TagSearchResult build() {
-        return new TagSearchResult(tag, tagEditDialog, docService);
+        return new TagSearchResult(tag, docService.countByTag(tag), tagEditDialog);
     }
 }

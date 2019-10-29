@@ -90,7 +90,7 @@ public class UpdateChecker {
                         if (current != null) {
                             Version finalNewest = newest;
                             current.access(() -> {
-                                Button b = new Button("Restart now", e -> shutdownManager.initiateShutdown(1337));
+                                Button b = new Button("Restart now", VaadinIcon.POWER_OFF.create(), e -> shutdownManager.initiateShutdown(1337));
                                 b.addThemeVariants(ButtonVariant.LUMO_ERROR);
                                 HorizontalLayout h = new HorizontalLayout();
                                 h.setAlignItems(FlexComponent.Alignment.CENTER);
