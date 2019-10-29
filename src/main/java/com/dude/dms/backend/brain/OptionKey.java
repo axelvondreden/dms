@@ -15,6 +15,7 @@ public enum OptionKey {
     IMAGE_PARSER_DPI("image_parser_dpi"),
     LOCALE("locale"),
     MAX_UPLOAD_FILE_SIZE("max_upload_file_size"),
+    NOTIFY_POSITION("notify_position"),
     POLL_INTERVAL("poll_interval"),
     SIMPLE_TAG_COLORS("simple_tag_colors"),
     UPDATE_CHECK_INTERVAL("update_check_interval");
