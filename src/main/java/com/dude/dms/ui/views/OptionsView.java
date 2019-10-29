@@ -76,6 +76,7 @@ public class OptionsView extends VerticalLayout {
         notifyPosition.setValue(Notification.Position.valueOf(NOTIFY_POSITION.getString()));
         notifyPosition.setAllowCustomValue(false);
         notifyPosition.setPreventInvalidInput(true);
+        notifyPosition.setWidthFull();
         notifyPosition.addValueChangeListener(event -> {
             if (!notifyPosition.isEmpty()) {
                 NOTIFY_POSITION.setString(notifyPosition.getValue().name());
@@ -83,7 +84,10 @@ public class OptionsView extends VerticalLayout {
             }
         });
         Button notifyTest = new Button("Test", e -> Notify.info("Hi, I am just a test!"));
-        add(createSection("View", locale, dateFormat, simpleColors, darkMode, new HorizontalLayout(notifyPosition, notifyTest)));
+        HorizontalLayout notifyWrapper = new HorizontalLayout(notifyPosition, notifyTest);
+        notifyWrapper.setWidthFull();
+        notifyWrapper.setAlignItems(Alignment.END);
+        add(createSection("View", locale, dateFormat, simpleColors, darkMode, notifyWrapper));
 
         TextField dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
         dateScanFormats.addValueChangeListener(event -> {
