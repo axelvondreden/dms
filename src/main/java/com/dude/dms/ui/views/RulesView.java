@@ -1,92 +1,77 @@
 package com.dude.dms.ui.views;
 
-import com.dude.dms.backend.data.rules.PlainTextRule;
-import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.backend.service.RegexRuleService;
-import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
-import com.dude.dms.ui.components.dialogs.crud.PlainTextRuleDialog;
-import com.dude.dms.ui.components.dialogs.crud.RegexRuleDialog;
-import com.dude.dms.ui.components.rules.RuleCard;
+import com.dude.dms.ui.builder.BuilderFactory;
+import com.github.appreciated.card.Card;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.details.Details;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 @Route(value = Const.PAGE_RULES, layout = MainView.class)
 @PageTitle("Rules")
-public class RulesView extends VerticalLayout {
+public class RulesView extends FormLayout {
 
-    private final Details plainTextDetails;
-    private final Details regexDetails;
+    private final BuilderFactory builderFactory;
 
     private final PlainTextRuleService plainTextRuleService;
     private final RegexRuleService regexRuleService;
-    private final TagService tagService;
 
     @Autowired
-    public RulesView(PlainTextRuleService plainTextRuleService, RegexRuleService regexRuleService, TagService tagService) {
+    public RulesView(BuilderFactory builderFactory, PlainTextRuleService plainTextRuleService, RegexRuleService regexRuleService) {
+        this.builderFactory = builderFactory;
         this.plainTextRuleService = plainTextRuleService;
         this.regexRuleService = regexRuleService;
-        this.tagService = tagService;
 
-        plainTextDetails = new Details();
-        regexDetails = new Details();
-
-        add(plainTextDetails, regexDetails);
-
+        getElement().getStyle().set("padding", "10px");
         fillContent();
     }
 
     private void fillContent() {
+        removeAll();
         addPlaintext();
-
         addRegex();
     }
 
     private void addPlaintext() {
-        Button create = new Button("Create", e -> {
-            PlainTextRuleDialog dialog = new PlainTextRuleDialog(tagService, plainTextRuleService);
-            dialog.setEventListener(this::fillContent);
-            dialog.open();
-        });
+        Button create = new Button("Create", VaadinIcon.PLUS.create(), e -> builderFactory.dialogs().plainTextRule().withEventListener(this::fillContent).build().open());
+        create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
-        List<PlainTextRule> plainTextRules = plainTextRuleService.getActiveRules();
-        for (PlainTextRule rule : plainTextRules) {
-            verticalLayout.add(new RuleCard(rule.getText(), tagService.findByPlainTextRule(rule), e -> {
-                PlainTextRuleDialog dialog = new PlainTextRuleDialog(rule, tagService, plainTextRuleService);
-                dialog.setEventListener(this::fillContent);
-                dialog.open();
-            }));
-        }
-        plainTextDetails.setSummaryText("Plaintext");
-        plainTextDetails.setContent(verticalLayout);
+        plainTextRuleService.getActiveRules().stream()
+                .map(rule -> builderFactory.cards().plainTextRule(rule).withDialogEventListener(this::fillContent).build())
+                .forEach(verticalLayout::add);
+        Details details = new Details("Text", verticalLayout);
+        details.setOpened(true);
+        details.getElement().getStyle().set("padding", "5px").set("width", "100%");
+        Card card = new Card(details);
+        card.setSizeFull();
+        card.getElement().getStyle().set("height", "100%");
+        add(card);
     }
 
     private void addRegex() {
-        Button create = new Button("Create", e -> {
-            RegexRuleDialog dialog = new RegexRuleDialog(tagService, regexRuleService);
-            dialog.setEventListener(this::fillContent);
-            dialog.open();
-        });
+        Button create = new Button("Create", VaadinIcon.PLUS.create(), e -> builderFactory.dialogs().regexRule().withEventListener(this::fillContent).build().open());
+        create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
-        List<RegexRule> regexRules = regexRuleService.getActiveRules();
-        for (RegexRule rule : regexRules) {
-            verticalLayout.add(new RuleCard(rule.getRegex(), tagService.findByRegexRule(rule), e -> {
-                RegexRuleDialog dialog = new RegexRuleDialog(rule, tagService, regexRuleService);
-                dialog.setEventListener(this::fillContent);
-                dialog.open();
-            }));
-        }
-        regexDetails.setSummaryText("Regex");
-        regexDetails.setContent(verticalLayout);
+        regexRuleService.getActiveRules().stream()
+                .map(rule -> builderFactory.cards().regexRule(rule).withDialogEventListener(this::fillContent).build())
+                .forEach(verticalLayout::add);
+        Details details = new Details("Regex", verticalLayout);
+        details.setOpened(true);
+        details.getElement().getStyle().set("padding", "5px").set("width", "100%");
+        Card card = new Card(details);
+        card.setSizeFull();
+        card.getElement().getStyle().set("height", "100%");
+        add(card);
     }
 }

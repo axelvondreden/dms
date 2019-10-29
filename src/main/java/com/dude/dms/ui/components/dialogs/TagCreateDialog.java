@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.dialogs.crud;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.TagService;
@@ -9,13 +9,14 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
 import static com.dude.dms.backend.brain.OptionKey.SIMPLE_TAG_COLORS;
 
-public class TagCreateDialog extends CrudCreateDialog<Tag> {
+public class TagCreateDialog extends EventDialog {
 
     private final TextField name;
 
@@ -28,19 +29,14 @@ public class TagCreateDialog extends CrudCreateDialog<Tag> {
 
         name = new TextField("Name");
         name.setWidthFull();
-
-        if (SIMPLE_TAG_COLORS.getBoolean()) {
-            colorPicker = new DmsColorPickerSimple("Color");
-        } else {
-            colorPicker = new DmsColorPicker("Color");
-        }
+        colorPicker = SIMPLE_TAG_COLORS.getBoolean() ? new DmsColorPickerSimple("Color") : new DmsColorPicker("Color");
         ((HasSize) colorPicker).setWidthFull();
 
-        Button createButton = new Button("Create", e -> create());
+        Button createButton = new Button("Create", VaadinIcon.PLUS.create(), e -> create());
         createButton.setWidthFull();
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button cancelButton = new Button("Close", e -> close());
+        Button cancelButton = new Button("Close", VaadinIcon.CLOSE.create(), e -> close());
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
@@ -56,8 +52,7 @@ public class TagCreateDialog extends CrudCreateDialog<Tag> {
         add(vLayout);
     }
 
-    @Override
-    protected void create() {
+    private void create() {
         if (name.isEmpty()) {
             name.setErrorMessage("Name can not be empty!");
             return;
@@ -71,9 +66,7 @@ public class TagCreateDialog extends CrudCreateDialog<Tag> {
             return;
         }
         tagService.create(new Tag(name.getValue(), (String) ((HasValue) colorPicker).getValue()));
-        if (eventListener != null) {
-            eventListener.onChange();
-        }
+        triggerEvent();
         close();
     }
 }

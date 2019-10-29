@@ -2,14 +2,9 @@ package com.dude.dms.ui;
 
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.tags.Tag;
-import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.backend.service.TextBlockService;
-import com.dude.dms.ui.components.dialogs.AddDocDialog;
-import com.dude.dms.ui.components.dialogs.ChangelogDialog;
-import com.dude.dms.ui.components.dialogs.crud.TagCreateDialog;
-import com.dude.dms.ui.components.dialogs.crud.TagEditDialog;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.views.DocsView;
 import com.dude.dms.ui.views.OptionsView;
@@ -31,36 +26,38 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dude.dms.backend.brain.OptionKey.DARK_MODE;
 import static com.github.appreciated.app.layout.entity.Section.FOOTER;
 import static com.github.appreciated.app.layout.entity.Section.HEADER;
 
 @Push
-public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
+public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> implements AfterNavigationObserver {
 
     private final DocService docService;
 
-    private final TextBlockService textBlockService;
-
     private final TagService tagService;
 
-    private final ChangelogService changelogService;
+    private final BuilderFactory builderFactory;
 
     private final String buildVersion;
 
     private DefaultBadgeHolder docsBadge;
 
     @Autowired
-    public MainView(DocService docService, TextBlockService textBlockService, TagService tagService, ChangelogService changelogService, PdfToDocParser pdfToDocParser, @Value("${build.version}") String buildVersion) {
+    public MainView(DocService docService, TagService tagService, PdfToDocParser pdfToDocParser, BuilderFactory builderFactory, @Value("${build.version}") String buildVersion) {
         this.docService = docService;
-        this.textBlockService = textBlockService;
         this.tagService = tagService;
-        this.changelogService = changelogService;
+        this.builderFactory = builderFactory;
         this.buildVersion = buildVersion;
 
         init(AppLayoutBuilder.get(LeftLayouts.LeftHybrid.class)
@@ -70,7 +67,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
                 .build());
 
         UI ui = UI.getCurrent();
-        pdfToDocParser.setEventListener(success -> {
+        pdfToDocParser.addEventListener("main", success -> {
             if (success) {
                 ui.access(() -> {
                     docsBadge.increase();
@@ -88,22 +85,18 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
         LeftSubmenu tagsEntry = createTagsEntry();
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
         return LeftAppMenuBuilder.get()
-                .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> new AddDocDialog().open()))
+                .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> builderFactory.dialogs().docCreate().build().open()))
                 .add(docsEntry, tagsEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
-                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> new ChangelogDialog(changelogService).open()),
+                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> builderFactory.dialogs().changelog().build().open()),
                         new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
                 .build();
     }
 
     private LeftSubmenu createTagsEntry() {
         List<Component> tagEntries = new ArrayList<>();
-        tagEntries.add(new LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create(), event -> {
-            TagCreateDialog dialog = new TagCreateDialog(tagService);
-            dialog.setEventListener(() -> UI.getCurrent().getPage().reload());
-            dialog.open();
-        }));
+        tagEntries.add(new LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create(), event -> builderFactory.dialogs().tagCreate().withEventListener(() -> UI.getCurrent().getPage().reload()).build().open()));
         for (Tag tag : tagService.findAll()) {
             DefaultBadgeHolder badgeHolder = new DefaultBadgeHolder((int) docService.countByTag(tag));
             Icon icon = VaadinIcon.TAG.create();
@@ -114,11 +107,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
 
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setTarget(entry);
-            contextMenu.addItem("Edit", e -> {
-                TagEditDialog dialog = new TagEditDialog(tagService);
-                dialog.setEventListener(() -> UI.getCurrent().getPage().reload());
-                dialog.open(tag);
-            });
+            contextMenu.addItem("Edit", e -> builderFactory.dialogs().tagEdit(tag).withEventListener(() -> UI.getCurrent().getPage().reload()).build().open());
         }
         return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);
     }
@@ -129,8 +118,15 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> {
     }
 
     private DmsSearchOverlayButton initSearchOverlayButton() {
-        DmsSearchOverlayButton button = new DmsSearchOverlayButton();
-        button.getSearchView().initDataproviders(docService, textBlockService, tagService);
+        DmsSearchOverlayButton button = new DmsSearchOverlayButton(builderFactory);
+        button.getSearchView().initDataproviders(docService, tagService);
         return button;
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+        themeList.clear();
+        themeList.add(DARK_MODE.getBoolean() ? Lumo.DARK : Lumo.LIGHT);
     }
 }

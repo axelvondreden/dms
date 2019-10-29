@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.dialogs.crud;
+package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;
@@ -7,38 +7,45 @@ import com.dude.dms.ui.components.standard.DmsDatePicker;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class DocEditDialog extends CrudEditDialog<Doc> {
+public class DocEditDialog extends EventDialog {
 
-    private final TextField guidTextField;
+    private final Doc doc;
+
     private final DmsDatePicker datePicker;
     private final Tagger tagger;
 
-    private Doc doc;
 
     private final DocService docService;
 
-    public DocEditDialog(DocService docService, TagService tagService) {
+    public DocEditDialog(Doc doc, DocService docService, TagService tagService) {
+        this.doc = doc;
         this.docService = docService;
 
-        guidTextField = new TextField("GUID");
+        TextField guidTextField = new TextField("GUID");
         guidTextField.setWidthFull();
         guidTextField.setReadOnly(true);
+        guidTextField.setValue(doc.getGuid());
 
         datePicker = new DmsDatePicker("Date");
         datePicker.setWidthFull();
+        datePicker.setValue(doc.getDocumentDate());
 
         tagger = new Tagger(tagService);
         tagger.setHeight("25vw");
+        tagger.setSelectedTags(doc.getTags());
+        tagger.setContainedTags(doc.getRawText());
 
-        Button saveButton = new Button("Save", e -> save());
+
+        Button saveButton = new Button("Save", VaadinIcon.DISC.create(), e -> save());
         saveButton.setWidthFull();
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button cancelButton = new Button("Close", e -> close());
+        Button cancelButton = new Button("Close", VaadinIcon.CLOSE.create(), e -> close());
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
@@ -54,25 +61,11 @@ public class DocEditDialog extends CrudEditDialog<Doc> {
         add(vLayout);
     }
 
-    @Override
-    protected void save() {
+    private void save() {
         doc.setDocumentDate(datePicker.getValue());
         doc.setTags(tagger.getSelectedTags());
         docService.save(doc);
-        if (eventListener != null) {
-            eventListener.onChange();
-        }
+        triggerEvent();
         close();
-    }
-
-    @Override
-    public void open(Doc item) {
-        tagger.clear();
-        doc = item;
-        guidTextField.setValue(doc.getGuid());
-        datePicker.setValue(doc.getDocumentDate());
-        tagger.setSelectedTags(doc.getTags());
-        tagger.setContainedTags(doc.getRawText());
-        open();
     }
 }

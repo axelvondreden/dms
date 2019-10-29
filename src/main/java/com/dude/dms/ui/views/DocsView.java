@@ -1,19 +1,18 @@
 package com.dude.dms.ui.views;
 
+import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.DocHistory;
 import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
-import com.dude.dms.ui.components.dialogs.DocImageDialog;
-import com.dude.dms.ui.components.dialogs.DocTextDialog;
-import com.dude.dms.ui.components.dialogs.crud.DocEditDialog;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.tags.TagContainer;
 import com.dude.dms.ui.converters.LocalDateConverter;
 import com.helger.commons.io.file.FileHelper;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -34,21 +33,30 @@ import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
 @PageTitle("Docs")
 public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements HasUrlParameter<String> {
 
+    private final BuilderFactory builderFactory;
+
     private final DocService docService;
     private final TagService tagService;
-    private final TextBlockService textBlockService;
+
+    private String param;
 
     @Autowired
-    public DocsView(DocService docService, TagService tagService, TextBlockService textBlockService) {
+    public DocsView(BuilderFactory builderFactory, DocService docService, TagService tagService, PdfToDocParser pdfToDocParser) {
+        this.builderFactory = builderFactory;
         this.docService = docService;
         this.tagService = tagService;
-        this.textBlockService = textBlockService;
+        UI ui = UI.getCurrent();
+        pdfToDocParser.addEventListener("docs", success -> {
+            if (success) {
+                ui.access(this::fillGrid);
+            }
+        });
         addColumn("Date", doc -> LocalDateConverter.convert(doc.getDocumentDate()));
         addComponentColumn("Tags", doc -> new TagContainer(doc.getTags()));
         addComponentColumn("", this::createGridActions);
         addColumn("GUID", Doc::getGuid);
 
-        grid.addItemDoubleClickListener(event -> new DocImageDialog(textBlockService).open(event.getItem()));
+        grid.addItemDoubleClickListener(event -> builderFactory.dialogs().docImage(event.getItem()).build().open());
     }
 
     private HorizontalLayout createGridActions(Doc doc) {
@@ -63,20 +71,16 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
             download.getElement().setAttribute("download", true);
         }
 
-        DocEditDialog docEditDialog = new DocEditDialog(docService, tagService);
-        docEditDialog.setEventListener(() -> grid.getDataProvider().refreshAll());
-
         return new HorizontalLayout(
-                new Button(VaadinIcon.TEXT_LABEL.create(), e ->new DocTextDialog().open(textBlockService.findByDoc(doc))),
+                new Button(VaadinIcon.TEXT_LABEL.create(), e -> builderFactory.dialogs().docText(doc).build().open()),
                 download,
-                new Button(VaadinIcon.EDIT.create(), e -> docEditDialog.open(doc))
+                new Button(VaadinIcon.EDIT.create(), e -> builderFactory.dialogs().docEdit(doc).withEventListener(() -> grid.getDataProvider().refreshAll()).build().open())
         );
     }
 
-    @Override
-    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
-        if (parameter != null && !parameter.isEmpty()) {
-            String[] parts = parameter.split(":");
+    private void fillGrid() {
+        if (param != null && !param.isEmpty()) {
+            String[] parts = param.split(":");
             if ("tag".equalsIgnoreCase(parts[0])) {
                 Optional<Tag> tag = tagService.findByName(parts[1]);
                 tag.ifPresent(t -> grid.setItems(docService.findByTag(t)));
@@ -84,5 +88,11 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         } else {
             grid.setItems(docService.findAll());
         }
+    }
+
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String t) {
+        param = t;
+        fillGrid();
     }
 }

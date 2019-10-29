@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 
 import static com.dude.dms.backend.brain.OptionKey.DOC_POLL_PATH;
+import static com.dude.dms.backend.brain.OptionKey.POLL_INTERVAL;
 
 @Component
 public class DocPollingService implements PollingService {
@@ -18,20 +19,28 @@ public class DocPollingService implements PollingService {
 
     private final String docPath;
 
+    private int tick;
+
     @Autowired
     private PdfToDocParser pdfToDocParser;
 
     public DocPollingService() {
         docPath = DOC_POLL_PATH.getString();
+        tick = 1;
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 1000)
     public void poll() {
-        LOGGER.info("Polling {} for PDFs...", docPath);
-        File [] files = new File(docPath).listFiles((file, name) -> name.endsWith(".pdf"));
-        if (files != null) {
-            for (File file : files) {
-                processFile(file);
+        if (tick < POLL_INTERVAL.getInt()) {
+            tick++;
+        } else {
+            tick = 1;
+            LOGGER.info("Polling {} for PDFs...", docPath);
+            File [] files = new File(docPath).listFiles((file, name) -> name.endsWith(".pdf"));
+            if (files != null) {
+                for (File file : files) {
+                    processFile(file);
+                }
             }
         }
     }
