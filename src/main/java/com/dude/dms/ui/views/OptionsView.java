@@ -74,7 +74,7 @@ public class OptionsView extends VerticalLayout {
         dateScanFormats.addValueChangeListener(event -> {
             if (!dateScanFormats.isEmpty()) {
                 DATE_SCAN_FORMATS.setString(String.join(",", dateScanFormats.getValue()));
-                Notification.show("Date scnan formats saved.");
+                Notification.show("Date scan formats saved.");
             }
         });
         NumberField imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
@@ -111,7 +111,7 @@ public class OptionsView extends VerticalLayout {
                             FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "img"), new File(dir, "img"));
                             FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "pdf"), new File(dir, "pdf"));
                             DOC_SAVE_PATH.setString(docSavePath.getValue());
-                            Notification.show("Archive moved!");
+                            Notification.show("Doc save path saved.");
                         } catch (IOException ex) {
                             Notification.show("Error trying to move folder: " + ex.getMessage());
                         }
