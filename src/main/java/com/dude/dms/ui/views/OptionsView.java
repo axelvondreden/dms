@@ -4,15 +4,18 @@ import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
 import com.dude.dms.ui.MainView;
+import com.dude.dms.ui.Notify;
 import com.github.appreciated.card.Card;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -41,7 +44,7 @@ public class OptionsView extends VerticalLayout {
         dateFormat.addValueChangeListener(event -> {
             if (!dateFormat.isEmpty()) {
                 DATE_FORMAT.setString(dateFormat.getValue());
-                Notification.show("Date format saved.");
+                Notify.info("Date format saved.");
             }
         });
         ComboBox<Locale> locale = new ComboBox<>("Language");
@@ -52,13 +55,13 @@ public class OptionsView extends VerticalLayout {
         locale.addValueChangeListener(event -> {
             if (!locale.isEmpty()) {
                 LOCALE.setString(locale.getValue().toLanguageTag());
-                Notification.show("Language changed.");
+                Notify.info("Language changed.");
             }
         });
         Checkbox simpleColors = new Checkbox("Simple tag colors", SIMPLE_TAG_COLORS.getBoolean());
         simpleColors.addValueChangeListener(event -> {
             SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
-            Notification.show("Simple tag colors saved");
+            Notify.info("Simple tag colors saved");
         });
         Checkbox darkMode = new Checkbox("Dark mode", DARK_MODE.getBoolean());
         darkMode.addValueChangeListener(event -> {
@@ -66,15 +69,27 @@ public class OptionsView extends VerticalLayout {
             ThemeList themeList = UI.getCurrent().getElement().getThemeList();
             themeList.clear();
             themeList.add(event.getValue() ? Lumo.DARK : Lumo.LIGHT);
-            Notification.show("Dark mode saved.");
+            Notify.info("Dark mode saved.");
         });
-        add(createSection("View", locale, dateFormat, simpleColors, darkMode));
+        ComboBox<Notification.Position> notifyPosition = new ComboBox<>("Notification position");
+        notifyPosition.setItems(Notification.Position.values());
+        notifyPosition.setValue(Notification.Position.valueOf(NOTIFY_POSITION.getString()));
+        notifyPosition.setAllowCustomValue(false);
+        notifyPosition.setPreventInvalidInput(true);
+        notifyPosition.addValueChangeListener(event -> {
+            if (!notifyPosition.isEmpty()) {
+                NOTIFY_POSITION.setString(notifyPosition.getValue().name());
+                Notify.info("Notification position saved.");
+            }
+        });
+        Button notifyTest = new Button("Test", e -> Notify.info("Hi, I am just a test!"));
+        add(createSection("View", locale, dateFormat, simpleColors, darkMode, new HorizontalLayout(notifyPosition, notifyTest)));
 
         TextField dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
         dateScanFormats.addValueChangeListener(event -> {
             if (!dateScanFormats.isEmpty()) {
                 DATE_SCAN_FORMATS.setString(String.join(",", dateScanFormats.getValue()));
-                Notification.show("Date scan formats saved.");
+                Notify.info("Date scan formats saved.");
             }
         });
         NumberField imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
@@ -82,7 +97,7 @@ public class OptionsView extends VerticalLayout {
             if (!imageParserDpi.isEmpty()) {
                 try {
                     IMAGE_PARSER_DPI.setDouble(imageParserDpi.getValue());
-                    Notification.show("Image parser DPI saved.");
+                    Notify.info("Image parser DPI saved.");
                 } catch (NumberFormatException ignored) {
                 }
             }
@@ -91,14 +106,14 @@ public class OptionsView extends VerticalLayout {
         pollingInterval.addValueChangeListener(event -> {
             if (!pollingInterval.isEmpty() && pollingInterval.getValue() > 0) {
                 POLL_INTERVAL.setInt(pollingInterval.getValue().intValue());
-                Notification.show("Polling interval saved.");
+                Notify.info("Polling interval saved.");
             }
         });
         NumberField maxUploadFileSize = new NumberField("Maximum upload file size (MB)", MAX_UPLOAD_FILE_SIZE.getDouble(), e -> {});
         maxUploadFileSize.addValueChangeListener(event -> {
             if (!maxUploadFileSize.isEmpty() && maxUploadFileSize.getValue() > 0) {
                 MAX_UPLOAD_FILE_SIZE.setInt(maxUploadFileSize.getValue().intValue());
-                Notification.show("Maximum upload file size saved.");
+                Notify.info("Maximum upload file size saved.");
             }
         });
         TextField docSavePath = new TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + '\'', DOC_SAVE_PATH.getString(), "");
@@ -111,13 +126,13 @@ public class OptionsView extends VerticalLayout {
                             FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "img"), new File(dir, "img"));
                             FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "pdf"), new File(dir, "pdf"));
                             DOC_SAVE_PATH.setString(docSavePath.getValue());
-                            Notification.show("Doc save path saved.");
+                            Notify.info("Doc save path saved.");
                         } catch (IOException ex) {
-                            Notification.show("Error trying to move folder: " + ex.getMessage());
+                            Notify.error("Error trying to move folder: " + ex.getMessage());
                         }
                     }, "Cancel", e -> {}).open();
                 } else {
-                    Notification.show("Directory " + docSavePath.getValue() + " does not exist.");
+                    Notify.error("Directory " + docSavePath.getValue() + " does not exist.");
                 }
             }
         });
@@ -135,30 +150,30 @@ public class OptionsView extends VerticalLayout {
         autoTag.addValueChangeListener(event -> {
             autoTagId.setReadOnly(!event.getValue());
             AUTO_TAG.setBoolean(autoTag.getValue());
-            Notification.show("Auto tag saved.");
+            Notify.info("Auto tag saved.");
         });
         autoTagId.addValueChangeListener(event -> {
             AUTO_TAG_ID.setLong(autoTagId.getValue().getId());
-            Notification.show("Auto tag saved");
+            Notify.info("Auto tag saved");
         });
         add(createSection("Tags", autoTag, autoTagId));
 
         TextField githubUser = new TextField("Github User", GITHUB_USER.getString(), "");
         githubUser.addValueChangeListener(event -> {
             GITHUB_USER.setString(githubUser.getValue());
-            Notification.show("Github user saved.");
+            Notify.info("Github user saved.");
         });
         PasswordField githubPassword = new PasswordField("Github Password");
         githubPassword.setValue(GITHUB_PASSWORD.getString());
         githubPassword.addValueChangeListener(event -> {
             GITHUB_PASSWORD.setString(githubPassword.getValue());
-            Notification.show("Github password saved.");
+            Notify.info("Github password saved.");
         });
         NumberField updateCheckInterval = new NumberField("Update check interval (minutes)", UPDATE_CHECK_INTERVAL.getDouble(), e -> {});
         updateCheckInterval.addValueChangeListener(event -> {
             if (!updateCheckInterval.isEmpty() && updateCheckInterval.getValue() > 0) {
                 UPDATE_CHECK_INTERVAL.setInt(updateCheckInterval.getValue().intValue());
-                Notification.show("Update check interval saved.");
+                Notify.info("Update check interval saved.");
             }
         });
         add(createSection("Update", githubUser, githubPassword, updateCheckInterval));
