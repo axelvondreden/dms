@@ -7,14 +7,11 @@ import com.dude.dms.ui.MainView;
 import com.github.appreciated.card.Card;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -38,138 +35,141 @@ import static com.dude.dms.backend.brain.OptionKey.*;
 @PageTitle("Options")
 public class OptionsView extends VerticalLayout {
 
-    private final TextField dateFormat;
-
-    private final TextField dateScanFormats;
-
-    private final NumberField imageParserDpi;
-
-    private final NumberField pollingInterval;
-
-    private final NumberField maxUploadFileSize;
-
-    private final TextField docSavePath;
-
-    private final ComboBox<Locale> locale;
-
-    private final Checkbox simpleColors;
-
-    private final Checkbox darkMode;
-
-    private final Checkbox autoTag;
-
-    private final ComboBox<Tag> autoTagId;
-
-    private final TextField githubUser;
-
-    private final PasswordField githubPassword;
-
-    private final NumberField updateCheckInterval;
-
     @Autowired
     public OptionsView(TagService tagService) {
-        Button save = new Button("Save Settings", VaadinIcon.DISC.create(), e -> save());
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        add(save);
-
-        dateFormat = new TextField("Date format", DATE_FORMAT.getString(), "");
-        locale = new ComboBox<>("Locale");
+        TextField dateFormat = new TextField("Date format", DATE_FORMAT.getString(), "");
+        dateFormat.addValueChangeListener(event -> {
+            if (!dateFormat.isEmpty()) {
+                DATE_FORMAT.setString(dateFormat.getValue());
+                Notification.show("Date format saved.");
+            }
+        });
+        ComboBox<Locale> locale = new ComboBox<>("Language");
         locale.setItems(Locale.getAvailableLocales());
         locale.setValue(Locale.forLanguageTag(LOCALE.getString()));
         locale.setAllowCustomValue(false);
         locale.setPreventInvalidInput(true);
-        simpleColors = new Checkbox("Simple tag colors", SIMPLE_TAG_COLORS.getBoolean());
-        darkMode = new Checkbox("Dark mode", DARK_MODE.getBoolean());
+        locale.addValueChangeListener(event -> {
+            if (!locale.isEmpty()) {
+                LOCALE.setString(locale.getValue().toLanguageTag());
+                Notification.show("Language changed.");
+            }
+        });
+        Checkbox simpleColors = new Checkbox("Simple tag colors", SIMPLE_TAG_COLORS.getBoolean());
+        simpleColors.addValueChangeListener(event -> {
+            SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
+            Notification.show("Simple tag colors saved");
+        });
+        Checkbox darkMode = new Checkbox("Dark mode", DARK_MODE.getBoolean());
         darkMode.addValueChangeListener(event -> {
+            DARK_MODE.setBoolean(darkMode.getValue());
             ThemeList themeList = UI.getCurrent().getElement().getThemeList();
             themeList.clear();
             themeList.add(event.getValue() ? Lumo.DARK : Lumo.LIGHT);
+            Notification.show("Dark mode saved.");
         });
         add(createSection("View", locale, dateFormat, simpleColors, darkMode));
 
-        dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
-        imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
-        pollingInterval = new NumberField("Polling interval (seconds)", POLL_INTERVAL.getDouble(), e -> {});
-        maxUploadFileSize = new NumberField("Maximum upload file size (MB)", MAX_UPLOAD_FILE_SIZE.getDouble(), e -> {});
-        docSavePath = new TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + "'", DOC_SAVE_PATH.getString(), "");
+        TextField dateScanFormats = new TextField("Date scan formats", DATE_SCAN_FORMATS.getString(), "");
+        dateScanFormats.addValueChangeListener(event -> {
+            if (!dateScanFormats.isEmpty()) {
+                DATE_SCAN_FORMATS.setString(String.join(",", dateScanFormats.getValue()));
+                Notification.show("Date scnan formats saved.");
+            }
+        });
+        NumberField imageParserDpi = new NumberField("Image Parser DPI", IMAGE_PARSER_DPI.getDouble(), e -> {});
+        imageParserDpi.addValueChangeListener(event -> {
+            if (!imageParserDpi.isEmpty()) {
+                try {
+                    IMAGE_PARSER_DPI.setDouble(imageParserDpi.getValue());
+                    Notification.show("Image parser DPI saved.");
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        });
+        NumberField pollingInterval = new NumberField("Polling interval (seconds)", POLL_INTERVAL.getDouble(), e -> {});
+        pollingInterval.addValueChangeListener(event -> {
+            if (!pollingInterval.isEmpty() && pollingInterval.getValue() > 0) {
+                POLL_INTERVAL.setInt(pollingInterval.getValue().intValue());
+                Notification.show("Polling interval saved.");
+            }
+        });
+        NumberField maxUploadFileSize = new NumberField("Maximum upload file size (MB)", MAX_UPLOAD_FILE_SIZE.getDouble(), e -> {});
+        maxUploadFileSize.addValueChangeListener(event -> {
+            if (!maxUploadFileSize.isEmpty() && maxUploadFileSize.getValue() > 0) {
+                MAX_UPLOAD_FILE_SIZE.setInt(maxUploadFileSize.getValue().intValue());
+                Notification.show("Maximum upload file size saved.");
+            }
+        });
+        TextField docSavePath = new TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + '\'', DOC_SAVE_PATH.getString(), "");
+        docSavePath.addValueChangeListener(event -> {
+            if (!docSavePath.isEmpty()) {
+                File dir = new File(docSavePath.getValue());
+                if (dir.exists() && dir.isDirectory()) {
+                    new ConfirmDialog("Changing archive path!", "Are you sure you want to change the archive path?\nOld files will be copied over to the new directory.", "Change", e -> {
+                        try {
+                            FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "img"), new File(dir, "img"));
+                            FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "pdf"), new File(dir, "pdf"));
+                            DOC_SAVE_PATH.setString(docSavePath.getValue());
+                            Notification.show("Archive moved!");
+                        } catch (IOException ex) {
+                            Notification.show("Error trying to move folder: " + ex.getMessage());
+                        }
+                    }, "Cancel", e -> {}).open();
+                } else {
+                    Notification.show("Directory " + docSavePath.getValue() + " does not exist.");
+                }
+            }
+        });
+
         add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize, docSavePath));
 
-        autoTag = new Checkbox("Auto tag", AUTO_TAG.getBoolean());
-        autoTagId = new ComboBox<>("Auto tag");
+        Checkbox autoTag = new Checkbox("Auto tag", AUTO_TAG.getBoolean());
+        ComboBox<Tag> autoTagId = new ComboBox<>("Auto tag");
         autoTagId.setPreventInvalidInput(true);
         autoTagId.setAllowCustomValue(false);
         autoTagId.setItems(tagService.findAll());
         autoTagId.setValue(tagService.load(AUTO_TAG_ID.getLong()));
         autoTagId.setReadOnly(!autoTag.getValue());
         autoTagId.setItemLabelGenerator(Tag::getName);
-        autoTag.addValueChangeListener(event -> autoTagId.setReadOnly(!event.getValue()));
+        autoTag.addValueChangeListener(event -> {
+            autoTagId.setReadOnly(!event.getValue());
+            AUTO_TAG.setBoolean(autoTag.getValue());
+            Notification.show("Auto tag saved.");
+        });
+        autoTagId.addValueChangeListener(event -> {
+            AUTO_TAG_ID.setLong(autoTagId.getValue().getId());
+            Notification.show("Auto tag saved");
+        });
         add(createSection("Tags", autoTag, autoTagId));
 
-        githubUser = new TextField("Github User", GITHUB_USER.getString(), "");
-        githubPassword = new PasswordField("Github Password");
+        TextField githubUser = new TextField("Github User", GITHUB_USER.getString(), "");
+        githubUser.addValueChangeListener(event -> {
+            GITHUB_USER.setString(githubUser.getValue());
+            Notification.show("Github user saved.");
+        });
+        PasswordField githubPassword = new PasswordField("Github Password");
         githubPassword.setValue(GITHUB_PASSWORD.getString());
-        updateCheckInterval = new NumberField("Update check interval (minutes)", UPDATE_CHECK_INTERVAL.getDouble(), e -> {});
+        githubPassword.addValueChangeListener(event -> {
+            GITHUB_PASSWORD.setString(githubPassword.getValue());
+            Notification.show("Github password saved.");
+        });
+        NumberField updateCheckInterval = new NumberField("Update check interval (minutes)", UPDATE_CHECK_INTERVAL.getDouble(), e -> {});
+        updateCheckInterval.addValueChangeListener(event -> {
+            if (!updateCheckInterval.isEmpty() && updateCheckInterval.getValue() > 0) {
+                UPDATE_CHECK_INTERVAL.setInt(updateCheckInterval.getValue().intValue());
+                Notification.show("Update check interval saved.");
+            }
+        });
         add(createSection("Update", githubUser, githubPassword, updateCheckInterval));
     }
 
-    private Card createSection(String title, Component... components) {
+    private static Card createSection(String title, Component... components) {
         Details details = new Details(title, new FormLayout(components));
         details.setOpened(true);
         details.getElement().getStyle().set("padding", "5px").set("width", "100%");
         Card card = new Card(details);
         card.setWidthFull();
         return card;
-    }
-
-    private void save() {
-        if (!DOC_SAVE_PATH.getString().equals(docSavePath.getValue())) {
-            File dir = new File(docSavePath.getValue());
-            if (dir.exists() && dir.isDirectory()) {
-                new ConfirmDialog("Changing archive path!", "Are you sure you want to change the archive path?\nOld files will be copied over to the new directory.", "Change", event -> {
-                    try {
-                        FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "img"), new File(dir, "img"));
-                        FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "pdf"), new File(dir, "pdf"));
-                        DOC_SAVE_PATH.setString(docSavePath.getValue());
-                        Notification.show("Archive moved!");
-                    } catch (IOException e) {
-                        Notification.show("Error trying to move folder: " + e.getMessage());
-                    }
-                }, "Cancel", event -> {}).open();
-            } else {
-                Notification.show("Directory " + docSavePath.getValue() + " does not exist.");
-            }
-        }
-        if (!dateFormat.isEmpty()) {
-            DATE_FORMAT.setString(dateFormat.getValue());
-        }
-        if (!dateScanFormats.isEmpty()) {
-            DATE_SCAN_FORMATS.setString(String.join(",", dateScanFormats.getValue()));
-        }
-        if (!locale.isEmpty()) {
-            LOCALE.setString(locale.getValue().toLanguageTag());
-        }
-        if (!imageParserDpi.isEmpty()) {
-            try {
-                IMAGE_PARSER_DPI.setDouble(imageParserDpi.getValue());
-            } catch (NumberFormatException ignored) {
-            }
-        }
-        if (!pollingInterval.isEmpty() && pollingInterval.getValue() > 0) {
-            POLL_INTERVAL.setInt(pollingInterval.getValue().intValue());
-        }
-        if (!maxUploadFileSize.isEmpty() && maxUploadFileSize.getValue() > 0) {
-            MAX_UPLOAD_FILE_SIZE.setInt(maxUploadFileSize.getValue().intValue());
-        }
-        if (!updateCheckInterval.isEmpty() && updateCheckInterval.getValue() > 0) {
-            UPDATE_CHECK_INTERVAL.setInt(updateCheckInterval.getValue().intValue());
-        }
-        AUTO_TAG.setBoolean(autoTag.getValue());
-        AUTO_TAG_ID.setLong(autoTagId.getValue().getId());
-        DARK_MODE.setBoolean(darkMode.getValue());
-        SIMPLE_TAG_COLORS.setBoolean(simpleColors.getValue());
-        GITHUB_USER.setString(githubUser.getValue());
-        GITHUB_PASSWORD.setString(githubPassword.getValue());
-
-        Notification.show("Settings saved!");
     }
 }
