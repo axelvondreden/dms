@@ -34,7 +34,7 @@ public class StartUpRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
-        //updateChecker.check(true);
+        updateChecker.check(true);
         createOptionsFile();
         directoryManager.checkDirectories();
         demoDataManager.createDemoData();
