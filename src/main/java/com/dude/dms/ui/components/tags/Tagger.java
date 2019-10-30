@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.tags;
 
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.TagService;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;

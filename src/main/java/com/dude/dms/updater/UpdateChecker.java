@@ -1,6 +1,6 @@
 package com.dude.dms.updater;
 
-import com.dude.dms.backend.data.updater.Changelog;
+import com.dude.dms.backend.data.Changelog;
 import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.startup.ShutdownManager;
 import com.vaadin.flow.component.UI;

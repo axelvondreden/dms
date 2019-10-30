@@ -1,6 +1,6 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.updater.Changelog;
+import com.dude.dms.backend.data.Changelog;
 import com.dude.dms.backend.repositories.ChangelogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

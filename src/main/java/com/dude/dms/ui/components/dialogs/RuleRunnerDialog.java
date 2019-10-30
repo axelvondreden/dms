@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.docs.Doc;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;

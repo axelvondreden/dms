@@ -1,6 +1,6 @@
 package com.dude.dms.ui.builder.searchresults;
 
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.components.dialogs.TagEditDialog;
 import com.dude.dms.ui.components.search.TagSearchResult;

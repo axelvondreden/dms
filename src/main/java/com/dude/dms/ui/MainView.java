@@ -1,7 +1,7 @@
 package com.dude.dms.ui;
 
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.builder.BuilderFactory;

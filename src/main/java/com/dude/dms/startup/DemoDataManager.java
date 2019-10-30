@@ -1,7 +1,7 @@
 package com.dude.dms.startup;
 
 import com.dude.dms.backend.data.docs.Doc;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import org.slf4j.Logger;

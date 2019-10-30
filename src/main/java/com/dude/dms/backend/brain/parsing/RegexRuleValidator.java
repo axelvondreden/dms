@@ -1,7 +1,7 @@
 package com.dude.dms.backend.brain.parsing;
 
 import com.dude.dms.backend.data.rules.RegexRule;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
