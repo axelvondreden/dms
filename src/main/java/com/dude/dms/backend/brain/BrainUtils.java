@@ -1,20 +1,16 @@
 package com.dude.dms.backend.brain;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.*;
 import java.util.Properties;
 
 public final class BrainUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BrainUtils.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(BrainUtils.class);
 
     private BrainUtils() {
     }
 
     public static String getProperty(OptionKey key) {
-        LOGGER.debug("Retrieving property for key: '{}'", key.key);
         String userProperty = getUserProperty(key);
         return userProperty != null ? userProperty : getDefaultProperty(key);
     }

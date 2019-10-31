@@ -11,4 +11,6 @@ public interface LogEntryRepository extends JpaRepository<LogEntry, Long> {
     List<LogEntry> findByClassName(String className);
 
     List<LogEntry> findByLevel(DmsLogger.Level level);
+
+    List<LogEntry> findByOrderByTimestampDesc();
 }

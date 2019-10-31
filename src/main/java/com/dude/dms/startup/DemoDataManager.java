@@ -1,11 +1,10 @@
 package com.dude.dms.startup;
 
-import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.Tag;
+import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.dude.dms.backend.brain.OptionKey.*;
@@ -23,7 +25,7 @@ import static com.dude.dms.backend.brain.OptionKey.*;
 @Component
 public class DemoDataManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DemoDataManager.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(DemoDataManager.class);
 
     @Autowired
     private TagService tagService;

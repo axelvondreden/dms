@@ -1,12 +1,11 @@
 package com.dude.dms.backend.brain.parsing;
 
-import com.dude.dms.backend.data.rules.RegexRule;
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.Tag;
+import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class RegexRuleValidator extends RuleValidator<RegexRule> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegexRuleValidator.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(RegexRuleValidator.class);
 
     private final RegexRuleService regexRuleService;
 

@@ -7,6 +7,7 @@ import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.views.DocsView;
+import com.dude.dms.ui.views.LogView;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder;
@@ -82,10 +83,11 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
         docsBadge.bind(docsEntry.getBadge());
 
         LeftSubmenu tagsEntry = createTagsEntry();
-        LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
+        LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView.class);
+        LeftNavigationItem logEntry = new LeftNavigationItem("Log", VaadinIcon. CLIPBOARD_PULSE.create(), LogView.class);
         return LeftAppMenuBuilder.get()
                 .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> builderFactory.dialogs().docCreate().build().open()))
-                .add(docsEntry, tagsEntry, rulesEntry)
+                .add(docsEntry, tagsEntry, rulesEntry, logEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
                         new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> builderFactory.dialogs().changelog().build().open()),

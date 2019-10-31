@@ -6,6 +6,7 @@ public final class Const {
     public static final String PAGE_DOCS = "docs";
     public static final String PAGE_RULES = "rules";
     public static final String PAGE_OPTIONS = "options";
+    public static final String PAGE_LOG = "log";
 
     public static final String[] SIMPLE_COLORS = {
             "AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "Black", "BlanchedAlmond", "Blue", "BlueViolet",
