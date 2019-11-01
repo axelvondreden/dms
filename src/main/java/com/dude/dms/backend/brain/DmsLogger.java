@@ -2,6 +2,8 @@ package com.dude.dms.backend.brain;
 
 import com.dude.dms.backend.data.LogEntry;
 import com.dude.dms.backend.service.LogEntryService;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +32,19 @@ public class DmsLogger {
     }
 
     private void save(Level lvl, String msg) {
-        trySave(new LogEntry(LocalDateTime.now(), clazz.getSimpleName(), clazz.getPackage().toString(), msg, lvl));
+        save(lvl, msg, false);
+    }
+
+    private void save(Level lvl, String msg, boolean ui) {
+        trySave(new LogEntry(LocalDateTime.now(), clazz.getSimpleName(), clazz.getPackage().toString(), msg, ui, lvl));
     }
 
     private void save(Level lvl, String msg, Exception e) {
-        trySave(new LogEntry(LocalDateTime.now(), clazz.getSimpleName(), clazz.getPackage().toString(), msg, Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("\n")), lvl));
+        save(lvl, msg, e, false);
+    }
+
+    private void save(Level lvl, String msg, Exception e, boolean ui) {
+        trySave(new LogEntry(LocalDateTime.now(), clazz.getSimpleName(), clazz.getPackage().toString(), msg, Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("\n")), ui, lvl));
     }
 
     private void trySave(LogEntry logEntry) {
@@ -50,14 +60,26 @@ public class DmsLogger {
         logEntryService.save(logEntry);
     }
 
-    public void info(String msg) {
-        logger.info(msg);
-        save(Level.INFO, msg);
+    public void info(String message) {
+        logger.info(message);
+        save(Level.INFO, message);
     }
 
-    public void info(String msg, Object... arguments) {
-        logger.info(msg, arguments);
-        save(Level.INFO, format(msg, arguments));
+    public void info(String message, Object... arguments) {
+        logger.info(message, arguments);
+        save(Level.INFO, format(message, arguments));
+    }
+
+    public void showInfo(String message) {
+        showInfo(message, false);
+    }
+
+    public void showInfo(String message, boolean persistent) {
+        Notification notification = create(message, persistent);
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        notification.open();
+        logger.info(message);
+        save(Level.INFO, message, true);
     }
 
     public void warn(String msg) {
@@ -88,6 +110,22 @@ public class DmsLogger {
     public void error(String msg, Exception e, Object... arguments) {
         logger.error(msg, e);
         save(Level.ERROR, format(msg, arguments), e);
+    }
+
+    public void showError(String message) {
+        showError(message, false);
+    }
+
+    public void showError(String message, boolean persistent) {
+        Notification notification = create(message, persistent);
+        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        notification.open();
+        logger.error(message);
+        save(Level.ERROR, message, true);
+    }
+
+    private static Notification create(String message, boolean persistent) {
+        return new Notification(message, persistent ? 0 : 3000, Notification.Position.valueOf(OptionKey.NOTIFY_POSITION.getString()));
     }
 
     private String format(String msg, Object... arguments) {

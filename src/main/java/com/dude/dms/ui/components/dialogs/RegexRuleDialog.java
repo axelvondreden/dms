@@ -1,9 +1,9 @@
 package com.dude.dms.ui.components.dialogs;
 
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.RegexRuleService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.Notify;
 import com.dude.dms.ui.components.standard.RegexField;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
@@ -14,6 +14,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class RegexRuleDialog extends EventDialog {
+
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(RegexRuleDialog.class);
 
     private final RegexField regex;
     private final Tagger ruleTagger;
@@ -56,21 +58,21 @@ public class RegexRuleDialog extends EventDialog {
 
     private void save() {
         if (regex.isEmpty()) {
-            Notify.error("Regex can not be empty!");
+            LOGGER.showError("Regex can not be empty!");
             return;
         }
         if (ruleTagger.getSelectedTags().isEmpty()) {
-            Notify.error("At least on tag must be selected!");
+            LOGGER.showError("At least on tag must be selected!");
             return;
         }
         if (regexRule == null) {
             regexRuleService.save(new RegexRule(regex.getValue(), ruleTagger.getSelectedTags()));
-            Notify.info("Created new rule!");
+            LOGGER.showInfo("Created new rule!");
         } else {
             regexRule.setRegex(regex.getValue());
             regexRule.setTags(ruleTagger.getSelectedTags());
             regexRuleService.save(regexRule);
-            Notify.info("Edited rule!");
+            LOGGER.showInfo("Edited rule!");
         }
         triggerEvent();
         close();

@@ -21,15 +21,17 @@ public interface LogEntryRepository extends JpaRepository<LogEntry, Long> {
 
     @Query("SELECT log FROM LogEntry log " +
             "WHERE (:className is null or log.className = :className) " +
-            "AND (:date is null or CAST(log.timestamp AS date) = :date)" +
-            "AND (:level is null or log.level = :level)")
-    Page<LogEntry> findByLogFilter(@Param("date") LocalDate date, @Param("className") String className, @Param("level") DmsLogger.Level level, Pageable pageable);
+            "AND (:date is null or CAST(log.timestamp AS date) = CAST(:date AS date))" +
+            "AND (:level is null or log.level = :level)" +
+            "AND (:ui = false or log.ui = :ui)")
+    Page<LogEntry> findByLogFilter(@Param("date") LocalDate date, @Param("className") String className, @Param("level") DmsLogger.Level level, @Param("ui") boolean ui, Pageable pageable);
 
     @Query("SELECT COUNT(*) FROM LogEntry log " +
             "WHERE (:className is null or log.className = :className) " +
-            "AND (:date is null or CAST(log.timestamp AS date) = :date)" +
-            "AND (:level is null or log.level = :level)")
-    long countByLogFilter(@Param("date") LocalDate date, @Param("className") String className, @Param("level") DmsLogger.Level level);
+            "AND (:date is null or CAST(log.timestamp AS date) = CAST(:date AS date))" +
+            "AND (:level is null or log.level = :level)" +
+            "AND (:ui = false or log.ui = :ui)")
+    long countByLogFilter(@Param("date") LocalDate date, @Param("className") String className, @Param("level") DmsLogger.Level level, @Param("ui") boolean ui);
 
     @Query("SELECT DISTINCT log.className FROM LogEntry log")
     List<String> findDistinctClassNames();

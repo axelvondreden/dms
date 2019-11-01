@@ -26,6 +26,8 @@ public class LogEntry extends DataEntity {
 
     protected String stacktrace;
 
+    protected boolean ui;
+
     @NotNull
     protected DmsLogger.Level level;
 
@@ -40,11 +42,28 @@ public class LogEntry extends DataEntity {
         this.level = level;
     }
 
+    public LogEntry(@NotNull LocalDateTime timestamp, @NotBlank String className, @NotBlank String path, boolean ui, @NotNull DmsLogger.Level level) {
+        this.timestamp = timestamp;
+        this.className = className;
+        this.path = path;
+        this.ui = ui;
+        this.level = level;
+    }
+
     public LogEntry(@NotNull LocalDateTime timestamp, @NotBlank String className, @NotBlank String path, String message, @NotNull DmsLogger.Level level) {
         this.timestamp = timestamp;
         this.className = className;
         this.path = path;
         this.message = message;
+        this.level = level;
+    }
+
+    public LogEntry(@NotNull LocalDateTime timestamp, @NotBlank String className, @NotBlank String path, String message, boolean ui, @NotNull DmsLogger.Level level) {
+        this.timestamp = timestamp;
+        this.className = className;
+        this.path = path;
+        this.message = message;
+        this.ui = ui;
         this.level = level;
     }
 
@@ -54,6 +73,16 @@ public class LogEntry extends DataEntity {
         this.path = path;
         this.message = message;
         this.stacktrace = stacktrace;
+        this.level = level;
+    }
+
+    public LogEntry(@NotNull LocalDateTime timestamp, @NotBlank String className, @NotBlank String path, String message, String stacktrace, boolean ui, @NotNull DmsLogger.Level level) {
+        this.timestamp = timestamp;
+        this.className = className;
+        this.path = path;
+        this.message = message;
+        this.stacktrace = stacktrace;
+        this.ui = ui;
         this.level = level;
     }
 
@@ -103,5 +132,13 @@ public class LogEntry extends DataEntity {
 
     public void setLevel(DmsLogger.Level level) {
         this.level = level;
+    }
+
+    public boolean isUi() {
+        return ui;
+    }
+
+    public void setUi(boolean ui) {
+        this.ui = ui;
     }
 }

@@ -1,9 +1,9 @@
 package com.dude.dms.ui.components.dialogs;
 
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.Notify;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,6 +16,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
 public class PlainTextRuleDialog extends EventDialog {
+
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(PlainTextRuleDialog.class);
 
     private final TextField plainText;
     private final Tagger ruleTagger;
@@ -70,21 +72,21 @@ public class PlainTextRuleDialog extends EventDialog {
 
     private void save() {
         if (plainText.isEmpty()) {
-            Notify.error("Text can not be empty!");
+            LOGGER.showError("Text can not be empty!");
             return;
         }
         if (ruleTagger.getSelectedTags().isEmpty()) {
-            Notify.error("At least on tag must be selected!");
+            LOGGER.showError("At least on tag must be selected!");
             return;
         }
         if (plainTextRule == null) {
             plainTextRuleService.save(new PlainTextRule(plainText.getValue(), caseSensitive.getValue(), ruleTagger.getSelectedTags()));
-            Notify.info("Created new rule!");
+            LOGGER.showInfo("Created new rule!");
         } else {
             plainTextRule.setText(plainText.getValue());
             plainTextRule.setTags(ruleTagger.getSelectedTags());
             plainTextRuleService.save(plainTextRule);
-            Notify.info("Edited rule!");
+            LOGGER.showInfo("Edited rule!");
         }
         triggerEvent();
         close();

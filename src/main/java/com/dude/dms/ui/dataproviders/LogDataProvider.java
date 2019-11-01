@@ -27,6 +27,7 @@ public class LogDataProvider extends FilterablePageableDataProvider<LogEntry, Lo
         private LocalDate date;
         private String className;
         private DmsLogger.Level level;
+        private boolean ui;
 
         public LocalDate getDate() {
             return date;
@@ -50,6 +51,14 @@ public class LogDataProvider extends FilterablePageableDataProvider<LogEntry, Lo
 
         public void setLevel(DmsLogger.Level level) {
             this.level = level;
+        }
+
+        public boolean isUI() {
+            return ui;
+        }
+
+        public void setUi(boolean ui) {
+            this.ui = ui;
         }
     }
 

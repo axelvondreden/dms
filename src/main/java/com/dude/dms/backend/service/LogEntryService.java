@@ -1,6 +1,5 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.LogEntry;
 import com.dude.dms.backend.repositories.LogEntryRepository;
 import com.dude.dms.ui.dataproviders.LogDataProvider;
@@ -27,24 +26,12 @@ public class LogEntryService extends CrudService<LogEntry> {
         return logEntryRepository;
     }
 
-    public List<LogEntry> findByClassName(String className) {
-        return logEntryRepository.findByClassName(className);
+    public Page<LogEntry> findByLogFilter(LogDataProvider.LogFilter filter, Pageable pageable) {
+        return logEntryRepository.findByLogFilter(filter.getDate(), filter.getClassName(), filter.getLevel(), filter.isUI(), pageable);
     }
 
-    public List<LogEntry> findByLevel(DmsLogger.Level level) {
-        return logEntryRepository.findByLevel(level);
-    }
-
-    public List<LogEntry> findByOrderByTimestampDesc() {
-        return logEntryRepository.findByOrderByTimestampDesc();
-    }
-
-    public Page<LogEntry> findByLogFilter(LogDataProvider.LogFilter logFilter, Pageable pageable) {
-        return logEntryRepository.findByLogFilter(logFilter.getDate(), logFilter.getClassName(), logFilter.getLevel(), pageable);
-    }
-
-    public long countByLogFilter(LogDataProvider.LogFilter logFilter) {
-        return logEntryRepository.countByLogFilter(logFilter.getDate(), logFilter.getClassName(), logFilter.getLevel());
+    public long countByLogFilter(LogDataProvider.LogFilter filter) {
+        return logEntryRepository.countByLogFilter(filter.getDate(), filter.getClassName(), filter.getLevel(), filter.isUI());
     }
 
     public List<String> findDistinctClassNames() {

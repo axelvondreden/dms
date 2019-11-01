@@ -1,5 +1,6 @@
 package com.dude.dms.ui;
 
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
@@ -43,6 +44,8 @@ import static com.github.appreciated.app.layout.entity.Section.HEADER;
 @Push
 public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> implements AfterNavigationObserver {
 
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(MainView.class);
+
     private final DocService docService;
 
     private final TagService tagService;
@@ -71,7 +74,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
             if (success) {
                 ui.access(() -> {
                     docsBadge.increase();
-                    Notify.info("New doc added!");
+                    LOGGER.showInfo("New doc added!");
                 });
             }
         });
