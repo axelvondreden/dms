@@ -8,7 +8,8 @@ import com.dude.dms.ui.components.standard.RegexField;
 import com.dude.dms.ui.components.tags.Tagger;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
@@ -76,12 +77,14 @@ public class RegexRuleDialog extends EventDialog {
     }
 
     private void delete() {
-        ConfirmDialog dialog = new ConfirmDialog("Confirm delete", "Are you sure you want to delete the item?", "Delete", event -> {
+        Dialog dialog = new Dialog(new Label("Are you sure you want to delete the item?"));
+        Button button = new Button("Delete", VaadinIcon.TRASH.create(), e -> {
             regexRuleService.delete(regexRule);
             triggerEvent();
             close();
-        }, "Cancel", event -> {});
-        dialog.setConfirmButtonTheme("error primary");
+        });
+        button.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        dialog.add(button);
         dialog.open();
     }
 }

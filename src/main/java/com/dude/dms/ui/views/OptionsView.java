@@ -9,11 +9,14 @@ import com.github.appreciated.card.Card;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.details.Details;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -125,7 +128,8 @@ public class OptionsView extends VerticalLayout {
             if (!docSavePath.isEmpty()) {
                 File dir = new File(docSavePath.getValue());
                 if (dir.exists() && dir.isDirectory()) {
-                    new ConfirmDialog("Changing archive path!", "Are you sure you want to change the archive path?\nOld files will be copied over to the new directory.", "Change", e -> {
+                    Dialog dialog = new Dialog(new Label("Are you sure you want to change the archive path?\nOld files will be copied over to the new directory."));
+                    Button button = new Button("Change", VaadinIcon.FOLDER_REMOVE.create(), e -> {
                         try {
                             FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "img"), new File(dir, "img"));
                             FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "pdf"), new File(dir, "pdf"));
@@ -134,7 +138,10 @@ public class OptionsView extends VerticalLayout {
                         } catch (IOException ex) {
                             Notify.error("Error trying to move folder: " + ex.getMessage());
                         }
-                    }, "Cancel", e -> {}).open();
+                    });
+                    button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+                    dialog.add(button);
+                    dialog.open();
                 } else {
                     Notify.error("Directory " + docSavePath.getValue() + " does not exist.");
                 }
