@@ -1,7 +1,6 @@
 /*.db
 
 target/
-.idea/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -46,3 +45,4 @@ options.properties
 /.vaadin/
 /docs/
 /docs_in/
+/.idea/$PRODUCT_WORKSPACE_FILE$
