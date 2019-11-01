@@ -46,3 +46,4 @@ options.properties
 /docs/
 /docs_in/
 /.idea/$PRODUCT_WORKSPACE_FILE$
+/.idea/dbnavigator.xml
