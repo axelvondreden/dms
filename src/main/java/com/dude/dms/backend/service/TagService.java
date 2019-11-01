@@ -3,7 +3,7 @@ package com.dude.dms.backend.service;
 import com.dude.dms.backend.data.history.TagHistory;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

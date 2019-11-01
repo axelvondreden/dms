@@ -1,13 +1,14 @@
 package com.dude.dms.backend.brain.parsing;
 
+import com.dude.dms.backend.brain.DmsLogger;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.docs.TextBlock;
-import com.dude.dms.backend.data.tags.Tag;
-import com.dude.dms.backend.service.*;
+import com.dude.dms.backend.service.DocService;
+import com.dude.dms.backend.service.TagService;
+import com.dude.dms.backend.service.TextBlockService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ import static com.dude.dms.backend.brain.OptionKey.*;
 @Component
 public class PdfToDocParser implements Parser {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PdfToDocParser.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(PdfToDocParser.class);
 
     private final DocService docService;
 

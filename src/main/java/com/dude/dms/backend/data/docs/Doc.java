@@ -3,7 +3,7 @@ package com.dude.dms.backend.data.docs;
 import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.data.Diffable;
 import com.dude.dms.backend.data.Historical;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.data.history.DocHistory;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

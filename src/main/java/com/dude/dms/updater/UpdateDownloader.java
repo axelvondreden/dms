@@ -1,7 +1,6 @@
 package com.dude.dms.updater;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.dude.dms.backend.brain.DmsLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -20,7 +19,7 @@ import java.util.Collections;
 @Component
 public class UpdateDownloader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateDownloader.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(UpdateDownloader.class);
 
     @Autowired
     private UpdateInstaller updateInstaller;
