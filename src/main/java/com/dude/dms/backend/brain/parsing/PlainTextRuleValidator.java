@@ -1,12 +1,11 @@
 package com.dude.dms.backend.brain.parsing;
 
+import com.dude.dms.backend.brain.DmsLogger;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.data.rules.PlainTextRule;
-import com.dude.dms.backend.data.tags.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.backend.service.TagService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class PlainTextRuleValidator extends RuleValidator<PlainTextRule> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlainTextRuleValidator.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(PlainTextRuleValidator.class);
 
     private final PlainTextRuleService plainTextRuleService;
 

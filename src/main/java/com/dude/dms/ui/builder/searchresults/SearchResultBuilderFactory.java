@@ -1,7 +1,7 @@
 package com.dude.dms.ui.builder.searchresults;
 
 import com.dude.dms.backend.data.docs.Doc;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.builder.Factory;

@@ -1,7 +1,7 @@
 package com.dude.dms.backend.data.rules;
 
 import com.dude.dms.backend.data.DataEntity;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 
 import javax.persistence.MappedSuperclass;
 import java.util.Set;

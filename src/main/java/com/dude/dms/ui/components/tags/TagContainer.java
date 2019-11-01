@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.tags;
 
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class TagContainer extends HorizontalLayout {

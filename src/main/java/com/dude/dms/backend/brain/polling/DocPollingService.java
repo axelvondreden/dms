@@ -1,8 +1,7 @@
 package com.dude.dms.backend.brain.polling;
 
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ import static com.dude.dms.backend.brain.OptionKey.POLL_INTERVAL;
 @Component
 public class DocPollingService implements PollingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DocPollingService.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(DocPollingService.class);
 
     private final String docPath;
 

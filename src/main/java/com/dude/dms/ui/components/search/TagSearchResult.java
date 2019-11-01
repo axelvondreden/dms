@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.search;
 
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.ui.components.dialogs.TagEditDialog;
 import com.github.appreciated.card.label.PrimaryLabel;
 import com.github.appreciated.card.label.TitleLabel;

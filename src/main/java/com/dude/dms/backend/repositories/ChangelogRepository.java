@@ -1,6 +1,6 @@
 package com.dude.dms.backend.repositories;
 
-import com.dude.dms.backend.data.updater.Changelog;
+import com.dude.dms.backend.data.Changelog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,12 +1,14 @@
 package com.dude.dms.ui;
 
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.views.DocsView;
+import com.dude.dms.ui.views.LogView;
 import com.dude.dms.ui.views.OptionsView;
 import com.dude.dms.ui.views.RulesView;
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder;
@@ -42,6 +44,8 @@ import static com.github.appreciated.app.layout.entity.Section.HEADER;
 @Push
 public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> implements AfterNavigationObserver {
 
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(MainView.class);
+
     private final DocService docService;
 
     private final TagService tagService;
@@ -70,7 +74,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
             if (success) {
                 ui.access(() -> {
                     docsBadge.increase();
-                    Notify.info("New doc added!");
+                    LOGGER.showInfo("New doc added!");
                 });
             }
         });
@@ -82,10 +86,11 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
         docsBadge.bind(docsEntry.getBadge());
 
         LeftSubmenu tagsEntry = createTagsEntry();
-        LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.FORM.create(), RulesView.class);
+        LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView.class);
+        LeftNavigationItem logEntry = new LeftNavigationItem("Log", VaadinIcon. CLIPBOARD_PULSE.create(), LogView.class);
         return LeftAppMenuBuilder.get()
                 .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> builderFactory.dialogs().docCreate().build().open()))
-                .add(docsEntry, tagsEntry, rulesEntry)
+                .add(docsEntry, tagsEntry, rulesEntry, logEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
                         new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> builderFactory.dialogs().changelog().build().open()),

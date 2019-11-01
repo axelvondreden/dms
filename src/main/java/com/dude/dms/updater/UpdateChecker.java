@@ -1,6 +1,7 @@
 package com.dude.dms.updater;
 
-import com.dude.dms.backend.data.updater.Changelog;
+import com.dude.dms.backend.brain.DmsLogger;
+import com.dude.dms.backend.data.Changelog;
 import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.startup.ShutdownManager;
 import com.vaadin.flow.component.UI;
@@ -11,8 +12,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
@@ -27,7 +26,7 @@ import static com.dude.dms.backend.brain.OptionKey.*;
 @Component
 public class UpdateChecker {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateChecker.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(UpdateChecker.class);
 
     private int tick;
 

@@ -1,9 +1,8 @@
 package com.dude.dms.startup;
 
+import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.brain.polling.DocPollingService;
 import com.dude.dms.updater.UpdateChecker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -18,7 +17,7 @@ import static com.dude.dms.backend.brain.OptionKey.LOCALE;
 @Component
 public class StartUpRunner implements CommandLineRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StartUpRunner.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(StartUpRunner.class);
 
     @Autowired
     private DocPollingService docPollingService;

@@ -1,6 +1,6 @@
 package com.dude.dms.api;
 
-import com.dude.dms.backend.data.updater.Changelog;
+import com.dude.dms.backend.data.Changelog;
 import com.dude.dms.backend.service.ChangelogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

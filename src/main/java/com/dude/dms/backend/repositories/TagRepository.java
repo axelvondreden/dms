@@ -2,7 +2,7 @@ package com.dude.dms.backend.repositories;
 
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.data.rules.RegexRule;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

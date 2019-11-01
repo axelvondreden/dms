@@ -1,6 +1,6 @@
 package com.dude.dms.ui.builder.dialogs;
 
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.dialogs.TagEditDialog;

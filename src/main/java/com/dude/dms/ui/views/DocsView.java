@@ -3,7 +3,7 @@ package com.dude.dms.ui.views;
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.DocHistory;
-import com.dude.dms.backend.data.tags.Tag;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
