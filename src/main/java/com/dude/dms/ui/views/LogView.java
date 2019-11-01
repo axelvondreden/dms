@@ -43,8 +43,8 @@ public class LogView extends VerticalLayout {
 
         Grid<LogEntry> grid = new Grid<>();
         grid.setPageSize(200);
-        grid.setDataProvider(logDataProvider
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT));
+        grid.setDataProvider(logDataProvider);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addColumn(log -> LocalDateTimeConverter.convert(log.getTimestamp())).setHeader("Timestamp").setAutoWidth(true).setResizable(true).setKey("timestamp");
         grid.addColumn(LogEntry::getLevel).setHeader("Level").setAutoWidth(true).setResizable(true).setKey("level");
         grid.addColumn(LogEntry::getClassName).setHeader("Class").setAutoWidth(true).setResizable(true).setKey("class");
@@ -55,14 +55,21 @@ public class LogView extends VerticalLayout {
         dateFilter = new DmsDatePicker();
         dateFilter.setPlaceholder("Date");
         dateFilter.setValue(LocalDate.now());
+        dateFilter.addValueChangeListener(e -> refreshFilter());
 
         classNameFilter = new ComboBox<>();
         classNameFilter.setPlaceholder("All Classes");
+        classNameFilter.setPreventInvalidInput(true);
+        classNameFilter.setAllowCustomValue(false);
         classNameFilter.setItems(logEntryService.findDistinctClassNames());
+        classNameFilter.addValueChangeListener(e -> refreshFilter());
 
         levelFilter = new ComboBox<>();
         levelFilter.setPlaceholder("All Levels");
+        levelFilter.setPreventInvalidInput(true);
+        levelFilter.setAllowCustomValue(false);
         levelFilter.setItems(DmsLogger.Level.values());
+        levelFilter.addValueChangeListener(e -> refreshFilter());
 
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(grid.getColumnByKey("timestamp")).setComponent(dateFilter);
