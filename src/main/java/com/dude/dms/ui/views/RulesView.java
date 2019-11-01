@@ -38,7 +38,7 @@ public class RulesView extends FormLayout {
     private void fillContent() {
         removeAll();
         addPlaintext();
-        addRegex();//test
+        addRegex();
     }
 
     private void addPlaintext() {
