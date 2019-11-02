@@ -1,4 +1,4 @@
-package com.dude.dms.ui.builder.dialogs;
+package com.dude.dms.ui.builder.docs;
 
 import com.dude.dms.ui.EntityEventListener;
 import com.dude.dms.ui.components.dialogs.DocCreateDialog;

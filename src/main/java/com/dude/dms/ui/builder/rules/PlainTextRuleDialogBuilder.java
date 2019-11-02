@@ -1,4 +1,4 @@
-package com.dude.dms.ui.builder.dialogs;
+package com.dude.dms.ui.builder.rules;
 
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;

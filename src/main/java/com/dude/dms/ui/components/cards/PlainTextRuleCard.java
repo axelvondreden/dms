@@ -20,7 +20,7 @@ public class PlainTextRuleCard extends RippleClickableCard {
         TagContainer tagContainer = new TagContainer(tagService.findByPlainTextRule(rule));
         tagContainer.setPadding(true);
 
-        Button runButton = new Button("Run", VaadinIcon.PLAY.create(), e -> builderFactory.dialogs().ruleRunner(plainTextRuleValidator.runRuleForAll(rule)).build().open());
+        Button runButton = new Button("Run", VaadinIcon.PLAY.create(), e -> builderFactory.rules().ruleRunnerDialog(plainTextRuleValidator.runRuleForAll(rule)).build().open());
         runButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 
         HorizontalLayout wrapper = new HorizontalLayout(runButton, new Label(rule.getText()), tagContainer);

@@ -1,5 +1,6 @@
 package com.dude.dms.backend.data;
 
+import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.TagHistory;
 import com.dude.dms.backend.data.rules.PlainTextRule;
@@ -26,6 +27,9 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     @ManyToMany(mappedBy = "tags")
     private List<Doc> docs;
+
+    @ManyToMany(mappedBy = "tags")
+    private List<Attribute> attributes;
 
     @ManyToMany(mappedBy = "tags")
     private List<PlainTextRule> plainTextRules;
@@ -113,5 +117,13 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
 
     public void setRegexRules(List<RegexRule> regexRules) {
         this.regexRules = regexRules;
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
     }
 }

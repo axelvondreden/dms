@@ -89,18 +89,18 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView.class);
         LeftNavigationItem logEntry = new LeftNavigationItem("Log", VaadinIcon. CLIPBOARD_PULSE.create(), LogView.class);
         return LeftAppMenuBuilder.get()
-                .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> builderFactory.dialogs().docCreate().build().open()))
+                .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> builderFactory.docs().createDialog().build().open()))
                 .add(docsEntry, tagsEntry, rulesEntry, logEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
-                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> builderFactory.dialogs().changelog().build().open()),
+                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> builderFactory.misc().changelog().build().open()),
                         new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
                 .build();
     }
 
     private LeftSubmenu createTagsEntry() {
         List<Component> tagEntries = new ArrayList<>();
-        tagEntries.add(new LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create(), event -> builderFactory.dialogs().tagCreate().withEventListener(() -> UI.getCurrent().getPage().reload()).build().open()));
+        tagEntries.add(new LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create(), event -> builderFactory.tags().createDialog().withEventListener(() -> UI.getCurrent().getPage().reload()).build().open()));
         for (Tag tag : tagService.findAll()) {
             DefaultBadgeHolder badgeHolder = new DefaultBadgeHolder((int) docService.countByTag(tag));
             Icon icon = VaadinIcon.TAG.create();
@@ -111,7 +111,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
 
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setTarget(entry);
-            contextMenu.addItem("Edit", e -> builderFactory.dialogs().tagEdit(tag).withEventListener(() -> UI.getCurrent().getPage().reload()).build().open());
+            contextMenu.addItem("Edit", e -> builderFactory.tags().editDialog(tag).withEventListener(() -> UI.getCurrent().getPage().reload()).build().open());
         }
         return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);
     }

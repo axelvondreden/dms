@@ -1,4 +1,4 @@
-package com.dude.dms.ui.builder.dialogs;
+package com.dude.dms.ui.builder.docs;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;

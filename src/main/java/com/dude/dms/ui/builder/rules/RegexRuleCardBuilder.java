@@ -1,4 +1,4 @@
-package com.dude.dms.ui.builder.cards;
+package com.dude.dms.ui.builder.rules;
 
 import com.dude.dms.backend.brain.parsing.RegexRuleValidator;
 import com.dude.dms.backend.data.rules.RegexRule;
@@ -33,7 +33,7 @@ public final class RegexRuleCardBuilder {
 
     public RegexRuleCard build() {
         RegexRuleCard card = new RegexRuleCard(builderFactory, rule, regexRuleValidator, tagService);
-        card.addClickListener(e -> builderFactory.dialogs().regexRule().forRule(rule).withEventListener(eventListener).build().open());
+        card.addClickListener(e -> builderFactory.rules().regexDialog().forRule(rule).withEventListener(eventListener).build().open());
         return card;
     }
 }

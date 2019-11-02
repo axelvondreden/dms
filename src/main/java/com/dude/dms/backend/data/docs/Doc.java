@@ -35,6 +35,9 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     private Set<TextBlock> textBlocks;
 
     @OneToMany(mappedBy = "doc")
+    private Set<AttributeValue> attributeValues;
+
+    @OneToMany(mappedBy = "doc")
     @OrderBy("timestamp")
     private List<DocHistory> history;
 
@@ -63,6 +66,8 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
         this.guid = guid;
         this.tags = tags;
     }
+
+
 
     public LocalDate getDocumentDate() {
         return documentDate;
@@ -116,5 +121,13 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     @Override
     public String toString() {
         return "Doc{guid='" + guid + "'}";
+    }
+
+    public Set<AttributeValue> getAttributeValues() {
+        return attributeValues;
+    }
+
+    public void setAttributeValues(Set<AttributeValue> attributeValues) {
+        this.attributeValues = attributeValues;
     }
 }

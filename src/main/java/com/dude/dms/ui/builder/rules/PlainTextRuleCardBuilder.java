@@ -1,4 +1,4 @@
-package com.dude.dms.ui.builder.cards;
+package com.dude.dms.ui.builder.rules;
 
 import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator;
 import com.dude.dms.backend.data.rules.PlainTextRule;
@@ -33,7 +33,7 @@ public final class PlainTextRuleCardBuilder {
 
     public PlainTextRuleCard build() {
         PlainTextRuleCard card = new PlainTextRuleCard(builderFactory, rule, plainTextRuleValidator, tagService);
-        card.addClickListener(e -> builderFactory.dialogs().plainTextRule().forRule(rule).withEventListener(eventListener).build().open());
+        card.addClickListener(e -> builderFactory.rules().plainDialog().forRule(rule).withEventListener(eventListener).build().open());
         return card;
     }
 }

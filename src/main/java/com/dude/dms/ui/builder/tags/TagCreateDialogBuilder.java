@@ -1,4 +1,4 @@
-package com.dude.dms.ui.builder.dialogs;
+package com.dude.dms.ui.builder.tags;
 
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;

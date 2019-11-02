@@ -20,7 +20,7 @@ public class RegexRuleCard extends RippleClickableCard {
         TagContainer tagContainer = new TagContainer(tagService.findByRegexRule(rule));
         tagContainer.setPadding(true);
 
-        Button runButton = new Button("Run", VaadinIcon.PLAY.create(), e -> builderFactory.dialogs().ruleRunner(regexRuleValidator.runRuleForAll(rule)).build().open());
+        Button runButton = new Button("Run", VaadinIcon.PLAY.create(), e -> builderFactory.rules().ruleRunnerDialog(regexRuleValidator.runRuleForAll(rule)).build().open());
         runButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 
         HorizontalLayout wrapper = new HorizontalLayout(runButton, new Label(rule.getRegex()), tagContainer);

@@ -3,9 +3,11 @@ package com.dude.dms.ui.builder;
 import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator;
 import com.dude.dms.backend.brain.parsing.RegexRuleValidator;
 import com.dude.dms.backend.service.*;
-import com.dude.dms.ui.builder.cards.CardBuilderFactory;
-import com.dude.dms.ui.builder.dialogs.DialogBuilderFactory;
-import com.dude.dms.ui.builder.searchresults.SearchResultBuilderFactory;
+import com.dude.dms.ui.builder.attributes.AttributeBuilderFactory;
+import com.dude.dms.ui.builder.docs.DocBuilderFactory;
+import com.dude.dms.ui.builder.misc.MiscBuilderFactory;
+import com.dude.dms.ui.builder.rules.RuleBuilderFactory;
+import com.dude.dms.ui.builder.tags.TagBuilderFactory;
 import com.dude.dms.updater.UpdateChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,15 +40,23 @@ public class BuilderFactory {
         this.regexRuleValidator = regexRuleValidator;
     }
 
-    public CardBuilderFactory cards() {
-        return new CardBuilderFactory(this, tagService, plainTextRuleValidator, regexRuleValidator);
+    public AttributeBuilderFactory attributes() {
+        return new AttributeBuilderFactory(this, tagService);
     }
 
-    public DialogBuilderFactory dialogs() {
-        return new DialogBuilderFactory(this, docService, tagService, plainTextRuleService, regexRuleService, changelogService, updateChecker, textBlockService);
+    public DocBuilderFactory docs() {
+        return new DocBuilderFactory(this, docService, tagService, textBlockService);
     }
 
-    public SearchResultBuilderFactory searchResults() {
-        return new SearchResultBuilderFactory(this, docService);
+    public MiscBuilderFactory misc() {
+        return new MiscBuilderFactory(this, changelogService, updateChecker);
+    }
+
+    public RuleBuilderFactory rules() {
+        return new RuleBuilderFactory(this, tagService, plainTextRuleValidator, regexRuleValidator, plainTextRuleService, regexRuleService, docService);
+    }
+
+    public TagBuilderFactory tags() {
+        return new TagBuilderFactory(this, tagService, docService);
     }
 }
