@@ -18,7 +18,7 @@ public class DocPollingService implements PollingService {
 
     private final String docPath;
 
-    private int tick;//
+    private int tick;
 
     @Autowired
     private PdfToDocParser pdfToDocParser;
