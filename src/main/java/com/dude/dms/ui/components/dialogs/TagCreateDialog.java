@@ -2,13 +2,16 @@ package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.standard.DmsColorPicker;
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple;
+import com.dude.dms.ui.components.tags.AttributeSelector;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -24,7 +27,7 @@ public class TagCreateDialog extends EventDialog {
 
     private final TagService tagService;
 
-    public TagCreateDialog(TagService tagService) {
+    public TagCreateDialog(BuilderFactory builderFactory, TagService tagService) {
         this.tagService = tagService;
 
         name = new TextField("Name");
@@ -40,11 +43,18 @@ public class TagCreateDialog extends EventDialog {
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
-        HorizontalLayout hLayout = new HorizontalLayout(name, colorPicker);
-        hLayout.setWidthFull();
+        HorizontalLayout fieldWrapper = new HorizontalLayout(name, colorPicker);
+        fieldWrapper.setWidthFull();
         HorizontalLayout buttonLayout = new HorizontalLayout(createButton, cancelButton);
         buttonLayout.setWidthFull();
-        VerticalLayout vLayout = new VerticalLayout(hLayout, buttonLayout);
+
+        AttributeSelector attributeSelector = builderFactory.attributes().selector().build();
+        attributeSelector.setSizeFull();
+        attributeSelector.setMaxHeight("40vh");
+
+        Details attributeDetails = new Details("Attributes", attributeSelector);
+
+        VerticalLayout vLayout = new VerticalLayout(fieldWrapper, attributeDetails, buttonLayout);
         vLayout.setSizeFull();
         vLayout.setPadding(false);
         vLayout.setSpacing(false);

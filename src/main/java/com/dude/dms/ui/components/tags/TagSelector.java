@@ -8,9 +8,9 @@ import com.vaadin.flow.component.grid.Grid;
 import java.util.List;
 import java.util.Set;
 
-public class Tagger extends Grid<Tag> {
+public class TagSelector extends Grid<Tag> {
 
-    public Tagger(TagService tagService) {
+    public TagSelector(TagService tagService) {
         List<Tag> tags = tagService.findAll();
 
         setItems(tags);
@@ -37,10 +37,6 @@ public class Tagger extends Grid<Tag> {
             checkbox.setReadOnly(true);
             return checkbox;
         }).setHeader("Contained").setAutoWidth(true);
-    }
-
-    public void clear() {
-        asMultiSelect().clear();
     }
 
     public Set<Tag> getSelectedTags() {

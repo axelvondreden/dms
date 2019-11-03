@@ -4,9 +4,12 @@ import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.dialogs.DocEditDialog;
 
 public final class DocEditDialogBuilder {
+
+    private final BuilderFactory builderFactory;
 
     private final Doc doc;
     private final DocService docService;
@@ -14,7 +17,8 @@ public final class DocEditDialogBuilder {
 
     private EntityEventListener eventListener;
 
-    DocEditDialogBuilder(Doc doc, DocService docService, TagService tagService) {
+    DocEditDialogBuilder(BuilderFactory builderFactory, Doc doc, DocService docService, TagService tagService) {
+        this.builderFactory = builderFactory;
         this.doc = doc;
         this.docService = docService;
         this.tagService = tagService;
@@ -26,7 +30,7 @@ public final class DocEditDialogBuilder {
     }
 
     public DocEditDialog build() {
-        DocEditDialog dialog = new DocEditDialog(doc, docService, tagService);
+        DocEditDialog dialog = new DocEditDialog(builderFactory, doc, docService);
         dialog.setEventListener(eventListener);
         return dialog;
     }

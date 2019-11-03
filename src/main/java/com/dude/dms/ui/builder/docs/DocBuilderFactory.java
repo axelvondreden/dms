@@ -30,7 +30,7 @@ public class DocBuilderFactory extends Factory {
     }
 
     public DocEditDialogBuilder editDialog(Doc doc) {
-        return new DocEditDialogBuilder(doc, docService, tagService);
+        return new DocEditDialogBuilder(builderFactory, doc, docService, tagService);
     }
 
     public DocImageDialogBuilder imageDialog(Doc doc) {

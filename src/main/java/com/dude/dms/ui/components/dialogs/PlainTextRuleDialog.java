@@ -3,8 +3,8 @@ package com.dude.dms.ui.components.dialogs;
 import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
-import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.components.tags.Tagger;
+import com.dude.dms.ui.builder.BuilderFactory;
+import com.dude.dms.ui.components.tags.TagSelector;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -20,39 +20,38 @@ public class PlainTextRuleDialog extends EventDialog {
     private static final DmsLogger LOGGER = DmsLogger.getLogger(PlainTextRuleDialog.class);
 
     private final TextField plainText;
-    private final Tagger ruleTagger;
+    private final TagSelector ruleTagSelector;
     private final Checkbox caseSensitive;
 
     private final PlainTextRuleService plainTextRuleService;
 
     private PlainTextRule plainTextRule;
 
-    public PlainTextRuleDialog(TagService tagService, PlainTextRuleService plainTextRuleService) {
+    public PlainTextRuleDialog(BuilderFactory builderFactory, PlainTextRuleService plainTextRuleService) {
         this.plainTextRuleService = plainTextRuleService;
         plainText = new TextField("Text", "");
         plainText.setWidthFull();
-        ruleTagger = new Tagger(tagService);
-        ruleTagger.setHeight("80%");
+        ruleTagSelector = builderFactory.tags().selector().build();
+        ruleTagSelector.setHeight("80%");
         caseSensitive = new Checkbox("case sensitive");
         HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
         hLayout.setWidthFull();
         hLayout.setAlignItems(FlexComponent.Alignment.END);
         Button button = new Button("Create", VaadinIcon.PLUS.create(), e -> save());
         button.setWidthFull();
-        add(hLayout, ruleTagger, button);
+        add(hLayout, ruleTagSelector, button);
         setWidth("70vw");
         setHeight("70vh");
     }
 
-    public PlainTextRuleDialog(PlainTextRule plainTextRule, TagService tagService, PlainTextRuleService plainTextRuleService) {
+    public PlainTextRuleDialog(BuilderFactory builderFactory, PlainTextRule plainTextRule, PlainTextRuleService plainTextRuleService) {
         this.plainTextRuleService = plainTextRuleService;
         this.plainTextRule = plainTextRule;
         plainText = new TextField("Text", "");
         plainText.setValue(plainTextRule.getText());
         plainText.setWidthFull();
-        ruleTagger = new Tagger(tagService);
-        ruleTagger.setHeight("80%");
-        ruleTagger.setSelectedTags(tagService.findByPlainTextRule(plainTextRule));
+        ruleTagSelector = builderFactory.tags().selector().forRule(plainTextRule).build();
+        ruleTagSelector.setHeight("80%");
         caseSensitive = new Checkbox("case sensitive");
         caseSensitive.setValue(plainTextRule.getCaseSensitive());
         HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
@@ -65,7 +64,7 @@ public class PlainTextRuleDialog extends EventDialog {
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, deleteButton);
         buttonLayout.setWidthFull();
-        add(hLayout, ruleTagger, buttonLayout);
+        add(hLayout, ruleTagSelector, buttonLayout);
         setWidth("70vw");
         setHeight("70vh");
     }
@@ -75,16 +74,16 @@ public class PlainTextRuleDialog extends EventDialog {
             LOGGER.showError("Text can not be empty!");
             return;
         }
-        if (ruleTagger.getSelectedTags().isEmpty()) {
+        if (ruleTagSelector.getSelectedTags().isEmpty()) {
             LOGGER.showError("At least on tag must be selected!");
             return;
         }
         if (plainTextRule == null) {
-            plainTextRuleService.save(new PlainTextRule(plainText.getValue(), caseSensitive.getValue(), ruleTagger.getSelectedTags()));
+            plainTextRuleService.save(new PlainTextRule(plainText.getValue(), caseSensitive.getValue(), ruleTagSelector.getSelectedTags()));
             LOGGER.showInfo("Created new rule!");
         } else {
             plainTextRule.setText(plainText.getValue());
-            plainTextRule.setTags(ruleTagger.getSelectedTags());
+            plainTextRule.setTags(ruleTagSelector.getSelectedTags());
             plainTextRuleService.save(plainTextRule);
             LOGGER.showInfo("Edited rule!");
         }

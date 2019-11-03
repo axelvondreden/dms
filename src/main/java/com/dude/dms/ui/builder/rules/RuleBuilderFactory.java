@@ -46,11 +46,11 @@ public class RuleBuilderFactory extends Factory {
     }
 
     public PlainTextRuleDialogBuilder plainDialog() {
-        return new PlainTextRuleDialogBuilder(tagService, plainTextRuleService);
+        return new PlainTextRuleDialogBuilder(builderFactory, plainTextRuleService);
     }
 
     public RegexRuleDialogBuilder regexDialog() {
-        return new RegexRuleDialogBuilder(tagService, regexRuleService);
+        return new RegexRuleDialogBuilder(builderFactory, regexRuleService);
     }
 
     public RuleRunnerDialogBuilder ruleRunnerDialog(Map<Doc, Set<Tag>> result) {

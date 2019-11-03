@@ -1,6 +1,5 @@
 package com.dude.dms.ui.components.tags;
 
-import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.service.AttributeService;
 import com.vaadin.flow.component.button.Button;
@@ -12,6 +11,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.TextRenderer;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class AttributeSelector extends VerticalLayout {
@@ -19,11 +19,14 @@ public class AttributeSelector extends VerticalLayout {
     private final Set<Attribute> selected;
     private final Set<Attribute> available;
 
-    public AttributeSelector(Tag tag, AttributeService attributeService) {
-        selected = attributeService.findByTag(tag);
-        available = attributeService.findByTagNot(tag);
+    private final ListBox<Attribute> selectedList;
+    private final ListBox<Attribute> availableList;
 
-        ListBox<Attribute> selectedList = new ListBox<>();
+    public AttributeSelector(AttributeService attributeService) {
+        selected = new HashSet<>();
+        available = new HashSet<>(attributeService.findAll());
+
+        selectedList = new ListBox<>();
         selectedList.setItems(selected);
         selectedList.setHeightFull();
         selectedList.setWidth("50%");
@@ -32,18 +35,21 @@ public class AttributeSelector extends VerticalLayout {
             if (!event.getHasValue().isEmpty()) {
                 selected.remove(event.getValue());
                 available.add(event.getValue());
+                refresh();
             }
         });
 
-        ListBox<Attribute> availableList = new ListBox<>();
+        availableList = new ListBox<>();
+        availableList.setMaxHeight("40wh");
         availableList.setItems(available);
         availableList.setHeightFull();
         availableList.setWidth("50%");
         availableList.setRenderer(new TextRenderer<>(Attribute::getName));
         availableList.addValueChangeListener(event -> {
             if (!event.getHasValue().isEmpty()) {
-                selected.remove(event.getValue());
-                available.add(event.getValue());
+                available.remove(event.getValue());
+                selected.add(event.getValue());
+                refresh();
             }
         });
 
@@ -55,7 +61,8 @@ public class AttributeSelector extends VerticalLayout {
         Checkbox addCheckbox = new Checkbox("Req.");
         Button addButton = new Button(VaadinIcon.PLUS.create(), e -> {
             if (!addField.isEmpty()) {
-                attributeService.create(new Attribute(addField.getValue(), addCheckbox.getValue()));
+                available.add(attributeService.create(new Attribute(addField.getValue(), addCheckbox.getValue())));
+                refresh();
             }
         });
 
@@ -63,6 +70,20 @@ public class AttributeSelector extends VerticalLayout {
         addWrapper.setWidthFull();
 
         add(listWrapper, addWrapper);
+    }
+
+    private void refresh() {
+        selectedList.getDataProvider().refreshAll();
+        availableList.getDataProvider().refreshAll();
+    }
+
+    public void setSelectedAttributes(Set<Attribute> selected) {
+        available.addAll(selected);
+        this.selected.clear();
+
+        this.selected.addAll(selected);
+        available.removeAll(this.selected);
+        refresh();
     }
 
     public Set<Attribute> getSelectedAttributes() {

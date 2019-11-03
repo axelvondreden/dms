@@ -22,10 +22,14 @@ public class TagBuilderFactory extends Factory {
     }
 
     public TagCreateDialogBuilder createDialog() {
-        return new TagCreateDialogBuilder(tagService);
+        return new TagCreateDialogBuilder(builderFactory, tagService);
     }
 
     public TagEditDialogBuilder editDialog(Tag tag) {
         return new TagEditDialogBuilder(tag, tagService);
+    }
+
+    public TagSelectorBuilder selector() {
+        return new TagSelectorBuilder(tagService);
     }
 }
