@@ -27,8 +27,12 @@ public class TagCreateDialog extends EventDialog {
 
     private final TagService tagService;
 
+    private final AttributeSelector attributeSelector;
+
     public TagCreateDialog(BuilderFactory builderFactory, TagService tagService) {
         this.tagService = tagService;
+
+        setWidth("35vw");
 
         name = new TextField("Name");
         name.setWidthFull();
@@ -48,11 +52,11 @@ public class TagCreateDialog extends EventDialog {
         HorizontalLayout buttonLayout = new HorizontalLayout(createButton, cancelButton);
         buttonLayout.setWidthFull();
 
-        AttributeSelector attributeSelector = builderFactory.attributes().selector().build();
+        attributeSelector = builderFactory.attributes().selector().build();
         attributeSelector.setSizeFull();
-        attributeSelector.setMaxHeight("40vh");
 
         Details attributeDetails = new Details("Attributes", attributeSelector);
+        attributeDetails.getElement().getStyle().set("width", "100%");
 
         VerticalLayout vLayout = new VerticalLayout(fieldWrapper, attributeDetails, buttonLayout);
         vLayout.setSizeFull();
@@ -75,7 +79,10 @@ public class TagCreateDialog extends EventDialog {
             name.setErrorMessage("Tag '" + name.getValue() + "' already exists!");
             return;
         }
-        tagService.create(new Tag(name.getValue(), (String) ((HasValue) colorPicker).getValue()));
+        Tag tag = new Tag(name.getValue(), (String) ((HasValue) colorPicker).getValue());
+        tagService.create(tag);
+        tag.setAttributes(attributeSelector.getSelectedAttributes());
+        tagService.save(tag);
         triggerEvent();
         close();
     }
