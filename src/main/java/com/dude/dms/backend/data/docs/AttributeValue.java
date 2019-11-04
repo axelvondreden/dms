@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.Objects;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
@@ -20,7 +22,13 @@ public class AttributeValue extends DataEntity {
     @ManyToOne
     private Attribute attribute;
 
-    protected String value;
+    protected String stringValue;
+
+    protected Integer intValue;
+
+    protected Float floatValue;
+
+    protected LocalDate dateValue;
 
     public AttributeValue() {
 
@@ -31,10 +39,28 @@ public class AttributeValue extends DataEntity {
         this.attribute = attribute;
     }
 
-    public AttributeValue(@NotNull Doc doc, @NotNull Attribute attribute, String value) {
+    public AttributeValue(@NotNull Doc doc, @NotNull Attribute attribute, String stringValue) {
         this.doc = doc;
         this.attribute = attribute;
-        this.value = value;
+        this.stringValue = stringValue;
+    }
+
+    public AttributeValue(@NotNull Doc doc, @NotNull Attribute attribute, Integer intValue) {
+        this.doc = doc;
+        this.attribute = attribute;
+        this.intValue = intValue;
+    }
+
+    public AttributeValue(@NotNull Doc doc, @NotNull Attribute attribute, Float floatValue) {
+        this.doc = doc;
+        this.attribute = attribute;
+        this.floatValue = floatValue;
+    }
+
+    public AttributeValue(@NotNull Doc doc, @NotNull Attribute attribute, LocalDate dateValue) {
+        this.doc = doc;
+        this.attribute = attribute;
+        this.dateValue = dateValue;
     }
 
     public Doc getDoc() {
@@ -53,16 +79,52 @@ public class AttributeValue extends DataEntity {
         this.attribute = attribute;
     }
 
-    public String getValue() {
-        return value;
+    public String getStringValue() {
+        return stringValue;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setStringValue(String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+    public Integer getIntValue() {
+        return intValue;
+    }
+
+    public void setIntValue(Integer intValue) {
+        this.intValue = intValue;
+    }
+
+    public Float getFloatValue() {
+        return floatValue;
+    }
+
+    public void setFloatValue(Float floatValue) {
+        this.floatValue = floatValue;
+    }
+
+    public LocalDate getDateValue() {
+        return dateValue;
+    }
+
+    public void setDateValue(LocalDate dateValue) {
+        this.dateValue = dateValue;
     }
 
     @Override
-    public String toString() {
-        return "AttributeValue{doc=" + doc + ", attribute=" + attribute + ", value='" + value + "'}";
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AttributeValue that = (AttributeValue) o;
+        return doc.equals(that.doc) && attribute.equals(that.attribute);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), doc, attribute);
     }
 }

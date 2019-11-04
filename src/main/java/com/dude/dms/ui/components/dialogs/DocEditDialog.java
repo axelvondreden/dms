@@ -4,9 +4,11 @@ import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.standard.DmsDatePicker;
+import com.dude.dms.ui.components.tags.AttributeValueContainer;
 import com.dude.dms.ui.components.tags.TagSelector;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -25,6 +27,8 @@ public class DocEditDialog extends EventDialog {
     public DocEditDialog(BuilderFactory builderFactory, Doc doc, DocService docService) {
         this.doc = doc;
         this.docService = docService;
+
+        setWidth("40vw");
 
         TextField guidTextField = new TextField("GUID");
         guidTextField.setWidthFull();
@@ -46,16 +50,26 @@ public class DocEditDialog extends EventDialog {
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
-        HorizontalLayout hLayout = new HorizontalLayout(guidTextField, datePicker);
-        hLayout.setWidthFull();
-        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
-        buttonLayout.setWidthFull();
-        VerticalLayout vLayout = new VerticalLayout(hLayout, tagSelector, buttonLayout);
-        vLayout.setSizeFull();
-        vLayout.setPadding(false);
-        vLayout.setSpacing(false);
+        AttributeValueContainer valueContainer = builderFactory.attributes().valueContainer(doc).build();
+        valueContainer.setSizeFull();
+        valueContainer.setMaxHeight("40vh");
 
-        add(vLayout);
+        Details tagDetails = new Details("Tags", tagSelector);
+        tagDetails.getElement().getStyle().set("width", "100%");
+
+        Details attributeDetails = new Details("Attributes", valueContainer);
+        attributeDetails.getElement().getStyle().set("width", "100%");
+
+        HorizontalLayout fieldWrapper = new HorizontalLayout(guidTextField, datePicker);
+        fieldWrapper.setWidthFull();
+        HorizontalLayout buttonWrapper = new HorizontalLayout(saveButton, cancelButton);
+        buttonWrapper.setWidthFull();
+        VerticalLayout wrapper = new VerticalLayout(fieldWrapper, tagDetails, attributeDetails, buttonWrapper);
+        wrapper.setSizeFull();
+        wrapper.setPadding(false);
+        wrapper.setSpacing(false);
+
+        add(wrapper);
     }
 
     private void save() {

@@ -1,7 +1,8 @@
 package com.dude.dms.backend.service;
 
-import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.Tag;
+import com.dude.dms.backend.data.docs.AttributeValue;
+import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.DocHistory;
 import com.dude.dms.backend.repositories.DocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,38 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
 
     private final DocRepository docRepository;
 
+    private final AttributeValueService attributeValueService;
+
     @Autowired
-    public DocService(DocRepository docRepository) {
+    public DocService(DocRepository docRepository, AttributeValueService attributeValueService) {
         this.docRepository = docRepository;
+        this.attributeValueService = attributeValueService;
     }
 
     @Override
     public JpaRepository<Doc, Long> getRepository() {
         return docRepository;
+    }
+
+    @Override
+    public Doc create(Doc entity) {
+        createAttributeValues(entity);
+        return super.create(entity);
+    }
+
+    @Override
+    public Doc save(Doc entity) {
+        createAttributeValues(entity);
+        return super.save(entity);
+    }
+
+    private void createAttributeValues(Doc doc) {
+        doc.getTags().stream()
+                .flatMap(tag -> tag.getAttributes().stream())
+                .filter(attribute -> !attributeValueService.findByDocAndAttribute(doc, attribute).isPresent())
+                .map(attribute -> new AttributeValue(doc, attribute))
+                .distinct()
+                .forEach(attributeValueService::create);
     }
 
     @Override

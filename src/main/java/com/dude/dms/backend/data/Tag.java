@@ -51,6 +51,12 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
         this.color = color;
     }
 
+    public Tag(@NotBlank @Size(max = 50) String name, @NotBlank String color, Set<Attribute> attributes) {
+        this.name = name;
+        this.color = color;
+        this.attributes = attributes;
+    }
+
     public String getName() {
         return name;
     }

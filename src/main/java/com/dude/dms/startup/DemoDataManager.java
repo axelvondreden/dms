@@ -2,7 +2,9 @@ package com.dude.dms.startup;
 
 import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.Tag;
+import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.data.docs.Doc;
+import com.dude.dms.backend.service.AttributeService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class DemoDataManager {
 
     @Autowired
     private DocService docService;
+
+    @Autowired
+    private AttributeService attributeService;
 
     private Random random;
 
@@ -72,7 +77,11 @@ public class DemoDataManager {
 
     private Set<Tag> createDemoTags() {
         Set<Tag> tags = new HashSet<>();
-        tags.add(tagService.create(new Tag("Rechnung", randomColor())));
+        Set<Attribute> attributes = new HashSet<>();
+        attributes.add(attributeService.findByName("Firma").orElse(attributeService.create(new Attribute("Firma", false, Attribute.Type.STRING))));
+        attributes.add(attributeService.findByName("Betrag").orElse(attributeService.create(new Attribute("Betrag", false, Attribute.Type.FLOAT))));
+        attributes.add(attributeService.findByName("Garantie").orElse(attributeService.create(new Attribute("Garantie", false, Attribute.Type.DATE))));
+        tags.add(tagService.create(new Tag("Rechnung", randomColor(), attributes)));
         tags.add(tagService.create(new Tag("Auto", randomColor())));
         tags.add(tagService.create(new Tag("Beleg", randomColor())));
         tags.add(tagService.create(new Tag("Einkauf", randomColor())));
