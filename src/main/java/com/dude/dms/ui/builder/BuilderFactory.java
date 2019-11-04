@@ -25,12 +25,13 @@ public class BuilderFactory {
     private final PlainTextRuleValidator plainTextRuleValidator;
     private final RegexRuleValidator regexRuleValidator;
     private final AttributeService attributeService;
+    private final AttributeValueService attributeValueService;
 
     @Autowired
     public BuilderFactory(DocService docService, TagService tagService, PlainTextRuleService plainTextRuleService,
                           RegexRuleService regexRuleService, ChangelogService changelogService, UpdateChecker updateChecker,
                           TextBlockService textBlockService, PlainTextRuleValidator plainTextRuleValidator, RegexRuleValidator regexRuleValidator,
-                          AttributeService attributeService) {
+                          AttributeService attributeService, AttributeValueService attributeValueService) {
         this.docService = docService;
         this.tagService = tagService;
         this.plainTextRuleService = plainTextRuleService;
@@ -41,10 +42,11 @@ public class BuilderFactory {
         this.plainTextRuleValidator = plainTextRuleValidator;
         this.regexRuleValidator = regexRuleValidator;
         this.attributeService = attributeService;
+        this.attributeValueService = attributeValueService;
     }
 
     public AttributeBuilderFactory attributes() {
-        return new AttributeBuilderFactory(this, attributeService);
+        return new AttributeBuilderFactory(this, attributeService, attributeValueService);
     }
 
     public DocBuilderFactory docs() {

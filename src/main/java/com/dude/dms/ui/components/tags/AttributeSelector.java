@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.service.AttributeService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -55,10 +56,15 @@ public class AttributeSelector extends VerticalLayout {
 
         TextField addField = new TextField("", "", "New Attribute");
         addField.setWidthFull();
+        ComboBox<Attribute.Type> addCombo = new ComboBox<>();
+        addCombo.setPreventInvalidInput(true);
+        addCombo.setAllowCustomValue(false);
+        addCombo.setItems(Attribute.Type.values());
+        addCombo.setValue(Attribute.Type.STRING);
         Checkbox addCheckbox = new Checkbox("Required");
         Button addButton = new Button(VaadinIcon.PLUS.create(), e -> {
-            if (!addField.isEmpty()) {
-                available.add(attributeService.create(new Attribute(addField.getValue(), addCheckbox.getValue())));
+            if (!addField.isEmpty() && !addCombo.isEmpty()) {
+                available.add(attributeService.create(new Attribute(addField.getValue(), addCheckbox.getValue(), addCombo.getValue())));
                 refresh();
             }
         });

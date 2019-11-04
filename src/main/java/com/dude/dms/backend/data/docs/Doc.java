@@ -34,7 +34,7 @@ public class Doc extends DataEntity implements Diffable<Doc>, Historical<DocHist
     @OneToMany(mappedBy = "doc")
     private Set<TextBlock> textBlocks;
 
-    @OneToMany(mappedBy = "doc")
+    @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
     private Set<AttributeValue> attributeValues;
 
     @OneToMany(mappedBy = "doc")
