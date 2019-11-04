@@ -18,7 +18,7 @@ public class Attribute extends DataEntity {
     @OneToMany(mappedBy = "attribute")
     private Set<AttributeValue> attributeValues;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "attributes")
     private Set<Tag> tags;
 
     @NotBlank

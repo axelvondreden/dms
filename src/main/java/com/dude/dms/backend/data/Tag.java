@@ -29,7 +29,7 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
     @ManyToMany(mappedBy = "tags")
     private Set<Doc> docs;
 
-    @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Attribute> attributes;
 
     @ManyToMany(mappedBy = "tags")
