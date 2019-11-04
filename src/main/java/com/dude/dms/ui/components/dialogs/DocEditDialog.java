@@ -2,9 +2,9 @@ package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.DocService;
-import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.standard.DmsDatePicker;
-import com.dude.dms.ui.components.tags.Tagger;
+import com.dude.dms.ui.components.tags.TagSelector;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -17,12 +17,12 @@ public class DocEditDialog extends EventDialog {
     private final Doc doc;
 
     private final DmsDatePicker datePicker;
-    private final Tagger tagger;
 
+    private final TagSelector tagSelector;
 
     private final DocService docService;
 
-    public DocEditDialog(Doc doc, DocService docService, TagService tagService) {
+    public DocEditDialog(BuilderFactory builderFactory, Doc doc, DocService docService) {
         this.doc = doc;
         this.docService = docService;
 
@@ -35,11 +35,8 @@ public class DocEditDialog extends EventDialog {
         datePicker.setWidthFull();
         datePicker.setValue(doc.getDocumentDate());
 
-        tagger = new Tagger(tagService);
-        tagger.setHeight("25vw");
-        tagger.setSelectedTags(doc.getTags());
-        tagger.setContainedTags(doc.getRawText());
-
+        tagSelector = builderFactory.tags().selector().forDoc(doc).build();
+        tagSelector.setHeight("25vw");
 
         Button saveButton = new Button("Save", VaadinIcon.DISC.create(), e -> save());
         saveButton.setWidthFull();
@@ -53,7 +50,7 @@ public class DocEditDialog extends EventDialog {
         hLayout.setWidthFull();
         HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
         buttonLayout.setWidthFull();
-        VerticalLayout vLayout = new VerticalLayout(hLayout, tagger, buttonLayout);
+        VerticalLayout vLayout = new VerticalLayout(hLayout, tagSelector, buttonLayout);
         vLayout.setSizeFull();
         vLayout.setPadding(false);
         vLayout.setSpacing(false);
@@ -63,7 +60,7 @@ public class DocEditDialog extends EventDialog {
 
     private void save() {
         doc.setDocumentDate(datePicker.getValue());
-        doc.setTags(tagger.getSelectedTags());
+        doc.setTags(tagSelector.getSelectedTags());
         docService.save(doc);
         triggerEvent();
         close();

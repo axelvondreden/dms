@@ -182,9 +182,9 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private Stream<DocSearchResult> searchDocs(String filter) {
         if (caseSensitiveCheckbox.getValue()) {
-            return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> builderFactory.searchResults().doc(doc, filter).build());
+            return docService.findTop10ByRawTextContaining(filter).stream().map(doc -> builderFactory.docs().searchResult(doc, filter).build());
         } else {
-            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> builderFactory.searchResults().doc(doc, filter).build());
+            return docService.findTop10ByRawTextContainingIgnoreCase(filter).stream().map(doc -> builderFactory.docs().searchResult(doc, filter).build());
         }
     }
 
@@ -198,9 +198,9 @@ public class DmsSearchOverlayView extends IronOverlay {
 
     private Stream<TagSearchResult> searchTags(String filter) {
         if (caseSensitiveCheckbox.getValue()) {
-            return tagService.findTop10ByNameContaining(filter).stream().map(tag -> builderFactory.searchResults().tag(tag).build());
+            return tagService.findTop10ByNameContaining(filter).stream().map(tag -> builderFactory.tags().searchResult(tag).build());
         } else {
-            return tagService.findTop10ByNameContainingIgnoreCase(filter).stream().map(tag -> builderFactory.searchResults().tag(tag).build());
+            return tagService.findTop10ByNameContainingIgnoreCase(filter).stream().map(tag -> builderFactory.tags().searchResult(tag).build());
         }
     }
 

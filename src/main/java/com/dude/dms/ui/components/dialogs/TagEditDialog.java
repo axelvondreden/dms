@@ -2,13 +2,16 @@ package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.TagService;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.standard.DmsColorPicker;
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple;
+import com.dude.dms.ui.components.tags.AttributeSelector;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -26,9 +29,13 @@ public class TagEditDialog extends EventDialog {
 
     private final TagService tagService;
 
-    public TagEditDialog(Tag tag, TagService tagService) {
+    private final AttributeSelector attributeSelector;
+
+    public TagEditDialog(BuilderFactory builderFactory, Tag tag, TagService tagService) {
         this.tag = tag;
         this.tagService = tagService;
+
+        setWidth("35vw");
 
         name = new TextField("Name");
         name.setWidthFull();
@@ -45,11 +52,18 @@ public class TagEditDialog extends EventDialog {
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
-        HorizontalLayout hLayout = new HorizontalLayout(name, colorPicker);
-        hLayout.setWidthFull();
+        HorizontalLayout fieldWrapper = new HorizontalLayout(name, colorPicker);
+        fieldWrapper.setWidthFull();
         HorizontalLayout buttonLayout = new HorizontalLayout(createButton, cancelButton);
         buttonLayout.setWidthFull();
-        VerticalLayout vLayout = new VerticalLayout(hLayout, buttonLayout);
+
+        attributeSelector = builderFactory.attributes().selector().forTag(tag).build();
+        attributeSelector.setSizeFull();
+
+        Details attributeDetails = new Details("Attributes", attributeSelector);
+        attributeDetails.getElement().getStyle().set("width", "100%");
+
+        VerticalLayout vLayout = new VerticalLayout(fieldWrapper, attributeDetails, buttonLayout);
         vLayout.setSizeFull();
         vLayout.setPadding(false);
         vLayout.setSpacing(false);
@@ -68,6 +82,7 @@ public class TagEditDialog extends EventDialog {
         }
         tag.setName(name.getValue());
         tag.setColor((String) ((HasValue) colorPicker).getValue());
+        tag.setAttributes(attributeSelector.getSelectedAttributes());
         tagService.save(tag);
         triggerEvent();
         close();

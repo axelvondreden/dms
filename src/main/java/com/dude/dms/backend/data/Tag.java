@@ -1,5 +1,6 @@
 package com.dude.dms.backend.data;
 
+import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.TagHistory;
 import com.dude.dms.backend.data.rules.PlainTextRule;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
@@ -25,13 +27,16 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
     protected String color;
 
     @ManyToMany(mappedBy = "tags")
-    private List<Doc> docs;
+    private Set<Doc> docs;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Attribute> attributes;
 
     @ManyToMany(mappedBy = "tags")
-    private List<PlainTextRule> plainTextRules;
+    private Set<PlainTextRule> plainTextRules;
 
     @ManyToMany(mappedBy = "tags")
-    private List<RegexRule> regexRules;
+    private Set<RegexRule> regexRules;
 
     @OneToMany(mappedBy = "tag")
     @OrderBy("timestamp")
@@ -71,19 +76,19 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
         this.history = history;
     }
 
-    public List<Doc> getDocs() {
+    public Set<Doc> getDocs() {
         return docs;
     }
 
-    public void setDocs(List<Doc> docs) {
+    public void setDocs(Set<Doc> docs) {
         this.docs = docs;
     }
 
-    public List<PlainTextRule> getPlainTextRules() {
+    public Set<PlainTextRule> getPlainTextRules() {
         return plainTextRules;
     }
 
-    public void setPlainTextRules(List<PlainTextRule> plainTextRules) {
+    public void setPlainTextRules(Set<PlainTextRule> plainTextRules) {
         this.plainTextRules = plainTextRules;
     }
 
@@ -107,11 +112,19 @@ public class Tag extends DataEntity implements Diffable<Tag>, Historical<TagHist
         return Objects.hash(super.hashCode(), name);
     }
 
-    public List<RegexRule> getRegexRules() {
+    public Set<RegexRule> getRegexRules() {
         return regexRules;
     }
 
-    public void setRegexRules(List<RegexRule> regexRules) {
+    public void setRegexRules(Set<RegexRule> regexRules) {
         this.regexRules = regexRules;
+    }
+
+    public Set<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
     }
 }

@@ -71,7 +71,7 @@ public class DocImageDialog extends Dialog {
                 div.setAttribute("id", String.valueOf(textBlock.getId()));
                 div.addEventListener("mouseenter", event -> event.getSource().getStyle().set("border", "3px solid black"));
                 div.addEventListener("mouseleave", event -> event.getSource().getStyle().set("border", "2px solid gray"));
-                div.addEventListener("click", event -> builderFactory.dialogs().textBlockEdit(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))).build().open());
+                div.addEventListener("click", event -> builderFactory.docs().textBlockEditDialog(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))).build().open());
                 container.appendChild(div);
             }
         } else {

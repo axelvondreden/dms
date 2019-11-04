@@ -56,7 +56,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         addComponentColumn("", this::createGridActions);
         addColumn("GUID", Doc::getGuid);
 
-        grid.addItemDoubleClickListener(event -> builderFactory.dialogs().docImage(event.getItem()).build().open());
+        grid.addItemDoubleClickListener(event -> builderFactory.docs().imageDialog(event.getItem()).build().open());
     }
 
     private HorizontalLayout createGridActions(Doc doc) {
@@ -72,9 +72,9 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
         }
 
         return new HorizontalLayout(
-                new Button(VaadinIcon.TEXT_LABEL.create(), e -> builderFactory.dialogs().docText(doc).build().open()),
+                new Button(VaadinIcon.TEXT_LABEL.create(), e -> builderFactory.docs().textDialog(doc).build().open()),
                 download,
-                new Button(VaadinIcon.EDIT.create(), e -> builderFactory.dialogs().docEdit(doc).withEventListener(() -> grid.getDataProvider().refreshAll()).build().open())
+                new Button(VaadinIcon.EDIT.create(), e -> builderFactory.docs().editDialog(doc).withEventListener(() -> grid.getDataProvider().refreshAll()).build().open())
         );
     }
 

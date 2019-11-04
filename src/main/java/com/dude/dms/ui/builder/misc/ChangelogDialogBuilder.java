@@ -1,4 +1,4 @@
-package com.dude.dms.ui.builder.dialogs;
+package com.dude.dms.ui.builder.misc;
 
 import com.dude.dms.backend.service.ChangelogService;
 import com.dude.dms.ui.components.dialogs.ChangelogDialog;

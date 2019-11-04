@@ -1,22 +1,23 @@
-package com.dude.dms.ui.builder.dialogs;
+package com.dude.dms.ui.builder.rules;
 
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.RegexRuleService;
-import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.EntityEventListener;
+import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.dialogs.RegexRuleDialog;
 
 public final class RegexRuleDialogBuilder {
 
-    private final TagService tagService;
+    private final BuilderFactory builderFactory;
+
     private final RegexRuleService regexRuleService;
 
     private RegexRule rule;
 
     private EntityEventListener eventListener;
 
-    RegexRuleDialogBuilder(TagService tagService, RegexRuleService regexRuleService) {
-        this.tagService = tagService;
+    RegexRuleDialogBuilder(BuilderFactory builderFactory, RegexRuleService regexRuleService) {
+        this.builderFactory = builderFactory;
         this.regexRuleService = regexRuleService;
     }
 
@@ -31,7 +32,7 @@ public final class RegexRuleDialogBuilder {
     }
 
     public RegexRuleDialog build() {
-        RegexRuleDialog dialog = rule == null ? new RegexRuleDialog(tagService, regexRuleService) : new RegexRuleDialog(rule, tagService, regexRuleService);
+        RegexRuleDialog dialog = rule == null ? new RegexRuleDialog(builderFactory, regexRuleService) : new RegexRuleDialog(builderFactory, rule, regexRuleService);
         dialog.setEventListener(eventListener);
         return dialog;
     }
