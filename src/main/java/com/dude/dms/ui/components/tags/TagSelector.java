@@ -33,7 +33,7 @@ public class TagSelector extends Grid<Tag> {
 
     public void setContainedTags(String rawText) {
         addComponentColumn(tag -> {
-            Checkbox checkbox = new Checkbox(rawText.contains(tag.getName()));
+            Checkbox checkbox = new Checkbox(rawText != null && rawText.contains(tag.getName()));
             checkbox.setReadOnly(true);
             return checkbox;
         }).setHeader("Contained").setAutoWidth(true);
