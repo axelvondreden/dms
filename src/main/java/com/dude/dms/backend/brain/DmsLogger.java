@@ -137,7 +137,10 @@ public class DmsLogger {
     private String format(String msg, Object... arguments) {
         String formattedMsg = msg;
         for (Object argument : arguments) {
-            formattedMsg = formattedMsg.replaceFirst("\\{}", argument.toString());
+            try {
+                formattedMsg = formattedMsg.replaceFirst("\\{}", argument.toString());
+            } catch (IllegalArgumentException ignored) {
+            }
         }
         return formattedMsg;
     }
