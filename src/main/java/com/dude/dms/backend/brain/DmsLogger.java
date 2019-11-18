@@ -75,9 +75,12 @@ public class DmsLogger {
     }
 
     public void showInfo(String message, boolean persistent) {
-        Notification notification = create(message, persistent);
-        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        notification.open();
+        try {
+            Notification notification = create(message, persistent);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.open();
+        } catch (IllegalStateException ignored) {
+        }
         logger.info(message);
         save(Level.INFO, message, true);
     }
@@ -117,9 +120,12 @@ public class DmsLogger {
     }
 
     public void showError(String message, boolean persistent) {
-        Notification notification = create(message, persistent);
-        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-        notification.open();
+        try {
+            Notification notification = create(message, persistent);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.open();
+        } catch (IllegalStateException ignored) {
+        }
         logger.error(message);
         save(Level.ERROR, message, true);
     }
