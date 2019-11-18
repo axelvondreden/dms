@@ -1,12 +1,12 @@
 package com.dude.dms.startup;
 
 import com.dude.dms.backend.brain.DmsLogger;
+import com.dude.dms.backend.brain.FileManager;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 
 import static com.dude.dms.backend.brain.OptionKey.DOC_POLL_PATH;
-import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
 
 @Component
 public class DirectoryManager {
@@ -19,12 +19,6 @@ public class DirectoryManager {
             LOGGER.info("Creating input directory new docs {}", pollDir);
             pollDir.mkdir();
         }
-        File saveDir = new File(DOC_SAVE_PATH.getString());
-        if (!saveDir.exists()) {
-            LOGGER.info("Creating directory for saved docs {}", saveDir);
-            saveDir.mkdir();
-            new File(saveDir, "pdf").mkdir();
-            new File(saveDir, "img").mkdir();
-        }
+        FileManager.createDirectories();
     }
 }

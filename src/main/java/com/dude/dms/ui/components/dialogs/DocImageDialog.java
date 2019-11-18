@@ -1,5 +1,6 @@
 package com.dude.dms.ui.components.dialogs;
 
+import com.dude.dms.backend.brain.FileManager;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.service.TextBlockService;
@@ -14,8 +15,6 @@ import com.vaadin.flow.server.StreamResource;
 
 import java.io.File;
 import java.util.List;
-
-import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
 
 public class DocImageDialog extends Dialog {
 
@@ -47,7 +46,7 @@ public class DocImageDialog extends Dialog {
     private void fill() {
         container.removeAllChildren();
 
-        File img = new File(DOC_SAVE_PATH.getString() + "/img/" + doc.getGuid() + "_00.png");
+        File img = FileManager.getDocImage(doc);
         if (img.exists()) {
             Element image = new Element("object");
             image.setAttribute("type", "image/png");

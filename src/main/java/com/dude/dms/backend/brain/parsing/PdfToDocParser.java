@@ -1,6 +1,7 @@
 package com.dude.dms.backend.brain.parsing;
 
 import com.dude.dms.backend.brain.DmsLogger;
+import com.dude.dms.backend.brain.FileManager;
 import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.docs.TextBlock;
@@ -8,19 +9,11 @@ import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.backend.service.TextBlockService;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -43,8 +36,6 @@ public class PdfToDocParser implements Parser {
 
     private final RegexRuleValidator regexRuleValidator;
 
-    private final String docSavePath;
-
     private List<TextBlock> textBlockList;
 
     private final Map<String, ParserEventListener> eventListeners;
@@ -57,7 +48,6 @@ public class PdfToDocParser implements Parser {
         this.textBlockService = textBlockService;
         this.plainTextRuleValidator = plainTextRuleValidator;
         this.regexRuleValidator = regexRuleValidator;
-        docSavePath = DOC_SAVE_PATH.getString();
         eventListeners = new HashMap<>();
     }
 
@@ -71,10 +61,10 @@ public class PdfToDocParser implements Parser {
         String guid = UUID.randomUUID().toString();
         String rawText = null;
 
-        Optional<File> savedFile = savePdf(file, guid);
+        Optional<File> savedFile = FileManager.savePdf(file, guid);
         if (savedFile.isPresent()) {
             try (PDDocument pdDoc = PDDocument.load(savedFile.get())) {
-                saveImage(pdDoc, guid);
+                FileManager.saveImage(pdDoc, guid);
                 rawText = stripText(pdDoc);
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
@@ -99,14 +89,10 @@ public class PdfToDocParser implements Parser {
                     LOGGER.info("Created textblock {} for doc {}", textBlock, doc);
                 });
             }
-            if (eventListeners != null) {
-                eventListeners.values().forEach(listener -> listener.onParse(true));
-            }
+            eventListeners.values().forEach(listener -> listener.onParse(true));
         } else {
             LOGGER.error("Could not save file {}", file.getAbsolutePath());
-            if (eventListeners != null) {
-                eventListeners.values().forEach(listener -> listener.onParse(false));
-            }
+            eventListeners.values().forEach(listener -> listener.onParse(false));
         }
     }
 
@@ -136,31 +122,6 @@ public class PdfToDocParser implements Parser {
         LOGGER.info("Stripping text...");
         textBlockList = new ArrayList<>();
         return pdfStripper.getTextWithPositions(pdDoc, textBlockList);
-    }
-
-    private Optional<File> savePdf(File file, String guid) {
-        Path targetPath = Paths.get(docSavePath, "pdf", guid + ".pdf");
-        LOGGER.info("Saving PDF {}...", targetPath);
-        try {
-            return Optional.of(Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING).toFile());
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            return Optional.empty();
-        }
-    }
-
-    private void saveImage(PDDocument pdDoc, String guid) throws IOException {
-        PDFRenderer pr = new PDFRenderer(pdDoc);
-        for (int i = 0; i < pdDoc.getNumberOfPages(); i++) {
-            try {
-                BufferedImage bi = pr.renderImageWithDPI(i, IMAGE_PARSER_DPI.getFloat());
-                File out = new File(docSavePath, String.format("img/%s_%02d.png", guid, i));
-                LOGGER.info("Saving Image {}...", out.getAbsolutePath());
-                ImageIO.write(bi, "PNG", out);
-            } catch (EOFException e) {
-                LOGGER.error("Error when saving image: EOFException {}", e.getMessage());
-            }
-        }
     }
 
     private static LocalDate discoverDates(String rawText) {

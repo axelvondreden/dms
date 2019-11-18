@@ -1,9 +1,10 @@
 package com.dude.dms.ui.views;
 
+import com.dude.dms.backend.brain.FileManager;
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
+import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.DocHistory;
-import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
@@ -22,11 +23,7 @@ import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
-
-import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
 
 @Route(value = Const.PAGE_DOCS, layout = MainView.class)
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView.class)
@@ -60,8 +57,7 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
     }
 
     private HorizontalLayout createGridActions(Doc doc) {
-        Path path = Paths.get(DOC_SAVE_PATH.getString(), "pdf", doc.getGuid() + ".pdf").toAbsolutePath();
-        File file = path.toFile();
+        File file = FileManager.getDocPdf(doc);
         Anchor download = new Anchor();
         download.add(new Button(VaadinIcon.FILE_TEXT.create()));
         download.setEnabled(false);
