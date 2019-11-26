@@ -2,7 +2,6 @@ package com.dude.dms.backend.brain;
 
 import com.dude.dms.backend.data.docs.Doc;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
