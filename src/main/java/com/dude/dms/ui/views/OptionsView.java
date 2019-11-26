@@ -1,6 +1,7 @@
 package com.dude.dms.ui.views;
 
 import com.dude.dms.backend.brain.DmsLogger;
+import com.dude.dms.backend.brain.FileManager;
 import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.Const;
@@ -9,14 +10,10 @@ import com.github.appreciated.card.Card;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.details.Details;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -27,11 +24,9 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Locale;
 
@@ -125,32 +120,77 @@ public class OptionsView extends VerticalLayout {
                 LOGGER.showInfo("Maximum upload file size saved.");
             }
         });
+        add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize));
+
         TextField docSavePath = new TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + '\'', DOC_SAVE_PATH.getString(), "");
         docSavePath.addValueChangeListener(event -> {
             if (!docSavePath.isEmpty()) {
                 File dir = new File(docSavePath.getValue());
                 if (dir.exists() && dir.isDirectory()) {
-                    Dialog dialog = new Dialog(new Label("Are you sure you want to change the archive path?\nOld files will be copied over to the new directory."));
-                    Button button = new Button("Change", VaadinIcon.FOLDER_REMOVE.create(), e -> {
-                        try {
-                            FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "img"), new File(dir, "img"));
-                            FileUtils.moveDirectory(new File(DOC_SAVE_PATH.getString(), "pdf"), new File(dir, "pdf"));
-                            DOC_SAVE_PATH.setString(docSavePath.getValue());
-                            LOGGER.showInfo("Doc save path saved.");
-                        } catch (IOException ex) {
-                            LOGGER.showError("Error trying to move folder: " + ex.getMessage());
-                        }
-                    });
-                    button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-                    dialog.add(button);
-                    dialog.open();
+                    DOC_SAVE_PATH.setString(docSavePath.getValue());
+                    LOGGER.showInfo("Doc save path saved.");
                 } else {
                     LOGGER.showError("Directory " + docSavePath.getValue() + " does not exist.");
                 }
             }
         });
 
-        add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize, docSavePath));
+        TextField ftpUrl = new TextField("FTP URL", FTP_URL.getString(), "ftps://");
+        ftpUrl.addValueChangeListener(event -> {
+            FTP_URL.setString(event.getValue());
+            LOGGER.showInfo("FTP URL saved.");
+            tryFtp();
+        });
+
+        TextField ftpUser = new TextField("FTP User", FTP_USER.getString(), "");
+        ftpUser.addValueChangeListener(event -> {
+            FTP_USER.setString(event.getValue());
+            LOGGER.showInfo("FTP User saved.");
+            tryFtp();
+        });
+
+        PasswordField ftpPassword = new PasswordField("FTP Password");
+        ftpPassword.setValue(FTP_PASSWORD.getString());
+        ftpPassword.addValueChangeListener(event -> {
+            FTP_PASSWORD.setString(event.getValue());
+            LOGGER.showInfo("FTP Password saved.");
+            tryFtp();
+        });
+
+        NumberField ftpPort = new NumberField("FTP Port", FTP_PORT.getDouble(), e -> {});
+        ftpPort.addValueChangeListener(event -> {
+            if (!ftpPort.isEmpty() && ftpPort.getValue() > 0) {
+                FTP_PORT.setInt(ftpPort.getValue().intValue());
+                LOGGER.showInfo("FTP Port saved.");
+                tryFtp();
+            }
+        });
+
+        ComboBox<String> storageType = new ComboBox<>("Storage Type");
+        storageType.setItems("local", "ftp");
+        storageType.setValue(DOC_SAVE_TYPE.getString());
+        storageType.setAllowCustomValue(false);
+        storageType.setPreventInvalidInput(true);
+        storageType.addValueChangeListener(event -> {
+            if (!event.getHasValue().isEmpty()) {
+                DOC_SAVE_TYPE.setString(event.getValue());
+                LOGGER.showInfo("Storage type saved. Old files need to be copied to the new location.");
+                boolean isFtp = event.getValue().equalsIgnoreCase("ftp");
+                ftpUrl.setEnabled(isFtp);
+                ftpUser.setEnabled(isFtp);
+                ftpPassword.setEnabled(isFtp);
+                ftpPort.setEnabled(isFtp);
+                if (isFtp) {
+                    tryFtp();
+                }
+            }
+        });
+        add(createSection("Storage", storageType, docSavePath, ftpUrl, ftpUser, ftpPassword, ftpPort));
+        boolean isFtp = "ftp".equalsIgnoreCase(DOC_SAVE_TYPE.getString());
+        ftpUrl.setEnabled(isFtp);
+        ftpUser.setEnabled(isFtp);
+        ftpPassword.setEnabled(isFtp);
+        ftpPort.setEnabled(isFtp);
 
         Checkbox autoTag = new Checkbox("Auto tag", AUTO_TAG.getBoolean());
         ComboBox<Tag> autoTagId = new ComboBox<>("Auto tag");
@@ -190,6 +230,15 @@ public class OptionsView extends VerticalLayout {
             }
         });
         add(createSection("Update", githubUser, githubPassword, updateCheckInterval));
+    }
+
+    private void tryFtp() {
+        boolean success = FileManager.testFtp();
+        if (success) {
+            LOGGER.showInfo("FTP Test: successful!");
+        } else {
+            LOGGER.showError("FTP Test: failed!");
+        }
     }
 
     private static Card createSection(String title, Component... components) {

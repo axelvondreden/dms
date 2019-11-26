@@ -1,6 +1,8 @@
 package com.dude.dms.backend.brain;
 
 import com.dude.dms.backend.data.docs.Doc;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -15,14 +17,32 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
-import static com.dude.dms.backend.brain.OptionKey.DOC_SAVE_PATH;
-import static com.dude.dms.backend.brain.OptionKey.IMAGE_PARSER_DPI;
+import static com.dude.dms.backend.brain.OptionKey.*;
 
 public final class FileManager {
 
     private static final DmsLogger LOGGER = DmsLogger.getLogger(FileManager.class);
 
     private FileManager() {
+    }
+
+    public static boolean testFtp() {
+        FTPClient ftpClient = new FTPClient();
+        try {
+            try {
+                ftpClient.setConnectTimeout(3000);
+                ftpClient.connect(FTP_URL.getString(), FTP_PORT.getInt());
+                ftpClient.login(FTP_USER.getString(), FTP_PASSWORD.getString());
+                ftpClient.listNames();
+                ftpClient.logout();
+                return true;
+            } finally {
+                ftpClient.disconnect();
+            }
+        } catch (IOException e) {
+            LOGGER.showError(e.getMessage());
+            return false;
+        }
     }
 
     public static File getDocImage(Doc doc) {
