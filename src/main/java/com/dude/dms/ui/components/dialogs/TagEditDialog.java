@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.dialogs;
 
 import com.dude.dms.backend.data.Tag;
+import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.standard.DmsColorPicker;
@@ -29,11 +30,14 @@ public class TagEditDialog extends EventDialog {
 
     private final TagService tagService;
 
+    private final DocService docService;
+
     private final AttributeSelector attributeSelector;
 
-    public TagEditDialog(BuilderFactory builderFactory, Tag tag, TagService tagService) {
+    public TagEditDialog(BuilderFactory builderFactory, Tag tag, TagService tagService, DocService docService) {
         this.tag = tag;
         this.tagService = tagService;
+        this.docService = docService;
 
         setWidth("35vw");
 
@@ -84,6 +88,9 @@ public class TagEditDialog extends EventDialog {
         tag.setColor((String) ((HasValue) colorPicker).getValue());
         tag.setAttributes(attributeSelector.getSelectedAttributes());
         tagService.save(tag);
+
+        docService.findByTag(tag).forEach(docService::save);
+
         triggerEvent();
         close();
     }

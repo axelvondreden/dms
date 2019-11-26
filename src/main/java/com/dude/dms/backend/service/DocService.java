@@ -1,6 +1,7 @@
 package com.dude.dms.backend.service;
 
 import com.dude.dms.backend.data.Tag;
+import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.data.docs.AttributeValue;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.history.DocHistory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DocService extends HistoricalCrudService<Doc, DocHistory> {
@@ -39,7 +41,9 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
     @Override
     public Doc save(Doc entity) {
         createAttributeValues(entity);
-        return super.save(entity);
+        super.save(entity);
+        deleteAttributeValues(entity);
+        return entity;
     }
 
     private void createAttributeValues(Doc doc) {
@@ -49,6 +53,14 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
                 .map(attribute -> new AttributeValue(doc, attribute))
                 .distinct()
                 .forEach(attributeValueService::create);
+    }
+
+    private void deleteAttributeValues(Doc doc) {
+        List<Attribute> attributes = doc.getTags().stream().flatMap(tag -> tag.getAttributes().stream()).collect(Collectors.toList());
+        doc.getAttributeValues().stream()
+                .filter(attributeValue -> !attributes.contains(attributeValue.getAttribute()))
+                .distinct()
+                .forEach(attributeValueService::delete);
     }
 
     @Override

@@ -134,8 +134,9 @@ public class OptionsView extends VerticalLayout {
                 }
             }
         });
+        add(createSection("Storage", docSavePath));
 
-        TextField ftpUrl = new TextField("FTP URL", FTP_URL.getString(), "ftps://");
+        /*TextField ftpUrl = new TextField("FTP URL", FTP_URL.getString(), "ftps://");
         ftpUrl.addValueChangeListener(event -> {
             FTP_URL.setString(event.getValue());
             LOGGER.showInfo("FTP URL saved.");
@@ -166,15 +167,15 @@ public class OptionsView extends VerticalLayout {
             }
         });
 
-        ComboBox<String> storageType = new ComboBox<>("Storage Type");
-        storageType.setItems("local", "ftp");
-        storageType.setValue(DOC_SAVE_TYPE.getString());
-        storageType.setAllowCustomValue(false);
-        storageType.setPreventInvalidInput(true);
-        storageType.addValueChangeListener(event -> {
+        ComboBox<String> backupMethod = new ComboBox<>("Method");
+        backupMethod.setItems("ftp");
+        backupMethod.setValue(BACKUP_METHOD.getString());
+        backupMethod.setAllowCustomValue(false);
+        backupMethod.setPreventInvalidInput(true);
+        backupMethod.addValueChangeListener(event -> {
             if (!event.getHasValue().isEmpty()) {
-                DOC_SAVE_TYPE.setString(event.getValue());
-                LOGGER.showInfo("Storage type saved. Old files need to be copied to the new location.");
+                BACKUP_METHOD.setString(event.getValue());
+                LOGGER.showInfo("Backup method saved.");
                 boolean isFtp = event.getValue().equalsIgnoreCase("ftp");
                 ftpUrl.setEnabled(isFtp);
                 ftpUser.setEnabled(isFtp);
@@ -185,12 +186,12 @@ public class OptionsView extends VerticalLayout {
                 }
             }
         });
-        add(createSection("Storage", storageType, docSavePath, ftpUrl, ftpUser, ftpPassword, ftpPort));
+        add(createSection("Backup", backupMethod, ));
         boolean isFtp = "ftp".equalsIgnoreCase(DOC_SAVE_TYPE.getString());
         ftpUrl.setEnabled(isFtp);
         ftpUser.setEnabled(isFtp);
         ftpPassword.setEnabled(isFtp);
-        ftpPort.setEnabled(isFtp);
+        ftpPort.setEnabled(isFtp);*/
 
         Checkbox autoTag = new Checkbox("Auto tag", AUTO_TAG.getBoolean());
         ComboBox<Tag> autoTagId = new ComboBox<>("Auto tag");

@@ -4,12 +4,12 @@ public enum OptionKey {
 
     AUTO_TAG("auto_tag"),
     AUTO_TAG_ID("auto_tag_id"),
+    BACKUP_METHOD("backup_method"),
     DARK_MODE("dark_mode"),
     DATE_FORMAT("date_format"),
     DATE_SCAN_FORMATS("date_scan_formats"),
     DOC_POLL_PATH("doc_poll_path"),
     DOC_SAVE_PATH("doc_save_path"),
-    DOC_SAVE_TYPE("doc_poll_type"),
     DEMO_DOCS("demo_docs"),
     FTP_URL("ftp_url"),
     FTP_USER("ftp_user"),

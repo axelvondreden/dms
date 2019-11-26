@@ -26,7 +26,7 @@ public class TagBuilderFactory extends Factory {
     }
 
     public TagEditDialogBuilder editDialog(Tag tag) {
-        return new TagEditDialogBuilder(builderFactory, tag, tagService);
+        return new TagEditDialogBuilder(builderFactory, tag, tagService, docService);
     }
 
     public TagSelectorBuilder selector() {
