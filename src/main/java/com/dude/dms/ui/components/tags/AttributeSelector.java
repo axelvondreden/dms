@@ -43,7 +43,7 @@ public class AttributeSelector extends VerticalLayout {
         availableGrid.setItems(available);
         availableGrid.setMinHeight("100%");
         availableGrid.setWidth("50%");
-        availableGrid.addColumn(Attribute::getName).setHeader("Available");
+        availableGrid.addColumn(attribute -> attribute.getName() + (attribute.isRequired() ? "*" : "")).setHeader("Available");
         availableGrid.addThemeVariants(GridVariant.LUMO_COMPACT);
         availableGrid.addItemClickListener(event -> {
             available.remove(event.getItem());
@@ -55,13 +55,12 @@ public class AttributeSelector extends VerticalLayout {
         listWrapper.setSizeFull();
 
         TextField addField = new TextField("", "", "New Attribute");
-        addField.setWidthFull();
         ComboBox<Attribute.Type> addCombo = new ComboBox<>();
         addCombo.setPreventInvalidInput(true);
         addCombo.setAllowCustomValue(false);
         addCombo.setItems(Attribute.Type.values());
         addCombo.setValue(Attribute.Type.STRING);
-        Checkbox addCheckbox = new Checkbox("Required");
+        Checkbox addCheckbox = new Checkbox("Req.");
         Button addButton = new Button(VaadinIcon.PLUS.create(), e -> {
             if (!addField.isEmpty() && !addCombo.isEmpty()) {
                 available.add(attributeService.create(new Attribute(addField.getValue(), addCheckbox.getValue(), addCombo.getValue())));
