@@ -8,10 +8,12 @@ import com.dude.dms.ui.builder.BuilderFactory;
 import com.helger.commons.io.file.FileHelper;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ElementFactory;
 import com.vaadin.flow.server.StreamResource;
+import dev.mett.vaadin.tooltip.Tooltips;
 
 import java.io.File;
 import java.util.List;
@@ -66,12 +68,13 @@ public class DocImageDialog extends Dialog {
                         .set("left", textBlock.getX() + "%")
                         .set("width", textBlock.getWidth() + "%")
                         .set("height", textBlock.getHeight() + "%");
-                div.setAttribute("title", textBlock.toString());
+                //div.setAttribute("title", textBlock.toString());
                 div.setAttribute("id", String.valueOf(textBlock.getId()));
                 div.addEventListener("mouseenter", event -> event.getSource().getStyle().set("border", "3px solid black"));
                 div.addEventListener("mouseleave", event -> event.getSource().getStyle().set("border", "2px solid gray"));
                 div.addEventListener("click", event -> builderFactory.docs().textBlockEditDialog(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))).build().open());
                 container.appendChild(div);
+                Tooltips.getCurrent().setTooltip((Div) div.getComponent().get(), textBlock.getText());
             }
         } else {
             add(new Text("No image found!"));

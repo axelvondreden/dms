@@ -20,6 +20,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.StreamResource;
+import dev.mett.vaadin.tooltip.Tooltips;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -66,12 +67,13 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
             download.setHref(new StreamResource("pdf.pdf", () -> FileHelper.getInputStream(file)));
             download.getElement().setAttribute("download", true);
         }
+        Tooltips.getCurrent().setTooltip(download, "Open");
 
-        return new HorizontalLayout(
-                new Button(VaadinIcon.TEXT_LABEL.create(), e -> builderFactory.docs().textDialog(doc).build().open()),
-                download,
-                new Button(VaadinIcon.EDIT.create(), e -> builderFactory.docs().editDialog(doc).withEventListener(() -> grid.getDataProvider().refreshAll()).build().open())
-        );
+        Button text = new Button(VaadinIcon.TEXT_LABEL.create(), e -> builderFactory.docs().textDialog(doc).build().open());
+        Tooltips.getCurrent().setTooltip(text, "Details");
+        Button edit = new Button(VaadinIcon.EDIT.create(), e -> builderFactory.docs().editDialog(doc).withEventListener(() -> grid.getDataProvider().refreshAll()).build().open());
+        Tooltips.getCurrent().setTooltip(edit, "Edit");
+        return new HorizontalLayout(text, download, edit);
     }
 
     private void fillGrid() {
