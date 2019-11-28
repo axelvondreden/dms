@@ -31,7 +31,7 @@ public class AttributeSelector extends VerticalLayout {
         selectedGrid.setItems(selected);
         selectedGrid.setMinHeight("100%");
         selectedGrid.setWidth("50%");
-        selectedGrid.addColumn(Attribute::getName).setHeader("Selected");
+        selectedGrid.addColumn(attribute -> attribute.getName() + (attribute.isRequired() ? "*" : "")).setHeader("Selected");
         selectedGrid.addThemeVariants(GridVariant.LUMO_COMPACT);
         selectedGrid.addItemClickListener(event -> {
             selected.remove(event.getItem());

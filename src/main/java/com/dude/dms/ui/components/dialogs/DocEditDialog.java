@@ -22,6 +22,8 @@ public class DocEditDialog extends EventDialog {
 
     private final TagSelector tagSelector;
 
+    private final AttributeValueContainer attributeValueContainer;
+
     private final DocService docService;
 
     public DocEditDialog(BuilderFactory builderFactory, Doc doc, DocService docService) {
@@ -50,14 +52,14 @@ public class DocEditDialog extends EventDialog {
         cancelButton.setWidthFull();
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
-        AttributeValueContainer valueContainer = builderFactory.attributes().valueContainer(doc).build();
-        valueContainer.setSizeFull();
-        valueContainer.setMaxHeight("40vh");
+        attributeValueContainer = builderFactory.attributes().valueContainer(doc).build();
+        attributeValueContainer.setSizeFull();
+        attributeValueContainer.setMaxHeight("40vh");
 
         Details tagDetails = new Details("Tags", tagSelector);
         tagDetails.getElement().getStyle().set("width", "100%");
 
-        Details attributeDetails = new Details("Attributes", valueContainer);
+        Details attributeDetails = new Details("Attributes", attributeValueContainer);
         attributeDetails.getElement().getStyle().set("width", "100%");
 
         HorizontalLayout fieldWrapper = new HorizontalLayout(guidTextField, datePicker);
@@ -73,10 +75,12 @@ public class DocEditDialog extends EventDialog {
     }
 
     private void save() {
-        doc.setDocumentDate(datePicker.getValue());
-        doc.setTags(tagSelector.getSelectedTags());
-        docService.save(doc);
-        triggerEvent();
-        close();
+        if (attributeValueContainer.validate()) {
+            doc.setDocumentDate(datePicker.getValue());
+            doc.setTags(tagSelector.getSelectedTags());
+            docService.save(doc);
+            triggerEvent();
+            close();
+        }
     }
 }
