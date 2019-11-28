@@ -69,7 +69,7 @@ public class AttributeSelector extends VerticalLayout {
             }
         });
 
-        HorizontalLayout addWrapper = new HorizontalLayout(addField, addCheckbox, addButton);
+        HorizontalLayout addWrapper = new HorizontalLayout(addField, addCheckbox, addCombo, addButton);
         addWrapper.setWidthFull();
         addWrapper.setAlignItems(Alignment.CENTER);
 
