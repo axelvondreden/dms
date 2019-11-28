@@ -2,8 +2,8 @@ package com.dude.dms.ui.components.tags;
 
 import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.service.AttributeService;
+import com.dude.dms.ui.components.misc.IconCheckbox;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -60,7 +60,7 @@ public class AttributeSelector extends VerticalLayout {
         addCombo.setAllowCustomValue(false);
         addCombo.setItems(Attribute.Type.values());
         addCombo.setValue(Attribute.Type.STRING);
-        Checkbox addCheckbox = new Checkbox("Req.");
+        IconCheckbox addCheckbox = new IconCheckbox("", "Required", VaadinIcon.LOCK);
         Button addButton = new Button(VaadinIcon.PLUS.create(), e -> {
             if (!addField.isEmpty() && !addCombo.isEmpty()) {
                 available.add(attributeService.create(new Attribute(addField.getValue(), addCheckbox.getValue(), addCombo.getValue())));
@@ -68,7 +68,7 @@ public class AttributeSelector extends VerticalLayout {
             }
         });
 
-        HorizontalLayout addWrapper = new HorizontalLayout(addField, addCheckbox, addCombo, addButton);
+        HorizontalLayout addWrapper = new HorizontalLayout(addField, addCombo, addCheckbox, addButton);
         addWrapper.setWidthFull();
         addWrapper.setAlignItems(Alignment.CENTER);
 
