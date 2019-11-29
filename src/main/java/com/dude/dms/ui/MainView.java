@@ -3,6 +3,7 @@ package com.dude.dms.ui;
 import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.Tag;
+import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.builder.BuilderFactory;
@@ -31,11 +32,13 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.theme.lumo.Lumo;
+import dev.mett.vaadin.tooltip.Tooltips;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.dude.dms.backend.brain.OptionKey.DARK_MODE;
 import static com.github.appreciated.app.layout.entity.Section.FOOTER;
@@ -106,6 +109,10 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
             Icon icon = VaadinIcon.TAG.create();
             icon.setColor(tag.getColor());
             LeftClickableItem entry = new LeftClickableItem(tag.getName(), icon, clickEvent -> UI.getCurrent().navigate(DocsView.class, "tag:" + tag.getName()));
+            String attrs = tag.getAttributes().stream().map(Attribute::getName).collect(Collectors.joining("\n"));
+            if (attrs != null && !attrs.isEmpty()) {
+                Tooltips.getCurrent().setTooltip(entry, "Attributes:\n" + attrs);
+            }
             tagEntries.add(entry);
             badgeHolder.bind(entry.getBadge());
 

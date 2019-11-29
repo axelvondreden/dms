@@ -60,21 +60,20 @@ public class DocImageDialog extends Dialog {
 
             List<TextBlock> textBlocks = textBlockService.findByDoc(doc);
             for (TextBlock textBlock : textBlocks) {
-                Element div = ElementFactory.createDiv();
-                div.getStyle()
+                Div div = new Div();
+                div.getElement().getStyle()
                         .set("border", "2px solid gray")
                         .set("position", "absolute")
                         .set("top", textBlock.getY() + "%")
                         .set("left", textBlock.getX() + "%")
                         .set("width", textBlock.getWidth() + "%")
                         .set("height", textBlock.getHeight() + "%");
-                //div.setAttribute("title", textBlock.toString());
-                div.setAttribute("id", String.valueOf(textBlock.getId()));
-                div.addEventListener("mouseenter", event -> event.getSource().getStyle().set("border", "3px solid black"));
-                div.addEventListener("mouseleave", event -> event.getSource().getStyle().set("border", "2px solid gray"));
-                div.addEventListener("click", event -> builderFactory.docs().textBlockEditDialog(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))).build().open());
-                container.appendChild(div);
-                Tooltips.getCurrent().setTooltip((Div) div.getComponent().get(), textBlock.getText());
+                div.getElement().setAttribute("id", String.valueOf(textBlock.getId()));
+                div.getElement().addEventListener("mouseenter", event -> event.getSource().getStyle().set("border", "3px solid black"));
+                div.getElement().addEventListener("mouseleave", event -> event.getSource().getStyle().set("border", "2px solid gray"));
+                div.getElement().addEventListener("click", event -> builderFactory.docs().textBlockEditDialog(textBlockService.load(Long.parseLong(event.getSource().getAttribute("id")))).build().open());
+                container.appendChild(div.getElement());
+                Tooltips.getCurrent().setTooltip(div, textBlock.getText());
             }
         } else {
             add(new Text("No image found!"));
