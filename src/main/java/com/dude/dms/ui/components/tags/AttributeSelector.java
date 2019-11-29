@@ -2,7 +2,7 @@ package com.dude.dms.ui.components.tags;
 
 import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.service.AttributeService;
-import com.dude.dms.ui.components.misc.IconCheckbox;
+import com.dude.dms.ui.components.misc.IconToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
@@ -55,20 +55,22 @@ public class AttributeSelector extends VerticalLayout {
         listWrapper.setSizeFull();
 
         TextField addField = new TextField("", "", "New Attribute");
+        addField.setWidthFull();
         ComboBox<Attribute.Type> addCombo = new ComboBox<>();
+        addCombo.setWidthFull();
         addCombo.setPreventInvalidInput(true);
         addCombo.setAllowCustomValue(false);
         addCombo.setItems(Attribute.Type.values());
         addCombo.setValue(Attribute.Type.STRING);
-        IconCheckbox addCheckbox = new IconCheckbox("", "Required", VaadinIcon.LOCK);
+        IconToggle addToggle = new IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), "Required");
         Button addButton = new Button(VaadinIcon.PLUS.create(), e -> {
             if (!addField.isEmpty() && !addCombo.isEmpty()) {
-                available.add(attributeService.create(new Attribute(addField.getValue(), addCheckbox.getValue(), addCombo.getValue())));
+                available.add(attributeService.create(new Attribute(addField.getValue(), addToggle.getValue(), addCombo.getValue())));
                 refresh();
             }
         });
 
-        HorizontalLayout addWrapper = new HorizontalLayout(addField, addCombo, addCheckbox, addButton);
+        HorizontalLayout addWrapper = new HorizontalLayout(addField, addCombo, addToggle, addButton);
         addWrapper.setWidthFull();
         addWrapper.setAlignItems(Alignment.CENTER);
 
