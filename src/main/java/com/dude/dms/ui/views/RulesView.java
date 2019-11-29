@@ -42,12 +42,17 @@ public class RulesView extends FormLayout {
     }
 
     private void addPlaintext() {
-        Button create = new Button("Create", VaadinIcon.PLUS.create(), e -> builderFactory.rules().plainDialog().withEventListener(this::fillContent).build().open());
+        Button create = new Button("Create", VaadinIcon.PLUS.create(),
+                e -> builderFactory.rules().plainDialog().withCreateListener(entity -> fillContent()).build().open());
         create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
         plainTextRuleService.getActiveRules().stream()
-                .map(rule -> builderFactory.rules().plainTextCard(rule).withDialogEventListener(this::fillContent).build())
+                .map(rule -> builderFactory.rules().plainTextCard(rule)
+                        .withCreateListener(entity -> fillContent())
+                        .withEditListener(entity -> fillContent())
+                        .withDeleteListener(entity -> fillContent())
+                        .build())
                 .forEach(verticalLayout::add);
         Details details = new Details("Text", verticalLayout);
         details.setOpened(true);
@@ -59,12 +64,17 @@ public class RulesView extends FormLayout {
     }
 
     private void addRegex() {
-        Button create = new Button("Create", VaadinIcon.PLUS.create(), e -> builderFactory.rules().regexDialog().withEventListener(this::fillContent).build().open());
+        Button create = new Button("Create", VaadinIcon.PLUS.create(),
+                e -> builderFactory.rules().regexDialog().withCreateListener(entity -> fillContent()).build().open());
         create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
         regexRuleService.getActiveRules().stream()
-                .map(rule -> builderFactory.rules().regexCard(rule).withDialogEventListener(this::fillContent).build())
+                .map(rule -> builderFactory.rules().regexCard(rule)
+                        .withCreateListener(entity -> fillContent())
+                        .withEditListener(entity -> fillContent())
+                        .withDeleteListener(entity -> fillContent())
+                        .build())
                 .forEach(verticalLayout::add);
         Details details = new Details("Regex", verticalLayout);
         details.setOpened(true);

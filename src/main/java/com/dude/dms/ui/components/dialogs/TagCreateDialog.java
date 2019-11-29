@@ -19,7 +19,7 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import static com.dude.dms.backend.brain.OptionKey.SIMPLE_TAG_COLORS;
 
-public class TagCreateDialog extends EventDialog {
+public class TagCreateDialog extends EventDialog<Tag> {
 
     private final TextField name;
 
@@ -83,7 +83,7 @@ public class TagCreateDialog extends EventDialog {
         tagService.create(tag);
         tag.setAttributes(attributeSelector.getSelectedAttributes());
         tagService.save(tag);
-        triggerEvent();
+        triggerCreateEvent(tag);
         close();
     }
 }

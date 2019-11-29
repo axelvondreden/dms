@@ -4,6 +4,7 @@ import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.PlainTextRuleService;
 import com.dude.dms.ui.builder.BuilderFactory;
+import com.dude.dms.ui.components.misc.ConfirmDialog;
 import com.dude.dms.ui.components.tags.TagSelector;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,7 +16,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class PlainTextRuleDialog extends EventDialog {
+public class PlainTextRuleDialog extends EventDialog<PlainTextRule> {
 
     private static final DmsLogger LOGGER = DmsLogger.getLogger(PlainTextRuleDialog.class);
 
@@ -87,19 +88,15 @@ public class PlainTextRuleDialog extends EventDialog {
             plainTextRuleService.save(plainTextRule);
             LOGGER.showInfo("Edited rule!");
         }
-        triggerEvent();
+        triggerCreateEvent(plainTextRule);
         close();
     }
 
     private void delete() {
-        Dialog dialog = new Dialog(new Label("Are you sure you want to delete the item?"));
-        Button button = new Button("Delete", VaadinIcon.TRASH.create(), e -> {
+        new ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, e -> {
             plainTextRuleService.delete(plainTextRule);
-            triggerEvent();
+            triggerDeleteEvent(plainTextRule);
             close();
-        });
-        button.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        dialog.add(button);
-        dialog.open();
+        }, ButtonVariant.LUMO_ERROR).open();
     }
 }

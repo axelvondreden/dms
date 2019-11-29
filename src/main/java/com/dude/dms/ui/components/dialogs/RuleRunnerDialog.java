@@ -10,7 +10,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import java.util.Map;
 import java.util.Set;
 
-public class RuleRunnerDialog extends EventDialog {
+public class RuleRunnerDialog extends EventDialog<Doc> {
 
     private final Map<Doc, Set<Tag>> result;
 
@@ -33,7 +33,7 @@ public class RuleRunnerDialog extends EventDialog {
         result.keySet().forEach(doc -> {
             doc.getTags().addAll(result.get(doc));
             docService.save(doc);
-            triggerEvent();
+            triggerEditEvent(doc);
         });
         close();
     }

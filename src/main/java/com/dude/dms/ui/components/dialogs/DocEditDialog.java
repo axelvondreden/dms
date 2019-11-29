@@ -14,7 +14,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class DocEditDialog extends EventDialog {
+public class DocEditDialog extends EventDialog<Doc> {
 
     private final Doc doc;
 
@@ -79,7 +79,7 @@ public class DocEditDialog extends EventDialog {
             doc.setDocumentDate(datePicker.getValue());
             doc.setTags(tagSelector.getSelectedTags());
             docService.save(doc);
-            triggerEvent();
+            triggerEditEvent(doc);
             close();
         }
     }

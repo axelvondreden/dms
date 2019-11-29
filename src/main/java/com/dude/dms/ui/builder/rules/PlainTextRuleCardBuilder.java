@@ -3,7 +3,9 @@ package com.dude.dms.ui.builder.rules;
 import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.EntityEventListener;
+import com.dude.dms.ui.EntityCreateListener;
+import com.dude.dms.ui.EntityDeleteListener;
+import com.dude.dms.ui.EntityEditListener;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.cards.PlainTextRuleCard;
 
@@ -17,7 +19,11 @@ public final class PlainTextRuleCardBuilder {
 
     private final TagService tagService;
 
-    private EntityEventListener eventListener;
+    private EntityCreateListener<PlainTextRule> createListener;
+
+    private EntityEditListener<PlainTextRule> editListener;
+
+    private EntityDeleteListener<PlainTextRule> deleteListener;
 
     PlainTextRuleCardBuilder(BuilderFactory builderFactory, PlainTextRule rule, PlainTextRuleValidator plainTextRuleValidator, TagService tagService) {
         this.builderFactory = builderFactory;
@@ -26,14 +32,25 @@ public final class PlainTextRuleCardBuilder {
         this.tagService = tagService;
     }
 
-    public PlainTextRuleCardBuilder withDialogEventListener(EntityEventListener eventListener) {
-        this.eventListener = eventListener;
+    public PlainTextRuleCardBuilder withCreateListener(EntityCreateListener<PlainTextRule> createListener) {
+        this.createListener = createListener;
+        return this;
+    }
+
+    public PlainTextRuleCardBuilder withEditListener(EntityEditListener<PlainTextRule> editListener) {
+        this.editListener = editListener;
+        return this;
+}
+
+    public PlainTextRuleCardBuilder withDeleteListener(EntityDeleteListener<PlainTextRule> deleteListener) {
+        this.deleteListener = deleteListener;
         return this;
     }
 
     public PlainTextRuleCard build() {
         PlainTextRuleCard card = new PlainTextRuleCard(builderFactory, rule, plainTextRuleValidator, tagService);
-        card.addClickListener(e -> builderFactory.rules().plainDialog().forRule(rule).withEventListener(eventListener).build().open());
+        card.addClickListener(e -> builderFactory.rules().plainDialog().forRule(rule)
+                .withCreateListener(createListener).withEditListener(editListener).withDeleteListener(deleteListener).build().open());
         return card;
     }
 }

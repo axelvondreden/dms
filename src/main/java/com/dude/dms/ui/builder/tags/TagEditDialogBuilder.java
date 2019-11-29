@@ -3,7 +3,7 @@ package com.dude.dms.ui.builder.tags;
 import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.EntityEventListener;
+import com.dude.dms.ui.EntityEditListener;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.components.dialogs.TagEditDialog;
 
@@ -17,7 +17,7 @@ public final class TagEditDialogBuilder {
 
     private final DocService docService;
 
-    private EntityEventListener eventListener;
+    private EntityEditListener<Tag> editListener;
 
     TagEditDialogBuilder(BuilderFactory builderFactory, Tag tag, TagService tagService, DocService docService) {
         this.builderFactory = builderFactory;
@@ -26,14 +26,14 @@ public final class TagEditDialogBuilder {
         this.docService = docService;
     }
 
-    public TagEditDialogBuilder withEventListener(EntityEventListener eventListener) {
-        this.eventListener = eventListener;
+    public TagEditDialogBuilder withEditListener(EntityEditListener<Tag> editListener) {
+        this.editListener = editListener;
         return this;
     }
 
     public TagEditDialog build() {
         TagEditDialog dialog = new TagEditDialog(builderFactory, tag, tagService, docService);
-        dialog.setEventListener(eventListener);
+        dialog.setEditListener(editListener);
         return dialog;
     }
 }

@@ -3,7 +3,6 @@ package com.dude.dms.ui.builder.docs;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.docs.TextBlock;
 import com.dude.dms.backend.service.DocService;
-import com.dude.dms.backend.service.TagService;
 import com.dude.dms.backend.service.TextBlockService;
 import com.dude.dms.ui.builder.BuilderFactory;
 import com.dude.dms.ui.builder.Factory;
@@ -11,13 +10,11 @@ import com.dude.dms.ui.builder.Factory;
 public class DocBuilderFactory extends Factory {
 
     private final DocService docService;
-    private final TagService tagService;
     private final TextBlockService textBlockService;
 
-    public DocBuilderFactory(BuilderFactory builderFactory, DocService docService, TagService tagService, TextBlockService textBlockService) {
+    public DocBuilderFactory(BuilderFactory builderFactory, DocService docService, TextBlockService textBlockService) {
         super(builderFactory);
         this.docService = docService;
-        this.tagService = tagService;
         this.textBlockService = textBlockService;
     }
 
@@ -30,7 +27,7 @@ public class DocBuilderFactory extends Factory {
     }
 
     public DocEditDialogBuilder editDialog(Doc doc) {
-        return new DocEditDialogBuilder(builderFactory, doc, docService, tagService);
+        return new DocEditDialogBuilder(builderFactory, doc, docService);
     }
 
     public DocImageDialogBuilder imageDialog(Doc doc) {

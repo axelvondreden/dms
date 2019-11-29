@@ -4,9 +4,11 @@ import com.dude.dms.backend.brain.DmsLogger;
 import com.dude.dms.backend.brain.parsing.PdfToDocParser;
 import com.dude.dms.backend.data.Tag;
 import com.dude.dms.backend.data.docs.Attribute;
+import com.dude.dms.backend.service.AttributeService;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.backend.service.TagService;
 import com.dude.dms.ui.builder.BuilderFactory;
+import com.dude.dms.ui.components.misc.ConfirmDialog;
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton;
 import com.dude.dms.ui.views.DocsView;
 import com.dude.dms.ui.views.LogView;
@@ -23,6 +25,7 @@ import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout;
 import com.github.appreciated.app.layout.entity.DefaultBadgeHolder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -53,6 +56,8 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
 
     private final TagService tagService;
 
+    private final AttributeService attributeService;
+
     private final BuilderFactory builderFactory;
 
     private final String buildVersion;
@@ -60,9 +65,10 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
     private DefaultBadgeHolder docsBadge;
 
     @Autowired
-    public MainView(DocService docService, TagService tagService, PdfToDocParser pdfToDocParser, BuilderFactory builderFactory, @Value("${build.version}") String buildVersion) {
+    public MainView(DocService docService, TagService tagService, AttributeService attributeService, PdfToDocParser pdfToDocParser, BuilderFactory builderFactory, @Value("${build.version}") String buildVersion) {
         this.docService = docService;
         this.tagService = tagService;
+        this.attributeService = attributeService;
         this.builderFactory = builderFactory;
         this.buildVersion = buildVersion;
 
@@ -89,21 +95,52 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
         docsBadge.bind(docsEntry.getBadge());
 
         LeftSubmenu tagsEntry = createTagsEntry();
+        LeftSubmenu attributesEntry = createAttributesEntry();
         LeftNavigationItem rulesEntry = new LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView.class);
         LeftNavigationItem logEntry = new LeftNavigationItem("Log", VaadinIcon. CLIPBOARD_PULSE.create(), LogView.class);
         return LeftAppMenuBuilder.get()
-                .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(), e -> builderFactory.docs().createDialog().build().open()))
-                .add(docsEntry, tagsEntry, rulesEntry, logEntry)
+                .addToSection(HEADER, new LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create(),
+                        e -> builderFactory.docs().createDialog().build().open()))
+                .add(docsEntry, tagsEntry, attributesEntry, rulesEntry, logEntry)
                 .withStickyFooter()
                 .addToSection(FOOTER,
-                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(), e -> builderFactory.misc().changelog().build().open()),
+                        new LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create(),
+                                e -> builderFactory.misc().changelog().build().open()),
                         new LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView.class))
                 .build();
     }
 
+    private LeftSubmenu createAttributesEntry() {
+        List<Component> attributeEntries = new ArrayList<>();
+        attributeEntries.add(new LeftClickableItem("Add Attribute", VaadinIcon.PLUS_CIRCLE.create(),
+                event -> builderFactory.attributes().createDialog().withCreateListener(entity -> UI.getCurrent().getPage().reload()).build().open()));
+        for (Attribute attribute : attributeService.findAll()) {
+            DefaultBadgeHolder badgeHolder = new DefaultBadgeHolder((int) docService.countByAttribute(attribute));
+            LeftClickableItem entry = new LeftClickableItem(attribute.getName(), VaadinIcon.TEXT_LABEL.create(), clickEvent -> {});
+            String tags = attribute.getTags().stream().map(Tag::getName).collect(Collectors.joining("\n"));
+            if (tags != null && !tags.isEmpty()) {
+                Tooltips.getCurrent().setTooltip(entry, "Tags:\n" + tags);
+            }
+            attributeEntries.add(entry);
+            badgeHolder.bind(entry.getBadge());
+
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.setTarget(entry);
+            contextMenu.addItem("Edit", e -> builderFactory.attributes().editDialog(attribute)
+                    .withEditListener(entity -> UI.getCurrent().getPage().reload()).build().open());
+            contextMenu.addItem("Delete", e -> {
+                new ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH,
+                        event -> attributeService.delete(attribute), ButtonVariant.LUMO_ERROR).open();
+                UI.getCurrent().getPage().reload();
+            });
+        }
+        return new LeftSubmenu("Attributes", VaadinIcon.ACCESSIBILITY.create(), attributeEntries);
+    }
+
     private LeftSubmenu createTagsEntry() {
         List<Component> tagEntries = new ArrayList<>();
-        tagEntries.add(new LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create(), event -> builderFactory.tags().createDialog().withEventListener(() -> UI.getCurrent().getPage().reload()).build().open()));
+        tagEntries.add(new LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create(),
+                event -> builderFactory.tags().createDialog().withCreateListener(entity -> UI.getCurrent().getPage().reload()).build().open()));
         for (Tag tag : tagService.findAll()) {
             DefaultBadgeHolder badgeHolder = new DefaultBadgeHolder((int) docService.countByTag(tag));
             Icon icon = VaadinIcon.TAG.create();
@@ -118,7 +155,8 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
 
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setTarget(entry);
-            contextMenu.addItem("Edit", e -> builderFactory.tags().editDialog(tag).withEventListener(() -> UI.getCurrent().getPage().reload()).build().open());
+            contextMenu.addItem("Edit", e -> builderFactory.tags().editDialog(tag)
+                    .withEditListener(entity -> UI.getCurrent().getPage().reload()).build().open());
         }
         return new LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries);
     }

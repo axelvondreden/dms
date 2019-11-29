@@ -1,5 +1,6 @@
 package com.dude.dms.backend.repositories;
 
+import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.data.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,6 @@ public interface DocRepository extends JpaRepository<Doc, Long> {
     List<Doc> findTop10ByRawTextContainingIgnoreCase(String rawText);
 
     long countByRawTextContainingIgnoreCase(String rawText);
+
+    long countByAttributeValues_AttributeEquals(Attribute attribute);
 }

@@ -1,19 +1,46 @@
 package com.dude.dms.ui.components.dialogs;
 
-import com.dude.dms.ui.EntityEventListener;
+import com.dude.dms.backend.data.DataEntity;
+import com.dude.dms.ui.EntityCreateListener;
+import com.dude.dms.ui.EntityDeleteListener;
+import com.dude.dms.ui.EntityEditListener;
 import com.vaadin.flow.component.dialog.Dialog;
 
-public abstract class EventDialog extends Dialog {
+public abstract class EventDialog<T extends DataEntity> extends Dialog {
 
-    protected EntityEventListener eventListener;
+    private EntityCreateListener<T> createListener;
 
-    public void setEventListener(EntityEventListener eventListener) {
-        this.eventListener = eventListener;
+    private EntityEditListener<T> editListener;
+
+    private EntityDeleteListener<T> deleteListener;
+
+    public void setCreateListener(EntityCreateListener<T> createListener) {
+        this.createListener = createListener;
     }
 
-    protected void triggerEvent() {
-        if (eventListener != null) {
-            eventListener.onChange();
+    public void setDeleteListener(EntityDeleteListener<T> deleteListener) {
+        this.deleteListener = deleteListener;
+    }
+
+    public void setEditListener(EntityEditListener<T> editListener) {
+        this.editListener = editListener;
+    }
+
+    protected void triggerCreateEvent(T entity) {
+        if (createListener != null) {
+            createListener.onCreate(entity);
+        }
+    }
+
+    protected void triggerDeleteEvent(T entity) {
+        if (deleteListener != null) {
+            deleteListener.onDelete(entity);
+        }
+    }
+
+    protected void triggerEditEvent(T entity) {
+        if (editListener != null) {
+            editListener.onEdit(entity);
         }
     }
 }

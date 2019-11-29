@@ -95,4 +95,8 @@ public class DocService extends HistoricalCrudService<Doc, DocHistory> {
     public long countByRawTextContainingIgnoreCase(String rawText) {
         return docRepository.countByRawTextContainingIgnoreCase(rawText);
     }
+
+    public long countByAttribute(Attribute attribute) {
+        return docRepository.countByAttributeValues_AttributeEquals(attribute);
+    }
 }

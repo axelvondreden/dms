@@ -71,7 +71,8 @@ public class DocsView extends HistoricalCrudView<Doc, DocHistory> implements Has
 
         Button text = new Button(VaadinIcon.TEXT_LABEL.create(), e -> builderFactory.docs().textDialog(doc).build().open());
         Tooltips.getCurrent().setTooltip(text, "Details");
-        Button edit = new Button(VaadinIcon.EDIT.create(), e -> builderFactory.docs().editDialog(doc).withEventListener(() -> grid.getDataProvider().refreshAll()).build().open());
+        Button edit = new Button(VaadinIcon.EDIT.create(),
+                e -> builderFactory.docs().editDialog(doc).withEditEventListener(entity -> grid.getDataProvider().refreshAll()).build().open());
         Tooltips.getCurrent().setTooltip(edit, "Edit");
         return new HorizontalLayout(text, download, edit);
     }

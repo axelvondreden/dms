@@ -13,7 +13,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextBlockEditDialog extends EventDialog {
+public class TextBlockEditDialog extends EventDialog<TextBlock> {
 
     private final TextField text;
 
@@ -78,7 +78,7 @@ public class TextBlockEditDialog extends EventDialog {
             block.setText(newText);
             textBlockService.save(block);
         });
-        triggerEvent();
+        triggerEditEvent(textBlock);
         close();
     }
 }

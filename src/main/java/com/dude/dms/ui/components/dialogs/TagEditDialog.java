@@ -20,7 +20,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import static com.dude.dms.backend.brain.OptionKey.SIMPLE_TAG_COLORS;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class TagEditDialog extends EventDialog {
+public class TagEditDialog extends EventDialog<Tag> {
 
     private final TextField name;
 
@@ -91,7 +91,7 @@ public class TagEditDialog extends EventDialog {
 
         docService.findByTag(tag).forEach(docService::save);
 
-        triggerEvent();
+        triggerEditEvent(tag);
         close();
     }
 }

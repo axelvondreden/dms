@@ -9,12 +9,16 @@ public class IconToggle extends Button {
     private boolean active;
 
     public IconToggle(Icon activeIcon, Icon inactiveIcon, String tooltip) {
-        active = false;
+        this(activeIcon, inactiveIcon, tooltip, false);
+    }
+
+    public IconToggle(Icon activeIcon, Icon inactiveIcon, String tooltip, boolean initialValue) {
+        active = initialValue;
         if (tooltip != null && !tooltip.isEmpty()) {
             Tooltips.getCurrent().setTooltip(this, tooltip);
         }
 
-        setIcon(inactiveIcon);
+        setIcon(active ? activeIcon : inactiveIcon);
         addClickListener(event -> {
             active = !active;
             setIcon(active ? activeIcon : inactiveIcon);

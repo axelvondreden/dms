@@ -1,5 +1,6 @@
 package com.dude.dms.ui.builder.attributes;
 
+import com.dude.dms.backend.data.docs.Attribute;
 import com.dude.dms.backend.data.docs.AttributeValue;
 import com.dude.dms.backend.data.docs.Doc;
 import com.dude.dms.backend.service.AttributeService;
@@ -20,7 +21,7 @@ public class AttributeBuilderFactory extends Factory {
     }
 
     public AttributeSelectorBuilder selector() {
-        return new AttributeSelectorBuilder(attributeService);
+        return new AttributeSelectorBuilder(builderFactory, attributeService);
     }
 
     public AttributeValueContainerBuilder valueContainer(Doc doc) {
@@ -29,5 +30,13 @@ public class AttributeBuilderFactory extends Factory {
 
     public AttributeValueFieldBuilder valueField(AttributeValue attributeValue) {
         return new AttributeValueFieldBuilder(attributeValue, attributeValueService);
+    }
+
+    public AttributeCreateDialogBuilder createDialog() {
+        return new AttributeCreateDialogBuilder(attributeService);
+    }
+
+    public AttributeEditDialogBuilder editDialog(Attribute attribute) {
+        return new AttributeEditDialogBuilder(attribute, attributeService);
     }
 }

@@ -50,7 +50,7 @@ public class BuilderFactory {
     }
 
     public DocBuilderFactory docs() {
-        return new DocBuilderFactory(this, docService, tagService, textBlockService);
+        return new DocBuilderFactory(this, docService, textBlockService);
     }
 
     public MiscBuilderFactory misc() {

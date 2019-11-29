@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
@@ -20,7 +21,7 @@ public class Attribute extends DataEntity {
     @OneToMany(mappedBy = "attribute")
     private Set<AttributeValue> attributeValues;
 
-    @ManyToMany(mappedBy = "attributes")
+    @ManyToMany(mappedBy = "attributes", fetch = FetchType.EAGER)
     private Set<Tag> tags;
 
     @NotBlank

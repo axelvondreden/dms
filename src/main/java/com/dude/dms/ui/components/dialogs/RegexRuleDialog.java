@@ -13,7 +13,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-public class RegexRuleDialog extends EventDialog {
+public class RegexRuleDialog extends EventDialog<RegexRule> {
 
     private static final DmsLogger LOGGER = DmsLogger.getLogger(RegexRuleDialog.class);
 
@@ -65,15 +65,17 @@ public class RegexRuleDialog extends EventDialog {
             return;
         }
         if (regexRule == null) {
-            regexRuleService.save(new RegexRule(regex.getValue(), ruleTagSelector.getSelectedTags()));
+            regexRule = new RegexRule(regex.getValue(), ruleTagSelector.getSelectedTags());
+            regexRuleService.save(regexRule);
             LOGGER.showInfo("Created new rule!");
+            triggerCreateEvent(regexRule);
         } else {
             regexRule.setRegex(regex.getValue());
             regexRule.setTags(ruleTagSelector.getSelectedTags());
             regexRuleService.save(regexRule);
             LOGGER.showInfo("Edited rule!");
+            triggerEditEvent(regexRule);
         }
-        triggerEvent();
         close();
     }
 
@@ -81,7 +83,7 @@ public class RegexRuleDialog extends EventDialog {
         Dialog dialog = new Dialog(new Label("Are you sure you want to delete the item?"));
         Button button = new Button("Delete", VaadinIcon.TRASH.create(), e -> {
             regexRuleService.delete(regexRule);
-            triggerEvent();
+            triggerDeleteEvent(regexRule);
             close();
         });
         button.addThemeVariants(ButtonVariant.LUMO_ERROR);
