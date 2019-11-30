@@ -13,30 +13,17 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-public class RegexRuleDialog extends EventDialog<RegexRule> {
+public class RegexRuleEditDialog extends EventDialog<RegexRule> {
 
-    private static final DmsLogger LOGGER = DmsLogger.getLogger(RegexRuleDialog.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(RegexRuleEditDialog.class);
 
     private final RegexField regex;
     private final TagSelector ruleTagSelector;
     private final RegexRuleService regexRuleService;
 
-    private RegexRule regexRule;
+    private final RegexRule regexRule;
 
-    public RegexRuleDialog(BuilderFactory builderFactory, RegexRuleService regexRuleService) {
-        this.regexRuleService = regexRuleService;
-        regex = new RegexField("Regex");
-        regex.setWidthFull();
-        ruleTagSelector = builderFactory.tags().selector().build();
-        ruleTagSelector.setHeight("80%");
-        Button button = new Button("Create", VaadinIcon.PLUS.create(), e -> save());
-        button.setWidthFull();
-        add(regex, ruleTagSelector, button);
-        setWidth("70vw");
-        setHeight("70vh");
-    }
-
-    public RegexRuleDialog(BuilderFactory builderFactory, RegexRule regexRule, RegexRuleService regexRuleService) {
+    public RegexRuleEditDialog(BuilderFactory builderFactory, RegexRule regexRule, RegexRuleService regexRuleService) {
         this.regexRuleService = regexRuleService;
         this.regexRule = regexRule;
         regex = new RegexField("Regex", regexRule.getRegex());
@@ -64,18 +51,11 @@ public class RegexRuleDialog extends EventDialog<RegexRule> {
             LOGGER.showError("At least on tag must be selected!");
             return;
         }
-        if (regexRule == null) {
-            regexRule = new RegexRule(regex.getValue(), ruleTagSelector.getSelectedTags());
-            regexRuleService.save(regexRule);
-            LOGGER.showInfo("Created new rule!");
-            triggerCreateEvent(regexRule);
-        } else {
-            regexRule.setRegex(regex.getValue());
-            regexRule.setTags(ruleTagSelector.getSelectedTags());
-            regexRuleService.save(regexRule);
-            LOGGER.showInfo("Edited rule!");
-            triggerEditEvent(regexRule);
-        }
+        regexRule.setRegex(regex.getValue());
+        regexRule.setTags(ruleTagSelector.getSelectedTags());
+        regexRuleService.save(regexRule);
+        LOGGER.showInfo("Edited rule!");
+        triggerEditEvent(regexRule);
         close();
     }
 

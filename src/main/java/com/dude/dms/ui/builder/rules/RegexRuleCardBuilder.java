@@ -3,7 +3,6 @@ package com.dude.dms.ui.builder.rules;
 import com.dude.dms.backend.brain.parsing.RegexRuleValidator;
 import com.dude.dms.backend.data.rules.RegexRule;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.EntityCreateListener;
 import com.dude.dms.ui.EntityDeleteListener;
 import com.dude.dms.ui.EntityEditListener;
 import com.dude.dms.ui.builder.BuilderFactory;
@@ -19,8 +18,6 @@ public final class RegexRuleCardBuilder {
 
     private final TagService tagService;
 
-    private EntityCreateListener<RegexRule> createListener;
-
     private EntityEditListener<RegexRule> editListener;
 
     private EntityDeleteListener<RegexRule> deleteListener;
@@ -30,11 +27,6 @@ public final class RegexRuleCardBuilder {
         this.rule = rule;
         this.regexRuleValidator = regexRuleValidator;
         this.tagService = tagService;
-    }
-
-    public RegexRuleCardBuilder withCreateListener(EntityCreateListener<RegexRule> createListener) {
-        this.createListener = createListener;
-        return this;
     }
 
     public RegexRuleCardBuilder withEditListener(EntityEditListener<RegexRule> editListener) {
@@ -49,8 +41,7 @@ public final class RegexRuleCardBuilder {
 
     public RegexRuleCard build() {
         RegexRuleCard card = new RegexRuleCard(builderFactory, rule, regexRuleValidator, tagService);
-        card.addClickListener(e -> builderFactory.rules().regexDialog().forRule(rule).withCreateListener(createListener)
-                .withEditListener(editListener).withDeleteListener(deleteListener).build().open());
+        card.addClickListener(e -> builderFactory.rules().regexEditDialog(rule).withEditListener(editListener).withDeleteListener(deleteListener).build().open());
         return card;
     }
 }

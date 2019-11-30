@@ -129,9 +129,10 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftHybrid> impl
             contextMenu.addItem("Edit", e -> builderFactory.attributes().editDialog(attribute)
                     .withEditListener(entity -> UI.getCurrent().getPage().reload()).build().open());
             contextMenu.addItem("Delete", e -> {
-                new ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH,
-                        event -> attributeService.delete(attribute), ButtonVariant.LUMO_ERROR).open();
-                UI.getCurrent().getPage().reload();
+                new ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, event -> {
+                    attributeService.delete(attribute);
+                    UI.getCurrent().getPage().reload();
+                }, ButtonVariant.LUMO_ERROR).open();
             });
         }
         return new LeftSubmenu("Attributes", VaadinIcon.ACCESSIBILITY.create(), attributeEntries);

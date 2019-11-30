@@ -3,7 +3,6 @@ package com.dude.dms.ui.builder.rules;
 import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator;
 import com.dude.dms.backend.data.rules.PlainTextRule;
 import com.dude.dms.backend.service.TagService;
-import com.dude.dms.ui.EntityCreateListener;
 import com.dude.dms.ui.EntityDeleteListener;
 import com.dude.dms.ui.EntityEditListener;
 import com.dude.dms.ui.builder.BuilderFactory;
@@ -19,8 +18,6 @@ public final class PlainTextRuleCardBuilder {
 
     private final TagService tagService;
 
-    private EntityCreateListener<PlainTextRule> createListener;
-
     private EntityEditListener<PlainTextRule> editListener;
 
     private EntityDeleteListener<PlainTextRule> deleteListener;
@@ -30,11 +27,6 @@ public final class PlainTextRuleCardBuilder {
         this.rule = rule;
         this.plainTextRuleValidator = plainTextRuleValidator;
         this.tagService = tagService;
-    }
-
-    public PlainTextRuleCardBuilder withCreateListener(EntityCreateListener<PlainTextRule> createListener) {
-        this.createListener = createListener;
-        return this;
     }
 
     public PlainTextRuleCardBuilder withEditListener(EntityEditListener<PlainTextRule> editListener) {
@@ -49,8 +41,7 @@ public final class PlainTextRuleCardBuilder {
 
     public PlainTextRuleCard build() {
         PlainTextRuleCard card = new PlainTextRuleCard(builderFactory, rule, plainTextRuleValidator, tagService);
-        card.addClickListener(e -> builderFactory.rules().plainDialog().forRule(rule)
-                .withCreateListener(createListener).withEditListener(editListener).withDeleteListener(deleteListener).build().open());
+        card.addClickListener(e -> builderFactory.rules().plainEditDialog(rule).withEditListener(editListener).withDeleteListener(deleteListener).build().open());
         return card;
     }
 }

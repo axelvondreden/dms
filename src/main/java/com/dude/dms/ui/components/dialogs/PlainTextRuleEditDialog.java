@@ -9,16 +9,14 @@ import com.dude.dms.ui.components.tags.TagSelector;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class PlainTextRuleDialog extends EventDialog<PlainTextRule> {
+public class PlainTextRuleEditDialog extends EventDialog<PlainTextRule> {
 
-    private static final DmsLogger LOGGER = DmsLogger.getLogger(PlainTextRuleDialog.class);
+    private static final DmsLogger LOGGER = DmsLogger.getLogger(PlainTextRuleEditDialog.class);
 
     private final TextField plainText;
     private final TagSelector ruleTagSelector;
@@ -26,30 +24,12 @@ public class PlainTextRuleDialog extends EventDialog<PlainTextRule> {
 
     private final PlainTextRuleService plainTextRuleService;
 
-    private PlainTextRule plainTextRule;
+    private final PlainTextRule plainTextRule;
 
-    public PlainTextRuleDialog(BuilderFactory builderFactory, PlainTextRuleService plainTextRuleService) {
-        this.plainTextRuleService = plainTextRuleService;
-        plainText = new TextField("Text", "");
-        plainText.setWidthFull();
-        ruleTagSelector = builderFactory.tags().selector().build();
-        ruleTagSelector.setHeight("80%");
-        caseSensitive = new Checkbox("case sensitive");
-        HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
-        hLayout.setWidthFull();
-        hLayout.setAlignItems(FlexComponent.Alignment.END);
-        Button button = new Button("Create", VaadinIcon.PLUS.create(), e -> save());
-        button.setWidthFull();
-        add(hLayout, ruleTagSelector, button);
-        setWidth("70vw");
-        setHeight("70vh");
-    }
-
-    public PlainTextRuleDialog(BuilderFactory builderFactory, PlainTextRule plainTextRule, PlainTextRuleService plainTextRuleService) {
+    public PlainTextRuleEditDialog(BuilderFactory builderFactory, PlainTextRule plainTextRule, PlainTextRuleService plainTextRuleService) {
         this.plainTextRuleService = plainTextRuleService;
         this.plainTextRule = plainTextRule;
-        plainText = new TextField("Text", "");
-        plainText.setValue(plainTextRule.getText());
+        plainText = new TextField("Text", plainTextRule.getText(), "");
         plainText.setWidthFull();
         ruleTagSelector = builderFactory.tags().selector().forRule(plainTextRule).build();
         ruleTagSelector.setHeight("80%");
@@ -79,16 +59,12 @@ public class PlainTextRuleDialog extends EventDialog<PlainTextRule> {
             LOGGER.showError("At least on tag must be selected!");
             return;
         }
-        if (plainTextRule == null) {
-            plainTextRuleService.save(new PlainTextRule(plainText.getValue(), caseSensitive.getValue(), ruleTagSelector.getSelectedTags()));
-            LOGGER.showInfo("Created new rule!");
-        } else {
-            plainTextRule.setText(plainText.getValue());
-            plainTextRule.setTags(ruleTagSelector.getSelectedTags());
-            plainTextRuleService.save(plainTextRule);
-            LOGGER.showInfo("Edited rule!");
-        }
-        triggerCreateEvent(plainTextRule);
+        plainTextRule.setText(plainText.getValue());
+        plainTextRule.setTags(ruleTagSelector.getSelectedTags());
+        plainTextRule.setCaseSensitive(caseSensitive.getValue());
+        plainTextRuleService.save(plainTextRule);
+        LOGGER.showInfo("Edited rule!");
+        triggerEditEvent(plainTextRule);
         close();
     }
 

@@ -45,12 +45,20 @@ public class RuleBuilderFactory extends Factory {
         return new RegexRuleCardBuilder(builderFactory, rule, regexRuleValidator, tagService);
     }
 
-    public PlainTextRuleDialogBuilder plainDialog() {
-        return new PlainTextRuleDialogBuilder(builderFactory, plainTextRuleService);
+    public PlainTextRuleCreateDialogBuilder plainCreateDialog() {
+        return new PlainTextRuleCreateDialogBuilder(builderFactory, plainTextRuleService);
     }
 
-    public RegexRuleDialogBuilder regexDialog() {
-        return new RegexRuleDialogBuilder(builderFactory, regexRuleService);
+    public PlainTextRuleEditDialogBuilder plainEditDialog(PlainTextRule rule) {
+        return new PlainTextRuleEditDialogBuilder(builderFactory, rule, plainTextRuleService);
+    }
+
+    public RegexRuleCreateDialogBuilder regexCreateDialog() {
+        return new RegexRuleCreateDialogBuilder(builderFactory, regexRuleService);
+    }
+
+    public RegexRuleEditDialogBuilder regexEditDialog(RegexRule rule) {
+        return new RegexRuleEditDialogBuilder(builderFactory, rule, regexRuleService);
     }
 
     public RuleRunnerDialogBuilder ruleRunnerDialog(Map<Doc, Set<Tag>> result) {

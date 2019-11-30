@@ -43,13 +43,12 @@ public class RulesView extends FormLayout {
 
     private void addPlaintext() {
         Button create = new Button("Create", VaadinIcon.PLUS.create(),
-                e -> builderFactory.rules().plainDialog().withCreateListener(entity -> fillContent()).build().open());
+                e -> builderFactory.rules().plainCreateDialog().withCreateListener(entity -> fillContent()).build().open());
         create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
         plainTextRuleService.getActiveRules().stream()
                 .map(rule -> builderFactory.rules().plainTextCard(rule)
-                        .withCreateListener(entity -> fillContent())
                         .withEditListener(entity -> fillContent())
                         .withDeleteListener(entity -> fillContent())
                         .build())
@@ -65,13 +64,12 @@ public class RulesView extends FormLayout {
 
     private void addRegex() {
         Button create = new Button("Create", VaadinIcon.PLUS.create(),
-                e -> builderFactory.rules().regexDialog().withCreateListener(entity -> fillContent()).build().open());
+                e -> builderFactory.rules().regexCreateDialog().withCreateListener(entity -> fillContent()).build().open());
         create.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         VerticalLayout verticalLayout = new VerticalLayout(create);
         verticalLayout.setSizeFull();
         regexRuleService.getActiveRules().stream()
                 .map(rule -> builderFactory.rules().regexCard(rule)
-                        .withCreateListener(entity -> fillContent())
                         .withEditListener(entity -> fillContent())
                         .withDeleteListener(entity -> fillContent())
                         .build())
