@@ -38,7 +38,7 @@ public class PlainTextRuleEditDialog extends EventDialog<PlainTextRule> {
         HorizontalLayout hLayout = new HorizontalLayout(plainText, caseSensitive);
         hLayout.setWidthFull();
         hLayout.setAlignItems(FlexComponent.Alignment.END);
-        Button saveButton = new Button("Create", VaadinIcon.PLUS.create(), e -> save());
+        Button saveButton = new Button("Save", VaadinIcon.PLUS.create(), e -> save());
         saveButton.setWidthFull();
         Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create(), e -> delete());
         deleteButton.setWidthFull();
