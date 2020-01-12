@@ -1,7 +1,9 @@
 package com.dude.dms.ui.components.dialogs
 
+import com.dude.dms.backend.brain.CreateEvent
+import com.dude.dms.backend.brain.DeleteEvent
+import com.dude.dms.backend.brain.EditEvent
 import com.dude.dms.backend.data.DataEntity
-import com.dude.dms.ui.*
 import com.vaadin.flow.component.dialog.Dialog
 
 abstract class EventDialog<T : DataEntity> : Dialog() {

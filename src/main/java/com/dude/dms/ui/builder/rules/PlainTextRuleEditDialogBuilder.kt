@@ -2,8 +2,8 @@ package com.dude.dms.ui.builder.rules
 
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.PlainTextRuleService
-import com.dude.dms.ui.DeleteEvent
-import com.dude.dms.ui.EditEvent
+import com.dude.dms.backend.brain.DeleteEvent
+import com.dude.dms.backend.brain.EditEvent
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.dialogs.PlainTextRuleEditDialog
 

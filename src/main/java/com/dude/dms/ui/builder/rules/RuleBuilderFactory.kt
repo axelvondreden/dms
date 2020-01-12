@@ -10,9 +10,9 @@ import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.ui.CreateEvent
-import com.dude.dms.ui.DeleteEvent
-import com.dude.dms.ui.EditEvent
+import com.dude.dms.backend.brain.CreateEvent
+import com.dude.dms.backend.brain.DeleteEvent
+import com.dude.dms.backend.brain.EditEvent
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.builder.Factory
 
