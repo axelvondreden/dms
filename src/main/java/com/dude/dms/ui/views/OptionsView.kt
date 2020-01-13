@@ -21,7 +21,6 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.NumberField
-import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -211,14 +210,6 @@ class OptionsView(tagService: TagService) : VerticalLayout() {
 
         add(createSection("Tags", autoTag, autoTagId))
 
-        val githubUser = TextField("Github User", OptionKey.GITHUB_USER.string) {
-            OptionKey.GITHUB_USER.string = it.value
-            LOGGER.showInfo("Github user saved.")
-        }
-        val githubPassword = PasswordField("Github Password", OptionKey.GITHUB_PASSWORD.string) {
-            OptionKey.GITHUB_PASSWORD.string = it.value
-            LOGGER.showInfo("Github password saved.")
-        }
         val updateCheckInterval = NumberField("Update check interval (minutes)", OptionKey.UPDATE_CHECK_INTERVAL.double) {
             if (it.value != null && it.value > 0) {
                 OptionKey.UPDATE_CHECK_INTERVAL.int = it.value.toInt()
@@ -226,7 +217,7 @@ class OptionsView(tagService: TagService) : VerticalLayout() {
             }
         }
 
-        add(createSection("Update", githubUser, githubPassword, updateCheckInterval))
+        add(createSection("Update", updateCheckInterval))
     }
 
     private fun tryFtp() {

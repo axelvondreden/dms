@@ -46,9 +46,7 @@ class UpdateChecker(private val changelogService: ChangelogService, private val 
     fun check(force: Boolean) {
         LOGGER.info("Checking for updates...")
         try {
-            val restTemplate = RestTemplate().apply {
-                interceptors.add(BasicAuthenticationInterceptor(OptionKey.GITHUB_USER.string, OptionKey.GITHUB_PASSWORD.string))
-            }
+            val restTemplate = RestTemplate()
             val releases = restTemplate.getForObject(releaseApi, Array<Release>::class.java)
             if (releases != null) {
                 var newest = Version(buildVersion)

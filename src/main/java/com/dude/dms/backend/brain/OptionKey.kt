@@ -18,8 +18,6 @@ enum class OptionKey(val key: String) {
     FTP_USER("ftp_user"),
     FTP_PASSWORD("ftp_password"),
     FTP_PORT("ftp_port"),
-    GITHUB_PASSWORD("github_password"),
-    GITHUB_USER("github_user"),
     IMAGE_PARSER_DPI("image_parser_dpi"),
     LOCALE("locale"),
     MAX_UPLOAD_FILE_SIZE("max_upload_file_size"),
