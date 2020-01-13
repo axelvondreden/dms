@@ -45,5 +45,6 @@ options.properties
 /.vaadin/
 /docs/
 /docs_in/
-/.idea/$PRODUCT_WORKSPACE_FILE$
-/.idea/dbnavigator.xml
+/.idea/
+/webdrivers.xml
+/webpack.config.js
