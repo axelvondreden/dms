@@ -90,7 +90,6 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.ERROR, format(msg, *arguments), e)
     }
 
-    @JvmOverloads
     fun showError(message: String, persistent: Boolean = false) {
         try {
             val notification = create(message, persistent)

@@ -13,7 +13,7 @@ class AttributeService(private val attributeRepository: AttributeRepository) : C
     override fun create(entity: Attribute): Attribute {
         val current = findByName(entity.name)
         return if (current != null) {
-            LOGGER.showError("Attribute '${entity.name}' already exists!")
+            LOGGER.error("Attribute '${entity.name}' already exists!")
             current
         } else super.create(entity)
     }
