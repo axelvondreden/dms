@@ -63,7 +63,6 @@ object FileManager {
         }
     }
 
-    @Throws(IOException::class)
     fun saveImage(pdDoc: PDDocument, guid: String) {
         val pr = PDFRenderer(pdDoc)
         for (i in 0 until pdDoc.numberOfPages) {
@@ -72,8 +71,8 @@ object FileManager {
                 val out = File(OptionKey.DOC_SAVE_PATH.string, String.format("img/%s_%02d.png", guid, i))
                 LOGGER.info("Saving Image {}...", out.absolutePath)
                 ImageIO.write(bi, "PNG", out)
-            } catch (e: EOFException) {
-                LOGGER.error("Error when saving image: EOFException {}", e.message)
+            } catch (e: IOException) {
+                LOGGER.error("Error when saving image: {}", e.message)
             }
         }
     }
