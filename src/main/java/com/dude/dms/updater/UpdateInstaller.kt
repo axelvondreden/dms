@@ -45,7 +45,6 @@ class UpdateInstaller(private val shutdownManager: ShutdownManager) {
     companion object {
         private val LOGGER = DmsLogger.getLogger(UpdateInstaller::class.java)
 
-        @Throws(IOException::class)
         private fun newFile(destinationDir: File, zipEntry: ZipEntry): File {
             val destFile = File(destinationDir, zipEntry.name)
             val destDirPath = destinationDir.canonicalPath

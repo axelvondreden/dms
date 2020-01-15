@@ -5,7 +5,6 @@ import com.dude.dms.backend.data.docs.Doc
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
-import java.io.EOFException
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -13,7 +12,6 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.*
 import javax.imageio.ImageIO
-import kotlin.text.*
 
 object FileManager {
 
@@ -52,14 +50,15 @@ object FileManager {
         }
     }
 
-    fun savePdf(file: File, guid: String): Optional<File> {
+    fun importFile(file: File): File? {
+        val guid = UUID.randomUUID().toString()
         val targetPath = Paths.get(OptionKey.DOC_SAVE_PATH.string, "pdf", "$guid.pdf")
-        LOGGER.info("Saving PDF {}...", targetPath)
+        LOGGER.info("Importing file {}...", targetPath)
         return try {
-            Optional.of(Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING).toFile())
+            Files.move(file.toPath(), targetPath, StandardCopyOption.ATOMIC_MOVE).toFile()
         } catch (e: IOException) {
             LOGGER.error(e.message!!)
-            Optional.empty()
+            null
         }
     }
 

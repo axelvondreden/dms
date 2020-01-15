@@ -48,7 +48,6 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.INFO, format(message, *arguments))
     }
 
-    @JvmOverloads
     fun showInfo(message: String, persistent: Boolean = false) {
         try {
             val notification = create(message, persistent)
@@ -114,9 +113,7 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
 
     companion object {
         @JvmStatic
-        fun getLogger(clazz: Class<*>): DmsLogger {
-            return DmsLogger(clazz)
-        }
+        fun getLogger(clazz: Class<*>) = DmsLogger(clazz)
 
         private fun create(message: String, persistent: Boolean) = Notification(message, if (persistent) 0 else 3000, Notification.Position.valueOf(OptionKey.NOTIFY_POSITION.string))
     }

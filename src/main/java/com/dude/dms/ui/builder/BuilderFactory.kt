@@ -2,7 +2,7 @@ package com.dude.dms.ui.builder
 
 import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.backend.brain.parsing.RegexRuleValidator
-import com.dude.dms.backend.brain.polling.PollingService
+import com.dude.dms.backend.brain.polling.DocPollingService
 import com.dude.dms.backend.service.*
 import com.dude.dms.ui.builder.attributes.AttributeBuilderFactory
 import com.dude.dms.ui.builder.docs.DocBuilderFactory
@@ -25,7 +25,7 @@ class BuilderFactory(
         private val regexRuleValidator: RegexRuleValidator,
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
-        private val pollingService: PollingService
+        private val pollingService: DocPollingService
 ) {
 
     fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService)

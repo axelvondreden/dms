@@ -40,7 +40,7 @@ class DocSearchResult(
 
     private val textSnippet: Html
         get() {
-            val raw = doc.rawText?:return Html("")
+            val raw = doc.rawText ?: return Html("")
             var index = raw.indexOf(search)
             if (index < 0) {
                 index = raw.toLowerCase().indexOf(search.toLowerCase())

@@ -4,7 +4,6 @@ import com.dude.dms.backend.data.docs.TextBlock
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.apache.pdfbox.text.TextPosition
-import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 
@@ -12,20 +11,18 @@ class DmsPdfTextStripper : PDFTextStripper() {
 
     private var textBlockListOut = mutableListOf<TextBlock>()
 
-    @Throws(IOException::class)
     fun getTextWithPositions(doc: PDDocument, textBlockListOut: MutableList<TextBlock>): String {
         this.textBlockListOut = textBlockListOut
         return getText(doc)
     }
 
-    @Throws(IOException::class)
-    override fun writeString(text: String?, textPositions: List<TextPosition>?) {
+    override fun writeString(text: String?, textPositions: List<TextPosition>) {
         createTextBlockEntity(text, textPositions)
         super.writeString(text, textPositions)
     }
 
-    private fun createTextBlockEntity(text: String?, textPositions: List<TextPosition>?) {
-        if (text != null && text.isNotEmpty() && textPositions != null && textPositions.isNotEmpty()) {
+    private fun createTextBlockEntity(text: String?, textPositions: List<TextPosition>) {
+        if (!text.isNullOrEmpty() && textPositions.isNotEmpty()) {
             var xMin = Float.MAX_VALUE
             var yMin = Float.MAX_VALUE
             var xMax = Float.MIN_VALUE

@@ -1,8 +1,8 @@
 package com.dude.dms.ui.builder.rules
 
+import com.dude.dms.backend.brain.CreateEvent
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.PlainTextRuleService
-import com.dude.dms.backend.brain.CreateEvent
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.dialogs.PlainTextRuleCreateDialog
 

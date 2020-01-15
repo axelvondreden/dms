@@ -1,5 +1,8 @@
 package com.dude.dms.ui.builder.rules
 
+import com.dude.dms.backend.brain.CreateEvent
+import com.dude.dms.backend.brain.DeleteEvent
+import com.dude.dms.backend.brain.EditEvent
 import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.backend.brain.parsing.RegexRuleValidator
 import com.dude.dms.backend.data.Tag
@@ -10,9 +13,6 @@ import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.backend.brain.CreateEvent
-import com.dude.dms.backend.brain.DeleteEvent
-import com.dude.dms.backend.brain.EditEvent
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.builder.Factory
 
@@ -29,7 +29,7 @@ class RuleBuilderFactory(
             rule: PlainTextRule,
             editEvent: EditEvent<PlainTextRule>? = null,
             deleteEvent: DeleteEvent<PlainTextRule>? = null
-    ) = PlainTextRuleCardBuilder(builderFactory, rule, plainTextRuleValidator, tagService, editEvent, deleteEvent)
+    ) = PlainTextRuleCardBuilder(builderFactory, rule, plainTextRuleValidator, tagService)
 
     fun regexCard(rule: RegexRule, editEvent: EditEvent<RegexRule>? = null, deleteEvent: DeleteEvent<RegexRule>? = null) = RegexRuleCardBuilder(builderFactory, rule, regexRuleValidator, tagService, editEvent, deleteEvent)
 

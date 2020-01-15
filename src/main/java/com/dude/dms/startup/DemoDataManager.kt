@@ -57,9 +57,12 @@ class DemoDataManager(private val tagService: TagService, private val docService
 
     private fun createDemoTags(): Set<Tag> {
         val attributes = setOf(
-                attributeService.findByName("Firma") ?: (attributeService.create(Attribute("Firma", false, Attribute.Type.STRING))),
-                attributeService.findByName("Betrag") ?: (attributeService.create(Attribute("Betrag", false, Attribute.Type.FLOAT))),
-                attributeService.findByName("Garantie") ?: (attributeService.create(Attribute("Garantie", false, Attribute.Type.DATE)))
+                attributeService.findByName("Firma")
+                        ?: (attributeService.create(Attribute("Firma", false, Attribute.Type.STRING))),
+                attributeService.findByName("Betrag")
+                        ?: (attributeService.create(Attribute("Betrag", false, Attribute.Type.FLOAT))),
+                attributeService.findByName("Garantie")
+                        ?: (attributeService.create(Attribute("Garantie", false, Attribute.Type.DATE)))
         )
         return hashSetOf(
                 tagService.create(Tag("Rechnung", randomColor(), attributes = attributes)),

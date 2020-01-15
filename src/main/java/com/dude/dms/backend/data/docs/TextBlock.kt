@@ -13,7 +13,7 @@ import javax.validation.constraints.Size
 class TextBlock(
         @ManyToOne var doc: Doc?,
 
-        @Column(columnDefinition="LONGVARCHAR")
+        @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 9999)
         var text: String,
 

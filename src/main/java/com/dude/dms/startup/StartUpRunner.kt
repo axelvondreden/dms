@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
 import java.io.File
-import java.io.IOException
 import java.util.*
 
 @Component
@@ -19,7 +18,6 @@ class StartUpRunner(
         private val demoDataManager: DemoDataManager
 ) : CommandLineRunner {
 
-    @Throws(IOException::class)
     override fun run(vararg args: String) {
         updateChecker.check(true)
         createOptionsFile()
@@ -32,7 +30,6 @@ class StartUpRunner(
     companion object {
         private val LOGGER = DmsLogger.getLogger(StartUpRunner::class.java)
 
-        @Throws(IOException::class)
         private fun createOptionsFile() {
             val prop = File("options.properties")
             if (!prop.exists()) {

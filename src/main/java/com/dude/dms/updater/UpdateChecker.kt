@@ -14,7 +14,6 @@ import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.client.support.BasicAuthenticationInterceptor
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException

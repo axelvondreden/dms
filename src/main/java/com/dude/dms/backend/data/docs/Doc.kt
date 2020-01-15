@@ -18,7 +18,7 @@ class Doc(
 
         var documentDate: LocalDate? = null,
 
-        @Column(columnDefinition="LONGVARCHAR")
+        @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 99999)
         var rawText: String? = null,
 

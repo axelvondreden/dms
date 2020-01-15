@@ -7,7 +7,9 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.DmsColorPicker
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple
-import com.vaadin.flow.component.*
+import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.HasSize
+import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details

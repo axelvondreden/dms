@@ -28,7 +28,7 @@ class PdfToDocParser(
         private val regexRuleValidator: RegexRuleValidator
 ) : Parser {
 
-    private var textBlockList: List<TextBlock>? = null
+    private val textBlockList = mutableListOf<TextBlock>()
 
     private val eventListeners = HashMap<String, ParseEvent>()
 
@@ -37,38 +37,31 @@ class PdfToDocParser(
      *
      * @param file the file used for parsing, this has a to be a pdf file.
      */
-    override fun parse(file: File?) {
-        LOGGER.info("Parsing file {}...", file!!.name)
-        val guid = UUID.randomUUID().toString()
+    override fun parse(file: File) {
+        LOGGER.info("Parsing file {}...", file.name)
+        val guid = file.name.takeWhile { it != '.' }
         var rawText: String? = null
-        val savedFile = FileManager.savePdf(file, guid)
-        if (savedFile.isPresent) {
-            try {
-                PDDocument.load(savedFile.get()).use { pdDoc ->
-                    FileManager.saveImage(pdDoc, guid)
-                    rawText = stripText(pdDoc)
-                }
-            } catch (e: IOException) {
-                e.message?.let { LOGGER.error(it) }
+        try {
+            PDDocument.load(file).use { pdDoc ->
+                FileManager.saveImage(pdDoc, guid)
+                rawText = stripText(pdDoc)
             }
             val doc = Doc(guid)
-            if (rawText != null && rawText!!.isNotEmpty()) {
+            if (!rawText.isNullOrEmpty()) {
                 doc.rawText = rawText
                 doc.documentDate = discoverDates(rawText!!)
             }
             doc.tags = discoverTags(rawText).toMutableSet()
             docService.create(doc)
             LOGGER.info("Created doc with ID: {}", doc.guid)
-            if (textBlockList != null) {
-                textBlockList!!.forEach {
-                    it.doc = doc
-                    textBlockService.create(it)
-                    LOGGER.info("Created textblock {} for doc {}", it, doc)
-                }
+            textBlockList.forEach {
+                it.doc = doc
+                textBlockService.create(it)
+                LOGGER.info("Created textblock {} for doc {}", it, doc)
             }
             eventListeners.values.forEach { it.invoke(true) }
-        } else {
-            LOGGER.error("Could not save file {}", file.absolutePath)
+        } catch (e: IOException) {
+            e.message?.let { LOGGER.error(it) }
             eventListeners.values.forEach { it.invoke(false) }
         }
     }
@@ -97,7 +90,7 @@ class PdfToDocParser(
     private fun stripText(pdDoc: PDDocument): String {
         val pdfStripper = DmsPdfTextStripper()
         LOGGER.info("Stripping text...")
-        textBlockList = ArrayList()
+        textBlockList.clear()
         return pdfStripper.getTextWithPositions(pdDoc, textBlockList as ArrayList<TextBlock>)
     }
 
@@ -111,7 +104,7 @@ class PdfToDocParser(
         private fun discoverDates(rawText: String): LocalDate? {
             LOGGER.info("Trying to find date...")
             val datePatterns = OptionKey.DATE_SCAN_FORMATS.string.split(",").toTypedArray()
-            val map = HashMap<LocalDate, Int>()
+            val map = mutableMapOf<LocalDate, Int>()
             for (pattern in datePatterns) {
                 for (line in rawText.split("\n").toTypedArray()) {
                     for (i in 0 until line.length - pattern.length) {
@@ -124,10 +117,9 @@ class PdfToDocParser(
                     }
                 }
             }
-            val entry: Map.Entry<LocalDate, Int>? = map.entries.maxBy { it.value }
-            if (entry != null) {
-                LOGGER.info("Setting date as {} with {} occurences", entry.key, entry.value)
-                return entry.key
+            map.entries.maxBy { it.value }?.let {
+                LOGGER.info("Setting date as {} with {} occurences", it.key, it.value)
+                return it.key
             }
             LOGGER.info("No date found on document")
             return null

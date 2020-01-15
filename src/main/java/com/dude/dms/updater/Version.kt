@@ -13,8 +13,6 @@ data class Version(var version: String) : Comparable<Version?> {
         }
     }
 
-    fun isBefore(other: Version?) = compareTo(other) < 0
-
     fun isAfter(other: Version?) = compareTo(other) > 0
 
     override fun compareTo(other: Version?): Int {

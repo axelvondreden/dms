@@ -36,8 +36,4 @@ class RegexField(label: String = "", initialValue: String = "") : HorizontalLayo
         }
         add(icon, regex)
     }
-
-    fun setReference(reference: ValueProvider<String>?) {
-        this.reference = reference
-    }
 }

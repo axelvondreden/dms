@@ -2,7 +2,6 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.brain.DmsLogger
 import com.dude.dms.backend.brain.OptionKey
-import com.dude.dms.backend.brain.polling.DocPollingService
 import com.dude.dms.backend.brain.polling.PollingService
 import com.dude.dms.backend.data.docs.Doc
 import com.vaadin.flow.component.upload.Upload
@@ -18,7 +17,7 @@ class DocCreateDialog(pollingService: PollingService) : EventDialog<Doc>() {
         height = "40vh"
 
         val buffer = MultiFileMemoryBuffer()
-            val upload = Upload(buffer).apply {
+        val upload = Upload(buffer).apply {
             setAcceptedFileTypes(".pdf")
             maxFileSize = OptionKey.MAX_UPLOAD_FILE_SIZE.int * 1024 * 1024
             height = "80%"
@@ -36,6 +35,8 @@ class DocCreateDialog(pollingService: PollingService) : EventDialog<Doc>() {
                         ex.message?.let { it1 -> LOGGER.error(it1, ex) }
                     }
                 }
+            }
+            addAllFinishedListener {
                 close()
                 pollingService.poll()
             }

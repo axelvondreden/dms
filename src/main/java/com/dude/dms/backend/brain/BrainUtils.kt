@@ -11,10 +11,7 @@ object BrainUtils {
     private val LOGGER = DmsLogger.getLogger(BrainUtils::class.java)
 
     @JvmStatic
-    fun getProperty(key: OptionKey): String? {
-        val userProperty = getUserProperty(key)
-        return userProperty ?: getDefaultProperty(key)
-    }
+    fun getProperty(key: OptionKey) = getUserProperty(key) ?: getDefaultProperty(key)
 
     @JvmStatic
     fun setProperty(key: OptionKey, value: String?) {
