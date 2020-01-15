@@ -94,7 +94,6 @@ class PdfToDocParser(
         return tags
     }
 
-    @Throws(IOException::class)
     private fun stripText(pdDoc: PDDocument): String {
         val pdfStripper = DmsPdfTextStripper()
         LOGGER.info("Stripping text...")

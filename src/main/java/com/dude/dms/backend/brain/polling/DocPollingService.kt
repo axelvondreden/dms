@@ -13,14 +13,18 @@ class DocPollingService(private val pdfToDocParser: PdfToDocParser) : PollingSer
     private val docPath = OptionKey.DOC_POLL_PATH.string
     private var tick = 1
 
-    @Scheduled(fixedRate = 1000)
     override fun poll() {
+        LOGGER.info("Polling {} for PDFs...", docPath)
+        File(docPath).listFiles { _, name -> name.endsWith(".pdf") }?.forEach { processFile(it) }
+    }
+
+    @Scheduled(fixedRate = 1000)
+    fun scheduledPoll() {
         if (tick < OptionKey.POLL_INTERVAL.int) {
             tick++
         } else {
             tick = 1
-            LOGGER.info("Polling {} for PDFs...", docPath)
-            File(docPath).listFiles { _, name -> name.endsWith(".pdf") }?.forEach { processFile(it) }
+            poll()
         }
     }
 
