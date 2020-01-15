@@ -28,7 +28,7 @@ class Doc(
         @OneToMany(mappedBy = "doc")
         var textBlocks: Set<TextBlock> = HashSet(),
 
-        @OneToMany(mappedBy = "doc")
+        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
         var attributeValues: Set<AttributeValue> = HashSet(),
 
         @OneToMany(mappedBy = "doc")

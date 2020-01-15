@@ -11,9 +11,11 @@ import com.dude.dms.ui.MainView
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.converters.convert
+import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.grid.dnd.GridDropMode
 import com.vaadin.flow.component.html.Anchor
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -47,6 +49,22 @@ class DocsView(
         addComponentColumn("", ValueProvider { createGridActions(it) })
         addColumn("GUID", ValueProvider<Doc, String> { it.guid })
         grid.addItemDoubleClickListener { event -> builderFactory.docs().imageDialog(event.item!!).build().open() }
+        grid.dropMode = GridDropMode.ON_TOP
+        grid.addDropListener { event ->
+            // Workaround
+            val comp = event.source.ui.get().internals.activeDragSourceComponent
+            if (comp is LeftClickableItem) {
+                val doc = event.dropTargetItem.get()
+                tagService.findByName(comp.name)?.let { tag ->
+                    val tags = tagService.findByDoc(doc).toMutableSet()
+                    if (tags.add(tag)) {
+                        doc.tags = tags
+                        docService.save(doc)
+                        grid.dataProvider.refreshAll()
+                    }
+                }
+            }
+        }
     }
 
     private fun createGridActions(doc: Doc): HorizontalLayout {

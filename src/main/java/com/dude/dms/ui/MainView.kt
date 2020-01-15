@@ -28,6 +28,7 @@ import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.contextmenu.ContextMenu
+import com.vaadin.flow.component.dnd.DragSource
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.router.AfterNavigationEvent
@@ -120,6 +121,7 @@ class MainView(
             val entry = LeftClickableItem(tag.name, VaadinIcon.TAG.create().apply { color = tag.color }) {
                 UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}")
             }
+            DragSource.create(entry)
             DefaultBadgeHolder(docService.countByTag(tag).toInt()).apply { bind(entry.badge) }
             val attrs = tag.attributes.joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
