@@ -26,7 +26,8 @@ class PdfToDocParser(
         private val textBlockService: TextBlockService,
         private val plainTextRuleValidator: PlainTextRuleValidator,
         private val regexRuleValidator: RegexRuleValidator,
-        private val fileManager: FileManager
+        private val fileManager: FileManager,
+        private val pdfStripper: DmsPdfTextStripper
 ) : Parser {
 
     private val textBlockList = mutableListOf<TextBlock>()
@@ -89,7 +90,6 @@ class PdfToDocParser(
     }
 
     private fun stripText(pdDoc: PDDocument): String {
-        val pdfStripper = DmsPdfTextStripper()
         LOGGER.info("Stripping text...")
         textBlockList.clear()
         return pdfStripper.getTextWithPositions(pdDoc, textBlockList as ArrayList<TextBlock>)

@@ -4,9 +4,11 @@ import com.dude.dms.backend.data.docs.TextBlock
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.apache.pdfbox.text.TextPosition
+import org.springframework.stereotype.Component
 import kotlin.math.max
 import kotlin.math.min
 
+@Component
 class DmsPdfTextStripper : PDFTextStripper() {
 
     private var textBlockListOut = mutableListOf<TextBlock>()
