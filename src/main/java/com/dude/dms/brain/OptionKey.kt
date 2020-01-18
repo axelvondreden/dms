@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain
+package com.dude.dms.brain
 
 import java.io.File
 import java.io.FileInputStream

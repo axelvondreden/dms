@@ -1,9 +1,9 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.FileManager
-import com.dude.dms.backend.brain.OptionKey
-import com.dude.dms.backend.brain.mail.EmailManager
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.mail.EmailManager
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.ui.Const

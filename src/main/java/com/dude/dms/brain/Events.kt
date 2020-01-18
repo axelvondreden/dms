@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain
+package com.dude.dms.brain
 
 typealias CreateEvent<T> = (T) -> Unit
 

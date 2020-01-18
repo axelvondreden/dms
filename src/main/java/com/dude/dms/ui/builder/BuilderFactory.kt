@@ -1,9 +1,9 @@
 package com.dude.dms.ui.builder
 
-import com.dude.dms.backend.brain.FileManager
-import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator
-import com.dude.dms.backend.brain.parsing.RegexRuleValidator
-import com.dude.dms.backend.brain.polling.DocPollingService
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.parsing.PlainTextRuleValidator
+import com.dude.dms.brain.parsing.RegexRuleValidator
+import com.dude.dms.brain.polling.DocPollingService
 import com.dude.dms.backend.service.*
 import com.dude.dms.ui.builder.attributes.AttributeBuilderFactory
 import com.dude.dms.ui.builder.docs.DocBuilderFactory

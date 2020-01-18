@@ -1,6 +1,6 @@
 package com.dude.dms.updater
 
-import com.dude.dms.backend.brain.DmsLogger
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.startup.ShutdownManager
 import org.springframework.stereotype.Component
 import java.io.File

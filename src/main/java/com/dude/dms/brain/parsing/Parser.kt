@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain.parsing
+package com.dude.dms.brain.parsing
 
 import java.io.File
 

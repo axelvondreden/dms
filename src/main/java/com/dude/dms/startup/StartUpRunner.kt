@@ -1,8 +1,8 @@
 package com.dude.dms.startup
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.OptionKey
-import com.dude.dms.backend.brain.polling.DocPollingService
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.polling.DocPollingService
 import com.dude.dms.updater.UpdateChecker
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.i18n.LocaleContextHolder

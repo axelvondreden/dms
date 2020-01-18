@@ -1,13 +1,13 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.OptionKey
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.OptionKey
 import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
 import com.dude.dms.ui.components.standard.DmsDatePicker
-import com.dude.dms.ui.converters.convert
+import com.dude.dms.ui.extensions.convert
 import com.dude.dms.ui.dataproviders.LogDataProvider
 import com.dude.dms.ui.dataproviders.LogDataProvider.LogFilter
 import com.vaadin.flow.component.checkbox.Checkbox

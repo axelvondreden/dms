@@ -1,6 +1,6 @@
-package com.dude.dms.backend.brain
+package com.dude.dms.brain
 
-import com.dude.dms.backend.brain.DmsLogger.Companion.getLogger
+import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.backend.data.docs.Doc
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.pdfbox.pdmodel.PDDocument

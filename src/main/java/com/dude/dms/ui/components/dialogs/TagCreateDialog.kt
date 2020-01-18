@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.brain.OptionKey
+import com.dude.dms.brain.OptionKey
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.ui.builder.BuilderFactory

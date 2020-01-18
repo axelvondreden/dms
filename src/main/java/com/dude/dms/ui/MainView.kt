@@ -1,8 +1,8 @@
 package com.dude.dms.ui
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.OptionKey
-import com.dude.dms.backend.brain.parsing.PdfToDocParser
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.parsing.PdfToDocParser
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService

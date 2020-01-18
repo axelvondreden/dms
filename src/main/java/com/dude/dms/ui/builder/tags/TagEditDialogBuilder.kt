@@ -1,6 +1,6 @@
 package com.dude.dms.ui.builder.tags
 
-import com.dude.dms.backend.brain.EditEvent
+import com.dude.dms.brain.EditEvent
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService

@@ -1,7 +1,7 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.backend.brain.FileManager
-import com.dude.dms.backend.brain.parsing.PdfToDocParser
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.parsing.PdfToDocParser
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.service.DocService
@@ -10,7 +10,7 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.tags.TagContainer
-import com.dude.dms.ui.converters.convert
+import com.dude.dms.ui.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI

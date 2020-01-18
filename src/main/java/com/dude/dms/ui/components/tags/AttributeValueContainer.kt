@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.tags
 
-import com.dude.dms.backend.brain.DmsLogger
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.ui.builder.BuilderFactory

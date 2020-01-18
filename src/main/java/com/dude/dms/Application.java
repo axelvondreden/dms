@@ -1,6 +1,6 @@
 package com.dude.dms;
 
-import com.dude.dms.backend.brain.SpringContext;
+import com.dude.dms.brain.SpringContext;
 import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.repositories.DocRepository;
 import com.dude.dms.backend.service.DocService;

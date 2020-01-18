@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain.parsing
+package com.dude.dms.brain.parsing
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.rules.Rule

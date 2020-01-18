@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain
+package com.dude.dms.brain
 
 import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService

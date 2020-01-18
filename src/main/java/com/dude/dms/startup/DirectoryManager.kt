@@ -1,8 +1,8 @@
 package com.dude.dms.startup
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.FileManager
-import com.dude.dms.backend.brain.OptionKey
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.OptionKey
 import org.springframework.stereotype.Component
 import java.io.File
 

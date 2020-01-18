@@ -1,6 +1,6 @@
-package com.dude.dms.backend.brain.mail
+package com.dude.dms.brain.mail
 
-import com.dude.dms.backend.brain.OptionKey
+import com.dude.dms.brain.OptionKey
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.mail.*

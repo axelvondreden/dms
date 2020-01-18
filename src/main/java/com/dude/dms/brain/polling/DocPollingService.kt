@@ -1,9 +1,9 @@
-package com.dude.dms.backend.brain.polling
+package com.dude.dms.brain.polling
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.FileManager
-import com.dude.dms.backend.brain.OptionKey
-import com.dude.dms.backend.brain.parsing.PdfToDocParser
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.parsing.PdfToDocParser
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.File

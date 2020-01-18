@@ -1,7 +1,7 @@
 package com.dude.dms.startup
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.OptionKey
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.OptionKey
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc

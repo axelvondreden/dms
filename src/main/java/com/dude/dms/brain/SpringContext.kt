@@ -1,4 +1,4 @@
-package com.dude.dms.backend.brain
+package com.dude.dms.brain
 
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware

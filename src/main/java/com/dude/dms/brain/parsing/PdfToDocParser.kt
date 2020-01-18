@@ -1,9 +1,9 @@
-package com.dude.dms.backend.brain.parsing
+package com.dude.dms.brain.parsing
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.FileManager
-import com.dude.dms.backend.brain.OptionKey
-import com.dude.dms.backend.brain.ParseEvent
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.ParseEvent
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.TextBlock

@@ -1,6 +1,6 @@
 package com.dude.dms.updater
 
-import com.dude.dms.backend.brain.DmsLogger
+import com.dude.dms.brain.DmsLogger
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
