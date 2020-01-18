@@ -111,10 +111,12 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         return formattedMsg
     }
 
+    private fun create(message: String, persistent: Boolean): Notification {
+        return Notification(message, if (persistent) 0 else 3000, Notification.Position.valueOf(OptionKey.NOTIFY_POSITION.string))
+    }
+
     companion object {
         @JvmStatic
         fun getLogger(clazz: Class<*>) = DmsLogger(clazz)
-
-        private fun create(message: String, persistent: Boolean) = Notification(message, if (persistent) 0 else 3000, Notification.Position.valueOf(OptionKey.NOTIFY_POSITION.string))
     }
 }

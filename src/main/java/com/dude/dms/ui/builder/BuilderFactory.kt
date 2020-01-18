@@ -1,5 +1,6 @@
 package com.dude.dms.ui.builder
 
+import com.dude.dms.backend.brain.FileManager
 import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.backend.brain.parsing.RegexRuleValidator
 import com.dude.dms.backend.brain.polling.DocPollingService
@@ -25,12 +26,13 @@ class BuilderFactory(
         private val regexRuleValidator: RegexRuleValidator,
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
-        private val pollingService: DocPollingService
+        private val pollingService: DocPollingService,
+        private val fileManager: FileManager
 ) {
 
     fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService)
 
-    fun docs() = DocBuilderFactory(this, docService, textBlockService, pollingService)
+    fun docs() = DocBuilderFactory(this, docService, textBlockService, pollingService, fileManager)
 
     fun misc() = MiscBuilderFactory(this, changelogService, updateChecker)
 

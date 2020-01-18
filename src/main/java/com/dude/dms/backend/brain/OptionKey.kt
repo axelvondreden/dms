@@ -1,7 +1,10 @@
 package com.dude.dms.backend.brain
 
-import com.dude.dms.backend.brain.BrainUtils.getProperty
-import com.dude.dms.backend.brain.BrainUtils.setProperty
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.util.*
 
 enum class OptionKey(val key: String) {
 
@@ -19,6 +22,10 @@ enum class OptionKey(val key: String) {
     FTP_PASSWORD("ftp_password"),
     FTP_PORT("ftp_port"),
     IMAGE_PARSER_DPI("image_parser_dpi"),
+    IMAP_HOST("imap_host"),
+    IMAP_PORT("imap_port"),
+    IMAP_LOGIN("imap_login"),
+    IMAP_PASSWORD("imap_password"),
     LOCALE("locale"),
     MAX_UPLOAD_FILE_SIZE("max_upload_file_size"),
     NOTIFY_POSITION("notify_position"),
@@ -33,32 +40,62 @@ enum class OptionKey(val key: String) {
         }
 
     var float
-        get() = getProperty(this)?.toFloat() ?: 0.0F
+        get() = if (string.isNotEmpty()) string.toFloat() else 0.0F
         set(value) {
             setProperty(this, value.toString())
         }
 
     var double
-        get() = getProperty(this)?.toDouble() ?: 0.0
+        get() = if (string.isNotEmpty()) string.toDouble() else 0.0
         set(value) {
             setProperty(this, value.toString())
         }
 
     var int
-        get() = getProperty(this)?.toFloat()?.toInt() ?: 0
+        get() = if (string.isNotEmpty()) string.toDouble().toInt() else 0
         set(value) {
             setProperty(this, value.toString())
         }
 
     var boolean
-        get() = getProperty(this)?.toBoolean() ?: false
+        get() = if (string.isNotEmpty()) string.toBoolean() else false
         set(value) {
             setProperty(this, value.toString())
         }
 
     var long
-        get() = getProperty(this)?.toFloat()?.toLong() ?: 0
+        get() = if (string.isNotEmpty()) string.toDouble().toLong() else 0L
         set(value) {
             setProperty(this, value.toString())
         }
+
+    fun getProperty(key: OptionKey) = getUserProperty(key) ?: getDefaultProperty(key)
+
+    fun setProperty(key: OptionKey, value: String?) {
+        val prop = getProperties("options.properties")
+        prop.setProperty(key.key, value)
+        try {
+            FileOutputStream(File("options.properties")).use { output -> prop.store(output, null) }
+        } catch (io: IOException) {
+            io.message?.let { LOGGER.error(it) }
+        }
+    }
+
+    private fun getDefaultProperty(key: OptionKey) = getProperties("options.default.properties").getProperty(key.key)
+
+    private fun getUserProperty(key: OptionKey) = getProperties("options.properties").getProperty(key.key)
+
+    private fun getProperties(file: String): Properties {
+        val prop = Properties()
+        try {
+            FileInputStream(File(file)).use { input -> prop.load(input) }
+        } catch (ex: IOException) {
+            ex.message?.let { LOGGER.error(it) }
+        }
+        return prop
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(OptionKey::class.java)
+    }
 }

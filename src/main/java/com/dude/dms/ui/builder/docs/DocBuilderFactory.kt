@@ -1,6 +1,7 @@
 package com.dude.dms.ui.builder.docs
 
 import com.dude.dms.backend.brain.EditEvent
+import com.dude.dms.backend.brain.FileManager
 import com.dude.dms.backend.brain.polling.PollingService
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.TextBlock
@@ -13,7 +14,8 @@ class DocBuilderFactory(
         builderFactory: BuilderFactory,
         private val docService: DocService,
         private val textBlockService: TextBlockService,
-        private val pollingService: PollingService
+        private val pollingService: PollingService,
+        private val fileManager: FileManager
 ) : Factory(builderFactory) {
 
     fun searchResult(doc: Doc, search: String) = DocSearchResultBuilder(doc, search, builderFactory.docs().imageDialog(doc).build(), builderFactory.docs().textDialog(doc).build())
@@ -22,7 +24,7 @@ class DocBuilderFactory(
 
     fun editDialog(doc: Doc, editEvent: EditEvent<Doc>? = null) = DocEditDialogBuilder(builderFactory, doc, docService, editEvent)
 
-    fun imageDialog(doc: Doc) = DocImageDialogBuilder(builderFactory, doc, textBlockService)
+    fun imageDialog(doc: Doc) = DocImageDialogBuilder(builderFactory, doc, textBlockService, fileManager)
 
     fun textDialog(doc: Doc) = DocTextDialogBuilder(doc, textBlockService)
 

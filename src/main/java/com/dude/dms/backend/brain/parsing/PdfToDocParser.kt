@@ -25,7 +25,8 @@ class PdfToDocParser(
         private val tagService: TagService,
         private val textBlockService: TextBlockService,
         private val plainTextRuleValidator: PlainTextRuleValidator,
-        private val regexRuleValidator: RegexRuleValidator
+        private val regexRuleValidator: RegexRuleValidator,
+        private val fileManager: FileManager
 ) : Parser {
 
     private val textBlockList = mutableListOf<TextBlock>()
@@ -43,7 +44,7 @@ class PdfToDocParser(
         var rawText: String? = null
         try {
             PDDocument.load(file).use { pdDoc ->
-                FileManager.saveImage(pdDoc, guid)
+                fileManager.saveImage(pdDoc, guid)
                 rawText = stripText(pdDoc)
             }
             val doc = Doc(guid)
@@ -98,31 +99,31 @@ class PdfToDocParser(
         eventListeners[key] = parseEvent
     }
 
-    companion object {
-        private val LOGGER = DmsLogger.getLogger(PdfToDocParser::class.java)
-
-        private fun discoverDates(rawText: String): LocalDate? {
-            LOGGER.info("Trying to find date...")
-            val datePatterns = OptionKey.DATE_SCAN_FORMATS.string.split(",").toTypedArray()
-            val map = mutableMapOf<LocalDate, Int>()
-            for (pattern in datePatterns) {
-                for (line in rawText.split("\n").toTypedArray()) {
-                    for (i in 0 until line.length - pattern.length) {
-                        val snippet = line.substring(i, i + pattern.length)
-                        try {
-                            val date = LocalDate.parse(snippet, DateTimeFormatter.ofPattern(pattern))
-                            map[date] = map.getOrDefault(date, 0) + 1
-                        } catch (ignored: DateTimeParseException) {
-                        }
+    private fun discoverDates(rawText: String): LocalDate? {
+        LOGGER.info("Trying to find date...")
+        val datePatterns = OptionKey.DATE_SCAN_FORMATS.string.split(",").toTypedArray()
+        val map = mutableMapOf<LocalDate, Int>()
+        for (pattern in datePatterns) {
+            for (line in rawText.split("\n").toTypedArray()) {
+                for (i in 0 until line.length - pattern.length) {
+                    val snippet = line.substring(i, i + pattern.length)
+                    try {
+                        val date = LocalDate.parse(snippet, DateTimeFormatter.ofPattern(pattern))
+                        map[date] = map.getOrDefault(date, 0) + 1
+                    } catch (ignored: DateTimeParseException) {
                     }
                 }
             }
-            map.entries.maxBy { it.value }?.let {
-                LOGGER.info("Setting date as {} with {} occurences", it.key, it.value)
-                return it.key
-            }
-            LOGGER.info("No date found on document")
-            return null
         }
+        map.entries.maxBy { it.value }?.let {
+            LOGGER.info("Setting date as {} with {} occurences", it.key, it.value)
+            return it.key
+        }
+        LOGGER.info("No date found on document")
+        return null
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(PdfToDocParser::class.java)
     }
 }

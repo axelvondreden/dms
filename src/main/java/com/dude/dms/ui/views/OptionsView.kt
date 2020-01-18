@@ -3,6 +3,7 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.brain.DmsLogger
 import com.dude.dms.backend.brain.FileManager
 import com.dude.dms.backend.brain.OptionKey
+import com.dude.dms.backend.brain.mail.EmailManager
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.ui.Const
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.NumberField
+import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -28,12 +30,26 @@ import com.vaadin.flow.theme.lumo.Lumo
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
+import javax.mail.MessagingException
 
 @Route(value = Const.PAGE_OPTIONS, layout = MainView::class)
 @PageTitle("Options")
-class OptionsView(tagService: TagService) : VerticalLayout() {
+class OptionsView(
+        private val fileManager: FileManager,
+        private val tagService: TagService,
+        private val emailManager: EmailManager
+) : VerticalLayout() {
 
     init {
+        createViewSection()
+        createDocsSection()
+        createMailSection()
+        createStorageSection()
+        createTagSection()
+        createUpdateSection()
+    }
+
+    private fun createViewSection() {
         val dateFormat = TextField("Date format", OptionKey.DATE_FORMAT.string) {
             if (it.value.isNotEmpty()) {
                 OptionKey.DATE_FORMAT.string = it.value
@@ -86,7 +102,9 @@ class OptionsView(tagService: TagService) : VerticalLayout() {
         }
 
         add(createSection("View", locale, dateFormat, simpleColors, darkMode, notifyWrapper))
+    }
 
+    private fun createDocsSection() {
         val dateScanFormats = TextField("Date scan formats", OptionKey.DATE_SCAN_FORMATS.string) {
             if (it.value.isNotEmpty()) {
                 OptionKey.DATE_SCAN_FORMATS.string = java.lang.String.join(",", it.value)
@@ -116,7 +134,49 @@ class OptionsView(tagService: TagService) : VerticalLayout() {
         }
 
         add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize))
+    }
 
+    private fun createMailSection() {
+        val imapHost = TextField("IMAP Host", OptionKey.IMAP_HOST.string) {
+            if (!it.value.isNullOrEmpty()) {
+                OptionKey.IMAP_HOST.string = it.value
+                LOGGER.showInfo("IMAP Host saved.")
+            }
+        }
+        val imapPort = NumberField("IMAP Port", OptionKey.IMAP_PORT.double) {
+            if (it.value != null) {
+                try {
+                    OptionKey.IMAP_PORT.int = it.value.toInt()
+                    LOGGER.showInfo("IMAP Port saved.")
+                } catch (ignored: NumberFormatException) {
+                }
+            }
+        }
+        val imapLogin = TextField("IMAP Login", OptionKey.IMAP_LOGIN.string) {
+            if (!it.value.isNullOrEmpty()) {
+                OptionKey.IMAP_LOGIN.string = it.value
+                LOGGER.showInfo("IMAP Login saved.")
+            }
+        }
+        val imapPassword = PasswordField("IMAP Password", OptionKey.IMAP_PASSWORD.string) {
+            if (!it.value.isNullOrEmpty()) {
+                OptionKey.IMAP_PASSWORD.string = it.value
+                LOGGER.showInfo("IMAP Password saved.")
+            }
+        }
+        val imapTest = Button("Test Connection") {
+            try {
+                emailManager.testConnection()
+                LOGGER.showInfo("Test Successfull.")
+            } catch (e: MessagingException) {
+                LOGGER.showError("Test Failed: ${e.message}")
+            }
+        }
+
+        add(createSection("Mails", imapHost, imapPort, imapLogin, imapPassword, imapTest))
+    }
+
+    private fun createStorageSection() {
         val docSavePath = TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + '\'', OptionKey.DOC_SAVE_PATH.string) {
             if (it.value.isNotEmpty()) {
                 val dir = File(it.value)
@@ -130,8 +190,65 @@ class OptionsView(tagService: TagService) : VerticalLayout() {
         }
 
         add(createSection("Storage", docSavePath))
+    }
 
-        /*TextField ftpUrl = new TextField("FTP URL", FTP_URL.getString(), "ftps://");
+    private fun createTagSection() {
+        val autoTagId = ComboBox<Tag>("Auto tag")
+        val autoTag = Checkbox("Auto tag", OptionKey.AUTO_TAG.boolean).apply {
+            addValueChangeListener { event ->
+                autoTagId.isReadOnly = !event.value!!
+                OptionKey.AUTO_TAG.boolean = value
+                LOGGER.showInfo("Auto tag saved.")
+            }
+        }
+
+        autoTagId.isPreventInvalidInput = true
+        autoTagId.isAllowCustomValue = false
+        autoTagId.setItems(tagService.findAll())
+        autoTagId.value = tagService.load(OptionKey.AUTO_TAG_ID.long)
+        autoTagId.isReadOnly = !autoTag.value
+        autoTagId.itemLabelGenerator = ItemLabelGenerator { obj: Tag -> obj.name }
+        autoTagId.addValueChangeListener {
+            OptionKey.AUTO_TAG_ID.long = autoTagId.value.id
+            LOGGER.showInfo("Auto tag saved")
+        }
+
+        add(createSection("Tags", autoTag, autoTagId))
+    }
+
+    private fun createUpdateSection() {
+        val updateCheckInterval = NumberField("Update check interval (minutes)", OptionKey.UPDATE_CHECK_INTERVAL.double) {
+            if (it.value != null && it.value > 0) {
+                OptionKey.UPDATE_CHECK_INTERVAL.int = it.value.toInt()
+                LOGGER.showInfo("Update check interval saved.")
+            }
+        }
+
+        add(createSection("Update", updateCheckInterval))
+    }
+
+    private fun createSection(title: String, vararg components: Component): Card {
+        val details = Details(title, FormLayout(*components)).apply {
+            isOpened = true
+            element.style.set("padding", "5px")["width"] = "100%"
+        }
+        return Card(details).apply { setWidthFull() }
+    }
+
+    private fun tryFtp() {
+        val success = fileManager.testFtp()
+        if (success) {
+            LOGGER.showInfo("FTP Test: successful!")
+        } else {
+            LOGGER.showError("FTP Test: failed!")
+        }
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(OptionsView::class.java)
+    }
+
+    /*TextField ftpUrl = new TextField("FTP URL", FTP_URL.getString(), "ftps://");
         ftpUrl.addValueChangeListener(event -> {
             FTP_URL.setString(event.getValue());
             LOGGER.showInfo("FTP URL saved.");
@@ -187,57 +304,4 @@ class OptionsView(tagService: TagService) : VerticalLayout() {
         ftpUser.setEnabled(isFtp);
         ftpPassword.setEnabled(isFtp);
         ftpPort.setEnabled(isFtp);*/
-
-        val autoTagId = ComboBox<Tag>("Auto tag")
-        val autoTag = Checkbox("Auto tag", OptionKey.AUTO_TAG.boolean).apply {
-            addValueChangeListener { event ->
-                autoTagId.isReadOnly = !event.value!!
-                OptionKey.AUTO_TAG.boolean = value
-                LOGGER.showInfo("Auto tag saved.")
-            }
-        }
-
-        autoTagId.isPreventInvalidInput = true
-        autoTagId.isAllowCustomValue = false
-        autoTagId.setItems(tagService.findAll())
-        autoTagId.value = tagService.load(OptionKey.AUTO_TAG_ID.long)
-        autoTagId.isReadOnly = !autoTag.value
-        autoTagId.itemLabelGenerator = ItemLabelGenerator { obj: Tag -> obj.name }
-        autoTagId.addValueChangeListener {
-            OptionKey.AUTO_TAG_ID.long = autoTagId.value.id
-            LOGGER.showInfo("Auto tag saved")
-        }
-
-        add(createSection("Tags", autoTag, autoTagId))
-
-        val updateCheckInterval = NumberField("Update check interval (minutes)", OptionKey.UPDATE_CHECK_INTERVAL.double) {
-            if (it.value != null && it.value > 0) {
-                OptionKey.UPDATE_CHECK_INTERVAL.int = it.value.toInt()
-                LOGGER.showInfo("Update check interval saved.")
-            }
-        }
-
-        add(createSection("Update", updateCheckInterval))
-    }
-
-    private fun tryFtp() {
-        val success = FileManager.testFtp()
-        if (success) {
-            LOGGER.showInfo("FTP Test: successful!")
-        } else {
-            LOGGER.showError("FTP Test: failed!")
-        }
-    }
-
-    companion object {
-        private val LOGGER = DmsLogger.getLogger(OptionsView::class.java)
-
-        private fun createSection(title: String, vararg components: Component): Card {
-            val details = Details(title, FormLayout(*components)).apply {
-                isOpened = true
-                element.style.set("padding", "5px")["width"] = "100%"
-            }
-            return Card(details).apply { setWidthFull() }
-        }
-    }
 }

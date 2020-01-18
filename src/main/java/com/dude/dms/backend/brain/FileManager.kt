@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.docs.Doc
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
+import org.springframework.stereotype.Component
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -13,9 +14,8 @@ import java.nio.file.StandardCopyOption
 import java.util.*
 import javax.imageio.ImageIO
 
-object FileManager {
-
-    private val LOGGER = getLogger(FileManager::class.java)
+@Component
+class FileManager {
 
     fun testFtp(): Boolean {
         val ftpClient = FTPClient()
@@ -31,7 +31,7 @@ object FileManager {
                 ftpClient.disconnect()
             }
         } catch (e: IOException) {
-            LOGGER.showError(e.message!!)
+            Companion.LOGGER.showError(e.message!!)
             false
         }
     }
@@ -74,5 +74,9 @@ object FileManager {
                 LOGGER.error("Error when saving image: {}", e.message)
             }
         }
+    }
+
+    companion object {
+        private val LOGGER = getLogger(FileManager::class.java)
     }
 }

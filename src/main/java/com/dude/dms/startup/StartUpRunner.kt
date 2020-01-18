@@ -27,15 +27,15 @@ class StartUpRunner(
         LocaleContextHolder.setLocale(Locale.forLanguageTag(OptionKey.LOCALE.string))
     }
 
+    private fun createOptionsFile() {
+        val prop = File("options.properties")
+        if (!prop.exists()) {
+            LOGGER.info("Creating user properties...")
+            prop.createNewFile()
+        }
+    }
+
     companion object {
         private val LOGGER = DmsLogger.getLogger(StartUpRunner::class.java)
-
-        private fun createOptionsFile() {
-            val prop = File("options.properties")
-            if (!prop.exists()) {
-                LOGGER.info("Creating user properties...")
-                prop.createNewFile()
-            }
-        }
     }
 }

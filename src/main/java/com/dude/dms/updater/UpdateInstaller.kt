@@ -42,18 +42,18 @@ class UpdateInstaller(private val shutdownManager: ShutdownManager) {
         }
     }
 
+    private fun newFile(destinationDir: File, zipEntry: ZipEntry): File {
+        val destFile = File(destinationDir, zipEntry.name)
+        val destDirPath = destinationDir.canonicalPath
+        val destFilePath = destFile.canonicalPath
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw IOException("Entry is outside of the target dir: ${zipEntry.name}")
+        }
+        destFile.createNewFile()
+        return destFile
+    }
+
     companion object {
         private val LOGGER = DmsLogger.getLogger(UpdateInstaller::class.java)
-
-        private fun newFile(destinationDir: File, zipEntry: ZipEntry): File {
-            val destFile = File(destinationDir, zipEntry.name)
-            val destDirPath = destinationDir.canonicalPath
-            val destFilePath = destFile.canonicalPath
-            if (!destFilePath.startsWith(destDirPath + File.separator)) {
-                throw IOException("Entry is outside of the target dir: ${zipEntry.name}")
-            }
-            destFile.createNewFile()
-            return destFile
-        }
     }
 }

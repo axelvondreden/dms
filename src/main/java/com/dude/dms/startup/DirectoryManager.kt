@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import java.io.File
 
 @Component
-class DirectoryManager {
+class DirectoryManager(private val fileManager: FileManager) {
 
     fun checkDirectories() {
         val pollDir = File(OptionKey.DOC_POLL_PATH.string)
@@ -15,7 +15,7 @@ class DirectoryManager {
             LOGGER.info("Creating input directory new docs {}", pollDir)
             pollDir.mkdir()
         }
-        FileManager.createDirectories()
+        fileManager.createDirectories()
     }
 
     companion object {

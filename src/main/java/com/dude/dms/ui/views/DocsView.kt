@@ -32,6 +32,7 @@ class DocsView(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
         private val tagService: TagService,
+        private val fileManager: FileManager,
         pdfToDocParser: PdfToDocParser
 ) : HistoricalCrudView<Doc, DocHistory>(), HasUrlParameter<String?> {
 
@@ -68,7 +69,7 @@ class DocsView(
     }
 
     private fun createGridActions(doc: Doc): HorizontalLayout {
-        val file = FileManager.getDocPdf(doc)
+        val file = fileManager.getDocPdf(doc)
         val download = Anchor().apply {
             add(Button(VaadinIcon.FILE_TEXT.create()))
             isEnabled = false
