@@ -2,7 +2,6 @@ package com.dude.dms.brain.parsing
 
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
-import com.dude.dms.brain.OptionKey
 import com.dude.dms.brain.ParseEvent
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
@@ -10,6 +9,7 @@ import com.dude.dms.backend.data.docs.TextBlock
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.backend.service.TextBlockService
+import com.dude.dms.brain.options.Options
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.springframework.stereotype.Component
 import java.io.File
@@ -76,13 +76,13 @@ class PdfToDocParser(
      */
     private fun discoverTags(rawText: String?): Set<Tag> {
         val tags: MutableSet<Tag> = HashSet()
-        if (OptionKey.AUTO_TAG.boolean) {
-            tagService.load(OptionKey.AUTO_TAG_ID.long)?.let {
+        for (tag in Options.get().tag.automaticTags) {
+            tagService.findByName(tag)?.let {
                 LOGGER.info("Adding tag: {}", it.name)
                 tags.add(it)
             }
         }
-        if (rawText != null && rawText.isNotEmpty()) {
+        if (!rawText.isNullOrEmpty()) {
             tags.addAll(plainTextRuleValidator.getTags(rawText))
             tags.addAll(regexRuleValidator.getTags(rawText))
         }
@@ -101,9 +101,8 @@ class PdfToDocParser(
 
     private fun discoverDates(rawText: String): LocalDate? {
         LOGGER.info("Trying to find date...")
-        val datePatterns = OptionKey.DATE_SCAN_FORMATS.string.split(",").toTypedArray()
         val map = mutableMapOf<LocalDate, Int>()
-        for (pattern in datePatterns) {
+        for (pattern in Options.get().view.dateScanFormats) {
             for (line in rawText.split("\n").toTypedArray()) {
                 for (i in 0 until line.length - pattern.length) {
                     val snippet = line.substring(i, i + pattern.length)

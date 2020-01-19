@@ -1,10 +1,10 @@
 package com.dude.dms.ui.extensions
 
-import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.options.Options
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun LocalDate.convert() = format(DateTimeFormatter.ofPattern(OptionKey.DATE_FORMAT.string))
+fun LocalDate.convert() = format(DateTimeFormatter.ofPattern(Options.get().view.dateFormat))
 
-fun LocalDateTime.convert() = format(DateTimeFormatter.ofPattern("${OptionKey.DATE_FORMAT.string} HH:mm:ss"))
+fun LocalDateTime.convert() = format(DateTimeFormatter.ofPattern("${Options.get().view.dateFormat} HH:mm:ss"))

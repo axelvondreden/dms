@@ -1,9 +1,9 @@
 package com.dude.dms.ui.views
 
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.OptionKey
 import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
+import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
 import com.dude.dms.ui.components.standard.DmsDatePicker
@@ -29,7 +29,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
     private val dateFilter = DmsDatePicker().apply {
         placeholder = "Date"
         value = LocalDate.now()
-        locale = Locale.forLanguageTag(OptionKey.LOCALE.string)
+        locale = Locale.forLanguageTag(Options.get().view.locale)
         addValueChangeListener { refreshFilter() }
     }
 

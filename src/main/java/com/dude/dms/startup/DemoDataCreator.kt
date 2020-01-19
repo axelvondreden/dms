@@ -1,13 +1,13 @@
 package com.dude.dms.startup
 
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.OptionKey
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.options.Options
 import org.springframework.stereotype.Component
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -19,15 +19,14 @@ import java.util.*
 import kotlin.math.min
 
 @Component
-class DemoDataManager(private val tagService: TagService, private val docService: DocService, private val attributeService: AttributeService) {
+class DemoDataCreator(private val tagService: TagService, private val docService: DocService, private val attributeService: AttributeService) {
 
     private var random: Random? = null
 
     fun createDemoData() {
         random = SecureRandom()
-        createReviewTag()
         val tags = createDemoTags()
-        if (docService.count() == 0L && OptionKey.DEMO_DOCS.int > 0) {
+        if (docService.count() == 0L && Options.get().doc.demoDocs > 0) {
             LOGGER.info("Creating demo docs...")
             createDemoDocs(tags)
         }
@@ -41,7 +40,7 @@ class DemoDataManager(private val tagService: TagService, private val docService
             e.message?.let { LOGGER.error(it, e) }
         }
         val txt = contentBuilder.toString()
-        for (i in 0 until OptionKey.DEMO_DOCS.int) {
+        for (i in 0 until Options.get().doc.demoDocs) {
             val rngTags: MutableSet<Tag> = HashSet()
             for (tag in tags) {
                 if (random!!.nextFloat() > 0.7f) {
@@ -77,14 +76,7 @@ class DemoDataManager(private val tagService: TagService, private val docService
 
     private fun randomColor() = String.format("#%06x", random!!.nextInt(0xffffff + 1))
 
-    private fun createReviewTag() {
-        if (OptionKey.AUTO_TAG.boolean) {
-            val reviewTag = tagService.create(Tag("Review", "red"))
-            OptionKey.AUTO_TAG_ID.float = reviewTag.id.toFloat()
-        }
-    }
-
     companion object {
-        private val LOGGER = DmsLogger.getLogger(DemoDataManager::class.java)
+        private val LOGGER = DmsLogger.getLogger(DemoDataCreator::class.java)
     }
 }

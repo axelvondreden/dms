@@ -2,7 +2,7 @@ package com.dude.dms.brain.polling
 
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
-import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.PdfToDocParser
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -11,7 +11,7 @@ import java.io.File
 @Component
 class DocPollingService(private val pdfToDocParser: PdfToDocParser, private val fileManager: FileManager) : PollingService {
 
-    private val docPath = OptionKey.DOC_POLL_PATH.string
+    private val docPath = Options.get().doc.pollingPath
     private var tick = 1
     private val processing = HashSet<String>()
 
@@ -22,7 +22,7 @@ class DocPollingService(private val pdfToDocParser: PdfToDocParser, private val 
 
     @Scheduled(fixedRate = 1000)
     fun scheduledPoll() {
-        if (tick < OptionKey.POLL_INTERVAL.int) {
+        if (tick < Options.get().doc.pollingInterval) {
             tick++
         } else {
             tick = 1

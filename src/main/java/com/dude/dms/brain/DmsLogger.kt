@@ -2,6 +2,7 @@ package com.dude.dms.brain
 
 import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
+import com.dude.dms.brain.options.Options
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import org.slf4j.LoggerFactory
@@ -112,7 +113,7 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
     }
 
     private fun create(message: String, persistent: Boolean): Notification {
-        return Notification(message, if (persistent) 0 else 3000, Notification.Position.valueOf(OptionKey.NOTIFY_POSITION.string))
+        return Notification(message, if (persistent) 0 else 3000, Notification.Position.valueOf(Options.get().view.notificationPosition))
     }
 
     companion object {

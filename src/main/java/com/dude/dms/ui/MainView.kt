@@ -1,11 +1,11 @@
 package com.dude.dms.ui
 
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.OptionKey
 import com.dude.dms.brain.parsing.PdfToDocParser
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton
@@ -42,9 +42,9 @@ class MainView(
         private val docService: DocService,
         private val tagService: TagService,
         private val attributeService: AttributeService,
-        pdfToDocParser: PdfToDocParser,
         private val builderFactory: BuilderFactory,
-        @param:Value("\${build.version}") private val buildVersion: String
+        @param:Value("\${build.version}") private val buildVersion: String,
+        pdfToDocParser: PdfToDocParser
 ) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
 
     private var docsBadge: DefaultBadgeHolder? = null
@@ -143,7 +143,7 @@ class MainView(
     override fun afterNavigation(afterNavigationEvent: AfterNavigationEvent) {
         val themeList = UI.getCurrent().element.themeList
         themeList.clear()
-        themeList.add(if (OptionKey.DARK_MODE.boolean) Lumo.DARK else Lumo.LIGHT)
+        themeList.add(if (Options.get().view.darkMode) Lumo.DARK else Lumo.LIGHT)
     }
 
     companion object {

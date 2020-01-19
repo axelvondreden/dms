@@ -1,6 +1,6 @@
 package com.dude.dms.brain.mail
 
-import com.dude.dms.brain.OptionKey
+import com.dude.dms.brain.options.Options
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.mail.*
@@ -75,14 +75,14 @@ class EmailManager {
     }
 
     private fun getStore() = Session.getDefaultInstance(getServerProperties()).getStore("imaps").apply {
-        connect(OptionKey.IMAP_HOST.string, OptionKey.IMAP_LOGIN.string, OptionKey.IMAP_PASSWORD.string)
+        connect(Options.get().mail.host, Options.get().mail.login, Options.get().mail.password)
     }
 
     private fun getServerProperties() = Properties().apply {
-        setProperty("mail.imap.host", OptionKey.IMAP_HOST.string)
-        setProperty("mail.imap.port", OptionKey.IMAP_PORT.string)
+        setProperty("mail.imap.host", Options.get().mail.host)
+        setProperty("mail.imap.port", Options.get().mail.port.toString())
         setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
         setProperty("mail.imap.socketFactory.fallback", "false")
-        setProperty("mail.imap.socketFactory.port", OptionKey.IMAP_PORT.string)
+        setProperty("mail.imap.socketFactory.port", Options.get().mail.port.toString())
     }
 }

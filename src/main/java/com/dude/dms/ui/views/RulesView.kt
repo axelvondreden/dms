@@ -39,7 +39,7 @@ class RulesView(
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
         val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
-        plainTextRuleService.findAll().map { builderFactory.rules().plainTextCard(it, { fillContent() }) { fillContent() }.build() }.forEach { verticalLayout.add(it) }
+        plainTextRuleService.findAll().map { builderFactory.rules().plainTextCard(it).build() }.forEach { verticalLayout.add(it) }
         val details = Details("Text", verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"

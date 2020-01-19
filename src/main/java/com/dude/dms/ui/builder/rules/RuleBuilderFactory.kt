@@ -1,10 +1,10 @@
 package com.dude.dms.ui.builder.rules
 
-import com.dude.dms.backend.brain.CreateEvent
-import com.dude.dms.backend.brain.DeleteEvent
-import com.dude.dms.backend.brain.EditEvent
-import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator
-import com.dude.dms.backend.brain.parsing.RegexRuleValidator
+import com.dude.dms.brain.CreateEvent
+import com.dude.dms.brain.DeleteEvent
+import com.dude.dms.brain.EditEvent
+import com.dude.dms.brain.parsing.PlainTextRuleValidator
+import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.rules.PlainTextRule
@@ -25,11 +25,7 @@ class RuleBuilderFactory(
         private val regexRuleService: RegexRuleService,
         private val docService: DocService) : Factory(builderFactory) {
 
-    fun plainTextCard(
-            rule: PlainTextRule,
-            editEvent: EditEvent<PlainTextRule>? = null,
-            deleteEvent: DeleteEvent<PlainTextRule>? = null
-    ) = PlainTextRuleCardBuilder(builderFactory, rule, plainTextRuleValidator, tagService)
+    fun plainTextCard(rule: PlainTextRule) = PlainTextRuleCardBuilder(builderFactory, rule, plainTextRuleValidator, tagService)
 
     fun regexCard(rule: RegexRule, editEvent: EditEvent<RegexRule>? = null, deleteEvent: DeleteEvent<RegexRule>? = null) = RegexRuleCardBuilder(builderFactory, rule, regexRuleValidator, tagService, editEvent, deleteEvent)
 

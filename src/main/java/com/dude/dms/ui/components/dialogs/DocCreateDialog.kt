@@ -1,9 +1,9 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.OptionKey
 import com.dude.dms.brain.polling.PollingService
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.brain.options.Options
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer
 import java.io.File
@@ -19,7 +19,7 @@ class DocCreateDialog(pollingService: PollingService) : EventDialog<Doc>() {
         val buffer = MultiFileMemoryBuffer()
         val upload = Upload(buffer).apply {
             setAcceptedFileTypes(".pdf")
-            maxFileSize = OptionKey.MAX_UPLOAD_FILE_SIZE.int * 1024 * 1024
+            maxFileSize = Options.get().storage.maxUploadFileSize * 1024 * 1024
             height = "80%"
             addFinishedListener {
                 for (file in buffer.files) {
@@ -27,7 +27,7 @@ class DocCreateDialog(pollingService: PollingService) : EventDialog<Doc>() {
                         buffer.getInputStream(file).use { inputStream ->
                             val bytes = ByteArray(inputStream.available())
                             inputStream.read(bytes)
-                            val targetFile = File(OptionKey.DOC_POLL_PATH.string, file)
+                            val targetFile = File(Options.get().doc.pollingPath, file)
                             LOGGER.info("Writing file {}...", file)
                             FileOutputStream(targetFile).use { outStream -> outStream.write(bytes) }
                         }

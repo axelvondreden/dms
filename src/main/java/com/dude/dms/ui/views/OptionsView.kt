@@ -1,26 +1,27 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
-import com.dude.dms.brain.OptionKey
 import com.dude.dms.brain.mail.EmailManager
-import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
 import com.github.appreciated.card.Card
 import com.vaadin.flow.component.Component
-import com.vaadin.flow.component.ItemLabelGenerator
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.details.Details
 import com.vaadin.flow.component.formlayout.FormLayout
+import com.vaadin.flow.component.html.H1
+import com.vaadin.flow.component.listbox.MultiSelectListBox
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.textfield.IntegerField
 import com.vaadin.flow.component.textfield.NumberField
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
@@ -40,6 +41,8 @@ class OptionsView(
         private val emailManager: EmailManager
 ) : VerticalLayout() {
 
+    private val options = Options.get()
+
     init {
         createViewSection()
         createDocsSection()
@@ -50,48 +53,53 @@ class OptionsView(
     }
 
     private fun createViewSection() {
-        val dateFormat = TextField("Date format", OptionKey.DATE_FORMAT.string) {
+        val dateFormat = TextField("Date format", options.view.dateFormat) {
             if (it.value.isNotEmpty()) {
-                OptionKey.DATE_FORMAT.string = it.value
+                options.view.dateFormat = it.value
+                options.save()
                 LOGGER.showInfo("Date format saved.")
             }
         }
         val locale = ComboBox<Locale>("Language").apply {
             setItems(*Locale.getAvailableLocales())
-            value = Locale.forLanguageTag(OptionKey.LOCALE.string)
+            value = Locale.forLanguageTag(options.view.locale)
             isAllowCustomValue = false
             isPreventInvalidInput = true
             addValueChangeListener {
                 if (!isEmpty) {
-                    OptionKey.LOCALE.string = value.toLanguageTag()
+                    options.view.locale = value.toLanguageTag()
+                    options.save()
                     LOGGER.showInfo("Language changed.")
                 }
             }
         }
-        val simpleColors = Checkbox("Simple tag colors", OptionKey.SIMPLE_TAG_COLORS.boolean).apply {
+        val simpleColors = Checkbox("Simple tag colors", options.tag.simpleColors).apply {
             addValueChangeListener {
-                OptionKey.SIMPLE_TAG_COLORS.boolean = value
+                options.tag.simpleColors = value
+                options.save()
                 LOGGER.showInfo("Simple tag colors saved")
             }
         }
-        val darkMode = Checkbox("Dark mode", OptionKey.DARK_MODE.boolean).apply {
+        val darkMode = Checkbox("Dark mode", options.view.darkMode).apply {
             addValueChangeListener { event ->
-                OptionKey.DARK_MODE.boolean = value
                 val themeList = UI.getCurrent().element.themeList
                 themeList.clear()
                 themeList.add(if (event.value) Lumo.DARK else Lumo.LIGHT)
+                options.view.darkMode = value
+                options.save()
                 LOGGER.showInfo("Dark mode saved.")
             }
         }
         val notifyPosition = ComboBox<Notification.Position>("Notification position").apply {
             setItems(*Notification.Position.values())
-            value = Notification.Position.valueOf(OptionKey.NOTIFY_POSITION.string)
+            value = Notification.Position.valueOf(options.view.notificationPosition)
             isAllowCustomValue = false
             isPreventInvalidInput = true
             setWidthFull()
             addValueChangeListener {
                 if (!isEmpty) {
-                    OptionKey.NOTIFY_POSITION.string = value.name
+                    options.view.notificationPosition = value.name
+                    options.save()
                     LOGGER.showInfo("Notification position saved.")
                 }
             }
@@ -105,63 +113,84 @@ class OptionsView(
     }
 
     private fun createDocsSection() {
-        val dateScanFormats = TextField("Date scan formats", OptionKey.DATE_SCAN_FORMATS.string) {
-            if (it.value.isNotEmpty()) {
-                OptionKey.DATE_SCAN_FORMATS.string = java.lang.String.join(",", it.value)
-                LOGGER.showInfo("Date scan formats saved.")
-            }
+        val dateScanFormats = MultiSelectListBox<String>()
+        dateScanFormats.add(H1("Date scan formats"))
+        dateScanFormats.setItems(options.view.dateScanFormats)
+        dateScanFormats.select(options.view.dateScanFormats)
+        dateScanFormats.addSelectionListener {
+            options.view.dateScanFormats = it.allSelectedItems.toList()
+            options.save()
+            LOGGER.showInfo("Date scan formats saved..")
+            dateScanFormats.setItems(options.view.dateScanFormats)
         }
-        val imageParserDpi = NumberField("Image Parser DPI", OptionKey.IMAGE_PARSER_DPI.double) {
-            if (it.value != null) {
+        dateScanFormats.add(TextField("", "Add").apply {
+            addValueChangeListener {
+                if (it.value.isNotBlank()) {
+                    options.view.dateScanFormats = dateScanFormats.selectedItems.apply { add(it.value) }.toList()
+                    options.save()
+                    LOGGER.showInfo("Date scan formats saved..")
+                    dateScanFormats.setItems(options.view.dateScanFormats)
+                }
+            }
+        })
+        val imageParserDpi = NumberField("Image Parser DPI", options.doc.imageParserDpi) {
+            if (it.value != null && it.value > 0) {
                 try {
-                    OptionKey.IMAGE_PARSER_DPI.double = it.value
+                    options.doc.imageParserDpi = it.value
+                    options.save()
                     LOGGER.showInfo("Image parser DPI saved.")
                 } catch (ignored: NumberFormatException) {
                 }
             }
         }
-        val pollingInterval = NumberField("Polling interval (seconds)", OptionKey.POLL_INTERVAL.double) {
+        val pollingInterval = IntegerField("Polling interval (seconds)", options.doc.pollingInterval) {
             if (it.value != null && it.value > 0) {
-                OptionKey.POLL_INTERVAL.int = it.value.toInt()
+                options.doc.pollingInterval = it.value
+                options.save()
                 LOGGER.showInfo("Polling interval saved.")
             }
         }
-        val maxUploadFileSize = NumberField("Maximum upload file size (MB)", OptionKey.MAX_UPLOAD_FILE_SIZE.double) {
-            if (it.value != null && it.value > 0) {
-                OptionKey.MAX_UPLOAD_FILE_SIZE.int = it.value.toInt()
-                LOGGER.showInfo("Maximum upload file size saved.")
-            }
-        }
 
-        add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval, maxUploadFileSize))
+        add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval))
     }
 
     private fun createMailSection() {
-        val imapHost = TextField("IMAP Host", OptionKey.IMAP_HOST.string) {
+        val imapHost = TextField("IMAP Host", options.mail.host) {
             if (!it.value.isNullOrEmpty()) {
-                OptionKey.IMAP_HOST.string = it.value
+                options.mail.host = it.value
+                options.save()
                 LOGGER.showInfo("IMAP Host saved.")
             }
         }
-        val imapPort = NumberField("IMAP Port", OptionKey.IMAP_PORT.double) {
-            if (it.value != null) {
+        val imapPort = IntegerField("IMAP Port", options.mail.port) {
+            if (it.value != null && it.value > 0) {
                 try {
-                    OptionKey.IMAP_PORT.int = it.value.toInt()
+                    options.mail.port = it.value
+                    options.save()
                     LOGGER.showInfo("IMAP Port saved.")
                 } catch (ignored: NumberFormatException) {
                 }
             }
         }
-        val imapLogin = TextField("IMAP Login", OptionKey.IMAP_LOGIN.string) {
+        val imapLogin = TextField("IMAP Login", options.mail.login) {
             if (!it.value.isNullOrEmpty()) {
-                OptionKey.IMAP_LOGIN.string = it.value
+                options.mail.login = it.value
+                options.save()
                 LOGGER.showInfo("IMAP Login saved.")
             }
         }
-        val imapPassword = PasswordField("IMAP Password", OptionKey.IMAP_PASSWORD.string) {
+        val imapPassword = PasswordField("IMAP Password", options.mail.password) {
             if (!it.value.isNullOrEmpty()) {
-                OptionKey.IMAP_PASSWORD.string = it.value
+                options.mail.password = it.value
+                options.save()
                 LOGGER.showInfo("IMAP Password saved.")
+            }
+        }
+        val imapPolling = IntegerField("IMAP Polling interval (min)", options.mail.pollingInterval) {
+            if (it.value != null && it.value > 0) {
+                options.mail.pollingInterval = it.value
+                options.save()
+                LOGGER.showInfo("IMAP Polling interval saved.")
             }
         }
         val imapTest = Button("Test Connection") {
@@ -173,53 +202,52 @@ class OptionsView(
             }
         }
 
-        add(createSection("Mails", imapHost, imapPort, imapLogin, imapPassword, imapTest))
+        add(createSection("Mails", imapHost, imapPort, imapLogin, imapPassword, imapPolling, imapTest))
     }
 
     private fun createStorageSection() {
-        val docSavePath = TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + '\'', OptionKey.DOC_SAVE_PATH.string) {
+        val docSavePath = TextField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + '\'', options.doc.savePath) {
             if (it.value.isNotEmpty()) {
                 val dir = File(it.value)
                 if (dir.exists() && dir.isDirectory) {
-                    OptionKey.DOC_SAVE_PATH.string = it.value
+                    options.doc.savePath = it.value
+                    options.save()
                     LOGGER.showInfo("Doc save path saved.")
                 } else {
                     LOGGER.showError("Directory " + it.value + " does not exist.")
                 }
             }
         }
-
-        add(createSection("Storage", docSavePath))
-    }
-
-    private fun createTagSection() {
-        val autoTagId = ComboBox<Tag>("Auto tag")
-        val autoTag = Checkbox("Auto tag", OptionKey.AUTO_TAG.boolean).apply {
-            addValueChangeListener { event ->
-                autoTagId.isReadOnly = !event.value!!
-                OptionKey.AUTO_TAG.boolean = value
-                LOGGER.showInfo("Auto tag saved.")
+        val maxUploadFileSize = IntegerField("Maximum upload file size (MB)", options.storage.maxUploadFileSize) {
+            if (it.value != null && it.value > 0) {
+                options.storage.maxUploadFileSize = it.value
+                options.save()
+                LOGGER.showInfo("Maximum upload file size saved.")
             }
         }
 
-        autoTagId.isPreventInvalidInput = true
-        autoTagId.isAllowCustomValue = false
-        autoTagId.setItems(tagService.findAll())
-        autoTagId.value = tagService.load(OptionKey.AUTO_TAG_ID.long)
-        autoTagId.isReadOnly = !autoTag.value
-        autoTagId.itemLabelGenerator = ItemLabelGenerator { obj: Tag -> obj.name }
-        autoTagId.addValueChangeListener {
-            OptionKey.AUTO_TAG_ID.long = autoTagId.value.id
-            LOGGER.showInfo("Auto tag saved")
+        add(createSection("Storage", docSavePath, maxUploadFileSize))
+    }
+
+    private fun createTagSection() {
+        val autoTag = MultiSelectListBox<String>()
+        autoTag.add(H1("Automatic Tags"))
+        autoTag.setItems(tagService.findAll().map { it.name })
+        autoTag.select(options.tag.automaticTags)
+        autoTag.addSelectionListener {
+            options.tag.automaticTags = it.allSelectedItems.toList()
+            options.save()
+            LOGGER.showInfo("Automatic Tags saved..")
         }
 
-        add(createSection("Tags", autoTag, autoTagId))
+        add(createSection("Tags", autoTag))
     }
 
     private fun createUpdateSection() {
-        val updateCheckInterval = NumberField("Update check interval (minutes)", OptionKey.UPDATE_CHECK_INTERVAL.double) {
+        val updateCheckInterval = IntegerField("Update check interval (minutes)", options.update.checkInterval) {
             if (it.value != null && it.value > 0) {
-                OptionKey.UPDATE_CHECK_INTERVAL.int = it.value.toInt()
+                options.update.checkInterval = it.value
+                options.save()
                 LOGGER.showInfo("Update check interval saved.")
             }
         }

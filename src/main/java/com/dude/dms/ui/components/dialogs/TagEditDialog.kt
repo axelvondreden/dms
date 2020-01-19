@@ -1,9 +1,9 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.brain.OptionKey
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.DmsColorPicker
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple
@@ -28,7 +28,7 @@ class TagEditDialog(
 
     @Suppress("UNCHECKED_CAST")
     private val colorPicker = when {
-        OptionKey.SIMPLE_TAG_COLORS.boolean -> DmsColorPickerSimple("Color")
+        Options.get().tag.simpleColors -> DmsColorPickerSimple("Color")
         else -> DmsColorPicker("Color")
     }.also {
         (it as HasSize).setWidthFull()
