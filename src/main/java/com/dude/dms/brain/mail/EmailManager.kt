@@ -9,10 +9,9 @@ import javax.mail.*
 @Component
 class EmailManager {
 
-    fun getAllFolders() {
+    fun getRootFolders(): List<Folder> {
         val store = getStore()
-        val folders = store.defaultFolder.list()
-        folders.forEach { println(it) }
+        return store.defaultFolder.list().toList()
     }
 
     fun downloadEmails(host: String, port: String, userName: String, password: String) {
@@ -74,15 +73,24 @@ class EmailManager {
         getStore().defaultFolder.list()
     }
 
-    private fun getStore() = Session.getDefaultInstance(getServerProperties()).getStore("imaps").apply {
-        connect(Options.get().mail.host, Options.get().mail.login, Options.get().mail.password)
-    }
+    companion object {
+        private var store: Store? = null
 
-    private fun getServerProperties() = Properties().apply {
-        setProperty("mail.imap.host", Options.get().mail.host)
-        setProperty("mail.imap.port", Options.get().mail.port.toString())
-        setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
-        setProperty("mail.imap.socketFactory.fallback", "false")
-        setProperty("mail.imap.socketFactory.port", Options.get().mail.port.toString())
+        private fun getStore(): Store {
+            if (store == null) {
+                store = Session.getDefaultInstance(getServerProperties()).getStore("imaps").apply {
+                    connect(Options.get().mail.host, Options.get().mail.login, Options.get().mail.password)
+                }
+            }
+            return store!!
+        }
+
+        private fun getServerProperties() = Properties().apply {
+            setProperty("mail.imap.host", Options.get().mail.host)
+            setProperty("mail.imap.port", Options.get().mail.port.toString())
+            setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
+            setProperty("mail.imap.socketFactory.fallback", "false")
+            setProperty("mail.imap.socketFactory.port", Options.get().mail.port.toString())
+        }
     }
 }
