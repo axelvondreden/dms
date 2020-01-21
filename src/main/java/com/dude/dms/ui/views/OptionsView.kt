@@ -9,13 +9,13 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
 import com.github.appreciated.card.Card
 import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.details.Details
 import com.vaadin.flow.component.formlayout.FormLayout
-import com.vaadin.flow.component.html.H1
 import com.vaadin.flow.component.listbox.MultiSelectListBox
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
@@ -113,26 +113,6 @@ class OptionsView(
     }
 
     private fun createDocsSection() {
-        val dateScanFormats = MultiSelectListBox<String>()
-        dateScanFormats.add(H1("Date scan formats"))
-        dateScanFormats.setItems(options.view.dateScanFormats)
-        dateScanFormats.select(options.view.dateScanFormats)
-        dateScanFormats.addSelectionListener {
-            options.view.dateScanFormats = it.allSelectedItems.toList()
-            options.save()
-            LOGGER.showInfo("Date scan formats saved..")
-            dateScanFormats.setItems(options.view.dateScanFormats)
-        }
-        dateScanFormats.add(TextField("", "Add").apply {
-            addValueChangeListener {
-                if (it.value.isNotBlank()) {
-                    options.view.dateScanFormats = dateScanFormats.selectedItems.apply { add(it.value) }.toList()
-                    options.save()
-                    LOGGER.showInfo("Date scan formats saved..")
-                    dateScanFormats.setItems(options.view.dateScanFormats)
-                }
-            }
-        })
         val imageParserDpi = NumberField("Image Parser DPI", options.doc.imageParserDpi) {
             if (it.value != null && it.value > 0) {
                 try {
@@ -150,9 +130,17 @@ class OptionsView(
                 LOGGER.showInfo("Polling interval saved.")
             }
         }
+        val dateScanFormats = TextField("Date scan formats", options.view.dateScanFormats.joinToString(",")) {
+            if (!it.value.isNullOrEmpty()) {
+                options.view.dateScanFormats = it.value.split(",")
+                options.save()
+                LOGGER.showInfo("Date scan formats saved..")
+            }
+        }
 
-        add(createSection("Docs", dateScanFormats, imageParserDpi, pollingInterval))
+        add(createSection("Docs", imageParserDpi, pollingInterval, dateScanFormats))
     }
+
 
     private fun createMailSection() {
         val imapHost = TextField("IMAP Host", options.mail.host) {
@@ -231,8 +219,8 @@ class OptionsView(
 
     private fun createTagSection() {
         val autoTag = MultiSelectListBox<String>()
-        autoTag.add(H1("Automatic Tags"))
         autoTag.setItems(tagService.findAll().map { it.name })
+        autoTag.addComponentAsFirst(Text("Automatic Tags"))
         autoTag.select(options.tag.automaticTags)
         autoTag.addSelectionListener {
             options.tag.automaticTags = it.allSelectedItems.toList()
