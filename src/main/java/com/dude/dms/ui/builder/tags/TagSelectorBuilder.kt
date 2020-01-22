@@ -23,6 +23,8 @@ class TagSelectorBuilder(
 
     fun build() = TagSelector(tagService).apply {
         selectedTags = selected
-        setContainedTags(rawText)
+        if (rawText != null) {
+            setContainedTags(rawText)
+        }
     }
 }
