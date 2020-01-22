@@ -2,8 +2,12 @@ package com.dude.dms.brain.mail
 
 import com.dude.dms.brain.options.Options
 import org.springframework.stereotype.Component
+import java.time.ZoneId
 import java.util.*
-import javax.mail.*
+import javax.mail.Folder
+import javax.mail.Message
+import javax.mail.Session
+import javax.mail.Store
 
 
 @Component
@@ -14,59 +18,17 @@ class EmailManager {
         return store.defaultFolder.list().toList()
     }
 
-    fun downloadEmails(host: String, port: String, userName: String, password: String) {
-        /*val session = Session.getDefaultInstance(getServerProperties(host, port))
-        try {
-            val store = session.getStore("imap")
-            store.connect(userName, password)
-            // opens the inbox folder
-            val folderInbox = store.getFolder("INBOX")
-            folderInbox.open(Folder.READ_ONLY)
-            // fetches new messages from server
-            val messages = folderInbox.messages
-            for (i in messages.indices) {
-                val msg = messages[i]
-                val fromAddress = msg.from
-                val from = fromAddress[0].toString()
-                val subject = msg.subject
-                val toList = parseAddresses(msg
-                        .getRecipients(Message.RecipientType.TO))
-                val ccList = parseAddresses(msg
-                        .getRecipients(Message.RecipientType.CC))
-                val sentDate = msg.sentDate.toString()
-                val contentType = msg.contentType
-                var messageContent = ""
-                if (contentType.contains("text/plain")
-                        || contentType.contains("text/html")) {
-                    try {
-                        val content = msg.content
-                        if (content != null) {
-                            messageContent = content.toString()
-                        }
-                    } catch (ex: Exception) {
-                        messageContent = "[Error downloading content]"
-                        ex.printStackTrace()
-                    }
-                }
-                // print out details of each message
-                println("Message #" + (i + 1) + ":")
-                println("\t From: $from")
-                println("\t To: $toList")
-                println("\t CC: $ccList")
-                println("\t Subject: $subject")
-                println("\t Sent Date: $sentDate")
-                println("\t Message: $messageContent")
-            }
-            // disconnect
-            folderInbox.close(false)
-            store.close()
-        } catch (ex: NoSuchProviderException) {
-            println("No provider for protocol: $protocol")
-            ex.printStackTrace()
-        } catch (ex: MessagingException) {
-            println("Could not connect to the message store")
-            ex.printStackTrace()
-        }*/
+    fun getMails(folder: Folder) {
+        folder.open(Folder.READ_ONLY)
+        for (message in folder.messages) {
+            val from = message.from[0].toString()
+            val subject = message.subject
+            val toList = message.getRecipients(Message.RecipientType.TO)
+            val ccList = message.getRecipients(Message.RecipientType.CC)
+            val sentDate = message.receivedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            val body = message.content.toString()
+        }
+        folder.close(false)
     }
 
     fun testConnection() {
