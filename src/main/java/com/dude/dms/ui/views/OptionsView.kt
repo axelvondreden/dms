@@ -191,7 +191,8 @@ class OptionsView(
             try {
                 emailManager.testConnection()
                 LOGGER.showInfo("Connection Successfull.")
-                fillImapFolderSelect(imapFolderSelect)
+                imapFolderSelect.setItems(emailManager.getRootFolders()) { it.list().toList() }
+                imapFolderSelect.dataProvider.refreshAll()
             } catch (e: MessagingException) {
                 LOGGER.showError("Connection Failed: ${e.message}")
                 imapFolderSelect.setItems(emptyList())
@@ -200,11 +201,6 @@ class OptionsView(
         }
 
         add(createSection("Mails", imapHost, imapPort, imapLogin, imapPassword, imapPolling, imapTest, imapFolderSelect))
-    }
-
-    private fun fillImapFolderSelect(imapFolderSelect: TreeGrid<Folder>) {
-        imapFolderSelect.setItems(emailManager.getRootFolders()) { it.list().toList() }
-        imapFolderSelect.dataProvider.refreshAll()
     }
 
     private fun createStorageSection() {

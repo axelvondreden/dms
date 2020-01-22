@@ -72,12 +72,12 @@ class MainView(
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
         val rulesEntry = LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView::class.java)
-        val logEntry = LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java)
         return LeftAppMenuBuilder.get()
                 .addToSection(Section.HEADER, LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create()) { builderFactory.docs().createDialog().build().open() })
-                .add(docsEntry, tagsEntry, attributesEntry, rulesEntry, logEntry)
+                .add(docsEntry, tagsEntry, attributesEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
+                        LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
                         LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().build().open() },
                         LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView::class.java))
                 .build()
