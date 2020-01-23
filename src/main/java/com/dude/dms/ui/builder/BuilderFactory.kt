@@ -5,6 +5,7 @@ import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.brain.polling.DocPollingService
 import com.dude.dms.backend.service.*
+import com.dude.dms.brain.mail.EmailManager
 import com.dude.dms.ui.builder.attributes.AttributeBuilderFactory
 import com.dude.dms.ui.builder.docs.DocBuilderFactory
 import com.dude.dms.ui.builder.misc.MiscBuilderFactory
@@ -27,7 +28,9 @@ class BuilderFactory(
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
         private val pollingService: DocPollingService,
-        private val fileManager: FileManager
+        private val fileManager: FileManager,
+        private val mailFilterService: MailFilterService,
+        private val emailManager: EmailManager
 ) {
 
     fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService)
@@ -36,7 +39,7 @@ class BuilderFactory(
 
     fun misc() = MiscBuilderFactory(this, changelogService, updateChecker)
 
-    fun rules() = RuleBuilderFactory(this, tagService, plainTextRuleValidator, regexRuleValidator, plainTextRuleService, regexRuleService, docService)
+    fun rules() = RuleBuilderFactory(this, tagService, plainTextRuleValidator, regexRuleValidator, plainTextRuleService, regexRuleService, docService, mailFilterService, emailManager)
 
     fun tags() = TagBuilderFactory(this, tagService, docService)
 }

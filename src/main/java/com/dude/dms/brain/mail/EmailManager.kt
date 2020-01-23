@@ -1,5 +1,6 @@
 package com.dude.dms.brain.mail
 
+import com.dude.dms.brain.MailReceiveEvent
 import com.dude.dms.brain.options.Options
 import org.springframework.stereotype.Component
 import java.time.ZoneId
@@ -13,6 +14,16 @@ import javax.mail.Store
 @Component
 class EmailManager {
 
+    private val eventListeners = HashMap<String, MailReceiveEvent>()
+
+    fun addEventListener(key: String, mailReceiveEvent: MailReceiveEvent) {
+        eventListeners[key] = mailReceiveEvent
+    }
+
+    fun poll() {
+        eventListeners.values.forEach { it.invoke() }
+    }
+
     fun getRootFolders(): List<Folder> {
         val store = getStore()
         return store.defaultFolder.list().toList()
@@ -23,9 +34,7 @@ class EmailManager {
         for (message in folder.messages) {
             val from = message.from[0].toString()
             val subject = message.subject
-            val toList = message.getRecipients(Message.RecipientType.TO)
-            val ccList = message.getRecipients(Message.RecipientType.CC)
-            val sentDate = message.receivedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            val date = message.receivedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             val body = message.content.toString()
         }
         folder.close(false)

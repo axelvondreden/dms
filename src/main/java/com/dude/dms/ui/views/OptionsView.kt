@@ -16,7 +16,6 @@ import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.details.Details
 import com.vaadin.flow.component.formlayout.FormLayout
-import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.listbox.MultiSelectListBox
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
@@ -26,14 +25,12 @@ import com.vaadin.flow.component.textfield.IntegerField
 import com.vaadin.flow.component.textfield.NumberField
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
-import com.vaadin.flow.component.treegrid.TreeGrid
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.Lumo
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
-import javax.mail.Folder
 import javax.mail.MessagingException
 
 @Route(value = Const.PAGE_OPTIONS, layout = MainView::class)
@@ -184,23 +181,16 @@ class OptionsView(
                 LOGGER.showInfo("IMAP Polling interval saved.")
             }
         }
-        val imapFolderSelect = TreeGrid<Folder>()
-        imapFolderSelect.addHierarchyColumn { it.fullName }.setHeader("Folder")
-        imapFolderSelect.setSelectionMode(Grid.SelectionMode.MULTI)
         val imapTest = Button("Connect") {
             try {
                 emailManager.testConnection()
                 LOGGER.showInfo("Connection Successfull.")
-                imapFolderSelect.setItems(emailManager.getRootFolders()) { it.list().toList() }
-                imapFolderSelect.dataProvider.refreshAll()
             } catch (e: MessagingException) {
                 LOGGER.showError("Connection Failed: ${e.message}")
-                imapFolderSelect.setItems(emptyList())
-                imapFolderSelect.dataProvider.refreshAll()
             }
         }
 
-        add(createSection("Mails", imapHost, imapPort, imapLogin, imapPassword, imapPolling, imapTest, imapFolderSelect))
+        add(createSection("Mails", imapHost, imapPort, imapLogin, imapPassword, imapPolling, imapTest))
     }
 
     private fun createStorageSection() {

@@ -1,11 +1,10 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.brain.FileManager
-import com.dude.dms.brain.parsing.PdfToDocParser
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.parsing.PdfToDocParser
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
 import com.dude.dms.ui.builder.BuilderFactory
@@ -19,7 +18,6 @@ import com.vaadin.flow.component.grid.dnd.GridDropMode
 import com.vaadin.flow.component.html.Anchor
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.function.ValueProvider
 import com.vaadin.flow.router.*
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
@@ -34,7 +32,7 @@ class DocsView(
         private val tagService: TagService,
         private val fileManager: FileManager,
         pdfToDocParser: PdfToDocParser
-) : HistoricalCrudView<Doc, DocHistory>(), HasUrlParameter<String?> {
+) : GridView<Doc>(), HasUrlParameter<String?> {
 
     private var param: String? = null
 
@@ -45,10 +43,13 @@ class DocsView(
                 ui.access { fillGrid() }
             }
         }
-        addColumn("Date", ValueProvider<Doc, String> { it.documentDate?.convert() })
-        addComponentColumn("Tags", ValueProvider { TagContainer(it.tags) })
-        addComponentColumn("", ValueProvider { createGridActions(it) })
-        addColumn("GUID", ValueProvider<Doc, String> { it.guid })
+        grid.addColumn { it.documentDate?.convert() }.setHeader("Date")
+        grid.addComponentColumn { TagContainer(it.tags) }.setHeader("Tags")
+        grid.addComponentColumn { createGridActions(it) }
+        grid.addColumn { it.guid }
+        grid.columns.forEach { it.setResizable(true).setAutoWidth(true) }
+        grid.isColumnReorderingAllowed = true
+
         grid.addItemDoubleClickListener { event -> builderFactory.docs().imageDialog(event.item!!).build().open() }
         grid.dropMode = GridDropMode.ON_TOP
         grid.addDropListener { event ->

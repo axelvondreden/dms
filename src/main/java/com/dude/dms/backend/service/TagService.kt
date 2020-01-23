@@ -3,6 +3,7 @@ package com.dude.dms.backend.service
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.history.TagHistory
+import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.repositories.TagRepository
@@ -30,4 +31,5 @@ class TagService(private val tagRepository: TagRepository) : HistoricalCrudServi
     fun countByNameContainingIgnoreCase(name: String) = tagRepository.countByNameContainingIgnoreCase(name)
 
     fun findByDoc(doc: Doc) = tagRepository.findByDocs(doc)
+    fun findByMail(mail: Mail) = tagRepository.findByMails(mail)
 }

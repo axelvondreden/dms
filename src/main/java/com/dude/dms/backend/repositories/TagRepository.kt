@@ -2,6 +2,7 @@ package com.dude.dms.backend.repositories
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import org.springframework.data.jpa.repository.JpaRepository
@@ -15,4 +16,5 @@ interface TagRepository : JpaRepository<Tag, Long> {
     fun findTop10ByNameContainingIgnoreCase(name: String): List<Tag>
     fun countByNameContainingIgnoreCase(name: String): Long
     fun findByDocs(doc: Doc): Set<Tag>
+    fun findByMails(mail: Mail): Set<Tag>
 }

@@ -7,3 +7,5 @@ typealias EditEvent<T> = (T) -> Unit
 typealias DeleteEvent<T> = (T) -> Unit
 
 typealias ParseEvent = (Boolean) -> Unit
+
+typealias MailReceiveEvent = () -> Unit

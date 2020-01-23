@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.Diffable
 import com.dude.dms.backend.data.Historical
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.history.DocHistory
+import com.dude.dms.backend.data.mails.Mail
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDate
@@ -30,6 +31,9 @@ class Doc(
 
         @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
         var attributeValues: Set<AttributeValue> = HashSet(),
+
+        @ManyToOne
+        var mail: Mail? = null,
 
         @OneToMany(mappedBy = "doc")
         @OrderBy("timestamp")

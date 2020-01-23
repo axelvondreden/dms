@@ -1,5 +1,6 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.ui.Const.PAGE_RULES
@@ -77,7 +78,7 @@ class RulesView(
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
         val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
-        mailFilterService.findAll().map { builderFactory.rules().mailFilterCard(it, { fillContent() }) { fillContent() }.build() }.forEach { verticalLayout.add(it) }
+        mailFilterService.findAll().map { builderFactory.rules().mailCard(it, { fillContent() }) { fillContent() }.build() }.forEach { verticalLayout.add(it) }
         val details = Details("Mail Filters", verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"

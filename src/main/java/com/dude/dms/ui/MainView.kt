@@ -1,18 +1,17 @@
 package com.dude.dms.ui
 
-import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.parsing.PdfToDocParser
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.mail.EmailManager
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.parsing.PdfToDocParser
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton
-import com.dude.dms.ui.views.DocsView
-import com.dude.dms.ui.views.LogView
-import com.dude.dms.ui.views.OptionsView
-import com.dude.dms.ui.views.RulesView
+import com.dude.dms.ui.views.*
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts.LeftHybrid
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
@@ -40,14 +39,17 @@ import org.springframework.beans.factory.annotation.Value
 @Push
 class MainView(
         private val docService: DocService,
+        private val mailService: MailService,
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val builderFactory: BuilderFactory,
         @param:Value("\${build.version}") private val buildVersion: String,
-        pdfToDocParser: PdfToDocParser
+        pdfToDocParser: PdfToDocParser,
+        emailManager: EmailManager
 ) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
 
     private var docsBadge: DefaultBadgeHolder? = null
+    private var mailsBadge: DefaultBadgeHolder? = null
 
     init {
         init(AppLayoutBuilder.get(LeftHybrid::class.java)
@@ -64,17 +66,25 @@ class MainView(
                 }
             }
         }
+        emailManager.addEventListener("main") {
+            ui.access {
+                mailsBadge!!.increase()
+                LOGGER.showInfo("New mail added!")
+            }
+        }
     }
 
     private fun buildAppMenu(): Component {
         val docsEntry = LeftNavigationItem("Docs", VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
+        val mailsEntry = LeftNavigationItem("Mails", VaadinIcon.MAILBOX.create(), MailsView::class.java)
+        mailsBadge = DefaultBadgeHolder(mailService.count().toInt()).apply { bind(mailsEntry.badge) }
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
         val rulesEntry = LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView::class.java)
         return LeftAppMenuBuilder.get()
                 .addToSection(Section.HEADER, LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create()) { builderFactory.docs().createDialog().build().open() })
-                .add(docsEntry, tagsEntry, attributesEntry, rulesEntry)
+                .add(docsEntry, mailsEntry, tagsEntry, attributesEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
