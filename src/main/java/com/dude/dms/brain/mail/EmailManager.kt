@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import java.time.ZoneId
 import java.util.*
 import javax.mail.Folder
-import javax.mail.Message
 import javax.mail.Session
 import javax.mail.Store
 
@@ -24,9 +23,20 @@ class EmailManager {
         eventListeners.values.forEach { it.invoke() }
     }
 
-    fun getRootFolders(): List<Folder> {
-        val store = getStore()
-        return store.defaultFolder.list().toList()
+    fun getRootFolders(opened: Boolean = false): List<Folder> {
+        return getStore().defaultFolder.list().toList().apply {
+            if (opened) {
+                forEach { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.open(Folder.READ_ONLY) }
+            }
+        }
+    }
+
+    fun getSubFolders(parent: Folder, opened: Boolean = false): List<Folder> {
+        return parent.list().toList().apply {
+            if (opened) {
+                forEach { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.open(Folder.READ_ONLY) }
+            }
+        }
     }
 
     fun getMails(folder: Folder) {

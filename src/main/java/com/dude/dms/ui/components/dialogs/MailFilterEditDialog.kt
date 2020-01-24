@@ -34,12 +34,12 @@ class MailFilterEditDialog(
             close()
         }
 
-        val folders = emailManager.getRootFolders()
-        folderGrid.setItems(folders) { it.list().toList() }
+        val folders = emailManager.getRootFolders(true)
+        folderGrid.setItems(folders) { emailManager.getSubFolders(it, true) }
         folderGrid.dataProvider.refreshAll()
 
         folderGrid.addHierarchyColumn { it.fullName }.setHeader("Folder")
-        folderGrid.addColumn { it.messageCount }.setHeader("Count")
+        folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader("Count")
         folderGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         folderGrid.asSingleSelect().value = folders.find { it.fullName == mailFilter.folder }
 

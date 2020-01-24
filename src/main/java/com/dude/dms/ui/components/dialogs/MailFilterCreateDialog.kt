@@ -26,11 +26,11 @@ class MailFilterCreateDialog(private val mailFilterService: MailFilterService, e
             close()
         }
 
-        folderGrid.setItems(emailManager.getRootFolders()) { it.list().toList() }
+        folderGrid.setItems(emailManager.getRootFolders(true)) { emailManager.getSubFolders(it, true) }
         folderGrid.dataProvider.refreshAll()
 
         folderGrid.addHierarchyColumn { it.fullName }.setHeader("Folder")
-        folderGrid.addColumn { it.messageCount }.setHeader("Count")
+        folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader("Count")
         folderGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
 
         val button = Button("Create", VaadinIcon.PLUS.create()) { create() }.apply { setWidthFull() }
