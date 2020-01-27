@@ -1,6 +1,7 @@
 package com.dude.dms.brain.options
 
 import com.dude.dms.brain.DmsLogger
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 import java.io.FileNotFoundException
@@ -28,6 +29,9 @@ data class Options (
                 try {
                     options = jacksonObjectMapper().readValue(File("options.json").readText(), Options::class.java)
                 } catch (e: FileNotFoundException) {
+                    LOGGER.warn("Options not found: Using default options...")
+                    return jacksonObjectMapper().readValue(File("options.default.json").readText(), Options::class.java)
+                } catch (e: MissingKotlinParameterException) {
                     LOGGER.warn("Options not found: Using default options...")
                     return jacksonObjectMapper().readValue(File("options.default.json").readText(), Options::class.java)
                 }

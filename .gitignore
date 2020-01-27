@@ -48,3 +48,4 @@ options.properties
 /.idea/
 /webdrivers.xml
 /webpack.config.js
+/options.json

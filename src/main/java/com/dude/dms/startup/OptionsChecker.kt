@@ -2,7 +2,6 @@ package com.dude.dms.startup
 
 import com.dude.dms.brain.DmsLogger
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component
@@ -33,7 +32,7 @@ class OptionsChecker {
         for (defaultField in default.fields()) {
             if (!user.has(defaultField.key)) {
                 LOGGER.info("Creating ${defaultField.key}...")
-                (user as ObjectNode).set(defaultField.key, defaultField.value)
+                (user as ObjectNode).set<ObjectNode>(defaultField.key, defaultField.value)
             } else if (defaultField.value.isContainerNode) {
                 updateOptions(defaultField.value, user[defaultField.key])
             }

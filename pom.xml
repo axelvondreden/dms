@@ -9,8 +9,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.7.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.2.2.RELEASE</version>
+        <relativePath/>
     </parent>
 
     <properties>
@@ -19,7 +19,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <!-- Dependencies -->
         <vaadin.version>14.1.5</vaadin.version>
 
         <!-- Overrides the old version specified by the Spring Boot parent -->
