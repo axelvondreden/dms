@@ -24,18 +24,16 @@ class EmailManager {
     }
 
     fun getRootFolders(opened: Boolean = false): List<Folder> {
-        return getStore().defaultFolder.list().toList().apply {
-            if (opened) {
-                forEach { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.open(Folder.READ_ONLY) }
-            }
+        return getStore().defaultFolder.list().toList().map {
+            getStore().getFolder(it.fullName)
+                    .apply { if (opened && it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.open(Folder.READ_ONLY) }
         }
     }
 
     fun getSubFolders(parent: Folder, opened: Boolean = false): List<Folder> {
-        return parent.list().toList().apply {
-            if (opened) {
-                forEach { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.open(Folder.READ_ONLY) }
-            }
+        return getStore().getFolder(parent.fullName).list().toList().map {
+            getStore().getFolder(it.fullName)
+                    .apply { if (opened && it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.open(Folder.READ_ONLY) }
         }
     }
 
@@ -58,11 +56,12 @@ class EmailManager {
         private var store: Store? = null
 
         private fun getStore(): Store {
-            if (store == null) {
-                store = Session.getDefaultInstance(getServerProperties()).getStore("imaps").apply {
+            if (store == null || !store!!.isConnected) {
+                store = Session.getInstance(getServerProperties()).getStore("imaps").apply {
                     connect(Options.get().mail.host, Options.get().mail.login, Options.get().mail.password)
                 }
             }
+            store!!.defaultFolder
             return store!!
         }
 
