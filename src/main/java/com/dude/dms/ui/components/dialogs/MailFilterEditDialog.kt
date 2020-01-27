@@ -42,6 +42,7 @@ class MailFilterEditDialog(
         folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader("Count")
         folderGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         folderGrid.asSingleSelect().value = folders.find { it.fullName == mailFilter.folder }
+        folderGrid.height = "90%"
 
         val saveButton = Button("Save", VaadinIcon.PLUS.create()) { save() }.apply { setWidthFull() }
         val deleteButton = Button("Delete", VaadinIcon.TRASH.create()) { delete() }.apply {

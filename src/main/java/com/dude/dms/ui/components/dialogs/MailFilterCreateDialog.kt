@@ -32,6 +32,7 @@ class MailFilterCreateDialog(private val mailFilterService: MailFilterService, e
         folderGrid.addHierarchyColumn { it.fullName }.setHeader("Folder")
         folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader("Count")
         folderGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
+        folderGrid.height = "90%"
 
         val button = Button("Create", VaadinIcon.PLUS.create()) { create() }.apply { setWidthFull() }
         add(folderGrid, button)
