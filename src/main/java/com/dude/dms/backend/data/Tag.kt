@@ -25,7 +25,7 @@ class Tag(
         @ManyToMany(mappedBy = "tags") var plainTextRules: Set<PlainTextRule> = HashSet(),
         @ManyToMany(mappedBy = "tags") var regexRules: Set<RegexRule> = HashSet(),
         @ManyToMany(mappedBy = "tags") var mailFilters: Set<MailFilter> = HashSet(),
-        @OneToMany(mappedBy = "tag") @OrderBy("timestamp") override var history: List<TagHistory> = ArrayList()
+        @OneToMany(mappedBy = "tag") override var history: List<TagHistory> = ArrayList()
 ) : DataEntity(), Diffable<Tag>, Historical<TagHistory> {
 
     override fun equals(other: Any?): Boolean {

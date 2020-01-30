@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.service.DocHistoryService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.vaadin.flow.component.button.Button
@@ -9,14 +10,18 @@ import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class DocDeleteDialog(private val doc: Doc, private val docService: DocService, private val mailService: MailService) : EventDialog<Doc>() {
+class DocDeleteDialog(
+        private val doc: Doc,
+        private val docService: DocService,
+        private val mailService: MailService
+) : EventDialog<Doc>() {
 
     private val docCheck = Checkbox("Document", true).apply { isEnabled = false }
 
     private val mailCheck = Checkbox("Mail (${mailService.countByDoc(doc)})")
 
     init {
-        width = "40vw"
+        width = "20vw"
         val deleteButton = Button("Delete", VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)

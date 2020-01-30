@@ -36,7 +36,6 @@ class Doc(
         var mail: Mail? = null,
 
         @OneToMany(mappedBy = "doc")
-        @OrderBy("timestamp")
         override var history: List<DocHistory> = ArrayList()
 ) : DataEntity(), Diffable<Doc>, Historical<DocHistory> {
 

@@ -14,7 +14,7 @@ class TagService(private val tagRepository: TagRepository) : HistoricalCrudServi
 
     override fun create(entity: Tag) = tagRepository.findByName(entity.name) ?: super.create(entity)
 
-    override fun createHistory(entity: Tag, text: String?, created: Boolean, edited: Boolean, deleted: Boolean) = TagHistory(entity, text, created, edited, deleted)
+    override fun createHistory(entity: Tag, text: String?, created: Boolean, edited: Boolean) = TagHistory(entity, text, created, edited)
 
     fun findByName(name: String) = tagRepository.findByName(name)
 
@@ -31,5 +31,6 @@ class TagService(private val tagRepository: TagRepository) : HistoricalCrudServi
     fun countByNameContainingIgnoreCase(name: String) = tagRepository.countByNameContainingIgnoreCase(name)
 
     fun findByDoc(doc: Doc) = tagRepository.findByDocs(doc)
+
     fun findByMail(mail: Mail) = tagRepository.findByMails(mail)
 }

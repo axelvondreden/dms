@@ -9,7 +9,12 @@ import com.dude.dms.backend.repositories.DocRepository
 import org.springframework.stereotype.Service
 
 @Service
-class DocService(private val docRepository: DocRepository, private val attributeValueService: AttributeValueService) : HistoricalCrudService<Doc, DocHistory>(docRepository) {
+class DocService(
+        private val docRepository: DocRepository,
+        private val attributeValueService: AttributeValueService,
+        private val docHistoryService: DocHistoryService,
+        private val textBlockService: TextBlockService
+) : HistoricalCrudService<Doc, DocHistory>(docRepository) {
 
     override fun create(entity: Doc): Doc {
         createAttributeValues(entity)
@@ -21,6 +26,13 @@ class DocService(private val docRepository: DocRepository, private val attribute
         super.save(entity)
         deleteAttributeValues(entity)
         return entity
+    }
+
+    override fun delete(entity: Doc) {
+        docHistoryService.getHistory(entity).forEach(docHistoryService::delete)
+        textBlockService.findByDoc(entity).forEach(textBlockService::delete)
+        attributeValueService.findByDoc(entity).forEach(attributeValueService::delete)
+        super.delete(entity)
     }
 
     private fun createAttributeValues(doc: Doc) {
@@ -37,7 +49,7 @@ class DocService(private val docRepository: DocRepository, private val attribute
                 .forEach { attributeValueService.delete(it) }
     }
 
-    override fun createHistory(entity: Doc, text: String?, created: Boolean, edited: Boolean, deleted: Boolean) = DocHistory(entity, text, created, edited, deleted)
+    override fun createHistory(entity: Doc, text: String?, created: Boolean, edited: Boolean) = DocHistory(entity, text, created, edited)
 
     fun findByGuid(guid: String): Doc? = docRepository.findByGuid(guid)
 

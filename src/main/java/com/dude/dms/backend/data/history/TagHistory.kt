@@ -9,6 +9,5 @@ class TagHistory(
         @ManyToOne var tag: Tag,
         text: String?,
         created: Boolean,
-        edited: Boolean,
-        deleted: Boolean
-) : History(created, edited, deleted, text)
+        edited: Boolean
+) : History(created, edited, text)
