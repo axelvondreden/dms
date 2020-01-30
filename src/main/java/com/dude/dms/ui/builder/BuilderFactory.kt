@@ -16,26 +16,27 @@ import org.springframework.stereotype.Component
 
 @Component
 class BuilderFactory(
-        private val docService: DocService,
-        private val tagService: TagService,
-        private val plainTextRuleService: PlainTextRuleService,
-        private val regexRuleService: RegexRuleService,
-        private val changelogService: ChangelogService,
-        private val updateChecker: UpdateChecker,
-        private val textBlockService: TextBlockService,
-        private val plainTextRuleValidator: PlainTextRuleValidator,
-        private val regexRuleValidator: RegexRuleValidator,
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
-        private val pollingService: DocPollingService,
+        private val changelogService: ChangelogService,
+        private val docService: DocService,
         private val fileManager: FileManager,
         private val mailFilterService: MailFilterService,
-        private val mailManager: MailManager
+        private val mailManager: MailManager,
+        private val mailService: MailService,
+        private val plainTextRuleService: PlainTextRuleService,
+        private val plainTextRuleValidator: PlainTextRuleValidator,
+        private val pollingService: DocPollingService,
+        private val regexRuleService: RegexRuleService,
+        private val regexRuleValidator: RegexRuleValidator,
+        private val tagService: TagService,
+        private val textBlockService: TextBlockService,
+        private val updateChecker: UpdateChecker
 ) {
 
     fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService)
 
-    fun docs() = DocBuilderFactory(this, docService, textBlockService, pollingService, fileManager)
+    fun docs() = DocBuilderFactory(this, docService, mailService, textBlockService, pollingService, fileManager)
 
     fun misc() = MiscBuilderFactory(this, changelogService, updateChecker)
 

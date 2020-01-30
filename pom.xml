@@ -315,6 +315,11 @@
             <artifactId>jakarta.mail</artifactId>
             <version>1.6.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.olli</groupId>
+            <artifactId>file-download-wrapper</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -43,7 +43,7 @@ class RuleBuilderFactory(
             mailFilter: MailFilter,
             editEvent: EditEvent<MailFilter>? = null,
             deleteEvent: DeleteEvent<MailFilter>? = null
-    ) = MailFilterCardBuilder(builderFactory, mailFilter, mailFilterService, editEvent, deleteEvent)
+    ) = MailFilterCardBuilder(builderFactory, mailFilter, editEvent, deleteEvent)
 
 
     fun plainCreateDialog(

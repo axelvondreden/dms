@@ -15,13 +15,13 @@ import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.dnd.GridDropMode
-import com.vaadin.flow.component.html.Anchor
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.router.*
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
+import org.vaadin.olli.FileDownloadWrapper
 
 @Route(value = Const.PAGE_DOCS, layout = MainView::class)
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView::class)
@@ -67,24 +67,38 @@ class DocsView(
                 }
             }
         }
+
+        createContextMenu()
+    }
+
+    private fun createContextMenu() {
+        val menu = grid.addContextMenu()
+
+        menu.setDynamicContentHandler { doc ->
+            menu.removeAll()
+            if (doc == null) return@setDynamicContentHandler false
+
+            menu.addItem("View") { builderFactory.docs().imageDialog(doc).build().open() }
+            menu.addItem("Details") { builderFactory.docs().textDialog(doc).build().open() }
+            menu.addItem("Edit") { builderFactory.docs().editDialog(doc) { grid.dataProvider.refreshAll() }.build().open() }
+            menu.addItem("Delete") { builderFactory.docs().deleteDialog(doc) { grid.dataProvider.refreshAll() }.build().open() }
+            true
+        }
     }
 
     private fun createGridActions(doc: Doc): HorizontalLayout {
         val file = fileManager.getDocPdf(doc)
-        val download = Anchor().apply {
-            add(Button(VaadinIcon.FILE_TEXT.create()))
-            isEnabled = false
-            if (file.exists()) {
-                isEnabled = true
-                setHref(StreamResource("pdf.pdf", InputStreamFactory { FileHelper.getInputStream(file) }))
-                element.setAttribute("download", true)
-            }
-        }
-        Tooltips.getCurrent().setTooltip(download, "Open")
+        val download = FileDownloadWrapper(StreamResource("${doc.guid}.pdf", InputStreamFactory { FileHelper.getInputStream(file) }))
+        val downloadButton = Button(VaadinIcon.FILE_TEXT.create())
+        download.wrapComponent(downloadButton)
+        Tooltips.getCurrent().setTooltip(downloadButton, "Download")
+
         val text = Button(VaadinIcon.TEXT_LABEL.create()) { builderFactory.docs().textDialog(doc).build().open() }
         Tooltips.getCurrent().setTooltip(text, "Details")
+
         val edit = Button(VaadinIcon.EDIT.create()) { builderFactory.docs().editDialog(doc) { grid.dataProvider.refreshAll() }.build().open() }
         Tooltips.getCurrent().setTooltip(edit, "Edit")
+
         return HorizontalLayout(text, download, edit)
     }
 

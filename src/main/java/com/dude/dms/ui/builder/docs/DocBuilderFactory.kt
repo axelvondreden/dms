@@ -6,13 +6,16 @@ import com.dude.dms.brain.polling.PollingService
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.TextBlock
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TextBlockService
+import com.dude.dms.brain.DeleteEvent
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.builder.Factory
 
 class DocBuilderFactory(
         builderFactory: BuilderFactory,
         private val docService: DocService,
+        private val mailService: MailService,
         private val textBlockService: TextBlockService,
         private val pollingService: PollingService,
         private val fileManager: FileManager
@@ -23,6 +26,8 @@ class DocBuilderFactory(
     fun createDialog() = DocCreateDialogBuilder(pollingService)
 
     fun editDialog(doc: Doc, editEvent: EditEvent<Doc>? = null) = DocEditDialogBuilder(builderFactory, doc, docService, editEvent)
+
+    fun deleteDialog(doc: Doc, deleteEvent: DeleteEvent<Doc>? = null) = DocDeleteDialogBuilder(doc, docService, mailService, deleteEvent)
 
     fun imageDialog(doc: Doc) = DocImageDialogBuilder(builderFactory, doc, textBlockService, fileManager)
 

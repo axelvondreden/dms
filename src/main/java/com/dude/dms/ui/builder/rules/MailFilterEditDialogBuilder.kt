@@ -5,6 +5,7 @@ import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DeleteEvent
 import com.dude.dms.brain.EditEvent
 import com.dude.dms.brain.mail.MailManager
+import com.dude.dms.ui.builder.Builder
 import com.dude.dms.ui.components.dialogs.MailFilterEditDialog
 
 class MailFilterEditDialogBuilder(
@@ -12,9 +13,10 @@ class MailFilterEditDialogBuilder(
         private val mailFilterService: MailFilterService,
         private val mailManager: MailManager,
         private var editEvent: EditEvent<MailFilter>? = null,
-        private var deleteEvent: DeleteEvent<MailFilter>? = null) {
+        private var deleteEvent: DeleteEvent<MailFilter>? = null
+): Builder<MailFilterEditDialog> {
 
-    fun build() = MailFilterEditDialog(mailFilter, mailFilterService, mailManager).also {
+    override fun build() = MailFilterEditDialog(mailFilter, mailFilterService, mailManager).also {
         it.editEvent = editEvent
         it.deleteEvent = deleteEvent
     }

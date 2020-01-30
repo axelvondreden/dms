@@ -1,0 +1,40 @@
+package com.dude.dms.ui.components.dialogs
+
+import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.MailService
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.checkbox.Checkbox
+import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+
+class DocDeleteDialog(private val doc: Doc, private val docService: DocService, private val mailService: MailService) : EventDialog<Doc>() {
+
+    private val docCheck = Checkbox("Document", true).apply { isEnabled = false }
+
+    private val mailCheck = Checkbox("Mail (${mailService.countByDoc(doc)})")
+
+    init {
+        width = "40vw"
+        val deleteButton = Button("Delete", VaadinIcon.TRASH.create()) { delete() }.apply {
+            setWidthFull()
+            addThemeVariants(ButtonVariant.LUMO_ERROR)
+        }
+        val wrapper = VerticalLayout(docCheck, mailCheck, deleteButton).apply {
+            setSizeFull()
+            isPadding = false
+            isSpacing = false
+        }
+        add(wrapper)
+    }
+
+    private fun delete() {
+        if (mailCheck.value) {
+            mailService.findByDoc(doc).forEach(mailService::delete)
+        }
+        docService.delete(doc)
+        triggerDeleteEvent(doc)
+        close()
+    }
+}
