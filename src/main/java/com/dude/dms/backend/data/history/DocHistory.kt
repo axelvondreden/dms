@@ -9,6 +9,5 @@ class DocHistory(
         @ManyToOne var doc: Doc,
         text: String?,
         created: Boolean,
-        edited: Boolean,
-        deleted: Boolean
-) : History(created, edited, deleted, text)
+        edited: Boolean
+) : History(created, edited, text)

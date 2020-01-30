@@ -5,12 +5,14 @@ import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.ui.builder.Builder
 import com.dude.dms.ui.components.tags.TagSelector
 
 class TagSelectorBuilder(
         private val tagService: TagService,
         private var selected: Set<Tag> = HashSet(),
-        private var rawText: String? = null) {
+        private var rawText: String? = null
+): Builder<TagSelector> {
 
     fun forDoc(doc: Doc) = apply {
         selected = doc.tags
@@ -21,8 +23,10 @@ class TagSelectorBuilder(
 
     fun forRule(rule: RegexRule) = apply { selected = tagService.findByRegexRule(rule) }
 
-    fun build() = TagSelector(tagService).apply {
+    override fun build() = TagSelector(tagService).apply {
         selectedTags = selected
-        setContainedTags(rawText)
+        if (rawText != null) {
+            setContainedTags(rawText)
+        }
     }
 }

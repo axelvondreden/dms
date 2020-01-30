@@ -4,7 +4,7 @@ import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.dialogs.DocTextDialog
 import com.dude.dms.ui.components.tags.TagContainer
-import com.dude.dms.ui.converters.convert
+import com.dude.dms.ui.extensions.convert
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.Html
@@ -40,7 +40,7 @@ class DocSearchResult(
 
     private val textSnippet: Html
         get() {
-            val raw = doc.rawText?:return Html("")
+            val raw = doc.rawText ?: return Html("")
             var index = raw.indexOf(search)
             if (index < 0) {
                 index = raw.toLowerCase().indexOf(search.toLowerCase())

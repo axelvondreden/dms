@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.Diffable
 import com.dude.dms.backend.data.Historical
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.history.DocHistory
+import com.dude.dms.backend.data.mails.Mail
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDate
@@ -18,7 +19,7 @@ class Doc(
 
         var documentDate: LocalDate? = null,
 
-        @Column(columnDefinition="LONGVARCHAR")
+        @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 99999)
         var rawText: String? = null,
 
@@ -28,11 +29,13 @@ class Doc(
         @OneToMany(mappedBy = "doc")
         var textBlocks: Set<TextBlock> = HashSet(),
 
-        @OneToMany(mappedBy = "doc")
+        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
         var attributeValues: Set<AttributeValue> = HashSet(),
 
+        @ManyToOne
+        var mail: Mail? = null,
+
         @OneToMany(mappedBy = "doc")
-        @OrderBy("timestamp")
         override var history: List<DocHistory> = ArrayList()
 ) : DataEntity(), Diffable<Doc>, Historical<DocHistory> {
 

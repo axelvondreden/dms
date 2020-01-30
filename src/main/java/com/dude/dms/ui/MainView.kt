@@ -1,18 +1,17 @@
 package com.dude.dms.ui
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.OptionKey
-import com.dude.dms.backend.brain.parsing.PdfToDocParser
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.parsing.PdfToDocParser
+import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton
-import com.dude.dms.ui.views.DocsView
-import com.dude.dms.ui.views.LogView
-import com.dude.dms.ui.views.OptionsView
-import com.dude.dms.ui.views.RulesView
+import com.dude.dms.ui.views.*
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts.LeftHybrid
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
@@ -28,6 +27,7 @@ import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.contextmenu.ContextMenu
+import com.vaadin.flow.component.dnd.DragSource
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.router.AfterNavigationEvent
@@ -39,14 +39,17 @@ import org.springframework.beans.factory.annotation.Value
 @Push
 class MainView(
         private val docService: DocService,
+        private val mailService: MailService,
         private val tagService: TagService,
         private val attributeService: AttributeService,
-        pdfToDocParser: PdfToDocParser,
         private val builderFactory: BuilderFactory,
-        @param:Value("\${build.version}") private val buildVersion: String
+        @param:Value("\${build.version}") private val buildVersion: String,
+        pdfToDocParser: PdfToDocParser,
+        mailPollingService: MailPollingService
 ) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
 
     private var docsBadge: DefaultBadgeHolder? = null
+    private var mailsBadge: DefaultBadgeHolder? = null
 
     init {
         init(AppLayoutBuilder.get(LeftHybrid::class.java)
@@ -63,20 +66,28 @@ class MainView(
                 }
             }
         }
+        mailPollingService.addEventListener("main") {
+            ui.access {
+                mailsBadge!!.count += it
+                LOGGER.showInfo("$it new mails added!")
+            }
+        }
     }
 
     private fun buildAppMenu(): Component {
         val docsEntry = LeftNavigationItem("Docs", VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
+        val mailsEntry = LeftNavigationItem("Mails", VaadinIcon.MAILBOX.create(), MailsView::class.java)
+        mailsBadge = DefaultBadgeHolder(mailService.count().toInt()).apply { bind(mailsEntry.badge) }
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
         val rulesEntry = LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView::class.java)
-        val logEntry = LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java)
         return LeftAppMenuBuilder.get()
                 .addToSection(Section.HEADER, LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create()) { builderFactory.docs().createDialog().build().open() })
-                .add(docsEntry, tagsEntry, attributesEntry, rulesEntry, logEntry)
+                .add(docsEntry, mailsEntry, tagsEntry, attributesEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
+                        LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
                         LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().build().open() },
                         LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView::class.java))
                 .build()
@@ -120,6 +131,7 @@ class MainView(
             val entry = LeftClickableItem(tag.name, VaadinIcon.TAG.create().apply { color = tag.color }) {
                 UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}")
             }
+            DragSource.create(entry)
             DefaultBadgeHolder(docService.countByTag(tag).toInt()).apply { bind(entry.badge) }
             val attrs = tag.attributes.joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
@@ -141,7 +153,7 @@ class MainView(
     override fun afterNavigation(afterNavigationEvent: AfterNavigationEvent) {
         val themeList = UI.getCurrent().element.themeList
         themeList.clear()
-        themeList.add(if (OptionKey.DARK_MODE.boolean) Lumo.DARK else Lumo.LIGHT)
+        themeList.add(if (Options.get().view.darkMode) Lumo.DARK else Lumo.LIGHT)
     }
 
     companion object {

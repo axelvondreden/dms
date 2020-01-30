@@ -9,7 +9,6 @@ import javax.validation.constraints.Size
 abstract class History(
         var created: Boolean,
         var edited: Boolean,
-        var deleted: Boolean,
         var text: @Size(max = 255) String? = null,
         var timestamp: LocalDateTime = LocalDateTime.now()
 ) : DataEntity()

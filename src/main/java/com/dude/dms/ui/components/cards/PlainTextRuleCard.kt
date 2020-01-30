@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.cards
 
-import com.dude.dms.backend.brain.parsing.PlainTextRuleValidator
+import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.ui.builder.BuilderFactory

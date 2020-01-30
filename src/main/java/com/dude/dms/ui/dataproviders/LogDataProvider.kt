@@ -1,6 +1,6 @@
 package com.dude.dms.ui.dataproviders
 
-import com.dude.dms.backend.brain.DmsLogger
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
 import com.dude.dms.ui.dataproviders.LogDataProvider.LogFilter

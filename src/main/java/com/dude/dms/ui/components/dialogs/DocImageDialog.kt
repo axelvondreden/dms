@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.brain.FileManager
+import com.dude.dms.brain.FileManager
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.TextBlockService
 import com.dude.dms.ui.builder.BuilderFactory
@@ -15,7 +15,12 @@ import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 
-class DocImageDialog(private val builderFactory: BuilderFactory, private val doc: Doc, private val textBlockService: TextBlockService) : Dialog() {
+class DocImageDialog(
+        private val builderFactory: BuilderFactory,
+        private val doc: Doc,
+        private val textBlockService: TextBlockService,
+        private val fileManager: FileManager
+) : Dialog() {
 
     private val container = ElementFactory.createDiv().apply {
         style["width"] = "100%"
@@ -37,7 +42,7 @@ class DocImageDialog(private val builderFactory: BuilderFactory, private val doc
 
     private fun fill() {
         container.removeAllChildren()
-        val img = FileManager.getDocImage(doc)
+        val img = fileManager.getDocImage(doc)
         if (img.exists()) {
             val image = Element("object").apply {
                 setAttribute("type", "image/png")

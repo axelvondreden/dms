@@ -1,6 +1,6 @@
 package com.dude.dms.backend.repositories
 
-import com.dude.dms.backend.brain.DmsLogger
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.LogEntry
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

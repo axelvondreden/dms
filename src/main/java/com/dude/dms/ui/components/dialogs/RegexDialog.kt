@@ -1,6 +1,5 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.ui.components.ValueProvider
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
@@ -33,11 +32,6 @@ class RegexDialog(private val callBack: TextField, private val matches: ArrayLis
         addColumn { it }.setHeader("Matches")
         setItems(matches)
         height = "30%"
-    }
-
-    constructor(callBack: TextField, valueProvider: ValueProvider<String>) : this(callBack) {
-        textArea.value = valueProvider.value
-        refreshResults()
     }
 
     init {

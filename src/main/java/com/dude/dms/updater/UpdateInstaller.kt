@@ -1,6 +1,6 @@
 package com.dude.dms.updater
 
-import com.dude.dms.backend.brain.DmsLogger
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.startup.ShutdownManager
 import org.springframework.stereotype.Component
 import java.io.File
@@ -42,19 +42,18 @@ class UpdateInstaller(private val shutdownManager: ShutdownManager) {
         }
     }
 
+    private fun newFile(destinationDir: File, zipEntry: ZipEntry): File {
+        val destFile = File(destinationDir, zipEntry.name)
+        val destDirPath = destinationDir.canonicalPath
+        val destFilePath = destFile.canonicalPath
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw IOException("Entry is outside of the target dir: ${zipEntry.name}")
+        }
+        destFile.createNewFile()
+        return destFile
+    }
+
     companion object {
         private val LOGGER = DmsLogger.getLogger(UpdateInstaller::class.java)
-
-        @Throws(IOException::class)
-        private fun newFile(destinationDir: File, zipEntry: ZipEntry): File {
-            val destFile = File(destinationDir, zipEntry.name)
-            val destDirPath = destinationDir.canonicalPath
-            val destFilePath = destFile.canonicalPath
-            if (!destFilePath.startsWith(destDirPath + File.separator)) {
-                throw IOException("Entry is outside of the target dir: ${zipEntry.name}")
-            }
-            destFile.createNewFile()
-            return destFile
-        }
     }
 }

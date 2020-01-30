@@ -1,8 +1,8 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.brain.OptionKey
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.DmsColorPicker
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple
@@ -22,7 +22,7 @@ class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: Ta
     private val name = TextField("Name").apply { setWidthFull() }
 
     private val colorPicker = when {
-        OptionKey.SIMPLE_TAG_COLORS.boolean -> DmsColorPickerSimple("Color")
+        Options.get().tag.simpleColors -> DmsColorPickerSimple("Color")
         else -> DmsColorPicker("Color")
     }.also { (it as HasSize).setWidthFull() }
 

@@ -1,6 +1,6 @@
 package com.dude.dms.backend.service
 
-import com.dude.dms.backend.brain.DmsLogger.Companion.getLogger
+import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.repositories.AttributeRepository
 import org.springframework.stereotype.Service

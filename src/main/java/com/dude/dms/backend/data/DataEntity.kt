@@ -10,7 +10,8 @@ import javax.persistence.MappedSuperclass
 abstract class DataEntity : Serializable {
 
     @Id
-    @GeneratedValue var id = 0L
+    @GeneratedValue
+    var id = 0L
 
     override fun equals(other: Any?) = if (other is DataEntity) other.id == id else false
 

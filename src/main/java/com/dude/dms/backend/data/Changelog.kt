@@ -11,7 +11,7 @@ import javax.validation.constraints.Size
 @Entity
 class Changelog(
         var published: LocalDateTime,
-        @Column(columnDefinition="LONGVARCHAR")
+        @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 99999)
         var body: String,
         var version: String

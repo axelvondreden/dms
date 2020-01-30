@@ -3,6 +3,7 @@ package com.dude.dms.ui
 object Const {
     const val PAGE_ROOT = ""
     const val PAGE_DOCS = "docs"
+    const val PAGE_MAILS = "mails"
     const val PAGE_RULES = "rules"
     const val PAGE_OPTIONS = "options"
     const val PAGE_LOG = "log"

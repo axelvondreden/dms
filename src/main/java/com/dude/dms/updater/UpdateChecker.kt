@@ -1,9 +1,9 @@
 package com.dude.dms.updater
 
-import com.dude.dms.backend.brain.DmsLogger
-import com.dude.dms.backend.brain.OptionKey
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.Changelog
 import com.dude.dms.backend.service.ChangelogService
+import com.dude.dms.brain.options.Options
 import com.dude.dms.startup.ShutdownManager
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
@@ -14,7 +14,6 @@ import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.client.support.BasicAuthenticationInterceptor
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
@@ -23,7 +22,10 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 
 @Component
-class UpdateChecker(private val changelogService: ChangelogService, private val updateDownloader: UpdateDownloader, private val shutdownManager: ShutdownManager) {
+class UpdateChecker(
+        private val changelogService: ChangelogService,
+        private val updateDownloader: UpdateDownloader,
+        private val shutdownManager: ShutdownManager) {
 
     private var tick = 1
 
@@ -35,7 +37,7 @@ class UpdateChecker(private val changelogService: ChangelogService, private val 
 
     @Scheduled(fixedRate = 1000 * 60)
     fun scheduledCheck() {
-        if (tick < OptionKey.UPDATE_CHECK_INTERVAL.int) {
+        if (tick < Options.get().update.checkInterval) {
             tick++
         } else {
             tick = 1
