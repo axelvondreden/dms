@@ -11,7 +11,7 @@ import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.*
-import com.dude.dms.brain.mail.EmailManager
+import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.builder.Factory
 
@@ -24,7 +24,7 @@ class RuleBuilderFactory(
         private val regexRuleService: RegexRuleService,
         private val docService: DocService,
         private val mailFilterService: MailFilterService,
-        private val emailManager: EmailManager
+        private val mailManager: MailManager
 ) : Factory(builderFactory) {
 
     fun plainTextCard(
@@ -56,7 +56,7 @@ class RuleBuilderFactory(
 
     fun mailCreateDialog(
             createEvent: CreateEvent<MailFilter>? = null
-    ) = MailFilterCreateDialogBuilder(mailFilterService, emailManager, createEvent)
+    ) = MailFilterCreateDialogBuilder(mailFilterService, mailManager, createEvent)
 
 
     fun plainEditDialog(
@@ -75,7 +75,7 @@ class RuleBuilderFactory(
             mailFilter: MailFilter,
             editEvent: EditEvent<MailFilter>? = null,
             deleteEvent: DeleteEvent<MailFilter>? = null
-    ) = MailFilterEditDialogBuilder(mailFilter, mailFilterService, emailManager, editEvent, deleteEvent)
+    ) = MailFilterEditDialogBuilder(mailFilter, mailFilterService, mailManager, editEvent, deleteEvent)
 
 
     fun ruleRunnerDialog(result: Map<Doc, Set<Tag>>) = RuleRunnerDialogBuilder(result, docService)

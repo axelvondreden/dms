@@ -8,4 +8,4 @@ typealias DeleteEvent<T> = (T) -> Unit
 
 typealias ParseEvent = (Boolean) -> Unit
 
-typealias MailReceiveEvent = () -> Unit
+typealias MailReceiveEvent = (Int) -> Unit

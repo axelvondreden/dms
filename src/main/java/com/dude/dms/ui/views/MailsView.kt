@@ -3,7 +3,7 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.mail.EmailManager
+import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
 import com.dude.dms.ui.components.tags.TagContainer
@@ -14,7 +14,8 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.dnd.GridDropMode
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.router.*
+import com.vaadin.flow.router.PageTitle
+import com.vaadin.flow.router.Route
 import dev.mett.vaadin.tooltip.Tooltips
 
 @Route(value = Const.PAGE_MAILS, layout = MainView::class)
@@ -22,12 +23,12 @@ import dev.mett.vaadin.tooltip.Tooltips
 class MailsView(
         private val mailService: MailService,
         private val tagService: TagService,
-        emailManager: EmailManager
+        mailPollingService: MailPollingService
 ) : GridView<Mail>() {
 
     init {
         val ui = UI.getCurrent()
-        emailManager.addEventListener("mail") { ui.access { fillGrid() } }
+        mailPollingService.addEventListener("mail") { ui.access { fillGrid() } }
 
         grid.addColumn { it.received.convert() }.setHeader("Date")
         grid.addColumn { it.sender }.setHeader("From")
@@ -53,6 +54,8 @@ class MailsView(
                 }
             }
         }
+
+        fillGrid()
     }
 
     private fun createGridActions(mail: Mail): HorizontalLayout {

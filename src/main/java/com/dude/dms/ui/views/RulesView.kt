@@ -3,6 +3,7 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.backend.service.RegexRuleService
+import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.ui.Const.PAGE_RULES
 import com.dude.dms.ui.MainView
 import com.dude.dms.ui.builder.BuilderFactory
@@ -12,6 +13,7 @@ import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -22,7 +24,8 @@ class RulesView(
         private val builderFactory: BuilderFactory,
         private val plainTextRuleService: PlainTextRuleService,
         private val regexRuleService: RegexRuleService,
-        private val mailFilterService: MailFilterService
+        private val mailFilterService: MailFilterService,
+        private val mailPollingService: MailPollingService
 ) : FormLayout() {
 
     init {
@@ -74,10 +77,15 @@ class RulesView(
     }
 
     private fun addMailFilter() {
-        val create = Button("Create", VaadinIcon.PLUS.create()) { builderFactory.rules().mailCreateDialog { fillContent() }.build().open() }.apply {
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        }
-        val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
+        val header = HorizontalLayout(
+                Button("Create", VaadinIcon.PLUS.create()) { builderFactory.rules().mailCreateDialog { fillContent() }.build().open() }.apply {
+                    addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                },
+                Button("Poll", VaadinIcon.CLOUD_DOWNLOAD.create()) { mailPollingService.poll() }.apply {
+                    addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                }
+        ).apply { setSizeFull() }
+        val verticalLayout = VerticalLayout(header).apply { setSizeFull() }
         mailFilterService.findAll().map { builderFactory.rules().mailCard(it, { fillContent() }) { fillContent() }.build() }.forEach { verticalLayout.add(it) }
         val details = Details("Mail Filters", verticalLayout).apply {
             isOpened = true

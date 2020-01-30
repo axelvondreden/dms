@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.mail.EmailManager
+import com.dude.dms.brain.mail.MailManager
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -11,7 +11,7 @@ import com.vaadin.flow.component.treegrid.TreeGrid
 import javax.mail.Folder
 import javax.mail.MessagingException
 
-class MailFilterCreateDialog(private val mailFilterService: MailFilterService, emailManager: EmailManager) : EventDialog<MailFilter>() {
+class MailFilterCreateDialog(private val mailFilterService: MailFilterService, mailManager: MailManager) : EventDialog<MailFilter>() {
 
     private val folderGrid = TreeGrid<Folder>().apply { setWidthFull() }
 
@@ -20,13 +20,13 @@ class MailFilterCreateDialog(private val mailFilterService: MailFilterService, e
         height = "70vh"
 
         try {
-            emailManager.testConnection()
+            mailManager.testConnection()
         } catch (e: MessagingException) {
             LOGGER.showError("IMAP Connection Failed: ${e.message}")
             close()
         }
 
-        folderGrid.setItems(emailManager.getRootFolders(true)) { emailManager.getSubFolders(it, true) }
+        folderGrid.setItems(mailManager.getRootFolders(true)) { mailManager.getSubFolders(it, true) }
         folderGrid.dataProvider.refreshAll()
 
         folderGrid.addHierarchyColumn { it.fullName }.setHeader("Folder")

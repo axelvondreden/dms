@@ -16,7 +16,7 @@ class DocPollingService(private val pdfToDocParser: PdfToDocParser, private val 
     private val processing = HashSet<String>()
 
     override fun poll() {
-        LOGGER.info("Polling {} for PDFs...", docPath)
+        LOGGER.info("Polling {}...", docPath)
         File(docPath).listFiles { _, name -> name.endsWith(".pdf") }?.forEach { processFile(it) }
     }
 

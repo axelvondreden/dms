@@ -5,9 +5,9 @@ import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.mail.EmailManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.PdfToDocParser
+import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton
@@ -45,7 +45,7 @@ class MainView(
         private val builderFactory: BuilderFactory,
         @param:Value("\${build.version}") private val buildVersion: String,
         pdfToDocParser: PdfToDocParser,
-        emailManager: EmailManager
+        mailPollingService: MailPollingService
 ) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
 
     private var docsBadge: DefaultBadgeHolder? = null
@@ -66,10 +66,10 @@ class MainView(
                 }
             }
         }
-        emailManager.addEventListener("main") {
+        mailPollingService.addEventListener("main") {
             ui.access {
-                mailsBadge!!.increase()
-                LOGGER.showInfo("New mail added!")
+                mailsBadge!!.count += it
+                LOGGER.showInfo("$it new mails added!")
             }
         }
     }

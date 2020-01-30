@@ -3,7 +3,7 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
-import com.dude.dms.brain.mail.EmailManager
+import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.MainView
@@ -38,7 +38,7 @@ import javax.mail.MessagingException
 class OptionsView(
         private val fileManager: FileManager,
         private val tagService: TagService,
-        private val emailManager: EmailManager
+        private val mailManager: MailManager
 ) : VerticalLayout() {
 
     private val options = Options.get()
@@ -183,7 +183,7 @@ class OptionsView(
         }
         val imapTest = Button("Connect") {
             try {
-                emailManager.testConnection()
+                mailManager.testConnection()
                 LOGGER.showInfo("Connection Successfull.")
             } catch (e: MessagingException) {
                 LOGGER.showError("Connection Failed: ${e.message}")

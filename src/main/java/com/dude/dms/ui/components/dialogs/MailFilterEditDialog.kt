@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.mail.EmailManager
+import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.button.Button
@@ -18,7 +18,7 @@ import javax.mail.MessagingException
 class MailFilterEditDialog(
         private val mailFilter: MailFilter,
         private val mailFilterService: MailFilterService,
-        emailManager: EmailManager
+        mailManager: MailManager
 ) : EventDialog<MailFilter>() {
 
     private val folderGrid = TreeGrid<Folder>().apply { setWidthFull() }
@@ -28,14 +28,14 @@ class MailFilterEditDialog(
         height = "70vh"
 
         try {
-            emailManager.testConnection()
+            mailManager.testConnection()
         } catch (e: MessagingException) {
             LOGGER.showError("IMAP Connection Failed: ${e.message}")
             close()
         }
 
-        val folders = emailManager.getRootFolders(true)
-        folderGrid.setItems(folders) { emailManager.getSubFolders(it, true) }
+        val folders = mailManager.getRootFolders(true)
+        folderGrid.setItems(folders) { mailManager.getSubFolders(it, true) }
         folderGrid.dataProvider.refreshAll()
 
         folderGrid.addHierarchyColumn { it.fullName }.setHeader("Folder")

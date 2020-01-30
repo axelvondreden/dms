@@ -11,7 +11,7 @@
     "notificationPosition": "BOTTOM_END"
   },
   "doc": {
-    "pollingInterval": 10,
+    "pollingInterval": 120,
     "pollingPath": "docs_in/",
     "savePath": "docs/",
     "imageParserDpi": 500.0,

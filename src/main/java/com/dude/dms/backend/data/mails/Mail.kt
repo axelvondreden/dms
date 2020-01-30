@@ -30,5 +30,29 @@ class Mail(
         var docs: MutableSet<Doc> = HashSet()
 ) : DataEntity(), Diffable<Mail> {
 
+
+
     override fun toString() = "Mail(sender='$sender', received=$received, subject=$subject)"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Mail
+
+        if (sender != other.sender) return false
+        if (received != other.received) return false
+        if (subject != other.subject) return false
+        if (body != other.body) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = sender.hashCode()
+        result = 31 * result + received.hashCode()
+        result = 31 * result + (subject?.hashCode() ?: 0)
+        result = 31 * result + (body?.hashCode() ?: 0)
+        return result
+    }
 }
