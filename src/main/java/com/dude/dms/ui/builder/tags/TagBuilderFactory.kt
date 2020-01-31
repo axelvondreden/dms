@@ -1,7 +1,5 @@
 package com.dude.dms.ui.builder.tags
 
-import com.dude.dms.brain.CreateEvent
-import com.dude.dms.brain.EditEvent
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
@@ -15,9 +13,9 @@ class TagBuilderFactory(
 
     fun searchResult(tag: Tag) = TagSearchResultBuilder(tag, builderFactory.tags().editDialog(tag).build(), docService)
 
-    fun createDialog(createEvent: CreateEvent<Tag>? = null) = TagCreateDialogBuilder(builderFactory, tagService, createEvent)
+    fun createDialog() = TagCreateDialogBuilder(builderFactory, tagService)
 
-    fun editDialog(tag: Tag, editEvent: EditEvent<Tag>? = null) = TagEditDialogBuilder(builderFactory, tag, tagService, docService, editEvent)
+    fun editDialog(tag: Tag) = TagEditDialogBuilder(builderFactory, tag, tagService, docService)
 
     fun selector() = TagSelectorBuilder(tagService)
 }

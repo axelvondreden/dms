@@ -1,0 +1,37 @@
+package com.dude.dms.backend.service
+
+import com.dude.dms.backend.data.DataEntity
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.events.EventManager
+import com.dude.dms.brain.events.EventType
+import org.springframework.data.jpa.repository.JpaRepository
+
+abstract class EventService<T : DataEntity>(
+        repository: JpaRepository<T, Long>,
+        private val eventManager: EventManager
+) : CrudService<T>(repository) {
+
+    override fun create(entity: T): T {
+        val new = super.create(entity)
+        LOGGER.showInfo("Created $new")
+        eventManager.trigger(new, EventType.CREATE)
+        return new
+    }
+
+    override fun save(entity: T): T {
+        val new = super.save(entity)
+        LOGGER.showInfo("Updated $new")
+        eventManager.trigger(new, EventType.UPDATE)
+        return new
+    }
+
+    override fun delete(entity: T) {
+        super.delete(entity)
+        LOGGER.showInfo("Deleted $entity")
+        eventManager.trigger(entity, EventType.DELETE)
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(EventService::class.java)
+    }
+}

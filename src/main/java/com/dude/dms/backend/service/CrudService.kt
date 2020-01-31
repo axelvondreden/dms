@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 abstract class CrudService<T : DataEntity>(protected val repository: JpaRepository<T, Long>) {
 
+    open fun create(entity: T) = repository.saveAndFlush(entity)
+
     open fun save(entity: T) = repository.saveAndFlush(entity)
 
     open fun delete(entity: T) = repository.delete(entity)
@@ -12,8 +14,6 @@ abstract class CrudService<T : DataEntity>(protected val repository: JpaReposito
     fun count() = repository.count()
 
     fun load(id: Long): T? = repository.findById(id).orElse(null)
-
-    open fun create(entity: T) = repository.saveAndFlush(entity)
 
     fun findAll() = repository.findAll()
 }

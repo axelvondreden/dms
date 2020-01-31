@@ -18,5 +18,5 @@ class MailFilter(
         var tags: MutableSet<Tag> = HashSet()
 ) : DataEntity(), Diffable<MailFilter> {
 
-    override fun toString() = "MailFilter(folder='$folder')"
+    override fun toString() = "MailFilter($folder)"
 }

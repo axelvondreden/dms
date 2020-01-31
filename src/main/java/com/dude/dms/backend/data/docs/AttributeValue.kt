@@ -26,4 +26,6 @@ class AttributeValue(
     }
 
     override fun hashCode(): Int = Objects.hash(super.hashCode(), doc, attribute)
+
+    override fun toString() = "AttributeValue($doc, $attribute, ${stringValue ?: intValue ?: floatValue ?: dateValue})"
 }

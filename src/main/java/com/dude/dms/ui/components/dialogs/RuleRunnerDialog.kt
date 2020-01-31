@@ -5,9 +5,10 @@ import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.DocService
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class RuleRunnerDialog(private val result: Map<Doc, Set<Tag>>, private val docService: DocService) : EventDialog<Doc>() {
+class RuleRunnerDialog(private val result: Map<Doc, Set<Tag>>, private val docService: DocService) : Dialog() {
 
     init {
         width = "60vw"
@@ -20,7 +21,6 @@ class RuleRunnerDialog(private val result: Map<Doc, Set<Tag>>, private val docSe
         result.keys.forEach { doc ->
             doc.tags.addAll(result.getValue(doc))
             docService.save(doc)
-            triggerEditEvent(doc)
         }
         close()
     }

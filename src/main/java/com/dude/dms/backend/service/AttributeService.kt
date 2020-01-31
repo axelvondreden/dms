@@ -1,12 +1,16 @@
 package com.dude.dms.backend.service
 
-import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.repositories.AttributeRepository
+import com.dude.dms.brain.DmsLogger.Companion.getLogger
+import com.dude.dms.brain.events.EventManager
 import org.springframework.stereotype.Service
 
 @Service
-class AttributeService(private val attributeRepository: AttributeRepository) : CrudService<Attribute>(attributeRepository) {
+class AttributeService(
+        private val attributeRepository: AttributeRepository,
+        eventManager: EventManager
+) : EventService<Attribute>(attributeRepository, eventManager) {
 
     fun findByName(name: String) = attributeRepository.findByName(name)
 

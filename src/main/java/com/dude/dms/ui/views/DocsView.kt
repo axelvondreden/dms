@@ -1,12 +1,13 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.FileManager
-import com.dude.dms.brain.parsing.PdfToDocParser
+import com.dude.dms.brain.events.EventManager
+import com.dude.dms.brain.events.EventType
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.MainView
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.extensions.convert
@@ -31,18 +32,17 @@ class DocsView(
         private val docService: DocService,
         private val tagService: TagService,
         private val fileManager: FileManager,
-        pdfToDocParser: PdfToDocParser
+        eventManager: EventManager
 ) : GridView<Doc>(), HasUrlParameter<String?> {
 
     private var param: String? = null
 
     init {
         val ui = UI.getCurrent()
-        pdfToDocParser.addEventListener("docs") { success ->
-            if (success) {
-                ui.access { fillGrid() }
-            }
-        }
+
+        eventManager.register(this::class, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
+        eventManager.register(this::class, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
+
         grid.addColumn { it.documentDate?.convert() }.setHeader("Date")
         grid.addComponentColumn { TagContainer(it.tags) }.setHeader("Tags")
         grid.addComponentColumn { createGridActions(it) }
@@ -80,8 +80,8 @@ class DocsView(
 
             menu.addItem("View") { builderFactory.docs().imageDialog(doc).build().open() }
             menu.addItem("Details") { builderFactory.docs().textDialog(doc).build().open() }
-            menu.addItem("Edit") { builderFactory.docs().editDialog(doc) { grid.dataProvider.refreshAll() }.build().open() }
-            menu.addItem("Delete") { builderFactory.docs().deleteDialog(doc) { grid.dataProvider.refreshAll() }.build().open() }
+            menu.addItem("Edit") { builderFactory.docs().editDialog(doc).build().open() }
+            menu.addItem("Delete") { builderFactory.docs().deleteDialog(doc).build().open() }
             true
         }
     }
@@ -96,7 +96,7 @@ class DocsView(
         val text = Button(VaadinIcon.TEXT_LABEL.create()) { builderFactory.docs().textDialog(doc).build().open() }
         Tooltips.getCurrent().setTooltip(text, "Details")
 
-        val edit = Button(VaadinIcon.EDIT.create()) { builderFactory.docs().editDialog(doc) { grid.dataProvider.refreshAll() }.build().open() }
+        val edit = Button(VaadinIcon.EDIT.create()) { builderFactory.docs().editDialog(doc).build().open() }
         Tooltips.getCurrent().setTooltip(edit, "Edit")
 
         return HorizontalLayout(text, download, edit)

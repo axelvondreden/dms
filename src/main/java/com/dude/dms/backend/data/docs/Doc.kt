@@ -39,5 +39,5 @@ class Doc(
         override var history: List<DocHistory> = ArrayList()
 ) : DataEntity(), Diffable<Doc>, Historical<DocHistory> {
 
-    override fun toString() = "Doc{guid='$guid'}"
+    override fun toString() = "Doc($guid)"
 }

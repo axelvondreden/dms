@@ -26,5 +26,5 @@ class TextBlock(
         var pagHeight: Float
 ) : DataEntity() {
 
-    override fun toString() = "TextBlock{text='$text', x=$x, y=$y, width=$width, height=$height}"
+    override fun toString() = "TextBlock($text)"
 }

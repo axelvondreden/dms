@@ -16,7 +16,7 @@ class RegexRuleEditDialog(
         builderFactory: BuilderFactory,
         private val regexRule: RegexRule,
         private val regexRuleService: RegexRuleService
-) : EventDialog<RegexRule>() {
+) : Dialog() {
 
     private val regex = RegexField("Regex", regexRule.regex).apply { setWidthFull() }
 
@@ -38,7 +38,6 @@ class RegexRuleEditDialog(
         val dialog = Dialog(Label("Are you sure you want to delete the item?"))
         val button = Button("Delete", VaadinIcon.TRASH.create()) {
             regexRuleService.delete(regexRule)
-            triggerDeleteEvent(regexRule)
             close()
         }.apply { addThemeVariants(ButtonVariant.LUMO_ERROR) }
         dialog.add(button)
@@ -58,7 +57,6 @@ class RegexRuleEditDialog(
         regexRule.tags = ruleTagSelector.selectedTags
         regexRuleService.save(regexRule)
         LOGGER.showInfo("Edited rule!")
-        triggerEditEvent(regexRule)
         close()
     }
 

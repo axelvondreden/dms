@@ -13,6 +13,7 @@ import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
@@ -22,7 +23,7 @@ class TagEditDialog(
         private val tag: Tag,
         private val tagService: TagService,
         private val docService: DocService
-) : EventDialog<Tag>() {
+) : Dialog() {
 
     private val name = TextField("Name", tag.name, "").apply { setWidthFull() }
 
@@ -73,7 +74,6 @@ class TagEditDialog(
         tag.attributes = attributeSelector.selectedAttributes
         tagService.save(tag)
         docService.findByTag(tag).forEach { docService.save(it) }
-        triggerEditEvent(tag)
         close()
     }
 }

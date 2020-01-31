@@ -1,17 +1,17 @@
-package com.dude.dms.ui
+package com.dude.dms.ui.views
 
+import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.events.EventManager
+import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.parsing.PdfToDocParser
-import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton
-import com.dude.dms.ui.views.*
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts.LeftHybrid
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
@@ -44,8 +44,7 @@ class MainView(
         private val attributeService: AttributeService,
         private val builderFactory: BuilderFactory,
         @param:Value("\${build.version}") private val buildVersion: String,
-        pdfToDocParser: PdfToDocParser,
-        mailPollingService: MailPollingService
+        eventManager: EventManager
 ) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
 
     private var docsBadge: DefaultBadgeHolder? = null
@@ -58,20 +57,11 @@ class MainView(
                 .withAppMenu(buildAppMenu())
                 .build())
         val ui = UI.getCurrent()
-        pdfToDocParser.addEventListener("main") { success ->
-            if (success) {
-                ui.access {
-                    docsBadge!!.increase()
-                    LOGGER.showInfo("New doc added!")
-                }
-            }
-        }
-        mailPollingService.addEventListener("main") {
-            ui.access {
-                mailsBadge!!.count += it
-                LOGGER.showInfo("$it new mails added!")
-            }
-        }
+
+        eventManager.register(this::class, Doc::class, EventType.CREATE) { ui.access { docsBadge!!.increase() } }
+        eventManager.register(this::class, Doc::class, EventType.DELETE) {ui.access { docsBadge!!.decrease() }}
+        eventManager.register(this::class, Mail::class, EventType.CREATE) { ui.access { mailsBadge!!.increase() } }
+        eventManager.register(this::class, Mail::class, EventType.DELETE) {ui.access { mailsBadge!!.decrease() }}
     }
 
     private fun buildAppMenu(): Component {
@@ -96,7 +86,7 @@ class MainView(
     private fun createAttributesEntry(): LeftSubmenu {
         val attributeEntries = mutableListOf<Component>(
                 LeftClickableItem("Add Attribute", VaadinIcon.PLUS_CIRCLE.create()) {
-                    builderFactory.attributes().createDialog { UI.getCurrent().page.reload() }.build().open()
+                    builderFactory.attributes().createDialog().build().open()
                 }
         )
         for (attribute in attributeService.findAll()) {
@@ -109,7 +99,7 @@ class MainView(
             attributeEntries.add(entry)
             ContextMenu().apply {
                 target = entry
-                addItem("Edit") { builderFactory.attributes().editDialog(attribute) { UI.getCurrent().page.reload() }.build().open() }
+                addItem("Edit") { builderFactory.attributes().editDialog(attribute).build().open() }
                 addItem("Delete") {
                     ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
                         attributeService.delete(attribute)
@@ -124,7 +114,7 @@ class MainView(
     private fun createTagsEntry(): LeftSubmenu {
         val tagEntries = mutableListOf<Component>(
                 LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create()) {
-                    builderFactory.tags().createDialog { UI.getCurrent().page.reload() }.build().open()
+                    builderFactory.tags().createDialog().build().open()
                 }
         )
         for (tag in tagService.findAll()) {
@@ -140,7 +130,7 @@ class MainView(
             tagEntries.add(entry)
             ContextMenu().apply {
                 target = entry
-                addItem("Edit") { builderFactory.tags().editDialog(tag) { UI.getCurrent().page.reload() }.build().open() }
+                addItem("Edit") { builderFactory.tags().editDialog(tag).build().open() }
             }
         }
         return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries)
@@ -154,9 +144,5 @@ class MainView(
         val themeList = UI.getCurrent().element.themeList
         themeList.clear()
         themeList.add(if (Options.get().view.darkMode) Lumo.DARK else Lumo.LIGHT)
-    }
-
-    companion object {
-        private val LOGGER = DmsLogger.getLogger(MainView::class.java)
     }
 }

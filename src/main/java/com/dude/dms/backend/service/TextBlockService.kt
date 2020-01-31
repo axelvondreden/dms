@@ -3,11 +3,14 @@ package com.dude.dms.backend.service
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.TextBlock
 import com.dude.dms.backend.repositories.TextBlockRepository
-import org.springframework.beans.factory.annotation.Autowired
+import com.dude.dms.brain.events.EventManager
 import org.springframework.stereotype.Service
 
 @Service
-class TextBlockService @Autowired constructor(private val textBlockRepository: TextBlockRepository) : CrudService<TextBlock>(textBlockRepository) {
+class TextBlockService(
+        private val textBlockRepository: TextBlockRepository,
+        eventManager: EventManager
+) : EventService<TextBlock>(textBlockRepository, eventManager) {
 
     fun findByDoc(doc: Doc) = textBlockRepository.findByDoc(doc)
 

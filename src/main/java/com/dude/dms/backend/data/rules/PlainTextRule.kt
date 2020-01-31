@@ -22,5 +22,5 @@ class PlainTextRule(
         } else false
     }
 
-    override fun toString() = "PlainTextRule{text='$text'}"
+    override fun toString() = "PlainTextRule($text)"
 }

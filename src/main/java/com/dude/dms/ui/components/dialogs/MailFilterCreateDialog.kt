@@ -5,13 +5,14 @@ import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.treegrid.TreeGrid
 import javax.mail.Folder
 import javax.mail.MessagingException
 
-class MailFilterCreateDialog(private val mailFilterService: MailFilterService, mailManager: MailManager) : EventDialog<MailFilter>() {
+class MailFilterCreateDialog(private val mailFilterService: MailFilterService, mailManager: MailManager) : Dialog() {
 
     private val folderGrid = TreeGrid<Folder>().apply { setWidthFull() }
 
@@ -46,7 +47,6 @@ class MailFilterCreateDialog(private val mailFilterService: MailFilterService, m
         val mailFilter = MailFilter(folderGrid.asSingleSelect().value.fullName)
         mailFilterService.save(mailFilter)
         LOGGER.showInfo("Created new mail-filter!")
-        triggerCreateEvent(mailFilter)
         close()
     }
 

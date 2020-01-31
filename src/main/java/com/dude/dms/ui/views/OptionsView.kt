@@ -6,7 +6,6 @@ import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.MainView
 import com.github.appreciated.card.Card
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.Text

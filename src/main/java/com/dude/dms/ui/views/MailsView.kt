@@ -1,11 +1,12 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.polling.MailPollingService
+import com.dude.dms.brain.events.EventManager
+import com.dude.dms.brain.events.EventType
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.MainView
 import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
@@ -23,12 +24,14 @@ import dev.mett.vaadin.tooltip.Tooltips
 class MailsView(
         private val mailService: MailService,
         private val tagService: TagService,
-        mailPollingService: MailPollingService
+        eventManager: EventManager
 ) : GridView<Mail>() {
 
     init {
         val ui = UI.getCurrent()
-        mailPollingService.addEventListener("mail") { ui.access { fillGrid() } }
+
+        eventManager.register(this::class, Mail::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
+        eventManager.register(this::class, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
 
         grid.addColumn { it.received.convert() }.setHeader("Date")
         grid.addColumn { it.sender }.setHeader("From")

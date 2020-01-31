@@ -5,7 +5,6 @@ import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.MainView
 import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.dude.dms.ui.extensions.convert
 import com.dude.dms.ui.dataproviders.LogDataProvider

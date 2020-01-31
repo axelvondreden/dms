@@ -7,10 +7,14 @@ import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.repositories.TagRepository
+import com.dude.dms.brain.events.EventManager
 import org.springframework.stereotype.Service
 
 @Service
-class TagService(private val tagRepository: TagRepository) : HistoricalCrudService<Tag, TagHistory>(tagRepository) {
+class TagService(
+        private val tagRepository: TagRepository,
+        eventManager: EventManager
+) : HistoricalCrudService<Tag, TagHistory>(tagRepository, eventManager) {
 
     override fun create(entity: Tag) = tagRepository.findByName(entity.name) ?: super.create(entity)
 

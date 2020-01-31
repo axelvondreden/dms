@@ -25,7 +25,7 @@ class Attribute(
         STRING, INT, FLOAT, DATE
     }
 
-    override fun toString() = "Attribute{name='$name', required=$isRequired}"
+    override fun toString() = "Attribute($name)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -8,9 +8,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 
 class MailFilterCard(mailFilter: MailFilter) : RippleClickableCard() {
 
+    private val label = Label(mailFilter.folder)
+
     init {
         setWidthFull()
-        val wrapper = HorizontalLayout(Label(mailFilter.folder)).apply {
+        val wrapper = HorizontalLayout(label).apply {
             setWidthFull()
             minHeight = "10vh"
             alignItems = FlexComponent.Alignment.CENTER

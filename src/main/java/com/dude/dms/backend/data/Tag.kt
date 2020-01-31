@@ -36,4 +36,7 @@ class Tag(
     }
 
     override fun hashCode() = Objects.hash(super.hashCode(), name)
+
+    override fun toString(): String = "Tag($name)"
+
 }

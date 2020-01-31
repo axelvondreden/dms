@@ -6,12 +6,13 @@ import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plainTextRuleService: PlainTextRuleService) : EventDialog<PlainTextRule>() {
+class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plainTextRuleService: PlainTextRuleService) : Dialog() {
 
     private val plainText = TextField("Text").apply { setWidthFull() }
 
@@ -43,7 +44,6 @@ class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plai
         val plainTextRule = PlainTextRule(plainText.value, caseSensitive.value, ruleTagSelector.selectedTags)
         plainTextRuleService.save(plainTextRule)
         LOGGER.showInfo("Created new rule!")
-        triggerCreateEvent(plainTextRule)
         close()
     }
 

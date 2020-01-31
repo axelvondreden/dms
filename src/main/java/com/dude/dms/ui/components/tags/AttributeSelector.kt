@@ -2,6 +2,8 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.service.AttributeService
+import com.dude.dms.brain.events.EventManager
+import com.dude.dms.brain.events.EventType
 import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
@@ -12,7 +14,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import java.util.*
 
-class AttributeSelector(builderFactory: BuilderFactory, attributeService: AttributeService) : VerticalLayout() {
+class AttributeSelector(builderFactory: BuilderFactory, attributeService: AttributeService, eventManager: EventManager) : VerticalLayout() {
 
     private val selected = HashSet<Attribute>()
 
@@ -57,13 +59,15 @@ class AttributeSelector(builderFactory: BuilderFactory, attributeService: Attrib
     init {
         val listWrapper = HorizontalLayout(selectedGrid, availableGrid).apply { setSizeFull() }
         val addButton = Button("New Attribute", VaadinIcon.PLUS.create()) {
-            builderFactory.attributes().createDialog { entity: Attribute ->
-                available.add(entity)
-                refresh()
-            }.build().open()
+            builderFactory.attributes().createDialog().build().open()
         }
         addButton.setWidthFull()
         add(listWrapper, addButton)
+
+        eventManager.register(this::class, Attribute::class, EventType.CREATE) {
+            available.add(it)
+            refresh()
+        }
     }
 
     private fun refresh() {

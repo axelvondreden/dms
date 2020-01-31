@@ -15,4 +15,6 @@ class Changelog(
         @Size(max = 99999)
         var body: String,
         var version: String
-) : DataEntity()
+) : DataEntity() {
+        override fun toString() = "Changelog($version)"
+}

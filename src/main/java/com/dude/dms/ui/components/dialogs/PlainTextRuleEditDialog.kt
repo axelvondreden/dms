@@ -9,6 +9,7 @@ import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -18,7 +19,7 @@ class PlainTextRuleEditDialog(
         builderFactory: BuilderFactory,
         private val plainTextRule: PlainTextRule,
         private val plainTextRuleService: PlainTextRuleService
-) : EventDialog<PlainTextRule>() {
+) : Dialog() {
 
     private val plainText = TextField("Text", plainTextRule.text, "").apply { setWidthFull() }
 
@@ -45,7 +46,6 @@ class PlainTextRuleEditDialog(
     private fun delete() {
         ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
             plainTextRuleService.delete(plainTextRule)
-            triggerDeleteEvent(plainTextRule)
             close()
         }).open()
     }
@@ -64,7 +64,6 @@ class PlainTextRuleEditDialog(
         plainTextRule.caseSensitive = caseSensitive.value
         plainTextRuleService.save(plainTextRule)
         LOGGER.showInfo("Edited rule!")
-        triggerEditEvent(plainTextRule)
         close()
     }
 

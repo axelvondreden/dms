@@ -8,7 +8,8 @@ class IconToggle(
         activeIcon: Icon,
         inactiveIcon: Icon,
         tooltip: String? = null,
-        var value: Boolean = false) : Button() {
+        var value: Boolean = false
+) : Button() {
 
     init {
         if (tooltip != null && tooltip.isNotEmpty()) {

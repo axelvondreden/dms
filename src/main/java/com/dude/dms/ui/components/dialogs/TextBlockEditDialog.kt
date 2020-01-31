@@ -4,13 +4,14 @@ import com.dude.dms.backend.data.docs.TextBlock
 import com.dude.dms.backend.service.TextBlockService
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant
 import com.vaadin.flow.component.textfield.TextField
 
-class TextBlockEditDialog(private val textBlock: TextBlock, private val textBlockService: TextBlockService) : EventDialog<TextBlock>() {
+class TextBlockEditDialog(private val textBlock: TextBlock, private val textBlockService: TextBlockService) : Dialog() {
 
     private val originalText = textBlock.text
 
@@ -58,7 +59,6 @@ class TextBlockEditDialog(private val textBlock: TextBlock, private val textBloc
             it.text = newText
             textBlockService.save(it)
         }
-        triggerEditEvent(textBlock)
         close()
     }
 }

@@ -30,9 +30,7 @@ class Mail(
         var docs: MutableSet<Doc> = HashSet()
 ) : DataEntity(), Diffable<Mail> {
 
-
-
-    override fun toString() = "Mail(sender='$sender', received=$received, subject=$subject)"
+    override fun toString() = "Mail($sender, $received, $subject)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -6,6 +6,7 @@ import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.repositories.DocRepository
+import com.dude.dms.brain.events.EventManager
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,8 +14,9 @@ class DocService(
         private val docRepository: DocRepository,
         private val attributeValueService: AttributeValueService,
         private val docHistoryService: DocHistoryService,
-        private val textBlockService: TextBlockService
-) : HistoricalCrudService<Doc, DocHistory>(docRepository) {
+        private val textBlockService: TextBlockService,
+        eventManager: EventManager
+) : HistoricalCrudService<Doc, DocHistory>(docRepository, eventManager) {
 
     override fun create(entity: Doc): Doc {
         createAttributeValues(entity)

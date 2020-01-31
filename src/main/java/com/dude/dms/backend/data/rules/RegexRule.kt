@@ -12,6 +12,7 @@ class RegexRule(
         @ManyToMany override var tags: Set<Tag> = HashSet()
 ) : Rule() {
 
+    @Suppress("SuspiciousVarProperty")
     @Transient
     private var pattern: Pattern = Pattern.compile(regex)
         get() = Pattern.compile(regex)
@@ -20,5 +21,5 @@ class RegexRule(
         return if (line == null || line.isEmpty()) false else pattern.matcher(line).matches()
     }
 
-    override fun toString() = "RegexRule{regex='$regex'}"
+    override fun toString() = "RegexRule($regex)"
 }

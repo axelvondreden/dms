@@ -6,9 +6,10 @@ import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.RegexField
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRuleService: RegexRuleService) : EventDialog<RegexRule>() {
+class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRuleService: RegexRuleService) : Dialog() {
 
     private val regex = RegexField("Regex").apply {
         setWidthFull()
@@ -37,7 +38,6 @@ class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRul
         val regexRule = RegexRule(regex.value!!, ruleTagSelector.selectedTags)
         regexRuleService.save(regexRule)
         LOGGER.showInfo("Created new rule!")
-        triggerCreateEvent(regexRule)
         close()
     }
 
