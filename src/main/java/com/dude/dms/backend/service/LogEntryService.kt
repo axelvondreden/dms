@@ -15,7 +15,7 @@ class LogEntryService(private val logEntryRepository: LogEntryRepository) : Crud
 
     fun findDistinctClassNames() = logEntryRepository.findDistinctClassNames()
 
-    fun findTopOrderByTimestampAsc() = logEntryRepository.findTopOrderByTimestampAsc()
+    fun findTopOrderByIdAsc() = logEntryRepository.findTopOrderByIdAsc()
 
-    fun findTopOrderByTimestampDesc() = logEntryRepository.findTopOrderByTimestampDesc()
+    fun findTopOrderByIdDesc() = logEntryRepository.findTopOrderByIdDesc()
 }

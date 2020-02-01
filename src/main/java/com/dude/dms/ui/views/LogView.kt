@@ -30,8 +30,8 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         value = LocalDate.now()
         locale = Locale.forLanguageTag(Options.get().view.locale)
         addValueChangeListener { refreshFilter() }
-        min = logEntryService.findTopOrderByTimestampAsc().timestamp.toLocalDate()
-        max = logEntryService.findTopOrderByTimestampDesc().timestamp.toLocalDate()
+        min = logEntryService.findTopOrderByIdAsc().timestamp.toLocalDate()
+        max = logEntryService.findTopOrderByIdDesc().timestamp.toLocalDate()
     }
 
     private val classNameFilter = ComboBox<String>().apply {
