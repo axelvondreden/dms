@@ -20,7 +20,7 @@ class AttributeValue(
         var dateValue: LocalDate? = null
 ) : DataEntity(), LogsEvents {
 
-    override fun showEvents() = false
+    override fun showEvents() = true
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

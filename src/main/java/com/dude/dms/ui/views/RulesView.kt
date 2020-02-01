@@ -37,9 +37,9 @@ class RulesView(
         element.style["padding"] = "10px"
         fillContent()
 
-        eventManager.register(this::class, PlainTextRule::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fillContent() }
-        eventManager.register(this::class, RegexRule::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fillContent() }
-        eventManager.register(this::class, MailFilter::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fillContent() }
+        eventManager.register(this, PlainTextRule::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fillContent() }
+        eventManager.register(this, RegexRule::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fillContent() }
+        eventManager.register(this, MailFilter::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fillContent() }
     }
 
     private fun fillContent() {

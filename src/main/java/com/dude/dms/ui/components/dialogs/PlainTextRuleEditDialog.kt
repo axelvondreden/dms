@@ -6,6 +6,7 @@ import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -52,18 +53,17 @@ class PlainTextRuleEditDialog(
 
     private fun save() {
         if (plainText.isEmpty) {
-            LOGGER.showError("Text can not be empty!")
+            LOGGER.showError("Text can not be empty!", UI.getCurrent())
             return
         }
         if (ruleTagSelector.selectedTags.isEmpty()) {
-            LOGGER.showError("At least on tag must be selected!")
+            LOGGER.showError("At least on tag must be selected!", UI.getCurrent())
             return
         }
         plainTextRule.text = plainText.value
         plainTextRule.tags = ruleTagSelector.selectedTags
         plainTextRule.caseSensitive = caseSensitive.value
         plainTextRuleService.save(plainTextRule)
-        LOGGER.showInfo("Edited rule!")
         close()
     }
 

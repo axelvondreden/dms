@@ -52,11 +52,9 @@ class PdfToDocParser(
             }
             doc.tags = discoverTags(rawText).toMutableSet()
             docService.create(doc)
-            LOGGER.info("Created doc with ID: {}", doc.guid)
             textBlockList.forEach {
                 it.doc = doc
                 textBlockService.create(it)
-                LOGGER.info("Created textblock {} for doc {}", it, doc)
             }
         } catch (e: IOException) {
             e.message?.let { LOGGER.error(it) }

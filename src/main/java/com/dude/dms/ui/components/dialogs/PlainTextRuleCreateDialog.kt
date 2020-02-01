@@ -4,6 +4,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.ui.builder.BuilderFactory
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.dialog.Dialog
@@ -34,16 +35,15 @@ class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plai
 
     private fun create() {
         if (plainText.isEmpty) {
-            LOGGER.showError("Text can not be empty!")
+            LOGGER.showError("Text can not be empty!", UI.getCurrent())
             return
         }
         if (ruleTagSelector.selectedTags.isEmpty()) {
-            LOGGER.showError("At least on tag must be selected!")
+            LOGGER.showError("At least on tag must be selected!", UI.getCurrent())
             return
         }
         val plainTextRule = PlainTextRule(plainText.value, caseSensitive.value, ruleTagSelector.selectedTags)
         plainTextRuleService.save(plainTextRule)
-        LOGGER.showInfo("Created new rule!")
         close()
     }
 

@@ -64,7 +64,7 @@ class AttributeSelector(builderFactory: BuilderFactory, attributeService: Attrib
         addButton.setWidthFull()
         add(listWrapper, addButton)
 
-        eventManager.register(this::class, Attribute::class, EventType.CREATE) {
+        eventManager.register(this, Attribute::class, EventType.CREATE) {
             available.add(it)
             refresh()
         }

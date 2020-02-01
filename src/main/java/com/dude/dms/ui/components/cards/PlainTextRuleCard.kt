@@ -42,7 +42,7 @@ class PlainTextRuleCard(
         }
         add(wrapper)
 
-        eventManager.register(this::class, Tag::class, EventType.UPDATE, EventType.DELETE) { fill(rule) }
+        eventManager.register(this, Tag::class, EventType.UPDATE, EventType.DELETE) { fill(rule) }
     }
 
     fun fill(rule: PlainTextRule) {

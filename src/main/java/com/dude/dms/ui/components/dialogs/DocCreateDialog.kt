@@ -9,6 +9,8 @@ import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.*
+import kotlin.concurrent.schedule
 
 class DocCreateDialog(pollingService: PollingService) : Dialog() {
 
@@ -38,7 +40,9 @@ class DocCreateDialog(pollingService: PollingService) : Dialog() {
             }
             addAllFinishedListener {
                 close()
-                pollingService.poll()
+                Timer().schedule(500) {
+                    pollingService.poll()
+                }
             }
         }
         add(upload)

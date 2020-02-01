@@ -1,9 +1,10 @@
 package com.dude.dms.brain.events
 
 import com.dude.dms.backend.data.LogsEvents
+import com.vaadin.flow.component.Component
 import kotlin.reflect.KClass
 
-data class Event<T : LogsEvents>(val clazz: KClass<*>, val target: KClass<T>, val type: EventType, val func: (T) -> Unit) {
+data class Event<T : LogsEvents>(val holder: Component, val target: KClass<T>, val type: EventType, val func: (T) -> Unit) {
 
     fun run(entity: T) = func.invoke(entity)
 
@@ -13,7 +14,7 @@ data class Event<T : LogsEvents>(val clazz: KClass<*>, val target: KClass<T>, va
 
         other as Event<*>
 
-        if (clazz != other.clazz) return false
+        if (holder::class != other.holder::class) return false
         if (target != other.target) return false
         if (type != other.type) return false
 
@@ -21,7 +22,7 @@ data class Event<T : LogsEvents>(val clazz: KClass<*>, val target: KClass<T>, va
     }
 
     override fun hashCode(): Int {
-        var result = clazz.hashCode()
+        var result = holder::class.hashCode()
         result = 31 * result + target.hashCode()
         result = 31 * result + type.hashCode()
         return result

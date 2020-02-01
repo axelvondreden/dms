@@ -40,8 +40,8 @@ class DocsView(
     init {
         val ui = UI.getCurrent()
 
-        eventManager.register(this::class, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
-        eventManager.register(this::class, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
+        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
 
         grid.addColumn { it.documentDate?.convert() }.setHeader("Date")
         grid.addComponentColumn { TagContainer(it.tags) }.setHeader("Tags")

@@ -8,6 +8,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.ui.builder.BuilderFactory
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import java.util.*
 
@@ -26,8 +27,8 @@ class AttributeValueContainer(
 
         fill(doc)
 
-        eventManager.register(this::class, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fill(doc) }
-        eventManager.register(this::class, AttributeValue::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fill(doc) }
+        eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fill(doc) }
+        eventManager.register(this, AttributeValue::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fill(doc) }
     }
 
     private fun fill(doc: Doc) {
@@ -43,7 +44,7 @@ class AttributeValueContainer(
     fun validate(): Boolean {
         for (field in fields) {
             if (!field.validate()) {
-                LOGGER.showError("Attribute '" + field.label + " is required.")
+                LOGGER.showError("Attribute '" + field.label + " is required.", UI.getCurrent())
                 return false
             }
         }

@@ -32,7 +32,7 @@ class FileManager {
                 ftpClient.disconnect()
             }
         } catch (e: IOException) {
-            LOGGER.showError(e.message!!)
+            LOGGER.error(e.message!!)
             false
         }
     }

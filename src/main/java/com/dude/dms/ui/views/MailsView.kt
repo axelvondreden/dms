@@ -30,8 +30,8 @@ class MailsView(
     init {
         val ui = UI.getCurrent()
 
-        eventManager.register(this::class, Mail::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
-        eventManager.register(this::class, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
+        eventManager.register(this, Mail::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
 
         grid.addColumn { it.received.convert() }.setHeader("Date")
         grid.addColumn { it.sender }.setHeader("From")

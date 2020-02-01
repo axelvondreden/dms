@@ -58,10 +58,10 @@ class MainView(
                 .build())
         val ui = UI.getCurrent()
 
-        eventManager.register(this::class, Doc::class, EventType.CREATE) { ui.access { docsBadge!!.increase() } }
-        eventManager.register(this::class, Doc::class, EventType.DELETE) {ui.access { docsBadge!!.decrease() }}
-        eventManager.register(this::class, Mail::class, EventType.CREATE) { ui.access { mailsBadge!!.increase() } }
-        eventManager.register(this::class, Mail::class, EventType.DELETE) {ui.access { mailsBadge!!.decrease() }}
+        eventManager.register(this, Doc::class, EventType.CREATE) { ui.access { docsBadge!!.increase() } }
+        eventManager.register(this, Doc::class, EventType.DELETE) {ui.access { docsBadge!!.decrease() }}
+        eventManager.register(this, Mail::class, EventType.CREATE) { ui.access { mailsBadge!!.increase() } }
+        eventManager.register(this, Mail::class, EventType.DELETE) {ui.access { mailsBadge!!.decrease() }}
     }
 
     private fun buildAppMenu(): Component {

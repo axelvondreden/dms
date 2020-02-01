@@ -55,7 +55,7 @@ class OptionsView(
             if (it.value.isNotEmpty()) {
                 options.view.dateFormat = it.value
                 options.save()
-                LOGGER.showInfo("Date format saved.")
+                LOGGER.showInfo("Date format saved.", UI.getCurrent())
             }
         }
         val locale = ComboBox<Locale>("Language").apply {
@@ -67,7 +67,7 @@ class OptionsView(
                 if (!isEmpty) {
                     options.view.locale = value.toLanguageTag()
                     options.save()
-                    LOGGER.showInfo("Language changed.")
+                    LOGGER.showInfo("Language changed.", UI.getCurrent())
                 }
             }
         }
@@ -75,7 +75,7 @@ class OptionsView(
             addValueChangeListener {
                 options.tag.simpleColors = value
                 options.save()
-                LOGGER.showInfo("Simple tag colors saved")
+                LOGGER.showInfo("Simple tag colors saved", UI.getCurrent())
             }
         }
         val darkMode = Checkbox("Dark mode", options.view.darkMode).apply {
@@ -85,7 +85,7 @@ class OptionsView(
                 themeList.add(if (event.value) Lumo.DARK else Lumo.LIGHT)
                 options.view.darkMode = value
                 options.save()
-                LOGGER.showInfo("Dark mode saved.")
+                LOGGER.showInfo("Dark mode saved.", UI.getCurrent())
             }
         }
 
@@ -103,7 +103,7 @@ class OptionsView(
                 if (!isEmpty) {
                     options.view.notificationPosition = value.name
                     options.save()
-                    LOGGER.showInfo("Notification position saved.")
+                    LOGGER.showInfo("Notification position saved.", UI.getCurrent())
                 }
             }
         }
@@ -117,7 +117,7 @@ class OptionsView(
                 try {
                     options.doc.imageParserDpi = it.value
                     options.save()
-                    LOGGER.showInfo("Image parser DPI saved.")
+                    LOGGER.showInfo("Image parser DPI saved.", UI.getCurrent())
                 } catch (ignored: NumberFormatException) {
                 }
             }
@@ -126,14 +126,14 @@ class OptionsView(
             if (it.value != null && it.value > 0) {
                 options.doc.pollingInterval = it.value
                 options.save()
-                LOGGER.showInfo("Polling interval saved.")
+                LOGGER.showInfo("Polling interval saved.", UI.getCurrent())
             }
         }
         val dateScanFormats = TextField("Date scan formats", options.view.dateScanFormats.joinToString(",")) {
             if (!it.value.isNullOrEmpty()) {
                 options.view.dateScanFormats = it.value.split(",")
                 options.save()
-                LOGGER.showInfo("Date scan formats saved..")
+                LOGGER.showInfo("Date scan formats saved..", UI.getCurrent())
             }
         }
 
@@ -146,7 +146,7 @@ class OptionsView(
             if (!it.value.isNullOrEmpty()) {
                 options.mail.host = it.value
                 options.save()
-                LOGGER.showInfo("IMAP Host saved.")
+                LOGGER.showInfo("IMAP Host saved.", UI.getCurrent())
             }
         }
         val imapPort = IntegerField("IMAP Port", options.mail.port) {
@@ -154,7 +154,7 @@ class OptionsView(
                 try {
                     options.mail.port = it.value
                     options.save()
-                    LOGGER.showInfo("IMAP Port saved.")
+                    LOGGER.showInfo("IMAP Port saved.", UI.getCurrent())
                 } catch (ignored: NumberFormatException) {
                 }
             }
@@ -163,29 +163,29 @@ class OptionsView(
             if (!it.value.isNullOrEmpty()) {
                 options.mail.login = it.value
                 options.save()
-                LOGGER.showInfo("IMAP Login saved.")
+                LOGGER.showInfo("IMAP Login saved.", UI.getCurrent())
             }
         }
         val imapPassword = PasswordField("IMAP Password", options.mail.password) {
             if (!it.value.isNullOrEmpty()) {
                 options.mail.password = it.value
                 options.save()
-                LOGGER.showInfo("IMAP Password saved.")
+                LOGGER.showInfo("IMAP Password saved.", UI.getCurrent())
             }
         }
         val imapPolling = IntegerField("IMAP Polling interval (min)", options.mail.pollingInterval) {
             if (it.value != null && it.value > 0) {
                 options.mail.pollingInterval = it.value
                 options.save()
-                LOGGER.showInfo("IMAP Polling interval saved.")
+                LOGGER.showInfo("IMAP Polling interval saved.", UI.getCurrent())
             }
         }
         val imapTest = Button("Connect") {
             try {
                 mailManager.testConnection()
-                LOGGER.showInfo("Connection Successfull.")
+                LOGGER.showInfo("Connection Successfull.", UI.getCurrent())
             } catch (e: MessagingException) {
-                LOGGER.showError("Connection Failed: ${e.message}")
+                LOGGER.showError("Connection Failed: ${e.message}", UI.getCurrent())
             }
         }
 
@@ -199,9 +199,9 @@ class OptionsView(
                 if (dir.exists() && dir.isDirectory) {
                     options.doc.savePath = it.value
                     options.save()
-                    LOGGER.showInfo("Doc save path saved.")
+                    LOGGER.showInfo("Doc save path saved.", UI.getCurrent())
                 } else {
-                    LOGGER.showError("Directory " + it.value + " does not exist.")
+                    LOGGER.showError("Directory " + it.value + " does not exist.", UI.getCurrent())
                 }
             }
         }
@@ -209,7 +209,7 @@ class OptionsView(
             if (it.value != null && it.value > 0) {
                 options.storage.maxUploadFileSize = it.value
                 options.save()
-                LOGGER.showInfo("Maximum upload file size saved.")
+                LOGGER.showInfo("Maximum upload file size saved.", UI.getCurrent())
             }
         }
 
@@ -224,7 +224,7 @@ class OptionsView(
         autoTag.addSelectionListener {
             options.tag.automaticTags = it.allSelectedItems.toList()
             options.save()
-            LOGGER.showInfo("Automatic Tags saved..")
+            LOGGER.showInfo("Automatic Tags saved..", UI.getCurrent())
         }
 
         add(createSection("Tags", autoTag))
@@ -235,7 +235,7 @@ class OptionsView(
             if (it.value != null && it.value > 0) {
                 options.update.checkInterval = it.value
                 options.save()
-                LOGGER.showInfo("Update check interval saved.")
+                LOGGER.showInfo("Update check interval saved.", UI.getCurrent())
             }
         }
 
@@ -253,9 +253,9 @@ class OptionsView(
     private fun tryFtp() {
         val success = fileManager.testFtp()
         if (success) {
-            LOGGER.showInfo("FTP Test: successful!")
+            LOGGER.showInfo("FTP Test: successful!", UI.getCurrent())
         } else {
-            LOGGER.showError("FTP Test: failed!")
+            LOGGER.showError("FTP Test: failed!", UI.getCurrent())
         }
     }
 

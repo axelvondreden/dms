@@ -3,6 +3,7 @@ package com.dude.dms.brain
 import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
 import com.dude.dms.brain.options.Options
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import org.slf4j.LoggerFactory
@@ -49,12 +50,13 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.INFO, format(message, *arguments))
     }
 
-    fun showInfo(message: String, persistent: Boolean = false) {
+    fun showInfo(message: String, ui: UI, persistent: Boolean = false) {
         try {
             val notification = create(message, persistent)
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
-            notification.open()
-        } catch (ignored: IllegalStateException) {
+            ui.access { notification.open() }
+        } catch (e: IllegalStateException) {
+            logger.warn("Could not show UI notification: ${e.message}")
         }
         logger.info(message)
         save(Level.INFO, message, true)
@@ -90,12 +92,13 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.ERROR, format(msg, *arguments), e)
     }
 
-    fun showError(message: String, persistent: Boolean = false) {
+    fun showError(message: String, ui: UI, persistent: Boolean = false) {
         try {
             val notification = create(message, persistent)
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR)
-            notification.open()
-        } catch (ignored: IllegalStateException) {
+            ui.access { notification.open() }
+        } catch (e: IllegalStateException) {
+            logger.warn("Could not show UI notification: ${e.message}")
         }
         logger.error(message)
         save(Level.ERROR, message, true)

@@ -6,6 +6,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.dialog.Dialog
@@ -31,7 +32,7 @@ class MailFilterEditDialog(
         try {
             mailManager.testConnection()
         } catch (e: MessagingException) {
-            LOGGER.showError("IMAP Connection Failed: ${e.message}")
+            LOGGER.showError("IMAP Connection Failed: ${e.message}", UI.getCurrent())
             close()
         }
 
@@ -62,12 +63,11 @@ class MailFilterEditDialog(
 
     private fun save() {
         if (folderGrid.asSingleSelect().isEmpty) {
-            LOGGER.showError("No Folder selected!")
+            LOGGER.showError("No Folder selected!", UI.getCurrent())
             return
         }
         mailFilter.folder = folderGrid.asSingleSelect().value.fullName
         mailFilterService.save(mailFilter)
-        LOGGER.showInfo("Edited mail-filter!")
         close()
     }
 

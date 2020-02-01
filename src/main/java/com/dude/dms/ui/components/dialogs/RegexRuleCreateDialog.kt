@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.RegexField
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -28,16 +29,15 @@ class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRul
 
     private fun create() {
         if (regex.isEmpty) {
-            LOGGER.showError("Regex can not be empty!")
+            LOGGER.showError("Regex can not be empty!", UI.getCurrent())
             return
         }
         if (ruleTagSelector.selectedTags.isEmpty()) {
-            LOGGER.showError("At least on tag must be selected!")
+            LOGGER.showError("At least on tag must be selected!", UI.getCurrent())
             return
         }
         val regexRule = RegexRule(regex.value!!, ruleTagSelector.selectedTags)
         regexRuleService.save(regexRule)
-        LOGGER.showInfo("Created new rule!")
         close()
     }
 

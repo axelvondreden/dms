@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
@@ -23,7 +24,7 @@ class MailFilterCreateDialog(private val mailFilterService: MailFilterService, m
         try {
             mailManager.testConnection()
         } catch (e: MessagingException) {
-            LOGGER.showError("IMAP Connection Failed: ${e.message}")
+            LOGGER.showError("IMAP Connection Failed: ${e.message}", UI.getCurrent())
             close()
         }
 
@@ -41,12 +42,11 @@ class MailFilterCreateDialog(private val mailFilterService: MailFilterService, m
 
     private fun create() {
         if (folderGrid.asSingleSelect().isEmpty) {
-            LOGGER.showError("No Folder selected!")
+            LOGGER.showError("No Folder selected!", UI.getCurrent())
             return
         }
         val mailFilter = MailFilter(folderGrid.asSingleSelect().value.fullName)
         mailFilterService.save(mailFilter)
-        LOGGER.showInfo("Created new mail-filter!")
         close()
     }
 
