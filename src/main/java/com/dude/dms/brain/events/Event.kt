@@ -1,9 +1,9 @@
 package com.dude.dms.brain.events
 
-import com.dude.dms.backend.data.DataEntity
+import com.dude.dms.backend.data.LogsEvents
 import kotlin.reflect.KClass
 
-data class Event<T : DataEntity>(val clazz: KClass<*>, val target: KClass<T>, val type: EventType, val func: (T) -> Unit) {
+data class Event<T : LogsEvents>(val clazz: KClass<*>, val target: KClass<T>, val type: EventType, val func: (T) -> Unit) {
 
     fun run(entity: T) = func.invoke(entity)
 

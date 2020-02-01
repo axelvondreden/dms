@@ -26,7 +26,9 @@ class Tag(
         @ManyToMany(mappedBy = "tags") var regexRules: Set<RegexRule> = HashSet(),
         @ManyToMany(mappedBy = "tags") var mailFilters: Set<MailFilter> = HashSet(),
         @OneToMany(mappedBy = "tag") override var history: List<TagHistory> = ArrayList()
-) : DataEntity(), Diffable<Tag>, Historical<TagHistory> {
+) : DataEntity(), Diffable<Tag>, Historical<TagHistory>, LogsEvents {
+
+    override fun showEvents() = true
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

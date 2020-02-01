@@ -1,6 +1,7 @@
 package com.dude.dms.backend.data.docs
 
 import com.dude.dms.backend.data.DataEntity
+import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.Tag
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
@@ -19,11 +20,13 @@ class Attribute(
         var type: Type,
         @OneToMany(mappedBy = "attribute") var attributeValues: Set<AttributeValue> = HashSet(),
         @ManyToMany(mappedBy = "attributes", fetch = FetchType.EAGER) var tags: Set<Tag> = HashSet()
-) : DataEntity() {
+) : DataEntity(), LogsEvents {
 
     enum class Type {
         STRING, INT, FLOAT, DATE
     }
+
+    override fun showEvents() = true
 
     override fun toString() = "Attribute($name)"
 

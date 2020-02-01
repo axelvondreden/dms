@@ -17,8 +17,6 @@ import com.vaadin.flow.component.details.Details
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.listbox.MultiSelectListBox
 import com.vaadin.flow.component.notification.Notification
-import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.IntegerField
 import com.vaadin.flow.component.textfield.NumberField
@@ -44,6 +42,7 @@ class OptionsView(
 
     init {
         createViewSection()
+        createNotificationSection()
         createDocsSection()
         createMailSection()
         createStorageSection()
@@ -89,6 +88,11 @@ class OptionsView(
                 LOGGER.showInfo("Dark mode saved.")
             }
         }
+
+        add(createSection("View", locale, dateFormat, simpleColors, darkMode))
+    }
+
+    private fun createNotificationSection() {
         val notifyPosition = ComboBox<Notification.Position>("Notification position").apply {
             setItems(*Notification.Position.values())
             value = Notification.Position.valueOf(options.view.notificationPosition)
@@ -103,12 +107,8 @@ class OptionsView(
                 }
             }
         }
-        val notifyWrapper = HorizontalLayout(notifyPosition, Button("Test") { LOGGER.showInfo("Hi, I am just a test!") }).apply {
-            setWidthFull()
-            alignItems = FlexComponent.Alignment.END
-        }
 
-        add(createSection("View", locale, dateFormat, simpleColors, darkMode, notifyWrapper))
+        add(createSection("Notifications", notifyPosition))
     }
 
     private fun createDocsSection() {

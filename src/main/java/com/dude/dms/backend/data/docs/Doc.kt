@@ -1,9 +1,6 @@
 package com.dude.dms.backend.data.docs
 
-import com.dude.dms.backend.data.DataEntity
-import com.dude.dms.backend.data.Diffable
-import com.dude.dms.backend.data.Historical
-import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.*
 import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.data.mails.Mail
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
@@ -37,7 +34,9 @@ class Doc(
 
         @OneToMany(mappedBy = "doc")
         override var history: List<DocHistory> = ArrayList()
-) : DataEntity(), Diffable<Doc>, Historical<DocHistory> {
+) : DataEntity(), Diffable<Doc>, Historical<DocHistory>, LogsEvents {
+
+    override fun showEvents() = true
 
     override fun toString() = "Doc($guid)"
 }

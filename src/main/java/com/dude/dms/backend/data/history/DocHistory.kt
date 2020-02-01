@@ -11,5 +11,6 @@ class DocHistory(
         created: Boolean,
         edited: Boolean
 ) : History(created, edited, text) {
+
     override fun toString() = "DocHistory($doc)"
 }

@@ -1,15 +1,16 @@
 package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.DataEntity
+import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import org.springframework.data.jpa.repository.JpaRepository
 
-abstract class EventService<T : DataEntity>(
+abstract class EventService<T>(
         repository: JpaRepository<T, Long>,
         private val eventManager: EventManager
-) : CrudService<T>(repository) {
+) : CrudService<T>(repository) where T : DataEntity, T : LogsEvents{
 
     override fun create(entity: T): T {
         val new = super.create(entity)
