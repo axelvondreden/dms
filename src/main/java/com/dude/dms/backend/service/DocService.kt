@@ -47,7 +47,7 @@ class DocService(
 
     private fun deleteAttributeValues(doc: Doc) {
         val attributes = doc.tags.flatMap { it.attributes }
-        doc.attributeValues.filter { it.attribute !in attributes }.distinct()
+        attributeValueService.findByDoc(doc).filter { it.attribute !in attributes }.distinct()
                 .forEach { attributeValueService.delete(it) }
     }
 
