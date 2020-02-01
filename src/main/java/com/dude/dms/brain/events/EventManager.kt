@@ -16,7 +16,9 @@ class EventManager {
     @Suppress("UNCHECKED_CAST")
     fun <T : LogsEvents> register(clazz: KClass<*>, target: KClass<T>, vararg types: EventType, func: (T) -> Unit) {
         for (type in types) {
-            listeners.add(Event(clazz, target, type, func) as Event<LogsEvents>)
+            val event = Event(clazz, target, type, func) as Event<LogsEvents>
+            listeners.remove(event)
+            listeners.add(event)
         }
     }
 }
