@@ -10,9 +10,7 @@ import org.springframework.data.repository.query.Param
 import java.time.LocalDate
 
 interface LogEntryRepository : JpaRepository<LogEntry, Long> {
-    fun findByClassName(className: String): List<LogEntry>
-    fun findByLevel(level: DmsLogger.Level): List<LogEntry>
-    fun findByOrderByTimestampDesc(): List<LogEntry>
+
     @Query("SELECT log FROM LogEntry log " +
             "WHERE (:className is null or log.className = :className) " +
             "AND (:date is null or CAST(log.timestamp AS date) = CAST(:date AS date))" +
@@ -32,7 +30,7 @@ interface LogEntryRepository : JpaRepository<LogEntry, Long> {
     @Query("SELECT DISTINCT log.className FROM LogEntry log")
     fun findDistinctClassNames(): List<String>
 
-    fun findTopOrderByIdAsc(): LogEntry
+    fun findTopByOrderByTimestampAsc(): LogEntry
 
-    fun findTopOrderByIdDesc(): LogEntry
+    fun findTopByOrderByTimestampDesc(): LogEntry
 }
