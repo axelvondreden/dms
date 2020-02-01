@@ -14,21 +14,21 @@ abstract class EventService<T>(
 
     override fun create(entity: T): T {
         val new = super.create(entity)
-        LOGGER.showInfo("Created $new")
+        if (entity.showEvents()) LOGGER.showInfo("Created $new") else LOGGER.info("Created $new")
         eventManager.trigger(new, EventType.CREATE)
         return new
     }
 
     override fun save(entity: T): T {
         val new = super.save(entity)
-        LOGGER.showInfo("Updated $new")
+        if (entity.showEvents()) LOGGER.showInfo("Updated $new") else LOGGER.info("Updated $new")
         eventManager.trigger(new, EventType.UPDATE)
         return new
     }
 
     override fun delete(entity: T) {
         super.delete(entity)
-        LOGGER.showInfo("Deleted $entity")
+        if (entity.showEvents()) LOGGER.showInfo("Deleted $entity") else LOGGER.info("Deleted $entity")
         eventManager.trigger(entity, EventType.DELETE)
     }
 
