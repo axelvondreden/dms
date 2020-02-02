@@ -5,5 +5,6 @@ import com.dude.dms.backend.data.history.DocHistory
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface DocHistoryRepository : JpaRepository<DocHistory, Long> {
-    fun findByDoc(doc: Doc): List<DocHistory>
+
+    fun findByDoc(doc: Doc): Set<DocHistory>
 }

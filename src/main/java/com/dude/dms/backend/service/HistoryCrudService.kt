@@ -10,5 +10,6 @@ abstract class HistoryCrudService<T, U : History>(
         jpaRepository: JpaRepository<U, Long>,
         eventManager: EventManager
 ) : EventService<U>(jpaRepository, eventManager) where T : DataEntity, T : Historical<U> {
-    abstract fun getHistory(entity: T): List<U>
+
+    abstract fun getHistory(entity: T): Set<U>
 }

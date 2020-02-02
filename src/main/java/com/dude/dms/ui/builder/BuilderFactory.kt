@@ -38,7 +38,7 @@ class BuilderFactory(
 
     fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService, eventManager)
 
-    fun docs() = DocBuilderFactory(this, docService, mailService, textBlockService, pollingService, fileManager)
+    fun docs() = DocBuilderFactory(this, docService, mailService, tagService, textBlockService, pollingService, fileManager)
 
     fun misc() = MiscBuilderFactory(this, changelogService, updateChecker)
 

@@ -42,7 +42,7 @@ class MailsView(
         grid.addColumn { it.received.convert() }.setHeader("Date")
         grid.addColumn { it.sender }.setHeader("From")
         grid.addColumn { it.subject }.setHeader("Subject")
-        grid.addComponentColumn { TagContainer(it.tags) }.setHeader("Tags")
+        grid.addComponentColumn { TagContainer(tagService.findByMail(it)) }.setHeader("Tags")
         grid.addComponentColumn { createGridActions(it) }
         grid.columns.forEach { it.setResizable(true).setAutoWidth(true) }
         grid.isColumnReorderingAllowed = true

@@ -15,7 +15,7 @@ class TagSelectorBuilder(
 ): Builder<TagSelector> {
 
     fun forDoc(doc: Doc) = apply {
-        selected = doc.tags
+        selected = tagService.findByDoc(doc)
         rawText = doc.rawText
     }
 

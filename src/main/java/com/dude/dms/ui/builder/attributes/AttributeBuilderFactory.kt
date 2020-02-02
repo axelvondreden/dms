@@ -20,7 +20,7 @@ class AttributeBuilderFactory(
 
     fun valueContainer(doc: Doc) = AttributeValueContainerBuilder(builderFactory, doc, attributeValueService, eventManager)
 
-    fun valueField(attributeValue: AttributeValue) = AttributeValueFieldBuilder(attributeValue, attributeValueService)
+    fun valueField(attributeValue: AttributeValue) = AttributeValueFieldBuilder(attributeValue, attributeService, attributeValueService)
 
     fun createDialog() = AttributeCreateDialogBuilder(attributeService)
 

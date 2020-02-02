@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.util.*
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.ManyToMany
 import javax.persistence.OneToMany
 import javax.validation.constraints.NotBlank
@@ -19,7 +18,7 @@ class Attribute(
         var isRequired: Boolean,
         var type: Type,
         @OneToMany(mappedBy = "attribute") var attributeValues: Set<AttributeValue> = HashSet(),
-        @ManyToMany(mappedBy = "attributes", fetch = FetchType.EAGER) var tags: Set<Tag> = HashSet()
+        @ManyToMany(mappedBy = "attributes") var tags: Set<Tag> = HashSet()
 ) : DataEntity(), LogsEvents {
 
     enum class Type {

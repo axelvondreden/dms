@@ -1,6 +1,7 @@
 package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.history.TagHistory
 import com.dude.dms.backend.data.mails.Mail
@@ -37,4 +38,6 @@ class TagService(
     fun findByDoc(doc: Doc) = tagRepository.findByDocs(doc)
 
     fun findByMail(mail: Mail) = tagRepository.findByMails(mail)
+
+    fun findByAttribute(attribute: Attribute) = tagRepository.findByAttributes(attribute)
 }

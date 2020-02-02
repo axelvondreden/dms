@@ -49,7 +49,7 @@ class DocsView(
 
         grid.dataProvider = docDataProvider
         grid.addColumn { it.documentDate?.convert() }.setHeader("Date")
-        grid.addComponentColumn { TagContainer(it.tags) }.setHeader("Tags")
+        grid.addComponentColumn { TagContainer(tagService.findByDoc(it)) }.setHeader("Tags")
         grid.addComponentColumn { createGridActions(it) }
         grid.addColumn { it.guid }
         grid.columns.forEach { it.setResizable(true).setAutoWidth(true) }

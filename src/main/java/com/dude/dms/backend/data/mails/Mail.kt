@@ -24,10 +24,10 @@ class Mail(
         @Size(max = 99999)
         var body: String? = null,
 
-        @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany
         var tags: MutableSet<Tag> = HashSet(),
 
-        @OneToMany(fetch = FetchType.EAGER)
+        @OneToMany
         var docs: MutableSet<Doc> = HashSet()
 ) : DataEntity(), Diffable<Mail>, LogsEvents {
 

@@ -20,7 +20,7 @@ class Doc(
         @Size(max = 99999)
         var rawText: String? = null,
 
-        @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany
         var tags: MutableSet<Tag> = HashSet(),
 
         @OneToMany(mappedBy = "doc")
@@ -33,7 +33,7 @@ class Doc(
         var mail: Mail? = null,
 
         @OneToMany(mappedBy = "doc")
-        override var history: List<DocHistory> = ArrayList()
+        override var history: Set<DocHistory> = HashSet()
 ) : DataEntity(), Diffable<Doc>, Historical<DocHistory>, LogsEvents {
 
     override fun showEvents() = true

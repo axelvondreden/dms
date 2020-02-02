@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.docs.TextBlock
 import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service
 @Service
 class DocService(
         private val docRepository: DocRepository,
+        private val tagService: TagService,
+        private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
         private val docHistoryService: DocHistoryService,
         private val textBlockService: TextBlockService,
@@ -21,8 +24,9 @@ class DocService(
 ) : HistoricalCrudService<Doc, DocHistory>(docRepository, eventManager) {
 
     override fun create(entity: Doc): Doc {
-        createAttributeValues(entity)
-        return super.create(entity)
+        val new = super.create(entity)
+        createAttributeValues(new)
+        return new
     }
 
     override fun save(entity: Doc): Doc {
@@ -40,7 +44,7 @@ class DocService(
     }
 
     private fun createAttributeValues(doc: Doc) {
-        doc.tags.flatMap { it.attributes }
+        tagService.findByDoc(doc).flatMap { attributeService.findByTag(it) }
                 .filter { attributeValueService.findByDocAndAttribute(doc, it) == null }
                 .map { AttributeValue(doc, it) }
                 .distinct()
@@ -48,9 +52,10 @@ class DocService(
     }
 
     private fun deleteAttributeValues(doc: Doc) {
-        val attributes = doc.tags.flatMap { it.attributes }
-        attributeValueService.findByDoc(doc).filter { it.attribute !in attributes }.distinct()
-                .forEach { attributeValueService.delete(it) }
+        val attributes = tagService.findByDoc(doc).flatMap { attributeService.findByTag(it) }
+        attributeValueService.findByDoc(doc)
+                .filter { attributeService.findByAttributeValue(it) !in attributes }
+                .distinct().forEach { attributeValueService.delete(it) }
     }
 
     override fun createHistory(entity: Doc, text: String?, created: Boolean, edited: Boolean) = DocHistory(entity, text, created, edited)
@@ -74,4 +79,6 @@ class DocService(
     fun findByFilter(filter: DocDataProvider.Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, pageable)
 
     fun countByFilter(filter: DocDataProvider.Filter) = docRepository.countByFilter(filter.tag, filter.mail)
+
+    fun findByTextBlock(textBlock: TextBlock) = docRepository.findByTextBlocks(textBlock)
 }

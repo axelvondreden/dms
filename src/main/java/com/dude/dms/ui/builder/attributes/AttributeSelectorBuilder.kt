@@ -15,7 +15,7 @@ class AttributeSelectorBuilder(
         private var selected: Set<Attribute> = HashSet()
 ): Builder<AttributeSelector> {
 
-    fun forTag(tag: Tag) = this.apply { selected = tag.attributes }
+    fun forTag(tag: Tag) = this.apply { selected = attributeService.findByTag(tag) }
 
     override fun build() = AttributeSelector(builderFactory, attributeService, eventManager).also { it.selectedAttributes = selected }
 }

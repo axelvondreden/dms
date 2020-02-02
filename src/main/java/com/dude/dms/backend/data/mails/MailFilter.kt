@@ -7,7 +7,6 @@ import com.dude.dms.backend.data.Tag
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.ManyToMany
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
@@ -15,7 +14,7 @@ import javax.persistence.ManyToMany
 class MailFilter(
         var folder: String,
 
-        @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany
         var tags: MutableSet<Tag> = HashSet()
 ) : DataEntity(), Diffable<MailFilter>, LogsEvents {
 

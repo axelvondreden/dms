@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param
 
 interface MailRepository : JpaRepository<Mail, Long> {
 
-    fun findByDocs(doc: Doc): List<Mail>
+    fun findByDocs(doc: Doc): Set<Mail>
 
     fun countByDocs(doc: Doc): Int
 

@@ -28,7 +28,7 @@ interface LogEntryRepository : JpaRepository<LogEntry, Long> {
                       @Param("ui") ui: Boolean?): Long
 
     @Query("SELECT DISTINCT log.className FROM LogEntry log")
-    fun findDistinctClassNames(): List<String>
+    fun findDistinctClassNames(): Set<String>
 
     fun findTopByOrderByTimestampAsc(): LogEntry
 

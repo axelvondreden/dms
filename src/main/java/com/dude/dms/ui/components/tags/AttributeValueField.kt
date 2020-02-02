@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.tags
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
+import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.AttributeValueService
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.datepicker.DatePicker
@@ -10,16 +11,22 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.NumberField
 import com.vaadin.flow.component.textfield.TextField
 
-class AttributeValueField(attributeValue: AttributeValue, attributeValueService: AttributeValueService) : HorizontalLayout() {
+class AttributeValueField(
+        attributeValue: AttributeValue,
+        attributeService: AttributeService,
+        attributeValueService: AttributeValueService
+) : HorizontalLayout() {
 
     private val validation: () -> Boolean
 
-    val label = attributeValue.attribute.name
+    private val attribute = attributeService.findByAttributeValue(attributeValue)
 
-    val isRequired = attributeValue.attribute.isRequired
+    val label = attribute.name
+
+    private val isRequired = attribute.isRequired
 
     init {
-        when (attributeValue.attribute.type) {
+        when (attribute.type) {
             Attribute.Type.STRING -> {
                 val textField = TextField(label).apply {
                     value = attributeValue.stringValue ?: ""

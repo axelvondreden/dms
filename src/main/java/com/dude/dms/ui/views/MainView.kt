@@ -95,7 +95,7 @@ class MainView(
         )
         for (attribute in attributeService.findAll()) {
             val entry = LeftClickableItem(attribute.name, VaadinIcon.TEXT_LABEL.create()) { }
-            val tags = attribute.tags.joinToString("\n") { it.name }
+            val tags = tagService.findByAttribute(attribute).joinToString("\n") { it.name }
             if (tags.isNotEmpty()) {
                 Tooltips.getCurrent().setTooltip(entry, "Tags:\n$tags")
             }
@@ -126,7 +126,7 @@ class MainView(
             DragSource.create(entry)
             tagBadges[tag.id] = DefaultBadgeHolder().apply { bind(entry.badge) }
             fillBadgeCount(tag)
-            val attrs = tag.attributes.joinToString("\n") { it.name }
+            val attrs = attributeService.findByTag(tag).joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
                 Tooltips.getCurrent().setTooltip(entry, "Attributes:\n$attrs")
             }
@@ -144,11 +144,11 @@ class MainView(
     }
 
     private fun fillBadgeCount(doc: Doc) {
-        doc.tags.forEach { fillBadgeCount(it) }
+        tagService.findByDoc(doc).forEach { fillBadgeCount(it) }
     }
 
     private fun fillBadgeCount(mail: Mail) {
-        mail.tags.forEach { fillBadgeCount(it) }
+        tagService.findByMail(mail).forEach { fillBadgeCount(it) }
     }
 
     private fun fillBadgeCount(tag: Tag) {
