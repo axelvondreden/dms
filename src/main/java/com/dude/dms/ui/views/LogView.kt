@@ -8,7 +8,7 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.dude.dms.ui.extensions.convert
 import com.dude.dms.ui.dataproviders.LogDataProvider
-import com.dude.dms.ui.dataproviders.LogDataProvider.LogFilter
+import com.dude.dms.ui.dataproviders.LogDataProvider.Filter
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
@@ -82,7 +82,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
     }
 
     private fun refreshFilter() {
-        val filter = LogFilter(dateFilter.optionalValue.orElse(null), classNameFilter.optionalValue.orElse(null), levelFilter.optionalValue.orElse(null), uiFilter.value)
+        val filter = Filter(dateFilter.optionalValue.orElse(null), classNameFilter.optionalValue.orElse(null), levelFilter.optionalValue.orElse(null), uiFilter.value)
         logDataProvider.setFilter(filter)
         logDataProvider.refreshAll()
     }

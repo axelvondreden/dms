@@ -2,7 +2,9 @@ package com.dude.dms.ui.views
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
@@ -10,6 +12,7 @@ import com.dude.dms.brain.events.EventType
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.tags.TagContainer
+import com.dude.dms.ui.dataproviders.DocDataProvider
 import com.dude.dms.ui.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.helger.commons.io.file.FileHelper
@@ -29,20 +32,22 @@ import org.vaadin.olli.FileDownloadWrapper
 @PageTitle("Docs")
 class DocsView(
         private val builderFactory: BuilderFactory,
+        private val docDataProvider: DocDataProvider,
         private val docService: DocService,
         private val tagService: TagService,
+        private val mailService: MailService,
         private val fileManager: FileManager,
         eventManager: EventManager
 ) : GridView<Doc>(), HasUrlParameter<String?> {
 
-    private var param: String? = null
+    private val ui = UI.getCurrent()
 
     init {
-        val ui = UI.getCurrent()
+        eventManager.register(this, Doc::class, EventType.CREATE, EventType.DELETE) { ui.access { docDataProvider.refreshAll() } }
+        eventManager.register(this, Doc::class, EventType.UPDATE) { ui.access { docDataProvider.refreshItem(it) } }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { docDataProvider.refreshAll() } }
 
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fillGrid() } }
-
+        grid.dataProvider = docDataProvider
         grid.addColumn { it.documentDate?.convert() }.setHeader("Date")
         grid.addComponentColumn { TagContainer(it.tags) }.setHeader("Tags")
         grid.addComponentColumn { createGridActions(it) }
@@ -102,19 +107,24 @@ class DocsView(
         return HorizontalLayout(text, download, edit)
     }
 
-    private fun fillGrid() {
-        if (param != null && param!!.isNotEmpty()) {
-            val parts = param!!.split(":").toTypedArray()
-            if ("tag".equals(parts[0], ignoreCase = true)) {
-                tagService.findByName(parts[1])?.let { grid.setItems(docService.findByTag(it)) }
-            }
-        } else {
-            grid.setItems(docService.findAll())
+    private fun refreshFilter(tag: Tag? = null, mail: Mail? = null) {
+        val filter = DocDataProvider.Filter(tag, mail)
+        ui.access {
+            docDataProvider.setFilter(filter)
+            docDataProvider.refreshAll()
         }
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, @OptionalParameter t: String?) {
-        param = t
-        fillGrid()
+        if (!t.isNullOrEmpty()) {
+            val parts = t.split(":").toTypedArray()
+            if ("tag".equals(parts[0], ignoreCase = true)) {
+                refreshFilter(tag = tagService.findByName(parts[1]))
+            } else if ("mail".equals(parts[0], ignoreCase = true)) {
+                refreshFilter(mail = mailService.load(parts[1].toLong()))
+            }
+        } else {
+            refreshFilter()
+        }
     }
 }

@@ -7,6 +7,8 @@ import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
+import com.dude.dms.ui.dataproviders.DocDataProvider
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
@@ -68,4 +70,8 @@ class DocService(
     fun countByRawTextContainingIgnoreCase(rawText: String) = docRepository.countByRawTextContainingIgnoreCase(rawText)
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEquals(attribute)
+
+    fun findByFilter(filter: DocDataProvider.Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, pageable)
+
+    fun countByFilter(filter: DocDataProvider.Filter) = docRepository.countByFilter(filter.tag, filter.mail)
 }
