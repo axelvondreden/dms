@@ -1,5 +1,6 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.AttributeService
@@ -7,7 +8,7 @@ import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
-import com.dude.dms.brain.events.EventType
+import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
@@ -49,6 +50,7 @@ class MainView(
 
     private var docsBadge: DefaultBadgeHolder? = null
     private var mailsBadge: DefaultBadgeHolder? = null
+    private val tagBadges = HashMap<Long, DefaultBadgeHolder>()
 
     init {
         init(AppLayoutBuilder.get(LeftHybrid::class.java)
@@ -58,10 +60,12 @@ class MainView(
                 .build())
         val ui = UI.getCurrent()
 
-        eventManager.register(this, Doc::class, EventType.CREATE) { ui.access { docsBadge!!.increase() } }
-        eventManager.register(this, Doc::class, EventType.DELETE) {ui.access { docsBadge!!.decrease() }}
-        eventManager.register(this, Mail::class, EventType.CREATE) { ui.access { mailsBadge!!.increase() } }
-        eventManager.register(this, Mail::class, EventType.DELETE) {ui.access { mailsBadge!!.decrease() }}
+        eventManager.register(this, Doc::class, CREATE) { ui.access { docsBadge!!.increase(); fillBadgeCount(it) } }
+        eventManager.register(this, Doc::class, UPDATE) { ui.access { fillBadgeCount(it) } }
+        eventManager.register(this, Doc::class, DELETE) { ui.access { docsBadge!!.decrease(); fillBadgeCount(it) } }
+        eventManager.register(this, Mail::class, CREATE) { ui.access { mailsBadge!!.increase(); fillBadgeCount(it) } }
+        eventManager.register(this, Mail::class, UPDATE) { ui.access { fillBadgeCount(it) } }
+        eventManager.register(this, Mail::class, DELETE) { ui.access { mailsBadge!!.decrease(); fillBadgeCount(it) } }
     }
 
     private fun buildAppMenu(): Component {
@@ -91,7 +95,6 @@ class MainView(
         )
         for (attribute in attributeService.findAll()) {
             val entry = LeftClickableItem(attribute.name, VaadinIcon.TEXT_LABEL.create()) { }
-            DefaultBadgeHolder(docService.countByAttribute(attribute).toInt()).apply { bind(entry.badge) }
             val tags = attribute.tags.joinToString("\n") { it.name }
             if (tags.isNotEmpty()) {
                 Tooltips.getCurrent().setTooltip(entry, "Tags:\n$tags")
@@ -112,6 +115,7 @@ class MainView(
     }
 
     private fun createTagsEntry(): LeftSubmenu {
+        tagBadges.clear()
         val tagEntries = mutableListOf<Component>(
                 LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create()) {
                     builderFactory.tags().createDialog().build().open()
@@ -122,7 +126,8 @@ class MainView(
                 UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}")
             }
             DragSource.create(entry)
-            DefaultBadgeHolder(docService.countByTag(tag).toInt()).apply { bind(entry.badge) }
+            tagBadges[tag.id] = DefaultBadgeHolder().apply { bind(entry.badge) }
+            fillBadgeCount(tag)
             val attrs = tag.attributes.joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
                 Tooltips.getCurrent().setTooltip(entry, "Attributes:\n$attrs")
@@ -134,6 +139,18 @@ class MainView(
             }
         }
         return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
+    }
+
+    private fun fillBadgeCount(doc: Doc) {
+        doc.tags.forEach { fillBadgeCount(it) }
+    }
+
+    private fun fillBadgeCount(mail: Mail) {
+        mail.tags.forEach { fillBadgeCount(it) }
+    }
+
+    private fun fillBadgeCount(tag: Tag) {
+        tagBadges[tag.id]?.count = docService.countByTag(tag).toInt() + mailService.countByTag(tag).toInt()
     }
 
     private fun buildAppBar() = AppBarBuilder.get().add(initSearchOverlayButton()).build()

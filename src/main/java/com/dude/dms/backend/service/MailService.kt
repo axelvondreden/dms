@@ -1,5 +1,6 @@
 package com.dude.dms.backend.service
 
+import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.MailRepository
@@ -21,4 +22,6 @@ class MailService(
     fun findByFilter(filter: MailDataProvider.Filter, pageable: Pageable) = mailRepository.findByFilter(filter.tag, filter.doc, pageable)
 
     fun countByFilter(filter: MailDataProvider.Filter) = mailRepository.countByFilter(filter.tag, filter.doc)
+
+    fun countByTag(tag: Tag) = mailRepository.countByTags(tag)
 }

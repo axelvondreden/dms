@@ -20,4 +20,6 @@ interface MailRepository : JpaRepository<Mail, Long> {
 
     @Query("SELECT COUNT(*) FROM Mail mail WHERE (:tag is null or :tag MEMBER OF mail.tags) AND (:doc is null or :doc MEMBER OF mail.docs)")
     fun countByFilter(@Param("tag") tag: Tag?, @Param("doc") doc: Doc?): Long
+
+    fun countByTags(tag: Tag): Long
 }
