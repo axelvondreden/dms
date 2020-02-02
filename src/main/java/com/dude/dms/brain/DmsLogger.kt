@@ -50,7 +50,7 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.INFO, format(message, *arguments))
     }
 
-    fun showInfo(message: String, ui: UI, persistent: Boolean = false) {
+    fun showInfo(message: String, ui: UI, persistent: Boolean = false, log: Boolean = true) {
         try {
             val notification = create(message, persistent)
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
@@ -58,8 +58,10 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         } catch (e: IllegalStateException) {
             logger.warn("Could not show UI notification: ${e.message}")
         }
-        logger.info(message)
-        save(Level.INFO, message, true)
+        if (log) {
+            logger.info(message)
+            save(Level.INFO, message, true)
+        }
     }
 
     fun warn(msg: String) {
@@ -92,7 +94,7 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.ERROR, format(msg, *arguments), e)
     }
 
-    fun showError(message: String, ui: UI, persistent: Boolean = false) {
+    fun showError(message: String, ui: UI, persistent: Boolean = false, log: Boolean = true) {
         try {
             val notification = create(message, persistent)
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR)
@@ -100,8 +102,10 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         } catch (e: IllegalStateException) {
             logger.warn("Could not show UI notification: ${e.message}")
         }
-        logger.error(message)
-        save(Level.ERROR, message, true)
+        if (log) {
+            logger.error(message)
+            save(Level.ERROR, message, true)
+        }
     }
 
     private fun format(msg: String, vararg arguments: Any?): String {

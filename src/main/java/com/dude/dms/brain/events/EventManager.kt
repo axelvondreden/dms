@@ -14,19 +14,17 @@ class EventManager {
         listeners.filter { it.target == entity::class && it.type == type }.forEach {
             it.run(entity)
         }
-        listeners.filter { it.target == entity::class && it.type == type }.distinctBy { it.holder.ui }.forEach {
-            val ui = it.holder.ui
-            val text = when(type) {
-                EventType.CREATE -> "Created"
-                EventType.UPDATE -> "Updated"
-                EventType.DELETE -> "Deleted"
-            }
-            if (entity.showEvents() && ui.isPresent) {
-                LOGGER.showInfo("$text $entity", ui.get())
-            } else {
-                LOGGER.info("$text $entity")
-            }
+        val uis = listeners.filter { it.target == entity::class && it.type == type && it.holder.ui.isPresent }
+                .map { it.holder.ui.get() }.toSet()
+        val text = when(type) {
+            EventType.CREATE -> "Created"
+            EventType.UPDATE -> "Updated"
+            EventType.DELETE -> "Deleted"
         }
+        if (entity.showEvents()) {
+            uis.forEach { LOGGER.showInfo("$text $entity", it, log = false) }
+        }
+        LOGGER.info("$text $entity")
     }
 
     @Suppress("UNCHECKED_CAST")
