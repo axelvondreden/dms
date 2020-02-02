@@ -108,7 +108,7 @@ class MainView(
                 }
             }
         }
-        return LeftSubmenu("Attributes", VaadinIcon.ACCESSIBILITY.create(), attributeEntries)
+        return LeftSubmenu("Attributes", VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
     }
 
     private fun createTagsEntry(): LeftSubmenu {
@@ -133,7 +133,7 @@ class MainView(
                 addItem("Edit") { builderFactory.tags().editDialog(tag).build().open() }
             }
         }
-        return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries)
+        return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
     }
 
     private fun buildAppBar() = AppBarBuilder.get().add(initSearchOverlayButton()).build()
