@@ -27,6 +27,8 @@ interface DocRepository : JpaRepository<Doc, Long> {
 
     fun countByRawTextContainingIgnoreCase(rawText: String): Long
 
+    fun findByAttributeValues_AttributeEquals(attribute: Attribute): Set<Doc>
+
     fun countByAttributeValues_AttributeEquals(attribute: Attribute): Long
 
     @Query("SELECT doc FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)")

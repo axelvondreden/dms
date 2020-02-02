@@ -13,6 +13,7 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.dataproviders.DocDataProvider
+import com.dude.dms.ui.dataproviders.GridViewDataProvider
 import com.dude.dms.ui.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.helger.commons.io.file.FileHelper
@@ -32,20 +33,20 @@ import org.vaadin.olli.FileDownloadWrapper
 @PageTitle("Docs")
 class DocsView(
         private val builderFactory: BuilderFactory,
-        private val docDataProvider: DocDataProvider,
         private val docService: DocService,
         private val tagService: TagService,
         private val mailService: MailService,
         private val fileManager: FileManager,
+        docDataProvider: DocDataProvider,
         eventManager: EventManager
 ) : GridView<Doc>(), HasUrlParameter<String?> {
 
     private val ui = UI.getCurrent()
 
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.DELETE) { ui.access { docDataProvider.refreshAll() } }
-        eventManager.register(this, Doc::class, EventType.UPDATE) { ui.access { docDataProvider.refreshItem(it) } }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { docDataProvider.refreshAll() } }
+        eventManager.register(this, Doc::class, EventType.CREATE, EventType.DELETE) { ui.access { grid.dataProvider.refreshAll() } }
+        eventManager.register(this, Doc::class, EventType.UPDATE) { ui.access { grid.dataProvider.refreshItem(it) } }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { grid.dataProvider.refreshAll() } }
 
         grid.dataProvider = docDataProvider
         grid.addColumn { it.documentDate?.convert() }.setHeader("Date")
@@ -107,11 +108,13 @@ class DocsView(
         return HorizontalLayout(text, download, edit)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun refreshFilter(tag: Tag? = null, mail: Mail? = null) {
         val filter = DocDataProvider.Filter(tag, mail)
+        val dp = grid.dataProvider as GridViewDataProvider<Doc, DocDataProvider.Filter>
         ui.access {
-            docDataProvider.setFilter(filter)
-            docDataProvider.refreshAll()
+            dp.setFilter(filter)
+            dp.refreshAll()
         }
     }
 

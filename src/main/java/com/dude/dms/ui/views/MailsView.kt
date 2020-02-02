@@ -10,6 +10,7 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.tags.TagContainer
+import com.dude.dms.ui.dataproviders.GridViewDataProvider
 import com.dude.dms.ui.dataproviders.MailDataProvider
 import com.dude.dms.ui.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
@@ -24,19 +25,19 @@ import dev.mett.vaadin.tooltip.Tooltips
 @Route(value = Const.PAGE_MAILS, layout = MainView::class)
 @PageTitle("Mails")
 class MailsView(
-        private val mailDataProvider: MailDataProvider,
         private val mailService: MailService,
         private val tagService: TagService,
         private val docService: DocService,
+        mailDataProvider: MailDataProvider,
         eventManager: EventManager
 ) : GridView<Mail>(), HasUrlParameter<String?> {
 
     private val ui = UI.getCurrent()
 
     init {
-        eventManager.register(this, Mail::class, EventType.CREATE, EventType.DELETE) { ui.access { mailDataProvider.refreshAll() } }
-        eventManager.register(this, Mail::class, EventType.UPDATE) { ui.access { mailDataProvider.refreshItem(it) } }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { mailDataProvider.refreshAll() } }
+        eventManager.register(this, Mail::class, EventType.CREATE, EventType.DELETE) { ui.access { grid.dataProvider.refreshAll() } }
+        eventManager.register(this, Mail::class, EventType.UPDATE) { ui.access { grid.dataProvider.refreshItem(it) } }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { grid.dataProvider.refreshAll() } }
 
         grid.dataProvider = mailDataProvider
         grid.addColumn { it.received.convert() }.setHeader("Date")
@@ -71,11 +72,13 @@ class MailsView(
         return HorizontalLayout(docs)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun refreshFilter(tag: Tag? = null, doc: Doc? = null) {
         val filter = MailDataProvider.Filter(tag, doc)
+        val dp = grid.dataProvider as GridViewDataProvider<Mail, MailDataProvider.Filter>
         ui.access {
-            mailDataProvider.setFilter(filter)
-            mailDataProvider.refreshAll()
+            dp.setFilter(filter)
+            dp.refreshAll()
         }
     }
 

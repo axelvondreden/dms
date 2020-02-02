@@ -1,6 +1,7 @@
 package com.dude.dms.ui.views
 
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.AttributeService
@@ -11,7 +12,6 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts.LeftHybrid
@@ -24,9 +24,7 @@ import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout
 import com.github.appreciated.app.layout.entity.DefaultBadgeHolder
 import com.github.appreciated.app.layout.entity.Section
 import com.vaadin.flow.component.Component
-import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.dnd.DragSource
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -66,6 +64,8 @@ class MainView(
         eventManager.register(this, Mail::class, CREATE) { ui.access { mailsBadge!!.increase(); fillBadgeCount(it) } }
         eventManager.register(this, Mail::class, UPDATE) { ui.access { fillBadgeCount(it) } }
         eventManager.register(this, Mail::class, DELETE) { ui.access { mailsBadge!!.decrease(); fillBadgeCount(it) } }
+        eventManager.register(this, Attribute::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
+        eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
     }
 
     private fun buildAppMenu(): Component {
@@ -102,13 +102,9 @@ class MainView(
             attributeEntries.add(entry)
             ContextMenu().apply {
                 target = entry
+                isOpenOnClick = true
                 addItem("Edit") { builderFactory.attributes().editDialog(attribute).build().open() }
-                addItem("Delete") {
-                    ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
-                        attributeService.delete(attribute)
-                        UI.getCurrent().page.reload()
-                    }).open()
-                }
+                addItem("Delete") { builderFactory.attributes().deleteDialog(attribute).build().open() }
             }
         }
         return LeftSubmenu("Attributes", VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
@@ -137,7 +133,7 @@ class MainView(
                 addItem("Docs") { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
                 addItem("Mails") { UI.getCurrent().navigate<String, MailsView>(MailsView::class.java, "tag:${tag.name}") }
                 addItem("Edit") { builderFactory.tags().editDialog(tag).build().open() }
-                addItem("Delete")
+                addItem("Delete") { builderFactory.tags().deleteDialog(tag).build().open() }
             }
         }
         return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)

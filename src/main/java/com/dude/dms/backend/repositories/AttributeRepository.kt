@@ -11,5 +11,7 @@ interface AttributeRepository : JpaRepository<Attribute, Long> {
 
     fun findByTags(tag: Tag): Set<Attribute>
 
+    fun countByTags(tag: Tag): Long
+
     fun findByAttributeValues(attributeValue: AttributeValue): Attribute
 }

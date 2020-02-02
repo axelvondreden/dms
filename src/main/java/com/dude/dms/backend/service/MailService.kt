@@ -23,5 +23,7 @@ class MailService(
 
     fun countByFilter(filter: MailDataProvider.Filter) = mailRepository.countByFilter(filter.tag, filter.doc)
 
+    fun findByTag(tag: Tag) = mailRepository.findByTags(tag)
+
     fun countByTag(tag: Tag) = mailRepository.countByTags(tag)
 }

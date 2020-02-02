@@ -15,7 +15,7 @@ class MailFilter(
         var folder: String,
 
         @ManyToMany
-        var tags: MutableSet<Tag> = HashSet()
+        var tags: Set<Tag> = HashSet()
 ) : DataEntity(), Diffable<MailFilter>, LogsEvents {
 
     override fun showEvents() = true

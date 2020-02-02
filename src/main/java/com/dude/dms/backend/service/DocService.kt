@@ -74,6 +74,8 @@ class DocService(
 
     fun countByRawTextContainingIgnoreCase(rawText: String) = docRepository.countByRawTextContainingIgnoreCase(rawText)
 
+    fun findByAttribute(attribute: Attribute) = docRepository.findByAttributeValues_AttributeEquals(attribute)
+
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEquals(attribute)
 
     fun findByFilter(filter: DocDataProvider.Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, pageable)

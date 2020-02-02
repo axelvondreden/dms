@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service
 @Service
 class AttributeService(
         private val attributeRepository: AttributeRepository,
+        private val tagService: TagService,
+        private val attributeValueService: AttributeValueService,
         eventManager: EventManager
 ) : EventService<Attribute>(attributeRepository, eventManager) {
 
@@ -22,9 +24,20 @@ class AttributeService(
         } else super.create(entity)
     }
 
+    override fun delete(entity: Attribute) {
+        tagService.findByAttribute(entity).forEach {
+            it.attributes = findByTag(it).minus(entity)
+            tagService.save(it)
+        }
+        attributeValueService.findByAttribute(entity).forEach(attributeValueService::delete)
+        super.delete(entity)
+    }
+
     fun findByName(name: String) = attributeRepository.findByName(name)
 
     fun findByTag(tag: Tag) = attributeRepository.findByTags(tag)
+
+    fun countByTag(tag: Tag) = attributeRepository.countByTags(tag)
 
     fun findByAttributeValue(attributeValue: AttributeValue) = attributeRepository.findByAttributeValues(attributeValue)
 

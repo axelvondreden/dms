@@ -36,7 +36,7 @@ class BuilderFactory(
         private val updateChecker: UpdateChecker
 ) {
 
-    fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService, eventManager)
+    fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService, docService, tagService, eventManager)
 
     fun docs() = DocBuilderFactory(this, docService, mailService, tagService, textBlockService, pollingService, fileManager)
 
@@ -44,5 +44,5 @@ class BuilderFactory(
 
     fun rules() = RuleBuilderFactory(this, tagService, plainTextRuleValidator, regexRuleValidator, plainTextRuleService, regexRuleService, docService, mailFilterService, mailManager, eventManager)
 
-    fun tags() = TagBuilderFactory(this, tagService, docService)
+    fun tags() = TagBuilderFactory(this, tagService, docService, mailService, attributeService, plainTextRuleService, regexRuleService, mailFilterService)
 }
