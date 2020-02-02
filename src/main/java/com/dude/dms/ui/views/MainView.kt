@@ -122,9 +122,7 @@ class MainView(
                 }
         )
         for (tag in tagService.findAll()) {
-            val entry = LeftClickableItem(tag.name, VaadinIcon.TAG.create().apply { color = tag.color }) {
-                UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}")
-            }
+            val entry = LeftClickableItem(tag.name, VaadinIcon.TAG.create().apply { color = tag.color }) { }
             DragSource.create(entry)
             tagBadges[tag.id] = DefaultBadgeHolder().apply { bind(entry.badge) }
             fillBadgeCount(tag)
@@ -135,7 +133,11 @@ class MainView(
             tagEntries.add(entry)
             ContextMenu().apply {
                 target = entry
+                isOpenOnClick = true
+                addItem("Docs") { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
+                addItem("Mails") { UI.getCurrent().navigate<String, MailsView>(MailsView::class.java, "tag:${tag.name}") }
                 addItem("Edit") { builderFactory.tags().editDialog(tag).build().open() }
+                addItem("Delete")
             }
         }
         return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
