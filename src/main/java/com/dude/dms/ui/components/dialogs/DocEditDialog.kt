@@ -7,12 +7,13 @@ import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class DocEditDialog(builderFactory: BuilderFactory, private val doc: Doc, private val docService: DocService) : EventDialog<Doc>() {
+class DocEditDialog(builderFactory: BuilderFactory, private val doc: Doc, private val docService: DocService) : Dialog() {
 
     private val datePicker = DmsDatePicker("Date").apply {
         setWidthFull()
@@ -62,7 +63,6 @@ class DocEditDialog(builderFactory: BuilderFactory, private val doc: Doc, privat
             doc.documentDate = datePicker.value
             doc.tags = tagSelector.selectedTags.toMutableSet()
             docService.save(doc)
-            triggerEditEvent(doc)
             close()
         }
     }

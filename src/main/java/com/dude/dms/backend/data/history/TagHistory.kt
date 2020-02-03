@@ -10,4 +10,6 @@ class TagHistory(
         text: String?,
         created: Boolean,
         edited: Boolean
-) : History(created, edited, text)
+) : History(created, edited, text) {
+    override fun toString() = "TagHistory($tag)"
+}

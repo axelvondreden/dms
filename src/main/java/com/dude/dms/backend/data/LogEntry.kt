@@ -16,4 +16,6 @@ class LogEntry(
         var level: DmsLogger.Level,
         var stacktrace: String? = null,
         var isUi: Boolean = false
-) : DataEntity()
+) : DataEntity() {
+    override fun toString(): String = "LogEntry($timestamp, $message, $level)"
+}

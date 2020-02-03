@@ -21,12 +21,14 @@ class Tag(
         var color: String,
         @ManyToMany(mappedBy = "tags") var docs: Set<Doc> = HashSet(),
         @ManyToMany(mappedBy = "tags") var mails: Set<Mail> = HashSet(),
-        @ManyToMany(fetch = FetchType.EAGER) var attributes: Set<Attribute> = HashSet(),
+        @ManyToMany var attributes: Set<Attribute> = HashSet(),
         @ManyToMany(mappedBy = "tags") var plainTextRules: Set<PlainTextRule> = HashSet(),
         @ManyToMany(mappedBy = "tags") var regexRules: Set<RegexRule> = HashSet(),
         @ManyToMany(mappedBy = "tags") var mailFilters: Set<MailFilter> = HashSet(),
-        @OneToMany(mappedBy = "tag") override var history: List<TagHistory> = ArrayList()
-) : DataEntity(), Diffable<Tag>, Historical<TagHistory> {
+        @OneToMany(mappedBy = "tag") override var history: Set<TagHistory> = HashSet()
+) : DataEntity(), Diffable<Tag>, Historical<TagHistory>, LogsEvents {
+
+    override fun showEvents() = true
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -36,4 +38,7 @@ class Tag(
     }
 
     override fun hashCode() = Objects.hash(super.hashCode(), name)
+
+    override fun toString(): String = "Tag($name)"
+
 }

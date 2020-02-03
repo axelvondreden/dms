@@ -16,7 +16,7 @@ class ChangelogDialog(changelogService: ChangelogService, updateChecker: UpdateC
 
         add(Button("Check for updates", VaadinIcon.REFRESH.create()) { updateChecker.check(false) }.apply { addThemeVariants(ButtonVariant.LUMO_PRIMARY) })
 
-        changelogService.findAll().sortedBy { it.published }.forEach { changelog ->
+        changelogService.findAll().sortedBy { it.published }.reversed().forEach { changelog ->
             val area = TextArea(changelog.version, changelog.body, "").apply {
                 isReadOnly = true
                 setWidthFull()

@@ -1,6 +1,7 @@
 package com.dude.dms.backend.data.history
 
 import com.dude.dms.backend.data.DataEntity
+import com.dude.dms.backend.data.LogsEvents
 import java.time.LocalDateTime
 import javax.persistence.MappedSuperclass
 import javax.validation.constraints.Size
@@ -11,4 +12,7 @@ abstract class History(
         var edited: Boolean,
         var text: @Size(max = 255) String? = null,
         var timestamp: LocalDateTime = LocalDateTime.now()
-) : DataEntity()
+) : DataEntity(), LogsEvents {
+
+    override fun showEvents() = false
+}

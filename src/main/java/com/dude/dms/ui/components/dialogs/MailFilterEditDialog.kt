@@ -6,8 +6,10 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -19,7 +21,7 @@ class MailFilterEditDialog(
         private val mailFilter: MailFilter,
         private val mailFilterService: MailFilterService,
         mailManager: MailManager
-) : EventDialog<MailFilter>() {
+) : Dialog() {
 
     private val folderGrid = TreeGrid<Folder>().apply { setWidthFull() }
 
@@ -30,7 +32,7 @@ class MailFilterEditDialog(
         try {
             mailManager.testConnection()
         } catch (e: MessagingException) {
-            LOGGER.showError("IMAP Connection Failed: ${e.message}")
+            LOGGER.showError("IMAP Connection Failed: ${e.message}", UI.getCurrent())
             close()
         }
 
@@ -55,20 +57,17 @@ class MailFilterEditDialog(
     private fun delete() {
         ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
             mailFilterService.delete(mailFilter)
-            triggerDeleteEvent(mailFilter)
             close()
         }).open()
     }
 
     private fun save() {
         if (folderGrid.asSingleSelect().isEmpty) {
-            LOGGER.showError("No Folder selected!")
+            LOGGER.showError("No Folder selected!", UI.getCurrent())
             return
         }
         mailFilter.folder = folderGrid.asSingleSelect().value.fullName
         mailFilterService.save(mailFilter)
-        LOGGER.showInfo("Edited mail-filter!")
-        triggerEditEvent(mailFilter)
         close()
     }
 

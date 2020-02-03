@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.RegexField
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.dialog.Dialog
@@ -16,7 +17,7 @@ class RegexRuleEditDialog(
         builderFactory: BuilderFactory,
         private val regexRule: RegexRule,
         private val regexRuleService: RegexRuleService
-) : EventDialog<RegexRule>() {
+) : Dialog() {
 
     private val regex = RegexField("Regex", regexRule.regex).apply { setWidthFull() }
 
@@ -38,7 +39,6 @@ class RegexRuleEditDialog(
         val dialog = Dialog(Label("Are you sure you want to delete the item?"))
         val button = Button("Delete", VaadinIcon.TRASH.create()) {
             regexRuleService.delete(regexRule)
-            triggerDeleteEvent(regexRule)
             close()
         }.apply { addThemeVariants(ButtonVariant.LUMO_ERROR) }
         dialog.add(button)
@@ -47,18 +47,16 @@ class RegexRuleEditDialog(
 
     private fun save() {
         if (regex.isEmpty) {
-            LOGGER.showError("Regex can not be empty!")
+            LOGGER.showError("Regex can not be empty!", UI.getCurrent())
             return
         }
         if (ruleTagSelector.selectedTags.isEmpty()) {
-            LOGGER.showError("At least on tag must be selected!")
+            LOGGER.showError("At least on tag must be selected!", UI.getCurrent())
             return
         }
         regexRule.regex = regex.value!!
         regexRule.tags = ruleTagSelector.selectedTags
         regexRuleService.save(regexRule)
-        LOGGER.showInfo("Edited rule!")
-        triggerEditEvent(regexRule)
         close()
     }
 

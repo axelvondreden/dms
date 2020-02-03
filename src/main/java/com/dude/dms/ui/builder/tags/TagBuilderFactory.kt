@@ -1,23 +1,28 @@
 package com.dude.dms.ui.builder.tags
 
-import com.dude.dms.brain.CreateEvent
-import com.dude.dms.brain.EditEvent
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.TagService
+import com.dude.dms.backend.service.*
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.builder.Factory
 
 class TagBuilderFactory(
         builderFactory: BuilderFactory,
         private val tagService: TagService,
-        private val docService: DocService) : Factory(builderFactory) {
+        private val docService: DocService,
+        private val mailService: MailService,
+        private val attributeService: AttributeService,
+        private val plainTextRuleService: PlainTextRuleService,
+        private val regexRuleService: RegexRuleService,
+        private val mailFilterService: MailFilterService
+) : Factory(builderFactory) {
 
     fun searchResult(tag: Tag) = TagSearchResultBuilder(tag, builderFactory.tags().editDialog(tag).build(), docService)
 
-    fun createDialog(createEvent: CreateEvent<Tag>? = null) = TagCreateDialogBuilder(builderFactory, tagService, createEvent)
+    fun createDialog() = TagCreateDialogBuilder(builderFactory, tagService)
 
-    fun editDialog(tag: Tag, editEvent: EditEvent<Tag>? = null) = TagEditDialogBuilder(builderFactory, tag, tagService, docService, editEvent)
+    fun editDialog(tag: Tag) = TagEditDialogBuilder(builderFactory, tag, tagService, docService)
+
+    fun deleteDialog(tag: Tag) = TagDeleteDialogBuilder(tag, tagService, docService, mailService, attributeService, plainTextRuleService, regexRuleService, mailFilterService)
 
     fun selector() = TagSelectorBuilder(tagService)
 }

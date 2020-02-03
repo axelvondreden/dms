@@ -4,7 +4,7 @@ import com.dude.dms.brain.SpringContext;
 import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.repositories.DocRepository;
 import com.dude.dms.backend.service.DocService;
-import com.dude.dms.ui.MainView;
+import com.dude.dms.ui.views.MainView;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

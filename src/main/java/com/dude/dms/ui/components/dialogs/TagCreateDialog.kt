@@ -12,12 +12,13 @@ import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: TagService) : EventDialog<Tag>() {
+class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: TagService) : Dialog() {
 
     private val name = TextField("Name").apply { setWidthFull() }
 
@@ -67,7 +68,6 @@ class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: Ta
         tagService.create(tag)
         tag.attributes = attributeSelector.selectedAttributes
         tagService.save(tag)
-        triggerCreateEvent(tag)
         close()
     }
 }

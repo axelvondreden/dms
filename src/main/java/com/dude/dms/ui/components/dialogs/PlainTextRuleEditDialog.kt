@@ -6,9 +6,11 @@ import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -18,7 +20,7 @@ class PlainTextRuleEditDialog(
         builderFactory: BuilderFactory,
         private val plainTextRule: PlainTextRule,
         private val plainTextRuleService: PlainTextRuleService
-) : EventDialog<PlainTextRule>() {
+) : Dialog() {
 
     private val plainText = TextField("Text", plainTextRule.text, "").apply { setWidthFull() }
 
@@ -45,26 +47,23 @@ class PlainTextRuleEditDialog(
     private fun delete() {
         ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
             plainTextRuleService.delete(plainTextRule)
-            triggerDeleteEvent(plainTextRule)
             close()
         }).open()
     }
 
     private fun save() {
         if (plainText.isEmpty) {
-            LOGGER.showError("Text can not be empty!")
+            LOGGER.showError("Text can not be empty!", UI.getCurrent())
             return
         }
         if (ruleTagSelector.selectedTags.isEmpty()) {
-            LOGGER.showError("At least on tag must be selected!")
+            LOGGER.showError("At least on tag must be selected!", UI.getCurrent())
             return
         }
         plainTextRule.text = plainText.value
         plainTextRule.tags = ruleTagSelector.selectedTags
         plainTextRule.caseSensitive = caseSensitive.value
         plainTextRuleService.save(plainTextRule)
-        LOGGER.showInfo("Edited rule!")
-        triggerEditEvent(plainTextRule)
         close()
     }
 

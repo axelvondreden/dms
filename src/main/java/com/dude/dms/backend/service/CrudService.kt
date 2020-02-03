@@ -1,9 +1,12 @@
 package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.DataEntity
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 abstract class CrudService<T : DataEntity>(protected val repository: JpaRepository<T, Long>) {
+
+    open fun create(entity: T) = repository.saveAndFlush(entity)
 
     open fun save(entity: T) = repository.saveAndFlush(entity)
 
@@ -13,7 +16,7 @@ abstract class CrudService<T : DataEntity>(protected val repository: JpaReposito
 
     fun load(id: Long): T? = repository.findById(id).orElse(null)
 
-    open fun create(entity: T) = repository.saveAndFlush(entity)
-
     fun findAll() = repository.findAll()
+
+    fun findAll(pageable: Pageable) = repository.findAll(pageable)
 }

@@ -6,13 +6,15 @@ import com.dude.dms.ui.components.misc.IconToggle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class AttributeCreateDialog(private val attributeService: AttributeService) : EventDialog<Attribute>() {
+
+class AttributeCreateDialog(private val attributeService: AttributeService) : Dialog() {
 
     private val nameTextField = TextField("Name").apply {
         setWidthFull()
@@ -60,7 +62,6 @@ class AttributeCreateDialog(private val attributeService: AttributeService) : Ev
         }
         val attribute = Attribute(nameTextField.value, requiredToggle.value, typeComboBox.value)
         attributeService.create(attribute)
-        triggerCreateEvent(attribute)
         close()
     }
 }

@@ -1,9 +1,6 @@
 package com.dude.dms.backend.data.docs
 
-import com.dude.dms.backend.data.DataEntity
-import com.dude.dms.backend.data.Diffable
-import com.dude.dms.backend.data.Historical
-import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.*
 import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.data.mails.Mail
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
@@ -23,21 +20,23 @@ class Doc(
         @Size(max = 99999)
         var rawText: String? = null,
 
-        @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany
         var tags: MutableSet<Tag> = HashSet(),
 
         @OneToMany(mappedBy = "doc")
         var textBlocks: Set<TextBlock> = HashSet(),
 
-        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
+        @OneToMany(mappedBy = "doc")
         var attributeValues: Set<AttributeValue> = HashSet(),
 
         @ManyToOne
         var mail: Mail? = null,
 
         @OneToMany(mappedBy = "doc")
-        override var history: List<DocHistory> = ArrayList()
-) : DataEntity(), Diffable<Doc>, Historical<DocHistory> {
+        override var history: Set<DocHistory> = HashSet()
+) : DataEntity(), Diffable<Doc>, Historical<DocHistory>, LogsEvents {
 
-    override fun toString() = "Doc{guid='$guid'}"
+    override fun showEvents() = true
+
+    override fun toString() = "Doc($guid)"
 }

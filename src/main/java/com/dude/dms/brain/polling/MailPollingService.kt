@@ -4,12 +4,10 @@ import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.MailReceiveEvent
 import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.options.Options
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.util.HashMap
 
 @Component
 class MailPollingService(
@@ -19,12 +17,6 @@ class MailPollingService(
 ) : PollingService {
 
     private var tick = 1
-
-    private val eventListeners = HashMap<String, MailReceiveEvent>()
-
-    fun addEventListener(key: String, mailReceiveEvent: MailReceiveEvent) {
-        eventListeners[key] = mailReceiveEvent
-    }
 
     override fun poll() {
         for (filter in mailFilterService.findAll()) {
@@ -53,7 +45,6 @@ class MailPollingService(
             LOGGER.info("Saving Mail: {}", mail)
             mailService.save(mail)
         }
-        eventListeners.values.forEach { it.invoke(mails.size) }
     }
 
     companion object {

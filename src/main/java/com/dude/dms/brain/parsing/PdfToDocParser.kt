@@ -1,14 +1,13 @@
 package com.dude.dms.brain.parsing
 
-import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.FileManager
-import com.dude.dms.brain.ParseEvent
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.TextBlock
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.backend.service.TextBlockService
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.springframework.stereotype.Component
@@ -32,8 +31,6 @@ class PdfToDocParser(
 
     private val textBlockList = mutableListOf<TextBlock>()
 
-    private val eventListeners = HashMap<String, ParseEvent>()
-
     /**
      * Creates a new [Doc] from a file.
      *
@@ -55,16 +52,12 @@ class PdfToDocParser(
             }
             doc.tags = discoverTags(rawText).toMutableSet()
             docService.create(doc)
-            LOGGER.info("Created doc with ID: {}", doc.guid)
             textBlockList.forEach {
                 it.doc = doc
                 textBlockService.create(it)
-                LOGGER.info("Created textblock {} for doc {}", it, doc)
             }
-            eventListeners.values.forEach { it.invoke(true) }
         } catch (e: IOException) {
             e.message?.let { LOGGER.error(it) }
-            eventListeners.values.forEach { it.invoke(false) }
         }
     }
 
@@ -93,10 +86,6 @@ class PdfToDocParser(
         LOGGER.info("Stripping text...")
         textBlockList.clear()
         return pdfStripper.getTextWithPositions(pdDoc, textBlockList as ArrayList<TextBlock>)
-    }
-
-    fun addEventListener(key: String, parseEvent: ParseEvent) {
-        eventListeners[key] = parseEvent
     }
 
     private fun discoverDates(rawText: String): LocalDate? {

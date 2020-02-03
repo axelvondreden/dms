@@ -1,16 +1,22 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.TextBlock
+import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TextBlockService
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant
 import com.vaadin.flow.component.textfield.TextField
 
-class TextBlockEditDialog(private val textBlock: TextBlock, private val textBlockService: TextBlockService) : EventDialog<TextBlock>() {
+class TextBlockEditDialog(
+        private val textBlock: TextBlock,
+        private val textBlockService: TextBlockService,
+        private val docService: DocService
+) : Dialog() {
 
     private val originalText = textBlock.text
 
@@ -20,7 +26,7 @@ class TextBlockEditDialog(private val textBlock: TextBlock, private val textBloc
         addThemeVariants(RadioGroupVariant.LUMO_VERTICAL)
         setItems(
                 "change this",
-                "change all in document (${textBlockService.countByTextAndDoc(originalText, textBlock.doc!!)})",
+                "change all in document (${textBlockService.countByTextAndDoc(originalText, docService.findByTextBlock(textBlock))})",
                 "change all (${textBlockService.countByext(originalText)})"
         )
         value = "change this"
@@ -48,9 +54,9 @@ class TextBlockEditDialog(private val textBlock: TextBlock, private val textBloc
         val newText = text.value
         textBlock.text = newText
         textBlockService.save(textBlock)
-        var textBlocks = emptyList<TextBlock>()
+        var textBlocks = emptySet<TextBlock>()
         if (group.value.startsWith("change all in doc")) {
-            textBlocks = textBlockService.findByTextAndDoc(originalText, textBlock.doc!!)
+            textBlocks = textBlockService.findByTextAndDoc(originalText, docService.findByTextBlock(textBlock))
         } else if (group.value.startsWith("change all (")) {
             textBlocks = textBlockService.findByText(originalText)
         }
@@ -58,7 +64,6 @@ class TextBlockEditDialog(private val textBlock: TextBlock, private val textBloc
             it.text = newText
             textBlockService.save(it)
         }
-        triggerEditEvent(textBlock)
         close()
     }
 }

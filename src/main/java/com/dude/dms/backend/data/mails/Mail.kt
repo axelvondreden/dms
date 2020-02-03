@@ -2,6 +2,7 @@ package com.dude.dms.backend.data.mails
 
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.Diffable
+import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
@@ -23,16 +24,16 @@ class Mail(
         @Size(max = 99999)
         var body: String? = null,
 
-        @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany
         var tags: MutableSet<Tag> = HashSet(),
 
-        @OneToMany(fetch = FetchType.EAGER)
+        @OneToMany
         var docs: MutableSet<Doc> = HashSet()
-) : DataEntity(), Diffable<Mail> {
+) : DataEntity(), Diffable<Mail>, LogsEvents {
 
+    override fun showEvents() = true
 
-
-    override fun toString() = "Mail(sender='$sender', received=$received, subject=$subject)"
+    override fun toString() = "Mail($sender, $received, $subject)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

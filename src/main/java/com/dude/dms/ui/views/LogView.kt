@@ -5,11 +5,10 @@ import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.MainView
 import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.dude.dms.ui.extensions.convert
 import com.dude.dms.ui.dataproviders.LogDataProvider
-import com.dude.dms.ui.dataproviders.LogDataProvider.LogFilter
+import com.dude.dms.ui.dataproviders.LogDataProvider.Filter
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
@@ -31,6 +30,8 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         value = LocalDate.now()
         locale = Locale.forLanguageTag(Options.get().view.locale)
         addValueChangeListener { refreshFilter() }
+        min = logEntryService.findFirst().timestamp.toLocalDate()
+        max = logEntryService.findLast().timestamp.toLocalDate()
     }
 
     private val classNameFilter = ComboBox<String>().apply {
@@ -81,7 +82,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
     }
 
     private fun refreshFilter() {
-        val filter = LogFilter(dateFilter.optionalValue.orElse(null), classNameFilter.optionalValue.orElse(null), levelFilter.optionalValue.orElse(null), uiFilter.value)
+        val filter = Filter(dateFilter.optionalValue.orElse(null), classNameFilter.optionalValue.orElse(null), levelFilter.optionalValue.orElse(null), uiFilter.value)
         logDataProvider.setFilter(filter)
         logDataProvider.refreshAll()
     }

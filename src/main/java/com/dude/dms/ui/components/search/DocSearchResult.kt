@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.search
 
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.service.TagService
 import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.dialogs.DocTextDialog
 import com.dude.dms.ui.components.tags.TagContainer
@@ -20,7 +21,8 @@ class DocSearchResult(
         private val doc: Doc,
         private val search: String,
         private val docImageDialog: DocImageDialog,
-        private val docTextDialog: DocTextDialog
+        private val docTextDialog: DocTextDialog,
+        private val tagService: TagService
 ) : SearchResult() {
 
     override val header = "Document ${doc.documentDate?.convert()}"
@@ -33,7 +35,7 @@ class DocSearchResult(
                 setWidthFull()
                 alignItems = FlexComponent.Alignment.CENTER
             }
-            return VerticalLayout(TagContainer(doc.tags), textSnippet, buttonWrapper).apply {
+            return VerticalLayout(TagContainer(tagService.findByDoc(doc)), textSnippet, buttonWrapper).apply {
                 setSizeFull()
             }
         }

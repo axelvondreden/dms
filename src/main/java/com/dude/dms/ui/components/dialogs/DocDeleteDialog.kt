@@ -1,20 +1,16 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.service.DocHistoryService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class DocDeleteDialog(
-        private val doc: Doc,
-        private val docService: DocService,
-        private val mailService: MailService
-) : EventDialog<Doc>() {
+class DocDeleteDialog(private val doc: Doc, private val docService: DocService, private val mailService: MailService) : Dialog() {
 
     private val docCheck = Checkbox("Document", true).apply { isEnabled = false }
 
@@ -39,7 +35,6 @@ class DocDeleteDialog(
             mailService.findByDoc(doc).forEach(mailService::delete)
         }
         docService.delete(doc)
-        triggerDeleteEvent(doc)
         close()
     }
 }
