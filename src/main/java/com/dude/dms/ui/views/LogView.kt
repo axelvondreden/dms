@@ -9,11 +9,13 @@ import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.dude.dms.ui.extensions.convert
 import com.dude.dms.ui.dataproviders.LogDataProvider
 import com.dude.dms.ui.dataproviders.LogDataProvider.Filter
+import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.GridVariant
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextArea
 import com.vaadin.flow.router.PageTitle
@@ -68,10 +70,13 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
             addColumn { it.timestamp.convert() }.setHeader("Timestamp").setAutoWidth(true).setResizable(true).key = "timestamp"
             addColumn { it.level }.setHeader("Level").setAutoWidth(true).setResizable(true).key = "level"
             addColumn { it.className }.setHeader("Class").setAutoWidth(true).setResizable(true).key = "class"
-            addColumn { it.message }.setHeader("Message").setAutoWidth(true).setResizable(true).key = "message"
+            addColumn { it.message }.setHeader("Message").setAutoWidth(false).setResizable(true).key = "message"
             addComponentColumn { Checkbox(it.isUi).apply { isReadOnly = true } }.setHeader("UI").setAutoWidth(true).setResizable(true).key = "ui"
+            addComponentColumn { entry ->
+                Button(VaadinIcon.FILE_TEXT.create()) { showStackTrace(entry) }.apply { isEnabled = entry.stacktrace != null }
+            }.setHeader("Stack").setAutoWidth(true).setResizable(true).key = "stacktrace"
             setSizeFull()
-            addItemClickListener { if (it.item.stacktrace != null) showStackTrace(it.item) }
+            setSelectionMode(Grid.SelectionMode.MULTI)
         }
 
         grid.appendHeaderRow().apply {
