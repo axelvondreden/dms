@@ -11,9 +11,11 @@ import com.dude.dms.ui.dataproviders.LogDataProvider
 import com.dude.dms.ui.dataproviders.LogDataProvider.Filter
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.GridVariant
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.textfield.TextArea
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouteAlias
@@ -69,6 +71,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
             addColumn { it.message }.setHeader("Message").setAutoWidth(true).setResizable(true).key = "message"
             addComponentColumn { Checkbox(it.isUi).apply { isReadOnly = true } }.setHeader("UI").setAutoWidth(true).setResizable(true).key = "ui"
             setSizeFull()
+            addItemClickListener { if (it.item.stacktrace != null) showStackTrace(it.item) }
         }
 
         grid.appendHeaderRow().apply {
@@ -79,6 +82,10 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         }
         add(grid)
         refreshFilter()
+    }
+
+    private fun showStackTrace(entry: LogEntry) {
+        Dialog(TextArea("", entry.stacktrace, "").apply { isReadOnly = true }).open()
     }
 
     private fun refreshFilter() {
