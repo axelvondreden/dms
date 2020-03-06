@@ -218,9 +218,10 @@ class OptionsView(
 
     private fun createTagSection() {
         val autoTag = MultiSelectListBox<String>()
-        autoTag.setItems(tagService.findAll().map { it.name })
+        val entries = tagService.findAll().map { it.name }
+        autoTag.setItems(entries)
         autoTag.addComponentAsFirst(Text("Automatic Tags"))
-        autoTag.select(options.tag.automaticTags)
+        autoTag.select(options.tag.automaticTags.filter { it in entries })
         autoTag.addSelectionListener {
             options.tag.automaticTags = it.allSelectedItems.toList()
             options.save()
