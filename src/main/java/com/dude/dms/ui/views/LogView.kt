@@ -59,11 +59,13 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         isClearButtonVisible = true
         isAllowCustomValue = false
         setItems(*DmsLogger.Level.values())
+        setItems(*DmsLogger.Level.values())
         addValueChangeListener { refreshFilter() }
         setWidthFull()
     }
 
-    private val messageFilter = TextField("", "All Messages") { refreshFilter() }.apply {
+    private val messageFilter = TextField { refreshFilter() }.apply {
+        placeholder = "All Messages"
         setWidthFull()
         valueChangeMode = ValueChangeMode.LAZY
         valueChangeTimeout = 500
@@ -104,6 +106,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
             getCell(grid.getColumnByKey("timestamp")).setComponent(dateFilter)
             getCell(grid.getColumnByKey("class")).setComponent(classNameFilter)
             getCell(grid.getColumnByKey("level")).setComponent(levelFilter)
+            getCell(grid.getColumnByKey("message")).setComponent(messageFilter)
             getCell(grid.getColumnByKey("ui")).setComponent(uiFilter)
         }
 
