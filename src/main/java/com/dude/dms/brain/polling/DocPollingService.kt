@@ -7,6 +7,7 @@ import com.dude.dms.brain.parsing.PdfToDocParser
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.File
+import java.lang.RuntimeException
 
 @Component
 class DocPollingService(private val pdfToDocParser: PdfToDocParser, private val fileManager: FileManager) : PollingService {

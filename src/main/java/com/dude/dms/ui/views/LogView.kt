@@ -1,14 +1,14 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.standard.DmsDatePicker
-import com.dude.dms.ui.extensions.convert
 import com.dude.dms.ui.dataproviders.LogDataProvider
 import com.dude.dms.ui.dataproviders.LogDataProvider.Filter
+import com.dude.dms.ui.extensions.convert
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
@@ -21,7 +21,9 @@ import com.vaadin.flow.component.textfield.TextArea
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouteAlias
+import org.vaadin.olli.FileDownloadWrapper
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Route(value = Const.PAGE_LOG, layout = MainView::class)
@@ -63,20 +65,28 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         isPadding = false
         isSpacing = false
 
-        val grid = Grid<LogEntry>().apply {
+        val grid = Grid<LogEntry>()
+        val export = FileDownloadWrapper("dms.log") { exportLog(grid.selectedItems) }
+        val exportButton = Button("Export", VaadinIcon.FILE_ZIP.create()).apply {
+            isEnabled = false
+        }
+        export.wrapComponent(exportButton)
+
+        grid.apply {
             pageSize = 200
             dataProvider = logDataProvider
             addThemeVariants(GridVariant.LUMO_COMPACT)
             addColumn { it.timestamp.convert() }.setHeader("Timestamp").setAutoWidth(true).setResizable(true).key = "timestamp"
             addColumn { it.level }.setHeader("Level").setAutoWidth(true).setResizable(true).key = "level"
             addColumn { it.className }.setHeader("Class").setAutoWidth(true).setResizable(true).key = "class"
-            addColumn { it.message }.setHeader("Message").setAutoWidth(false).setResizable(true).key = "message"
+            addColumn { it.message }.setHeader("Message").setAutoWidth(true).setResizable(true).key = "message"
             addComponentColumn { Checkbox(it.isUi).apply { isReadOnly = true } }.setHeader("UI").setAutoWidth(true).setResizable(true).key = "ui"
             addComponentColumn { entry ->
                 Button(VaadinIcon.FILE_TEXT.create()) { showStackTrace(entry) }.apply { isEnabled = entry.stacktrace != null }
             }.setHeader("Stack").setAutoWidth(true).setResizable(true).key = "stacktrace"
             setSizeFull()
             setSelectionMode(Grid.SelectionMode.MULTI)
+            asMultiSelect().addSelectionListener { exportButton.isEnabled = it.allSelectedItems.isNotEmpty() }
         }
 
         grid.appendHeaderRow().apply {
@@ -85,12 +95,22 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
             getCell(grid.getColumnByKey("level")).setComponent(levelFilter)
             getCell(grid.getColumnByKey("ui")).setComponent(uiFilter)
         }
-        add(grid)
+
+        add(export, grid)
         refreshFilter()
     }
 
+    private fun exportLog(entries: Set<LogEntry>): ByteArray {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
+        return entries.sortedBy { it.timestamp }.joinToString("\n") {
+            "${it.timestamp.format(formatter)} ${it.level} ${it.className} ${it.message}${if (it.stacktrace != null) "\n${it.stacktrace}" else ""}"
+        }.toByteArray()
+    }
+
     private fun showStackTrace(entry: LogEntry) {
-        Dialog(TextArea("", entry.stacktrace, "").apply { isReadOnly = true }).open()
+        Dialog(TextArea("", entry.stacktrace, "").apply { isReadOnly = true; setWidthFull() }).apply {
+            width = "80vw"
+        }.open()
     }
 
     private fun refreshFilter() {
