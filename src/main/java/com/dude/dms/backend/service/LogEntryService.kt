@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 @Service
 class LogEntryService(private val logEntryRepository: LogEntryRepository) : CrudService<LogEntry>(logEntryRepository) {
 
-    fun findByFilter(filter: Filter, pageable: Pageable) = logEntryRepository.findByFilter(filter.date, filter.className, filter.level, filter.isUI, pageable)
+    fun findByFilter(filter: Filter, pageable: Pageable) = logEntryRepository.findByFilter(filter.date, filter.className, filter.level, filter.message, filter.isUI, pageable)
 
-    fun countByFilter(filter: Filter) = logEntryRepository.countByFilter(filter.date, filter.className, filter.level, filter.isUI)
+    fun countByFilter(filter: Filter) = logEntryRepository.countByFilter(filter.date, filter.className, filter.level, filter.message, filter.isUI)
 
     fun findDistinctClassNames() = logEntryRepository.findDistinctClassNames()
 

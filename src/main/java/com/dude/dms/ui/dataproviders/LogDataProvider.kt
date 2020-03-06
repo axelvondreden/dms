@@ -19,6 +19,7 @@ class LogDataProvider(private val logEntryService: LogEntryService) : GridViewDa
             var date: LocalDate? = null,
             var className: String? = null,
             var level: DmsLogger.Level? = null,
+            var message: String? = null,
             var isUI: Boolean = false
     ) : Serializable
 

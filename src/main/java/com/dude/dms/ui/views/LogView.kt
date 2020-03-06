@@ -18,6 +18,8 @@ import com.vaadin.flow.component.grid.GridVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextArea
+import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouteAlias
@@ -38,6 +40,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         addValueChangeListener { refreshFilter() }
         min = logEntryService.findFirst().timestamp.toLocalDate()
         max = logEntryService.findLast().timestamp.toLocalDate()
+        setWidthFull()
     }
 
     private val classNameFilter = ComboBox<String>().apply {
@@ -47,6 +50,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         isAllowCustomValue = false
         setItems(logEntryService.findDistinctClassNames())
         addValueChangeListener { refreshFilter() }
+        setWidthFull()
     }
 
     private val levelFilter = ComboBox<DmsLogger.Level>().apply {
@@ -56,6 +60,13 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         isAllowCustomValue = false
         setItems(*DmsLogger.Level.values())
         addValueChangeListener { refreshFilter() }
+        setWidthFull()
+    }
+
+    private val messageFilter = TextField("", "All Messages") { refreshFilter() }.apply {
+        setWidthFull()
+        valueChangeMode = ValueChangeMode.LAZY
+        valueChangeTimeout = 500
     }
 
     private val uiFilter = Checkbox().apply { addValueChangeListener { refreshFilter() } }
@@ -114,7 +125,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
     }
 
     private fun refreshFilter() {
-        val filter = Filter(dateFilter.optionalValue.orElse(null), classNameFilter.optionalValue.orElse(null), levelFilter.optionalValue.orElse(null), uiFilter.value)
+        val filter = Filter(dateFilter.optionalValue.orElse(null), classNameFilter.optionalValue.orElse(null), levelFilter.optionalValue.orElse(null), messageFilter.optionalValue.orElse(null), uiFilter.value)
         logDataProvider.setFilter(filter)
         logDataProvider.refreshAll()
     }

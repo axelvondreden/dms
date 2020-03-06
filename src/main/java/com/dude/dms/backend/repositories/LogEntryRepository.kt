@@ -15,17 +15,19 @@ interface LogEntryRepository : JpaRepository<LogEntry, Long> {
             "WHERE (:className is null or log.className = :className) " +
             "AND (:date is null or CAST(log.timestamp AS date) = CAST(:date AS date))" +
             "AND (:level is null or log.level = :level)" +
+            "AND (:message is null or LOWER(log.message) LIKE %:message%)" +
             "AND (:ui = false or log.isUi = :ui)")
     fun findByFilter(@Param("date") date: LocalDate?, @Param("className") className: String?, @Param("level") level: DmsLogger.Level?,
-                     @Param("ui") ui: Boolean?, pageable: Pageable): Page<LogEntry>
+                     @Param("message") message: String?, @Param("ui") ui: Boolean?, pageable: Pageable): Page<LogEntry>
 
     @Query("SELECT COUNT(*) FROM LogEntry log " +
             "WHERE (:className is null or log.className = :className) " +
             "AND (:date is null or CAST(log.timestamp AS date) = CAST(:date AS date))" +
             "AND (:level is null or log.level = :level)" +
+            "AND (:message is null or LOWER(log.message) LIKE %:message%)" +
             "AND (:ui = false or log.isUi = :ui)")
     fun countByFilter(@Param("date") date: LocalDate?, @Param("className") className: String?, @Param("level") level: DmsLogger.Level?,
-                      @Param("ui") ui: Boolean?): Long
+                      @Param("message") message: String?, @Param("ui") ui: Boolean?): Long
 
     @Query("SELECT DISTINCT log.className FROM LogEntry log")
     fun findDistinctClassNames(): Set<String>
