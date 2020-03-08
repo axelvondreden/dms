@@ -15,7 +15,6 @@ import com.github.appreciated.card.Card
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
-import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -31,7 +30,7 @@ class RulesView(
         private val mailFilterService: MailFilterService,
         private val mailPollingService: MailPollingService,
         eventManager: EventManager
-) : FormLayout() {
+) : VerticalLayout() {
 
     init {
         element.style["padding"] = "10px"

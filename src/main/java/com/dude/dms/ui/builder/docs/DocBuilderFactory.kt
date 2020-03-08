@@ -3,11 +3,8 @@ package com.dude.dms.ui.builder.docs
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.polling.PollingService
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.TextBlock
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.MailService
-import com.dude.dms.backend.service.TagService
-import com.dude.dms.backend.service.TextBlockService
+import com.dude.dms.backend.data.docs.Word
+import com.dude.dms.backend.service.*
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.builder.Factory
 
@@ -16,12 +13,13 @@ class DocBuilderFactory(
         private val docService: DocService,
         private val mailService: MailService,
         private val tagService: TagService,
-        private val textBlockService: TextBlockService,
+        private val lineService: LineService,
+        private val wordService: WordService,
         private val pollingService: PollingService,
         private val fileManager: FileManager
 ) : Factory(builderFactory) {
 
-    fun searchResult(doc: Doc, search: String) = DocSearchResultBuilder(doc, search, builderFactory.docs().imageDialog(doc).build(), builderFactory.docs().textDialog(doc).build(), tagService)
+    fun searchResult(doc: Doc, search: String) = DocSearchResultBuilder(doc, search, builderFactory.docs().imageDialog(doc).build(), tagService)
 
     fun createDialog() = DocCreateDialogBuilder(pollingService)
 
@@ -29,9 +27,7 @@ class DocBuilderFactory(
 
     fun deleteDialog(doc: Doc) = DocDeleteDialogBuilder(doc, docService, mailService)
 
-    fun imageDialog(doc: Doc) = DocImageDialogBuilder(builderFactory, doc, textBlockService, fileManager)
+    fun imageDialog(doc: Doc) = DocImageDialogBuilder(builderFactory, doc, lineService, wordService, fileManager)
 
-    fun textDialog(doc: Doc) = DocTextDialogBuilder(doc, textBlockService)
-
-    fun textBlockEditDialog(textBlock: TextBlock) = TextBlockEditDialogBuilder(textBlock, textBlockService, docService)
+    fun wordEditDialog(doc: Doc, word: Word) = WordEditDialogBuilder(doc, word, wordService)
 }

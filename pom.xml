@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dude.dms</groupId>
     <artifactId>dms</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
     <packaging>jar</packaging>
     <name>dms</name>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.2.RELEASE</version>
+        <version>2.2.4.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -18,29 +18,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <failOnMissingWebXml>false</failOnMissingWebXml>
-        <vaadin.version>14.1.5</vaadin.version>
 
-        <!-- Overrides the old version specified by the Spring Boot parent -->
-        <selenium.version>3.141.59</selenium.version>
+        <vaadin.version>14.1.18</vaadin.version>
 
-        <!-- Plugins -->
-        <frontend.maven.plugin.version>1.6</frontend.maven.plugin.version>
-        <maven.war.plugin.version>3.1.0</maven.war.plugin.version>
-        <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
-        <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
-        <maven.surefire.plugin.version>2.21.0</maven.surefire.plugin.version>
-
-        <gatling.version>3.0.2</gatling.version>
-        <gatling-plugin.version>3.0.1</gatling-plugin.version>
-        <scala-maven-plugin.version>3.4.4</scala-maven-plugin.version>
-
-        <!-- Frontend -->
         <node.version>v8.16.0</node.version>
         <yarn.version>v1.16.0</yarn.version>
-        <buildtools.directory>build-tools</buildtools.directory>
-        <kotlin.version>1.3.61</kotlin.version>
 
+        <kotlin.version>1.3.70</kotlin.version>
         <start-class>com.dude.dms.Application</start-class>
     </properties>
 
@@ -66,16 +50,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>vaadin-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -90,16 +64,6 @@
             <url>https://maven.vaadin.com/vaadin-prereleases</url>
             <snapshots>
                 <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>vaadin-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
@@ -238,7 +202,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.4.4.Final</version>
+            <version>5.4.10.Final</version>
         </dependency>
         <dependency>
             <groupId>com.github.appreciated</groupId>
@@ -246,19 +210,9 @@
             <version>2.0.0.beta4</version>
         </dependency>
         <dependency>
-            <groupId>com.github.appreciated</groupId>
-            <artifactId>swiper-flow</artifactId>
-            <version>2.0.0.alpha3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.appreciated</groupId>
-            <artifactId>iron-collapse</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox-tools</artifactId>
-            <version>2.0.18</version>
+            <version>2.0.19</version>
         </dependency>
         <dependency>
             <groupId>com.github.appreciated</groupId>
@@ -268,7 +222,7 @@
         <dependency>
             <groupId>com.github.appreciated</groupId>
             <artifactId>app-layout-addon</artifactId>
-            <version>4.0.0.rc4</version>
+            <version>4.0.0.rc5</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
@@ -298,7 +252,7 @@
         <dependency>
             <groupId>dev.mett.vaadin</groupId>
             <artifactId>tooltip</artifactId>
-            <version>1.4.1</version>
+            <version>1.4.3</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -308,7 +262,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
-            <version>2.10.1</version>
+            <version>2.10.3</version>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>
@@ -319,6 +273,11 @@
             <groupId>org.vaadin.olli</groupId>
             <artifactId>file-download-wrapper</artifactId>
             <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>tesseract-platform</artifactId>
+            <version>4.1.0-1.5.2</version>
         </dependency>
     </dependencies>
 
@@ -332,12 +291,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven.resources.plugin.version}</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>${maven.war.plugin.version}</version>
+                    <version>3.2.3</version>
                 </plugin>
                 <plugin>
                     <groupId>com.vaadin</groupId>
@@ -347,7 +306,7 @@
                 <plugin>
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
-                    <version>${frontend.maven.plugin.version}</version>
+                    <version>1.9.1</version>
                     <configuration>
                         <nodeVersion>${node.version}</nodeVersion>
                         <yarnVersion>${yarn.version}</yarnVersion>
@@ -356,7 +315,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.surefire.plugin.version}</version>
+                    <version>2.22.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>

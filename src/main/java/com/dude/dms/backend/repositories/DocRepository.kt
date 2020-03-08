@@ -3,7 +3,6 @@ package com.dude.dms.backend.repositories
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.TextBlock
 import com.dude.dms.backend.data.mails.Mail
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -36,6 +35,4 @@ interface DocRepository : JpaRepository<Doc, Long> {
 
     @Query("SELECT COUNT(*) FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)")
     fun countByFilter(@Param("tag") tag: Tag?, @Param("mail") mail: Mail?): Long
-
-    fun findByTextBlocks(textBlock: TextBlock): Doc
 }

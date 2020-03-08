@@ -136,8 +136,21 @@ class OptionsView(
                 LOGGER.showInfo("Date scan formats saved..", UI.getCurrent())
             }
         }
+        val ocrLanguage = ComboBox<String>("OCR Language").apply {
+            setItems(*Const.OCR_LANGUAGES)
+            value = options.doc.ocrLanguage
+            isAllowCustomValue = false
+            isPreventInvalidInput = true
+            addValueChangeListener {
+                if (!isEmpty) {
+                    options.doc.ocrLanguage = value
+                    options.save()
+                    LOGGER.showInfo("OCR Language changed.", UI.getCurrent())
+                }
+            }
+        }
 
-        add(createSection("Docs", imageParserDpi, pollingInterval, dateScanFormats))
+        add(createSection("Docs", imageParserDpi, pollingInterval, dateScanFormats, ocrLanguage))
     }
 
 
@@ -218,9 +231,10 @@ class OptionsView(
 
     private fun createTagSection() {
         val autoTag = MultiSelectListBox<String>()
-        autoTag.setItems(tagService.findAll().map { it.name })
+        val entries = tagService.findAll().map { it.name }
+        autoTag.setItems(entries)
         autoTag.addComponentAsFirst(Text("Automatic Tags"))
-        autoTag.select(options.tag.automaticTags)
+        autoTag.select(options.tag.automaticTags.filter { it in entries })
         autoTag.addSelectionListener {
             options.tag.automaticTags = it.allSelectedItems.toList()
             options.save()

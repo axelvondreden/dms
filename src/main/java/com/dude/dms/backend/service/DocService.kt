@@ -1,10 +1,7 @@
 package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.data.docs.AttributeValue
-import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.TextBlock
+import com.dude.dms.backend.data.docs.*
 import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
@@ -19,7 +16,8 @@ class DocService(
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
         private val docHistoryService: DocHistoryService,
-        private val textBlockService: TextBlockService,
+        private val lineService: LineService,
+        private val wordService: WordService,
         eventManager: EventManager
 ) : HistoricalCrudService<Doc, DocHistory>(docRepository, eventManager) {
 
@@ -38,7 +36,7 @@ class DocService(
 
     override fun delete(entity: Doc) {
         docHistoryService.getHistory(entity).forEach(docHistoryService::delete)
-        textBlockService.findByDoc(entity).forEach(textBlockService::delete)
+        lineService.findByDoc(entity).forEach(lineService::delete)
         attributeValueService.findByDoc(entity).forEach(attributeValueService::delete)
         super.delete(entity)
     }
@@ -82,5 +80,11 @@ class DocService(
 
     fun countByFilter(filter: DocDataProvider.Filter) = docRepository.countByFilter(filter.tag, filter.mail)
 
-    fun findByTextBlock(textBlock: TextBlock) = docRepository.findByTextBlocks(textBlock)
+    fun getFullTextMemory(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
+        line.words.sortedBy { it.x }.joinToString(" ") { it.text }
+    }
+
+    fun getFullText(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
+        wordService.findByLine(line).sortedBy { it.x }.joinToString(" ") { it.text }
+    }
 }

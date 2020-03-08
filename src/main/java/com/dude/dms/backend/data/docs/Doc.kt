@@ -24,7 +24,7 @@ class Doc(
         var tags: MutableSet<Tag> = HashSet(),
 
         @OneToMany(mappedBy = "doc")
-        var textBlocks: Set<TextBlock> = HashSet(),
+        var lines: Set<Line> = HashSet(),
 
         @OneToMany(mappedBy = "doc")
         var attributeValues: Set<AttributeValue> = HashSet(),

@@ -32,13 +32,14 @@ class BuilderFactory(
         private val regexRuleService: RegexRuleService,
         private val regexRuleValidator: RegexRuleValidator,
         private val tagService: TagService,
-        private val textBlockService: TextBlockService,
+        private val lineService: LineService,
+        private val wordService: WordService,
         private val updateChecker: UpdateChecker
 ) {
 
     fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService, docService, tagService, eventManager)
 
-    fun docs() = DocBuilderFactory(this, docService, mailService, tagService, textBlockService, pollingService, fileManager)
+    fun docs() = DocBuilderFactory(this, docService, mailService, tagService, lineService, wordService, pollingService, fileManager)
 
     fun misc() = MiscBuilderFactory(this, changelogService, updateChecker)
 

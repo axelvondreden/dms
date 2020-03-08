@@ -3,13 +3,14 @@ package com.dude.dms.brain.polling
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.parsing.PdfToDocParser
+import com.dude.dms.brain.parsing.DocParser
+import com.dude.dms.ui.Const
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.File
 
 @Component
-class DocPollingService(private val pdfToDocParser: PdfToDocParser, private val fileManager: FileManager) : PollingService {
+class DocPollingService(private val docParser: DocParser, private val fileManager: FileManager) : PollingService {
 
     private val docPath = Options.get().doc.pollingPath
     private var tick = 1
@@ -17,7 +18,8 @@ class DocPollingService(private val pdfToDocParser: PdfToDocParser, private val 
 
     override fun poll() {
         LOGGER.info("Polling {}...", docPath)
-        File(docPath).listFiles { _, name -> name.endsWith(".pdf") }?.forEach { processFile(it) }
+        File(docPath).listFiles { _, name -> name.endsWith(".pdf") }?.forEach { processPdf(it) }
+        File(docPath).listFiles { _, name -> Const.IMAGE_FORMATS.any { name.endsWith(it) } }?.forEach { processImage(it) }
     }
 
     @Scheduled(fixedRate = 1000)
@@ -30,11 +32,21 @@ class DocPollingService(private val pdfToDocParser: PdfToDocParser, private val 
         }
     }
 
-    private fun processFile(file: File) {
-        val name = file.name
+    private fun processPdf(pdf: File) {
+        val name = pdf.name
         if (processing.add(name)) {
-            fileManager.importFile(file)?.let {
-                pdfToDocParser.parse(it)
+            fileManager.importPdf(pdf)?.let {
+                docParser.parse(it)
+                processing.remove(name)
+            }
+        }
+    }
+
+    private fun processImage(img: File) {
+        val name = img.name
+        if (processing.add(name)) {
+            fileManager.importImage(img)?.let {
+                docParser.parse(it)
                 processing.remove(name)
             }
         }
