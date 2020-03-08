@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.PollingService
+import com.dude.dms.ui.Const
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer
@@ -20,7 +21,7 @@ class DocCreateDialog(pollingService: PollingService) : Dialog() {
 
         val buffer = MultiFileMemoryBuffer()
         val upload = Upload(buffer).apply {
-            setAcceptedFileTypes(".pdf")
+            setAcceptedFileTypes(*Const.IMAGE_FORMATS.plus("pdf").map { ".$it" }.toTypedArray())
             maxFileSize = Options.get().storage.maxUploadFileSize * 1024 * 1024
             height = "80%"
             addFinishedListener {

@@ -85,7 +85,6 @@ class DocsView(
             if (doc == null) return@setDynamicContentHandler false
 
             menu.addItem("View") { builderFactory.docs().imageDialog(doc).build().open() }
-            menu.addItem("Details") { builderFactory.docs().textDialog(doc).build().open() }
             menu.addItem("Edit") { builderFactory.docs().editDialog(doc).build().open() }
             menu.addItem("Delete") { builderFactory.docs().deleteDialog(doc).build().open() }
             true
@@ -93,19 +92,16 @@ class DocsView(
     }
 
     private fun createGridActions(doc: Doc): HorizontalLayout {
-        val file = fileManager.getDocPdf(doc)
+        val file = fileManager.getPdf(doc.guid)
         val download = FileDownloadWrapper(StreamResource("${doc.guid}.pdf", InputStreamFactory { FileHelper.getInputStream(file) }))
         val downloadButton = Button(VaadinIcon.FILE_TEXT.create())
         download.wrapComponent(downloadButton)
         Tooltips.getCurrent().setTooltip(downloadButton, "Download")
 
-        val text = Button(VaadinIcon.TEXT_LABEL.create()) { builderFactory.docs().textDialog(doc).build().open() }
-        Tooltips.getCurrent().setTooltip(text, "Details")
-
         val edit = Button(VaadinIcon.EDIT.create()) { builderFactory.docs().editDialog(doc).build().open() }
         Tooltips.getCurrent().setTooltip(edit, "Edit")
 
-        return HorizontalLayout(text, download, edit)
+        return HorizontalLayout(download, edit)
     }
 
     @Suppress("UNCHECKED_CAST")

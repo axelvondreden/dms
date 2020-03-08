@@ -5,5 +5,5 @@ data class DocOptions(
         var pollingPath: String,
         var savePath: String,
         var imageParserDpi: Double,
-        var demoDocs: Int
+        var ocrLanguage: String
 )

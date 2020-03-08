@@ -7,6 +7,13 @@ object Const {
     const val PAGE_RULES = "rules"
     const val PAGE_OPTIONS = "options"
     const val PAGE_LOG = "log"
+
+    @JvmField
+    val IMAGE_FORMATS = arrayOf("png", "jpg", "jpeg")
+
+    @JvmField
+    val OCR_LANGUAGES = arrayOf("eng", "deu")
+
     @JvmField
     val SIMPLE_COLORS = arrayOf(
             "AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "Black", "BlanchedAlmond", "Blue", "BlueViolet",

@@ -136,8 +136,21 @@ class OptionsView(
                 LOGGER.showInfo("Date scan formats saved..", UI.getCurrent())
             }
         }
+        val ocrLanguage = ComboBox<String>("OCR Language").apply {
+            setItems(*Const.OCR_LANGUAGES)
+            value = options.doc.ocrLanguage
+            isAllowCustomValue = false
+            isPreventInvalidInput = true
+            addValueChangeListener {
+                if (!isEmpty) {
+                    options.doc.ocrLanguage = value
+                    options.save()
+                    LOGGER.showInfo("OCR Language changed.", UI.getCurrent())
+                }
+            }
+        }
 
-        add(createSection("Docs", imageParserDpi, pollingInterval, dateScanFormats))
+        add(createSection("Docs", imageParserDpi, pollingInterval, dateScanFormats, ocrLanguage))
     }
 
 

@@ -3,7 +3,6 @@ package com.dude.dms.ui.components.search
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.ui.components.dialogs.DocImageDialog
-import com.dude.dms.ui.components.dialogs.DocTextDialog
 import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.extensions.convert
 import com.vaadin.flow.component.Component
@@ -11,8 +10,6 @@ import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.Html
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import kotlin.math.max
 import kotlin.math.min
@@ -21,7 +18,6 @@ class DocSearchResult(
         private val doc: Doc,
         private val search: String,
         private val docImageDialog: DocImageDialog,
-        private val docTextDialog: DocTextDialog,
         private val tagService: TagService
 ) : SearchResult() {
 
@@ -29,13 +25,10 @@ class DocSearchResult(
 
     override val body: Component
         get() {
-            val pdfButton = Button(VaadinIcon.FILE_TEXT.create(), ComponentEventListener { docImageDialog.open() })
-            val textButton = Button(VaadinIcon.TEXT_LABEL.create(), ComponentEventListener { docTextDialog.open() })
-            val buttonWrapper = HorizontalLayout(pdfButton, textButton).apply {
+            val pdfButton = Button(VaadinIcon.FILE_TEXT.create(), ComponentEventListener { docImageDialog.open() }).apply {
                 setWidthFull()
-                alignItems = FlexComponent.Alignment.CENTER
             }
-            return VerticalLayout(TagContainer(tagService.findByDoc(doc)), textSnippet, buttonWrapper).apply {
+            return VerticalLayout(TagContainer(tagService.findByDoc(doc)), textSnippet, pdfButton).apply {
                 setSizeFull()
             }
         }

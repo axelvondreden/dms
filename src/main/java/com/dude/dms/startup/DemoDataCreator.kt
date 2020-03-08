@@ -1,57 +1,21 @@
 package com.dude.dms.startup
 
-import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.options.Options
 import org.springframework.stereotype.Component
-import java.io.IOException
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.security.SecureRandom
-import java.time.LocalDate
 import java.util.*
-import kotlin.math.min
 
 @Component
-class DemoDataCreator(private val tagService: TagService, private val docService: DocService, private val attributeService: AttributeService) {
+class DemoDataCreator(private val tagService: TagService, private val attributeService: AttributeService) {
 
     private var random: Random? = null
 
     fun createDemoData() {
         random = SecureRandom()
-        val tags = createDemoTags()
-        if (docService.count() == 0L && Options.get().doc.demoDocs > 0) {
-            LOGGER.info("Creating demo docs...")
-            createDemoDocs(tags)
-        }
-    }
-
-    private fun createDemoDocs(tags: Iterable<Tag>) {
-        val contentBuilder = StringBuilder()
-        try {
-            Files.lines(Paths.get("lipsum.txt"), StandardCharsets.UTF_8).use { stream -> stream.forEach { contentBuilder.append(it).append(' ') } }
-        } catch (e: IOException) {
-            e.message?.let { LOGGER.error(it, e) }
-        }
-        val txt = contentBuilder.toString()
-        for (i in 0 until Options.get().doc.demoDocs) {
-            val rngTags: MutableSet<Tag> = HashSet()
-            for (tag in tags) {
-                if (random!!.nextFloat() > 0.7f) {
-                    rngTags.add(tag)
-                }
-            }
-            val date = LocalDate.of(2016 + random!!.nextInt(4), 1 + random!!.nextInt(12), 1 + random!!.nextInt(28))
-            val r1 = random!!.nextInt(txt.length)
-            val r2 = r1 + min(random!!.nextInt(txt.length - r1), 5000)
-            docService.create(Doc(UUID.randomUUID().toString(), date, txt.substring(r1, r2), rngTags))
-        }
+        createDemoTags()
     }
 
     private fun createDemoTags(): Set<Tag> {
@@ -75,8 +39,4 @@ class DemoDataCreator(private val tagService: TagService, private val docService
     }
 
     private fun randomColor() = String.format("#%06x", random!!.nextInt(0xffffff + 1))
-
-    companion object {
-        private val LOGGER = DmsLogger.getLogger(DemoDataCreator::class.java)
-    }
 }

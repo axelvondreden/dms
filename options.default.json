@@ -15,7 +15,7 @@
     "pollingPath": "docs_in/",
     "savePath": "docs/",
     "imageParserDpi": 500.0,
-    "demoDocs": 0
+    "ocrLanguage": "deu"
   },
   "mail": {
     "host": "",

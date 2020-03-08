@@ -2,7 +2,8 @@ java -jar "-Dvaadin.productionMode=true" ./dms.jar
 if ($LastExitCode -eq 1337)
 {
     write-host("Deleting old files...")
-    Remove-Item lipsum.txt, options.default.json, dms.jar, dms.zip
+    Remove-Item options.default.json, dms.jar, dms.zip
+    Remove-Item tessdata -Recurse
 
     [string]$sourceDirectory  = "update\*"
     [string]$destinationDirectory = ".\"

@@ -5,7 +5,8 @@ echo $code
 if [ $code -eq 1337 ] || [ $code -eq 57 ]
 then
   echo "Deleting old files..."
-  rm lipsum.txt options.default.json dms.jar dms.zip
+  rm options.default.json dms.jar dms.zip
+  rm -rf tessdata
 
   echo "Copying new files..."
   rsync -avr --progress "update/" "./"
