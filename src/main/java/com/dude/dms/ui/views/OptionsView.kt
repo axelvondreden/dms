@@ -59,7 +59,7 @@ class OptionsView(
             }
         }
         val locale = ComboBox<Locale>("Language").apply {
-            setItems(*Locale.getAvailableLocales())
+            setItems(*Const.LOCALES)
             value = Locale.forLanguageTag(options.view.locale)
             isAllowCustomValue = false
             isPreventInvalidInput = true

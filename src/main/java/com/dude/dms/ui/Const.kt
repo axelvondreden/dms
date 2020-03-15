@@ -1,5 +1,7 @@
 package com.dude.dms.ui
 
+import java.util.*
+
 object Const {
     const val PAGE_ROOT = ""
     const val PAGE_DOCS = "docs"
@@ -7,6 +9,12 @@ object Const {
     const val PAGE_RULES = "rules"
     const val PAGE_OPTIONS = "options"
     const val PAGE_LOG = "log"
+
+    @JvmField
+    val LOCALES = arrayOf(
+            Locale("de", "DE"),
+            Locale("en", "US")
+    )
 
     @JvmField
     val IMAGE_FORMATS = arrayOf("png", "jpg", "jpeg")
