@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.t
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -18,15 +19,15 @@ class AttributeDeleteDialog(
         private val tagService: TagService
 ) : Dialog() {
 
-    private val attributeCheck = Checkbox("Attribute", true).apply { isEnabled = false }
+    private val attributeCheck = Checkbox(t("attribute"), true).apply { isEnabled = false }
 
-    private val tagCheck = Checkbox("Tags (${tagService.countByAttribute(attribute)}")
+    private val tagCheck = Checkbox("${t("tags")} (${tagService.countByAttribute(attribute)}")
 
-    private val docCheck = Checkbox("Docs (${docService.countByAttribute(attribute)})")
+    private val docCheck = Checkbox("${t("docs")} (${docService.countByAttribute(attribute)})")
 
     init {
         width = "20vw"
-        val deleteButton = Button("Delete", VaadinIcon.TRASH.create()) { delete() }.apply {
+        val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }

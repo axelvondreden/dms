@@ -11,6 +11,7 @@ import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.t
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.bytedeco.leptonica.global.lept.pixDestroy
 import org.bytedeco.leptonica.global.lept.pixRead
@@ -21,7 +22,6 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 
 
@@ -78,31 +78,26 @@ class DocParser(
      * @return list of tags
      */
     private fun discoverTags(rawText: String?): Set<Tag> {
-        val tags: MutableSet<Tag> = HashSet()
-        for (tag in Options.get().tag.automaticTags) {
-            tagService.findByName(tag)?.let {
-                LOGGER.info("Adding tag: {}", it.name)
-                tags.add(it)
-            }
-        }
+        val tags = Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.toMutableSet()
         if (!rawText.isNullOrEmpty()) {
             tags.addAll(plainTextRuleValidator.getTags(rawText))
             tags.addAll(regexRuleValidator.getTags(rawText))
         }
+        LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.name }))
         return tags
     }
 
     private fun stripText(pdDoc: PDDocument): Set<Line> {
-        LOGGER.info("Stripping text...")
+        LOGGER.info(t("pdf.parse"))
         return pdfStripper.getLines(pdDoc)
     }
 
     private fun ocrText(img: File): Set<Line> {
         val ocrLang = Options.get().doc.ocrLanguage
-        LOGGER.info("Running OCR ($ocrLang)...")
+        LOGGER.info(t("image.ocr", ocrLang))
         val api = TessBaseAPI()
         if (api.Init("tessdata", ocrLang) != 0) {
-            LOGGER.error("Could not initialize tesseract.")
+            LOGGER.error(t("image.ocr.error"))
             return emptySet()
         }
 
@@ -153,7 +148,7 @@ class DocParser(
     }
 
     private fun discoverDates(rawText: String): LocalDate? {
-        LOGGER.info("Trying to find date...")
+        LOGGER.info(t("doc.parse.date.detect"))
         val map = mutableMapOf<LocalDate, Int>()
         for (pattern in Options.get().view.dateScanFormats) {
             for (line in rawText.split("\n").toTypedArray()) {
@@ -168,10 +163,10 @@ class DocParser(
             }
         }
         map.entries.maxBy { it.value }?.let {
-            LOGGER.info("Setting date as {} with {} occurences", it.key, it.value)
+            LOGGER.info(t("doc.parse.date.detect.success", it.key, it.value))
             return it.key
         }
-        LOGGER.info("No date found on document")
+        LOGGER.info(t("doc.parse.date.detect.failed"))
         return null
     }
 

@@ -11,6 +11,7 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.search.DmsSearchOverlayButton
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder
@@ -69,27 +70,27 @@ class MainView(
     }
 
     private fun buildAppMenu(): Component {
-        val docsEntry = LeftNavigationItem("Docs", VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
+        val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
-        val mailsEntry = LeftNavigationItem("Mails", VaadinIcon.MAILBOX.create(), MailsView::class.java)
+        val mailsEntry = LeftNavigationItem(t("mails"), VaadinIcon.MAILBOX.create(), MailsView::class.java)
         mailsBadge = DefaultBadgeHolder(mailService.count().toInt()).apply { bind(mailsEntry.badge) }
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
-        val rulesEntry = LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView::class.java)
+        val rulesEntry = LeftNavigationItem(t("rules"), VaadinIcon.MAGIC.create(), RulesView::class.java)
         return LeftAppMenuBuilder.get()
-                .addToSection(Section.HEADER, LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create()) { builderFactory.docs().createDialog().build().open() })
+                .addToSection(Section.HEADER, LeftClickableItem(t("doc.new"), VaadinIcon.PLUS_CIRCLE.create()) { builderFactory.docs().createDialog().build().open() })
                 .add(docsEntry, mailsEntry, tagsEntry, attributesEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
                         LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().build().open() },
-                        LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView::class.java))
+                        LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java))
                 .build()
     }
 
     private fun createAttributesEntry(): LeftSubmenu {
         val attributeEntries = mutableListOf<Component>(
-                LeftClickableItem("Add Attribute", VaadinIcon.PLUS_CIRCLE.create()) {
+                LeftClickableItem(t("attribute.new"), VaadinIcon.PLUS_CIRCLE.create()) {
                     builderFactory.attributes().createDialog().build().open()
                 }
         )
@@ -97,17 +98,17 @@ class MainView(
             val entry = LeftClickableItem(attribute.name, VaadinIcon.TEXT_LABEL.create()) { }
             val tags = tagService.findByAttribute(attribute).joinToString("\n") { it.name }
             if (tags.isNotEmpty()) {
-                Tooltips.getCurrent().setTooltip(entry, "Tags:\n$tags")
+                Tooltips.getCurrent().setTooltip(entry, "${t("tags")}:\n$tags")
             }
             attributeEntries.add(entry)
             ContextMenu().apply {
                 target = entry
                 isOpenOnClick = true
-                addItem("Edit") { builderFactory.attributes().editDialog(attribute).build().open() }
-                addItem("Delete") { builderFactory.attributes().deleteDialog(attribute).build().open() }
+                addItem(t("edit")) { builderFactory.attributes().editDialog(attribute).build().open() }
+                addItem(t("delete")) { builderFactory.attributes().deleteDialog(attribute).build().open() }
             }
         }
-        return LeftSubmenu("Attributes", VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
+        return LeftSubmenu(t("attributes"), VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
     }
 
     private fun createTagsEntry(): LeftSubmenu {
@@ -124,19 +125,19 @@ class MainView(
             fillBadgeCount(tag)
             val attrs = attributeService.findByTag(tag).joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
-                Tooltips.getCurrent().setTooltip(entry, "Attributes:\n$attrs")
+                Tooltips.getCurrent().setTooltip(entry, "${t("attributes")}:\n$attrs")
             }
             tagEntries.add(entry)
             ContextMenu().apply {
                 target = entry
                 isOpenOnClick = true
-                addItem("Docs") { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
-                addItem("Mails") { UI.getCurrent().navigate<String, MailsView>(MailsView::class.java, "tag:${tag.name}") }
-                addItem("Edit") { builderFactory.tags().editDialog(tag).build().open() }
-                addItem("Delete") { builderFactory.tags().deleteDialog(tag).build().open() }
+                addItem(t("docs")) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
+                addItem(t("mails")) { UI.getCurrent().navigate<String, MailsView>(MailsView::class.java, "tag:${tag.name}") }
+                addItem(t("edit")) { builderFactory.tags().editDialog(tag).build().open() }
+                addItem(t("delete")) { builderFactory.tags().deleteDialog(tag).build().open() }
             }
         }
-        return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
+        return LeftSubmenu(t("tags"), VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
     }
 
     private fun fillBadgeCount(doc: Doc) {

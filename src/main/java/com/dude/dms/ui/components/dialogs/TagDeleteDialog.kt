@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.*
+import com.dude.dms.brain.t
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -20,23 +21,23 @@ class TagDeleteDialog(
         private val mailFilterService: MailFilterService
 ) : Dialog() {
 
-    private val tagCheck = Checkbox("Tag", true).apply { isEnabled = false }
+    private val tagCheck = Checkbox(t("tag"), true).apply { isEnabled = false }
 
-    private val docCheck = Checkbox("Docs (${docService.countByTag(tag)})")
+    private val docCheck = Checkbox("${t("docs")} (${docService.countByTag(tag)})")
 
-    private val mailCheck = Checkbox("Mails (${mailService.countByTag(tag)})")
+    private val mailCheck = Checkbox("${t("mails")} (${mailService.countByTag(tag)})")
 
-    private val attributeCheck = Checkbox("Attributes (${attributeService.countByTag(tag)}")
+    private val attributeCheck = Checkbox("${t("attributes")} (${attributeService.countByTag(tag)}")
 
-    private val plainTextRuleCheck = Checkbox("Text Rules (${plainTextRuleService.countByTag(tag)}")
+    private val plainTextRuleCheck = Checkbox("${t("rules.plain")} (${plainTextRuleService.countByTag(tag)}")
 
-    private val regexRuleCheck = Checkbox("Regex Rules (${regexRuleService.countByTag(tag)}")
+    private val regexRuleCheck = Checkbox("${t("rules.regex")} (${regexRuleService.countByTag(tag)}")
 
-    private val mailFilterCheck = Checkbox("Mail Filters (${mailFilterService.countByTag(tag)}")
+    private val mailFilterCheck = Checkbox("Mail Filter (${mailFilterService.countByTag(tag)}")
 
     init {
         width = "20vw"
-        val deleteButton = Button("Delete", VaadinIcon.TRASH.create()) { delete() }.apply {
+        val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }

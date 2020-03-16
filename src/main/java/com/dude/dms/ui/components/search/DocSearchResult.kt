@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.search
 
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.t
 import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.extensions.convert
@@ -21,7 +22,7 @@ class DocSearchResult(
         private val tagService: TagService
 ) : SearchResult() {
 
-    override val header = "Document ${doc.documentDate?.convert()}"
+    override val header = "${t("doc")} ${doc.documentDate?.convert()}"
 
     override val body: Component
         get() {

@@ -1,6 +1,7 @@
 package com.dude.dms.updater
 
 import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.t
 import com.dude.dms.startup.ShutdownManager
 import org.springframework.stereotype.Component
 import java.io.File
@@ -14,7 +15,7 @@ import java.util.zip.ZipInputStream
 class UpdateInstaller(private val shutdownManager: ShutdownManager) {
 
     fun install(name: String) {
-        LOGGER.info("Extracting {}...", name)
+        LOGGER.info(t("updates.extract"))
         val destDir = File("update")
         if (!destDir.exists()) {
             destDir.mkdir()
@@ -34,7 +35,7 @@ class UpdateInstaller(private val shutdownManager: ShutdownManager) {
                     zipEntry = zis.nextEntry
                 }
                 zis.closeEntry()
-                LOGGER.info("Processing update...")
+                LOGGER.info(t("updates.process"))
                 shutdownManager.initiateShutdown(1337)
             }
         } catch (e: IOException) {

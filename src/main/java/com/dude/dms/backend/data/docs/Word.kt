@@ -2,6 +2,7 @@ package com.dude.dms.backend.data.docs
 
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import javax.persistence.Column
@@ -26,7 +27,7 @@ class Word(
 
     override fun showEvents() = false
 
-    override fun toString() = "Word($text)"
+    override fun toString() = t("word")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

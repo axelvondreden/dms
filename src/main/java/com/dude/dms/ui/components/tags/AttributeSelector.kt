@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
+import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
@@ -24,7 +25,7 @@ class AttributeSelector(builderFactory: BuilderFactory, attributeService: Attrib
         setItems(selected)
         minHeight = "100%"
         width = "50%"
-        addColumn { "${it.name}${if (it.isRequired) "*" else ""}" }.setHeader("Selected")
+        addColumn { "${it.name}${if (it.isRequired) "*" else ""}" }.setHeader(t("selected"))
         addThemeVariants(GridVariant.LUMO_COMPACT)
         addItemClickListener { event ->
             selected.remove(event.item)
@@ -37,7 +38,7 @@ class AttributeSelector(builderFactory: BuilderFactory, attributeService: Attrib
         setItems(available)
         minHeight = "100%"
         width = "50%"
-        addColumn { "${it.name}${if (it.isRequired) "*" else ""}" }.setHeader("Available")
+        addColumn { "${it.name}${if (it.isRequired) "*" else ""}" }.setHeader(t("available"))
         addThemeVariants(GridVariant.LUMO_COMPACT)
         addItemClickListener { event: ItemClickEvent<Attribute> ->
             available.remove(event.item)
@@ -58,7 +59,7 @@ class AttributeSelector(builderFactory: BuilderFactory, attributeService: Attrib
 
     init {
         val listWrapper = HorizontalLayout(selectedGrid, availableGrid).apply { setSizeFull() }
-        val addButton = Button("New Attribute", VaadinIcon.PLUS.create()) {
+        val addButton = Button(t("attribute"), VaadinIcon.PLUS.create()) {
             builderFactory.attributes().createDialog().build().open()
         }
         addButton.setWidthFull()

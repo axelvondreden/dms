@@ -30,9 +30,7 @@ class DocCreateDialog(pollingService: PollingService) : Dialog() {
                         buffer.getInputStream(file).use { inputStream ->
                             val bytes = ByteArray(inputStream.available())
                             inputStream.read(bytes)
-                            val targetFile = File(Options.get().doc.pollingPath, file)
-                            LOGGER.info("Writing file {}...", file)
-                            FileOutputStream(targetFile).use { outStream -> outStream.write(bytes) }
+                            FileOutputStream(File(Options.get().doc.pollingPath, file)).use { outStream -> outStream.write(bytes) }
                         }
                     } catch (ex: IOException) {
                         ex.message?.let { it1 -> LOGGER.error(it1, ex) }

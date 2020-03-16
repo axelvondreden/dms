@@ -2,6 +2,7 @@ package com.dude.dms.brain.events
 
 import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.t
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
@@ -17,14 +18,14 @@ class EventManager {
         val uis = listeners.filter { it.target == entity::class && it.type == type && it.holder.ui.isPresent }
                 .map { it.holder.ui.get() }.toSet()
         val text = when(type) {
-            EventType.CREATE -> "Created"
-            EventType.UPDATE -> "Updated"
-            EventType.DELETE -> "Deleted"
+            EventType.CREATE -> "created"
+            EventType.UPDATE -> "updated"
+            EventType.DELETE -> "deleted"
         }
         if (entity.showEvents()) {
-            uis.forEach { LOGGER.showInfo("$text $entity", it, log = false) }
+            uis.forEach { LOGGER.showInfo(t(text, entity), it, log = false) }
         }
-        LOGGER.info("$text $entity")
+        LOGGER.info(t(text, entity))
     }
 
     @Suppress("UNCHECKED_CAST")

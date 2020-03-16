@@ -2,6 +2,7 @@ package com.dude.dms.backend.data.docs
 
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDate
@@ -30,5 +31,5 @@ class AttributeValue(
 
     override fun hashCode(): Int = Objects.hash(super.hashCode(), doc, attribute)
 
-    override fun toString() = "AttributeValue($doc, $attribute, ${stringValue ?: intValue ?: floatValue ?: dateValue})"
+    override fun toString() = t("attributevalue")
 }

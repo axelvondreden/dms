@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.LogEntry
 import com.dude.dms.backend.service.LogEntryService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.dude.dms.ui.dataproviders.LogDataProvider
@@ -34,7 +35,7 @@ import java.util.*
 class LogView(private val logDataProvider: LogDataProvider, logEntryService: LogEntryService) : VerticalLayout() {
 
     private val dateFilter = DmsDatePicker().apply {
-        placeholder = "Date"
+        placeholder = t("date")
         value = LocalDate.now()
         locale = Locale.forLanguageTag(Options.get().view.locale)
         addValueChangeListener { refreshFilter() }
@@ -44,7 +45,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
     }
 
     private val classNameFilter = ComboBox<String>().apply {
-        placeholder = "All Classes"
+        placeholder = "Classes"
         isPreventInvalidInput = true
         isClearButtonVisible = true
         isAllowCustomValue = false
@@ -54,7 +55,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
     }
 
     private val levelFilter = ComboBox<DmsLogger.Level>().apply {
-        placeholder = "All Levels"
+        placeholder = "Levels"
         isPreventInvalidInput = true
         isClearButtonVisible = true
         isAllowCustomValue = false
@@ -65,7 +66,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
     }
 
     private val messageFilter = TextField { refreshFilter() }.apply {
-        placeholder = "All Messages"
+        placeholder = "Messages"
         setWidthFull()
         valueChangeMode = ValueChangeMode.LAZY
         valueChangeTimeout = 500

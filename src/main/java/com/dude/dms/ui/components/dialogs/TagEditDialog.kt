@@ -4,9 +4,10 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.standard.DmsColorPicker
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple
+import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
@@ -25,12 +26,12 @@ class TagEditDialog(
         private val docService: DocService
 ) : Dialog() {
 
-    private val name = TextField("Name", tag.name, "").apply { setWidthFull() }
+    private val name = TextField(t("name"), tag.name, "").apply { setWidthFull() }
 
     @Suppress("UNCHECKED_CAST")
     private val colorPicker = when {
-        Options.get().tag.simpleColors -> DmsColorPickerSimple("Color")
-        else -> DmsColorPicker("Color")
+        Options.get().tag.simpleColors -> DmsColorPickerSimple(t("color"))
+        else -> ColorPickerFieldRaw(t("color"))
     }.also {
         (it as HasSize).setWidthFull()
         (it as HasValue<*, String>).setValue(tag.color)
@@ -41,17 +42,17 @@ class TagEditDialog(
     init {
         width = "35vw"
 
-        val createButton = Button("Save") { save() }.apply {
+        val createButton = Button(t("save")) { save() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
-        val cancelButton = Button("Close") { close() }.apply {
+        val cancelButton = Button(t("close")) { close() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }
         val fieldWrapper = HorizontalLayout(name, colorPicker as Component).apply { setWidthFull() }
         val buttonLayout = HorizontalLayout(createButton, cancelButton).apply { setWidthFull() }
-        val attributeDetails = Details("Attributes", attributeSelector).apply { element.style["width"] = "100%" }
+        val attributeDetails = Details(t("attributes"), attributeSelector).apply { element.style["width"] = "100%" }
         val vLayout = VerticalLayout(fieldWrapper, attributeDetails, buttonLayout).apply {
             setSizeFull()
             isPadding = false
@@ -61,14 +62,8 @@ class TagEditDialog(
     }
 
     private fun save() {
-        if (name.isEmpty) {
-            name.errorMessage = "Name can not be empty!"
-            return
-        }
-        if ((colorPicker as HasValue<*, *>).isEmpty()) {
-            name.errorMessage = "Color can not be empty!"
-            return
-        }
+        if (name.isEmpty) return
+        if ((colorPicker as HasValue<*, *>).isEmpty()) return
         tag.name = name.value
         tag.color = colorPicker.getValue() as String
         tag.attributes = attributeSelector.selectedAttributes

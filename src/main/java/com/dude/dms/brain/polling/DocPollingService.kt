@@ -4,6 +4,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DocParser
+import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -17,7 +18,7 @@ class DocPollingService(private val docParser: DocParser, private val fileManage
     private val processing = HashSet<String>()
 
     override fun poll() {
-        LOGGER.info("Polling {}...", docPath)
+        LOGGER.info(t("doc.poll", docPath))
         File(docPath).listFiles { _, name -> name.endsWith(".pdf") }?.forEach { processPdf(it) }
         File(docPath).listFiles { _, name -> Const.IMAGE_FORMATS.any { name.endsWith(it) } }?.forEach { processImage(it) }
     }

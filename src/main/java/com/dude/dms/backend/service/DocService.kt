@@ -2,7 +2,6 @@ package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.*
-import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.ui.dataproviders.DocDataProvider
@@ -15,11 +14,10 @@ class DocService(
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
-        private val docHistoryService: DocHistoryService,
         private val lineService: LineService,
         private val wordService: WordService,
         eventManager: EventManager
-) : HistoricalCrudService<Doc, DocHistory>(docRepository, eventManager) {
+) : EventService<Doc>(docRepository, eventManager) {
 
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
@@ -35,7 +33,6 @@ class DocService(
     }
 
     override fun delete(entity: Doc) {
-        docHistoryService.getHistory(entity).forEach(docHistoryService::delete)
         lineService.findByDoc(entity).forEach(lineService::delete)
         attributeValueService.findByDoc(entity).forEach(attributeValueService::delete)
         super.delete(entity)
@@ -55,8 +52,6 @@ class DocService(
                 .filter { attributeService.findByAttributeValue(it) !in attributes }
                 .distinct().forEach { attributeValueService.delete(it) }
     }
-
-    override fun createHistory(entity: Doc, text: String?, created: Boolean, edited: Boolean) = DocHistory(entity, text, created, edited)
 
     fun findByGuid(guid: String): Doc? = docRepository.findByGuid(guid)
 

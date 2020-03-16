@@ -1,5 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
+import com.dude.dms.brain.t
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
@@ -21,7 +22,7 @@ class RegexDialog(private val callBack: TextField, private val matches: ArrayLis
         valueChangeMode = ValueChangeMode.EAGER
     }
 
-    private val textArea = TextArea("Test area").apply {
+    private val textArea = TextArea(t("testarea")).apply {
         setWidthFull()
         height = "50%"
         addValueChangeListener { refreshResults() }
@@ -29,7 +30,7 @@ class RegexDialog(private val callBack: TextField, private val matches: ArrayLis
     }
 
     private val grid = Grid<String>().apply {
-        addColumn { it }.setHeader("Matches")
+        addColumn { it }.setHeader(t("matches"))
         setItems(matches)
         height = "30%"
     }
@@ -66,7 +67,7 @@ class RegexDialog(private val callBack: TextField, private val matches: ArrayLis
                             }
                         }
             } catch (e: PatternSyntaxException) {
-                regexField.errorMessage = "Invalid regex!"
+                regexField.errorMessage = t("regex.invalid")
             }
         }
         grid.dataProvider.refreshAll()

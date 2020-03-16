@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
+import com.dude.dms.brain.t
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
@@ -24,29 +25,25 @@ class MailFilterCreateDialog(private val mailFilterService: MailFilterService, m
         try {
             mailManager.testConnection()
         } catch (e: MessagingException) {
-            LOGGER.showError("IMAP Connection Failed: ${e.message}", UI.getCurrent())
+            LOGGER.showError(t("mail.imap.error", e), UI.getCurrent())
             close()
         }
 
         folderGrid.setItems(mailManager.getRootFolders(true)) { mailManager.getSubFolders(it, true) }
         folderGrid.dataProvider.refreshAll()
 
-        folderGrid.addHierarchyColumn { it.fullName }.setHeader("Folder")
-        folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader("Count")
+        folderGrid.addHierarchyColumn { it.fullName }.setHeader(t("folder"))
+        folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader(t("count"))
         folderGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         folderGrid.height = "90%"
 
-        val button = Button("Create", VaadinIcon.PLUS.create()) { create() }.apply { setWidthFull() }
+        val button = Button(t("create"), VaadinIcon.PLUS.create()) { create() }.apply { setWidthFull() }
         add(folderGrid, button)
     }
 
     private fun create() {
-        if (folderGrid.asSingleSelect().isEmpty) {
-            LOGGER.showError("No Folder selected!", UI.getCurrent())
-            return
-        }
-        val mailFilter = MailFilter(folderGrid.asSingleSelect().value.fullName)
-        mailFilterService.save(mailFilter)
+        if (folderGrid.asSingleSelect().isEmpty) return
+        mailFilterService.save(MailFilter(folderGrid.asSingleSelect().value.fullName))
         close()
     }
 

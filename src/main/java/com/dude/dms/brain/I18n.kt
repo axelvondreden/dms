@@ -7,7 +7,7 @@ import java.util.*
 
 val source = SpringContext.getBean(MessageSource::class.java)!!
 
-fun t(msg: String, vararg args: String) = try {
+fun t(msg: String, vararg args: Any) = try {
     source.getMessage(msg, args, Locale.forLanguageTag(Options.get().view.locale))
 } catch (e: NoSuchMessageException) {
     msg

@@ -2,7 +2,6 @@ package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
-import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import org.springframework.data.jpa.repository.JpaRepository
@@ -27,9 +26,5 @@ abstract class EventService<T>(
     override fun delete(entity: T) {
         super.delete(entity)
         eventManager.trigger(entity, EventType.DELETE)
-    }
-
-    companion object {
-        private val LOGGER = DmsLogger.getLogger(EventService::class.java)
     }
 }

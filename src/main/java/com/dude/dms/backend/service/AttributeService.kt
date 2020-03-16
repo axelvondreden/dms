@@ -6,6 +6,7 @@ import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.repositories.AttributeRepository
 import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.brain.events.EventManager
+import com.dude.dms.brain.t
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +20,7 @@ class AttributeService(
     override fun create(entity: Attribute): Attribute {
         val current = findByName(entity.name)
         return if (current != null) {
-            LOGGER.error("Attribute '${entity.name}' already exists!")
+            LOGGER.error(t("attribute.error.duplicate", entity.name))
             current
         } else super.create(entity)
     }

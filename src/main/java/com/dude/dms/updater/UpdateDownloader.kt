@@ -1,6 +1,7 @@
 package com.dude.dms.updater
 
 import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.t
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -25,11 +26,11 @@ class UpdateDownloader(private val updateInstaller: UpdateInstaller) {
         for ((name, url) in newestRelease.assets) {
             val responseExtractor = ResponseExtractor<Void> { response ->
                 Files.copy(response.body, Paths.get(name), StandardCopyOption.REPLACE_EXISTING)
-                LOGGER.info("Download finished: {}", name)
+                LOGGER.info(t("download.finished"))
                 updateInstaller.install(name)
                 null
             }
-            LOGGER.info("Starting download: {}", name)
+            LOGGER.info(t("download.started"))
             restTemplate.execute(URI.create(url), HttpMethod.GET, requestCallback, responseExtractor)
         }
     }

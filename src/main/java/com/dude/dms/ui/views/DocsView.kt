@@ -9,6 +9,7 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
+import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.tags.TagContainer
@@ -49,8 +50,8 @@ class DocsView(
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { grid.dataProvider.refreshAll() } }
 
         grid.dataProvider = docDataProvider
-        grid.addColumn { it.documentDate?.convert() }.setHeader("Date")
-        grid.addComponentColumn { TagContainer(tagService.findByDoc(it)) }.setHeader("Tags")
+        grid.addColumn { it.documentDate?.convert() }.setHeader(t("date"))
+        grid.addComponentColumn { TagContainer(tagService.findByDoc(it)) }.setHeader(t("tags"))
         grid.addComponentColumn { createGridActions(it) }
         grid.addColumn { it.guid }
         grid.columns.forEach { it.setResizable(true).setAutoWidth(true) }
@@ -84,9 +85,9 @@ class DocsView(
             menu.removeAll()
             if (doc == null) return@setDynamicContentHandler false
 
-            menu.addItem("View") { builderFactory.docs().imageDialog(doc).build().open() }
-            menu.addItem("Edit") { builderFactory.docs().editDialog(doc).build().open() }
-            menu.addItem("Delete") { builderFactory.docs().deleteDialog(doc).build().open() }
+            menu.addItem(t("view")) { builderFactory.docs().imageDialog(doc).build().open() }
+            menu.addItem(t("edit")) { builderFactory.docs().editDialog(doc).build().open() }
+            menu.addItem(t("delete")) { builderFactory.docs().deleteDialog(doc).build().open() }
             true
         }
     }
@@ -99,7 +100,7 @@ class DocsView(
         Tooltips.getCurrent().setTooltip(downloadButton, "Download")
 
         val edit = Button(VaadinIcon.EDIT.create()) { builderFactory.docs().editDialog(doc).build().open() }
-        Tooltips.getCurrent().setTooltip(edit, "Edit")
+        Tooltips.getCurrent().setTooltip(edit, t("edit"))
 
         return HorizontalLayout(download, edit)
     }

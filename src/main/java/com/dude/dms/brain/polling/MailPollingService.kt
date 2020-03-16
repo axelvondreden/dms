@@ -1,11 +1,11 @@
 package com.dude.dms.brain.polling
 
-import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.t
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -20,13 +20,13 @@ class MailPollingService(
 
     override fun poll() {
         for (filter in mailFilterService.findAll()) {
-            LOGGER.info("Polling {}...", filter.folder)
+            LOGGER.info(t("mail.poll", filter.folder))
             val allMails = mailService.findAll()
             val newMails = mailManager.getMails(filter.folder).filter { it !in allMails }
             if (newMails.isNotEmpty()) {
-                LOGGER.info("Processing {} new mails...", newMails.size)
+                LOGGER.info(t("mail.process", newMails.size))
             }
-            processMails(newMails)
+            newMails.forEach { mailService.save(it) }
         }
     }
 
@@ -37,13 +37,6 @@ class MailPollingService(
         } else {
             tick = 1
             poll()
-        }
-    }
-
-    private fun processMails(mails: List<Mail>) {
-        for (mail in mails) {
-            LOGGER.info("Saving Mail: {}", mail)
-            mailService.save(mail)
         }
     }
 

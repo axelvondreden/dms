@@ -45,36 +45,33 @@ class DocImageDialog(
     private fun fill() {
         container.removeAllChildren()
         val img = fileManager.getFirstImage(doc.guid)
-        if (img.exists()) {
-            val image = Element("object").apply {
-                setAttribute("type", "image/png")
-                style["maxWidth"] = "100%"
-                style["maxHeight"] = "100%"
-                setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
-            }
-            container.appendChild(image)
-            for (line in lineService.findByDoc(doc)) {
-                for (word in wordService.findByLine(line)) {
-                    val div = Div().apply {
-                        element.style["border"] = "2px solid gray"
-                        element.style["position"] = "absolute"
-                        element.style["top"] = "${word.y}%"
-                        element.style["left"] = "${word.x}%"
-                        element.style["width"] = "${word.width}%"
-                        element.style["height"] = "${word.height}%"
-                        element.setAttribute("id", word.id.toString())
-                        element.addEventListener("mouseenter") { event -> event.source.style["border"] = "3px solid black" }
-                        element.addEventListener("mouseleave") { event -> event.source.style["border"] = "2px solid gray" }
-                        element.addEventListener("click") { event ->
-                            builderFactory.docs().wordEditDialog(doc, wordService.load(event.source.getAttribute("id").toLong())!!).build().open()
-                        }
+        if (!img.exists()) return
+        val image = Element("object").apply {
+            setAttribute("attribute.type", "image/png")
+            style["maxWidth"] = "100%"
+            style["maxHeight"] = "100%"
+            setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
+        }
+        container.appendChild(image)
+        for (line in lineService.findByDoc(doc)) {
+            for (word in wordService.findByLine(line)) {
+                val div = Div().apply {
+                    element.style["border"] = "2px solid gray"
+                    element.style["position"] = "absolute"
+                    element.style["top"] = "${word.y}%"
+                    element.style["left"] = "${word.x}%"
+                    element.style["width"] = "${word.width}%"
+                    element.style["height"] = "${word.height}%"
+                    element.setAttribute("id", word.id.toString())
+                    element.addEventListener("mouseenter") { event -> event.source.style["border"] = "3px solid black" }
+                    element.addEventListener("mouseleave") { event -> event.source.style["border"] = "2px solid gray" }
+                    element.addEventListener("click") { event ->
+                        builderFactory.docs().wordEditDialog(doc, wordService.load(event.source.getAttribute("id").toLong())!!).build().open()
                     }
-                    container.appendChild(div.element)
-                    Tooltips.getCurrent().setTooltip(div, word.text)
                 }
+                container.appendChild(div.element)
+                Tooltips.getCurrent().setTooltip(div, word.text)
             }
-        } else {
-            add(Text("No image found!"))
         }
     }
 }

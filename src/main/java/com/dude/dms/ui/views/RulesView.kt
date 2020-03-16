@@ -9,6 +9,7 @@ import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.polling.MailPollingService
+import com.dude.dms.brain.t
 import com.dude.dms.ui.Const.PAGE_RULES
 import com.dude.dms.ui.builder.BuilderFactory
 import com.github.appreciated.card.Card
@@ -49,12 +50,12 @@ class RulesView(
     }
 
     private fun addPlaintext() {
-        val create = Button("Create", VaadinIcon.PLUS.create()) { builderFactory.rules().plainCreateDialog().build().open() }.apply {
+        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().plainCreateDialog().build().open() }.apply {
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
         val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
         plainTextRuleService.findAll().map { builderFactory.rules().plainTextCard(it).build() }.forEach { verticalLayout.add(it) }
-        val details = Details("Text Matchers", verticalLayout).apply {
+        val details = Details(t("rules.text"), verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"
             element.style["width"] = "100%"
@@ -67,12 +68,12 @@ class RulesView(
     }
 
     private fun addRegex() {
-        val create = Button("Create", VaadinIcon.PLUS.create()) { builderFactory.rules().regexCreateDialog().build().open() }.apply {
+        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().regexCreateDialog().build().open() }.apply {
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
         val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
         regexRuleService.findAll().map { builderFactory.rules().regexCard(it).build() }.forEach { verticalLayout.add(it) }
-        val details = Details("Regex Matchers", verticalLayout).apply {
+        val details = Details(t("rules.regex"), verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"
             element.style["width"] = "100%"
@@ -86,16 +87,16 @@ class RulesView(
 
     private fun addMailFilter() {
         val header = HorizontalLayout(
-                Button("Create", VaadinIcon.PLUS.create()) { builderFactory.rules().mailCreateDialog().build().open() }.apply {
+                Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().mailCreateDialog().build().open() }.apply {
                     addThemeVariants(ButtonVariant.LUMO_PRIMARY)
                 },
-                Button("Poll", VaadinIcon.CLOUD_DOWNLOAD.create()) { mailPollingService.poll() }.apply {
+                Button(t("check"), VaadinIcon.CLOUD_DOWNLOAD.create()) { mailPollingService.poll() }.apply {
                     addThemeVariants(ButtonVariant.LUMO_PRIMARY)
                 }
         ).apply { setSizeFull() }
         val verticalLayout = VerticalLayout(header).apply { setSizeFull() }
         mailFilterService.findAll().map { builderFactory.rules().mailCard(it).build() }.forEach { verticalLayout.add(it) }
-        val details = Details("Mail Filters", verticalLayout).apply {
+        val details = Details("Mail Filter", verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"
             element.style["width"] = "100%"

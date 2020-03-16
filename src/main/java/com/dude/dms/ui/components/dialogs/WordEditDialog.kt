@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.backend.service.WordService
+import com.dude.dms.brain.t
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.dialog.Dialog
@@ -35,11 +36,11 @@ class WordEditDialog(
     init {
         width = "40vw"
 
-        val createButton = Button("Save", VaadinIcon.DISC.create()) { save() }.apply {
+        val createButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
-        val cancelButton = Button("Close", VaadinIcon.CLOSE.create()) { close() }.apply {
+        val cancelButton = Button(t("close"), VaadinIcon.CLOSE.create()) { close() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }
@@ -47,10 +48,7 @@ class WordEditDialog(
     }
 
     private fun save() {
-        if (text.isEmpty) {
-            text.errorMessage = "Text can not be empty!"
-            return
-        }
+        if (text.isEmpty) return
         val newText = text.value
         word.text = newText
         wordService.save(word)

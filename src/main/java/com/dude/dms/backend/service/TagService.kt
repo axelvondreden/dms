@@ -3,7 +3,6 @@ package com.dude.dms.backend.service
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.history.TagHistory
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
@@ -15,17 +14,15 @@ import org.springframework.stereotype.Service
 @Service
 class TagService(
         private val tagRepository: TagRepository,
-        private val tagHistoryService: TagHistoryService,
         private val plainTextRuleService: PlainTextRuleService,
         private val regexRuleService: RegexRuleService,
         private val mailFilterService: MailFilterService,
         eventManager: EventManager
-) : HistoricalCrudService<Tag, TagHistory>(tagRepository, eventManager) {
+) : EventService<Tag>(tagRepository, eventManager) {
 
     override fun create(entity: Tag) = tagRepository.findByName(entity.name) ?: super.create(entity)
 
     override fun delete(entity: Tag) {
-        tagHistoryService.getHistory(entity).forEach(tagHistoryService::delete)
         plainTextRuleService.findByTag(entity).forEach {
             it.tags = findByPlainTextRule(it).minus(entity)
             plainTextRuleService.save(it)
@@ -40,8 +37,6 @@ class TagService(
         }
         super.delete(entity)
     }
-
-    override fun createHistory(entity: Tag, text: String?, created: Boolean, edited: Boolean) = TagHistory(entity, text, created, edited)
 
     fun findByName(name: String) = tagRepository.findByName(name)
 

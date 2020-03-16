@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.service.AttributeService
+import com.dude.dms.brain.t
 import com.dude.dms.ui.components.misc.IconToggle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -16,11 +17,11 @@ import com.vaadin.flow.component.textfield.TextField
 
 class AttributeCreateDialog(private val attributeService: AttributeService) : Dialog() {
 
-    private val nameTextField = TextField("Name").apply {
+    private val nameTextField = TextField(t("name")).apply {
         setWidthFull()
     }
 
-    private val typeComboBox = ComboBox<Attribute.Type>("Type").apply {
+    private val typeComboBox = ComboBox<Attribute.Type>(t("attribute.type")).apply {
         setWidthFull()
         isPreventInvalidInput = true
         isAllowCustomValue = false
@@ -28,7 +29,7 @@ class AttributeCreateDialog(private val attributeService: AttributeService) : Di
         value = Attribute.Type.STRING
     }
 
-    private val requiredToggle = IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), "Required")
+    private val requiredToggle = IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), t("attribute.required"))
 
     init {
         width = "35vw"
@@ -36,11 +37,11 @@ class AttributeCreateDialog(private val attributeService: AttributeService) : Di
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
         }
-        val createButton = Button("Create", VaadinIcon.PLUS.create()) { create() }.apply {
+        val createButton = Button(t("create"), VaadinIcon.PLUS.create()) { create() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
-        val cancelButton = Button("Close", VaadinIcon.CLOSE.create()) { close() }.apply {
+        val cancelButton = Button(t("close"), VaadinIcon.CLOSE.create()) { close() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }
@@ -57,7 +58,6 @@ class AttributeCreateDialog(private val attributeService: AttributeService) : Di
 
     private fun create() {
         if (nameTextField.isEmpty) {
-            nameTextField.errorMessage = "Name can not be empty!"
             return
         }
         val attribute = Attribute(nameTextField.value, requiredToggle.value, typeComboBox.value)

@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.search
 
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.github.appreciated.app.layout.component.appbar.IconButton
 import com.github.appreciated.card.Card
@@ -53,13 +54,13 @@ class DmsSearchOverlayView(private val builderFactory: BuilderFactory) : IronOve
     }
 
     private val entityMultiselect = MultiselectComboBox<String>().apply {
-        setItems("Docs", "Tags")
-        select("Docs", "Tags")
+        setItems(t("docs"), t("tags"))
+        select(t("docs"), t("tags"))
         width = "30%"
         addValueChangeListener { showResults(searchField.value) }
     }
 
-    private val caseSensitiveCheckbox = Checkbox("case sensitive").apply { addValueChangeListener { showResults(searchField.value) } }
+    private val caseSensitiveCheckbox = Checkbox("Case sensitive").apply { addValueChangeListener { showResults(searchField.value) } }
 
     private var docDataProvider: DataProvider<DocSearchResult, String>? = null
     private var tagDataProvider: DataProvider<TagSearchResult, String>? = null
@@ -80,7 +81,7 @@ class DmsSearchOverlayView(private val builderFactory: BuilderFactory) : IronOve
             style["flex-shrink"] = "0"
             style["z-index"] = "1"
         }
-        val configWrapper = HorizontalLayout(Label("Search in:"), entityMultiselect, caseSensitiveCheckbox).apply {
+        val configWrapper = HorizontalLayout(Label(t("search")), entityMultiselect, caseSensitiveCheckbox).apply {
             setWidthFull()
             alignItems = FlexComponent.Alignment.CENTER
             style["background"] = "var(--app-layout-bar-background-base-color)"
@@ -104,7 +105,7 @@ class DmsSearchOverlayView(private val builderFactory: BuilderFactory) : IronOve
     private fun showResults(value: String?) {
         resultsWrapper.removeAll()
         if (value == null || value.isEmpty()) return
-        if ("Docs" in entityMultiselect.selectedItems) {
+        if (t("docs") in entityMultiselect.selectedItems) {
             val title = Card(TitleLabel("Docs " + docDataProvider!!.size(Query(value))))
             title.setWidthFull()
             title.setBackground("var(--lumo-base-color)")
@@ -117,7 +118,7 @@ class DmsSearchOverlayView(private val builderFactory: BuilderFactory) : IronOve
                 resultsWrapper.add(card)
             }
         }
-        if ("Tags" in entityMultiselect.selectedItems) {
+        if (t("tags") in entityMultiselect.selectedItems) {
             val title = Card(TitleLabel("Tags " + tagDataProvider!!.size(Query(value)))).apply {
                 setWidthFull()
                 setBackground("var(--lumo-base-color)")

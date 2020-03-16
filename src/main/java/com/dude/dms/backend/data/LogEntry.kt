@@ -1,6 +1,7 @@
 package com.dude.dms.backend.data
 
 import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDateTime
@@ -21,5 +22,5 @@ class LogEntry(
         var stacktrace: String? = null,
         var isUi: Boolean = false
 ) : DataEntity() {
-    override fun toString(): String = "LogEntry($timestamp, $message, $level)"
+    override fun toString(): String = t("log.entry")
 }
