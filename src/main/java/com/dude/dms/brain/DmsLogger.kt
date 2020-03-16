@@ -34,7 +34,7 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
                 logger.warn(t("log.missing"))
                 return
             } else {
-                logger.info("log.restored")
+                logger.info(t("log.restored"))
             }
         }
         logEntryService!!.save(logEntry)
