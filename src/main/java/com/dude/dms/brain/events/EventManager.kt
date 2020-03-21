@@ -25,7 +25,7 @@ class EventManager {
         if (entity.showEvents()) {
             uis.forEach { LOGGER.showInfo(t(text, entity), it, log = false) }
         }
-        LOGGER.info(t(text, entity))
+        //LOGGER.info(t(text, entity))
     }
 
     @Suppress("UNCHECKED_CAST")

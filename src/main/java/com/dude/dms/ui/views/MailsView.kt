@@ -10,7 +10,7 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.components.tags.TagContainer
+import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.dataproviders.GridViewDataProvider
 import com.dude.dms.ui.dataproviders.MailDataProvider
 import com.dude.dms.ui.extensions.convert
@@ -26,6 +26,7 @@ import dev.mett.vaadin.tooltip.Tooltips
 @Route(value = Const.PAGE_MAILS, layout = MainView::class)
 @PageTitle("Mails")
 class MailsView(
+        private val builderFactory: BuilderFactory,
         private val mailService: MailService,
         private val tagService: TagService,
         private val docService: DocService,
@@ -44,7 +45,7 @@ class MailsView(
         grid.addColumn { it.received.convert() }.setHeader(t("date"))
         grid.addColumn { it.sender }.setHeader(t("mail.from"))
         grid.addColumn { it.subject }.setHeader(t("mail.subject"))
-        grid.addComponentColumn { TagContainer(tagService.findByMail(it)) }.setHeader(t("tags"))
+        grid.addComponentColumn { builderFactory.tags().container(tagService.findByMail(it).toMutableSet()) }.setHeader(t("tags"))
         grid.addComponentColumn { createGridActions(it) }
         grid.columns.forEach { it.setResizable(true).setAutoWidth(true) }
         grid.isColumnReorderingAllowed = true

@@ -1,13 +1,12 @@
 package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
+import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.tags.TagContainer
 import com.github.appreciated.card.RippleClickableCard
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -26,12 +25,12 @@ class PlainTextRuleCard(
 
     private val label = Label(rule.text)
 
-    private val tagContainer = TagContainer(tagService.findByPlainTextRule(rule)).apply { isPadding = true }
+    private val tagContainer = builderFactory.tags().container(tagService.findByPlainTextRule(rule).toMutableSet())
 
     init {
         setWidthFull()
 
-        val runButton = Button("Run", VaadinIcon.PLAY.create()) { builderFactory.rules().ruleRunnerDialog(plainTextRuleValidator.runRuleForAll(rule)).build().open() }.apply {
+        val runButton = Button("Run", VaadinIcon.PLAY.create()) { builderFactory.rules().ruleRunnerDialog(plainTextRuleValidator.runRuleForAll(rule)).open() }.apply {
             addThemeVariants(ButtonVariant.LUMO_SUCCESS)
         }
         val wrapper = HorizontalLayout(runButton, label, tagContainer).apply {
@@ -46,7 +45,7 @@ class PlainTextRuleCard(
     }
 
     fun fill(rule: PlainTextRule) {
-        tagContainer.setTags(tagService.findByPlainTextRule(rule))
+        tagContainer.setTags(tagService.findByPlainTextRule(rule).toMutableSet())
         label.text = rule.text
     }
 }

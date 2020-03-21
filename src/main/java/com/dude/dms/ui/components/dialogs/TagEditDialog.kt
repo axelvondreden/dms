@@ -37,7 +37,7 @@ class TagEditDialog(
         (it as HasValue<*, String>).setValue(tag.color)
     }
 
-    private val attributeSelector = builderFactory.attributes().selector().forTag(tag).build().apply { setSizeFull() }
+    private val attributeSelector = builderFactory.attributes().selector(tag).apply { setSizeFull() }
 
     init {
         width = "35vw"

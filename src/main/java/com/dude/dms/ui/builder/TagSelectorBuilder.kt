@@ -1,11 +1,10 @@
-package com.dude.dms.ui.builder.tags
+package com.dude.dms.ui.builder
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.ui.builder.Builder
 import com.dude.dms.ui.components.tags.TagSelector
 
 class TagSelectorBuilder(

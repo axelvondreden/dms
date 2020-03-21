@@ -35,7 +35,7 @@ class AttributeValueContainer(
         removeAll()
         fields.clear()
         for (attributeValue in attributeValueService.findByDoc(doc)) {
-            val field = builderFactory.attributes().valueField(attributeValue).build().apply { setWidthFull() }
+            val field = builderFactory.attributes().valueField(attributeValue).apply { setWidthFull() }
             add(field)
             fields.add(field)
         }

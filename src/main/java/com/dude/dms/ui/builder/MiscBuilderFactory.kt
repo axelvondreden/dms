@@ -1,14 +1,14 @@
-package com.dude.dms.ui.builder.misc
+package com.dude.dms.ui.builder
 
 import com.dude.dms.backend.service.ChangelogService
-import com.dude.dms.ui.builder.Builder
 import com.dude.dms.ui.components.dialogs.ChangelogDialog
 import com.dude.dms.updater.UpdateChecker
 
-class ChangelogDialogBuilder(
+class MiscBuilderFactory(
+        builderFactory: BuilderFactory,
         private val changelogService: ChangelogService,
         private val updateChecker: UpdateChecker
-): Builder<ChangelogDialog> {
+) : Factory(builderFactory) {
 
-    override fun build() = ChangelogDialog(changelogService, updateChecker)
+    fun changelog() = ChangelogDialog(changelogService, updateChecker)
 }

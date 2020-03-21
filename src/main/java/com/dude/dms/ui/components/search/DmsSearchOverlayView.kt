@@ -145,8 +145,8 @@ class DmsSearchOverlayView(private val builderFactory: BuilderFactory) : IronOve
     }
 
     private fun searchDocs(filter: String) = when {
-        caseSensitiveCheckbox.value -> docService!!.findTop10ByRawTextContaining(filter).map { builderFactory.docs().searchResult(it, filter).build() }
-        else -> docService!!.findTop10ByRawTextContainingIgnoreCase(filter).map { builderFactory.docs().searchResult(it, filter).build() }
+        caseSensitiveCheckbox.value -> docService!!.findTop10ByRawTextContaining(filter).map { builderFactory.docs().searchResult(it, filter) }
+        else -> docService!!.findTop10ByRawTextContainingIgnoreCase(filter).map { builderFactory.docs().searchResult(it, filter) }
     }
 
     private fun countDocs(filter: String) = when {
@@ -155,8 +155,8 @@ class DmsSearchOverlayView(private val builderFactory: BuilderFactory) : IronOve
     }
 
     private fun searchTags(filter: String) = when {
-        caseSensitiveCheckbox.value -> tagService!!.findTop10ByNameContaining(filter).map { builderFactory.tags().searchResult(it).build() }
-        else -> tagService!!.findTop10ByNameContainingIgnoreCase(filter).map { builderFactory.tags().searchResult(it).build() }
+        caseSensitiveCheckbox.value -> tagService!!.findTop10ByNameContaining(filter).map { builderFactory.tags().searchResult(it) }
+        else -> tagService!!.findTop10ByNameContainingIgnoreCase(filter).map { builderFactory.tags().searchResult(it) }
     }
 
     private fun countTags(filter: String) = when {

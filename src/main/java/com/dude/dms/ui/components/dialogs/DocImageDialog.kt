@@ -1,12 +1,12 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.brain.FileManager
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.backend.service.LineService
 import com.dude.dms.backend.service.WordService
+import com.dude.dms.brain.FileManager
 import com.dude.dms.ui.builder.BuilderFactory
 import com.helger.commons.io.file.FileHelper
-import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -18,10 +18,12 @@ import dev.mett.vaadin.tooltip.Tooltips
 
 class DocImageDialog(
         private val builderFactory: BuilderFactory,
-        private val doc: Doc,
         private val lineService: LineService,
         private val wordService: WordService,
-        private val fileManager: FileManager
+        private val fileManager: FileManager,
+        private val doc: Doc? = null,
+        private val guid: String? = null,
+        private val lines: Set<Line> = emptySet()
 ) : Dialog() {
 
     private val container = ElementFactory.createDiv().apply {
@@ -44,7 +46,7 @@ class DocImageDialog(
 
     private fun fill() {
         container.removeAllChildren()
-        val img = fileManager.getFirstImage(doc.guid)
+        val img = fileManager.getFirstImage((doc?.guid ?: guid)!!)
         if (!img.exists()) return
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")
@@ -53,8 +55,8 @@ class DocImageDialog(
             setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
         }
         container.appendChild(image)
-        for (line in lineService.findByDoc(doc)) {
-            for (word in wordService.findByLine(line)) {
+        for (line in doc?.let { lineService.findByDoc(it) } ?: lines) {
+            for (word in doc?.let { wordService.findByLine(line) } ?: line.words) {
                 val div = Div().apply {
                     element.style["border"] = "2px solid gray"
                     element.style["position"] = "absolute"
@@ -66,7 +68,11 @@ class DocImageDialog(
                     element.addEventListener("mouseenter") { event -> event.source.style["border"] = "3px solid black" }
                     element.addEventListener("mouseleave") { event -> event.source.style["border"] = "2px solid gray" }
                     element.addEventListener("click") { event ->
-                        builderFactory.docs().wordEditDialog(doc, wordService.load(event.source.getAttribute("id").toLong())!!).build().open()
+                        builderFactory.docs().wordEditDialog(
+                                doc?.let { wordService.load(event.source.getAttribute("id").toLong())!! } ?: word, doc, lines
+                        ).also {
+                            it.addDialogCloseActionListener { Tooltips.getCurrent().setTooltip(this, word.text) }
+                        }.open()
                     }
                 }
                 container.appendChild(div.element)

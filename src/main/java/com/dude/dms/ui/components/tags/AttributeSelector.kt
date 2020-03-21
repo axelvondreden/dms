@@ -60,7 +60,7 @@ class AttributeSelector(builderFactory: BuilderFactory, attributeService: Attrib
     init {
         val listWrapper = HorizontalLayout(selectedGrid, availableGrid).apply { setSizeFull() }
         val addButton = Button(t("attribute"), VaadinIcon.PLUS.create()) {
-            builderFactory.attributes().createDialog().build().open()
+            builderFactory.attributes().createDialog().open()
         }
         addButton.setWidthFull()
         add(listWrapper, addButton)

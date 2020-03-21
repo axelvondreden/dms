@@ -112,12 +112,6 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
                 }
             }
         }
-        val pollingInterval = IntegerField("Import Interval (s)", options.doc.pollingInterval) {
-            if (it.value != null && it.value > 0) {
-                options.doc.pollingInterval = it.value
-                save()
-            }
-        }
         val dateScanFormats = TextField("${t("date")} Format", options.view.dateScanFormats.joinToString(",")) {
             if (!it.value.isNullOrEmpty()) {
                 options.view.dateScanFormats = it.value.split(",")
@@ -137,7 +131,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
 
-        add(createSection(t("docs"), imageParserDpi, pollingInterval, dateScanFormats, ocrLanguage))
+        add(createSection(t("docs"), imageParserDpi, dateScanFormats, ocrLanguage))
     }
 
 

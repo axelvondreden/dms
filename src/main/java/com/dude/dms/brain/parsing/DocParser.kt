@@ -5,9 +5,7 @@ import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.LineService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
@@ -18,7 +16,6 @@ import org.bytedeco.leptonica.global.lept.pixRead
 import org.bytedeco.tesseract.TessBaseAPI
 import org.springframework.stereotype.Component
 import java.io.File
-import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -29,8 +26,6 @@ import javax.xml.parsers.DocumentBuilderFactory
 class DocParser(
         private val docService: DocService,
         private val tagService: TagService,
-        private val lineService: LineService,
-        private val wordService: WordService,
         private val plainTextRuleValidator: PlainTextRuleValidator,
         private val regexRuleValidator: RegexRuleValidator,
         private val fileManager: FileManager,
@@ -42,20 +37,16 @@ class DocParser(
      *
      * @param guid GUID of the imported files
      */
-    fun parse(guid: String) {
-        var lines = setOf<Line>()
-
+    /*fun parse(guid: String) {
         try {
-            PDDocument.load(fileManager.getPdf(guid)).use { pdDoc ->
-                lines = stripText(pdDoc)
-            }
+            var lines = getPdfText(guid)
             if (lines.isEmpty()) {
-                lines = ocrText(fileManager.getFirstImage(guid))
+                lines = getOcrText(fileManager.getFirstImage(guid))
             }
             val doc = Doc(guid)
             if (lines.isNotEmpty()) {
                 doc.rawText = docService.getFullTextMemory(lines)
-                doc.documentDate = discoverDates(doc.rawText!!)
+                doc.documentDate = getMostFrequentDate(lines)
             }
             doc.tags = discoverTags(doc.rawText).toMutableSet()
             docService.create(doc)
@@ -69,31 +60,14 @@ class DocParser(
         } catch (e: IOException) {
             e.message?.let { LOGGER.error(it) }
         }
-    }
+    }*/
 
-    /**
-     * Tries to find tags for a doc by all available methods
-     *
-     * @param rawText raw text of the document
-     * @return list of tags
-     */
-    private fun discoverTags(rawText: String?): Set<Tag> {
-        val tags = Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.toMutableSet()
-        if (!rawText.isNullOrEmpty()) {
-            tags.addAll(plainTextRuleValidator.getTags(rawText))
-            tags.addAll(regexRuleValidator.getTags(rawText))
-        }
-        LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.name }))
-        return tags
-    }
-
-    private fun stripText(pdDoc: PDDocument): Set<Line> {
+    fun getPdfText(guid: String): Set<Line> {
         LOGGER.info(t("pdf.parse"))
-        return pdfStripper.getLines(pdDoc)
+        PDDocument.load(fileManager.getPdf(guid)).use { return pdfStripper.getLines(it) }
     }
 
-    private fun ocrText(img: File): Set<Line> {
-        val ocrLang = Options.get().doc.ocrLanguage
+    fun getOcrText(img: File, ocrLang: String = Options.get().doc.ocrLanguage): Set<Line> {
         LOGGER.info(t("image.ocr", ocrLang))
         val api = TessBaseAPI()
         if (api.Init("tessdata", ocrLang) != 0) {
@@ -147,8 +121,20 @@ class DocParser(
         return lines
     }
 
-    private fun discoverDates(rawText: String): LocalDate? {
+    fun discoverTags(lines: Set<Line>): Set<Tag> {
+        val rawText = docService.getFullTextMemory(lines)
+        val tags = Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.toMutableSet()
+        if (rawText.isNotEmpty()) {
+            tags.addAll(plainTextRuleValidator.getTags(rawText))
+            tags.addAll(regexRuleValidator.getTags(rawText))
+        }
+        LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.name }))
+        return tags
+    }
+
+    fun getMostFrequentDate(lines: Set<Line>): LocalDate? {
         LOGGER.info(t("doc.parse.date.detect"))
+        val rawText = docService.getFullTextMemory(lines)
         val map = mutableMapOf<LocalDate, Int>()
         for (pattern in Options.get().view.dateScanFormats) {
             for (line in rawText.split("\n").toTypedArray()) {

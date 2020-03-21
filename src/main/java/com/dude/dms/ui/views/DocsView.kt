@@ -12,7 +12,6 @@ import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.dataproviders.DocDataProvider
 import com.dude.dms.ui.dataproviders.GridViewDataProvider
 import com.dude.dms.ui.extensions.convert
@@ -20,6 +19,7 @@ import com.github.appreciated.app.layout.component.menu.left.items.LeftClickable
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.grid.GridVariant
 import com.vaadin.flow.component.grid.dnd.GridDropMode
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -50,14 +50,15 @@ class DocsView(
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { grid.dataProvider.refreshAll() } }
 
         grid.dataProvider = docDataProvider
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES)
         grid.addColumn { it.documentDate?.convert() }.setHeader(t("date"))
-        grid.addComponentColumn { TagContainer(tagService.findByDoc(it)) }.setHeader(t("tags"))
+        grid.addComponentColumn { builderFactory.tags().container(tagService.findByDoc(it).toMutableSet()) }.setHeader(t("tags"))
         grid.addComponentColumn { createGridActions(it) }
         grid.addColumn { it.guid }
         grid.columns.forEach { it.setResizable(true).setAutoWidth(true) }
         grid.isColumnReorderingAllowed = true
 
-        grid.addItemDoubleClickListener { event -> builderFactory.docs().imageDialog(event.item!!).build().open() }
+        grid.addItemDoubleClickListener { event -> builderFactory.docs().imageDialog(event.item!!).open() }
         grid.dropMode = GridDropMode.ON_TOP
         grid.addDropListener { event ->
             // Workaround
@@ -85,9 +86,9 @@ class DocsView(
             menu.removeAll()
             if (doc == null) return@setDynamicContentHandler false
 
-            menu.addItem(t("view")) { builderFactory.docs().imageDialog(doc).build().open() }
-            menu.addItem(t("edit")) { builderFactory.docs().editDialog(doc).build().open() }
-            menu.addItem(t("delete")) { builderFactory.docs().deleteDialog(doc).build().open() }
+            menu.addItem(t("view")) { builderFactory.docs().imageDialog(doc).open() }
+            menu.addItem(t("edit")) { builderFactory.docs().editDialog(doc).open() }
+            menu.addItem(t("delete")) { builderFactory.docs().deleteDialog(doc).open() }
             true
         }
     }
@@ -99,7 +100,7 @@ class DocsView(
         download.wrapComponent(downloadButton)
         Tooltips.getCurrent().setTooltip(downloadButton, "Download")
 
-        val edit = Button(VaadinIcon.EDIT.create()) { builderFactory.docs().editDialog(doc).build().open() }
+        val edit = Button(VaadinIcon.EDIT.create()) { builderFactory.docs().editDialog(doc).open() }
         Tooltips.getCurrent().setTooltip(edit, t("edit"))
 
         return HorizontalLayout(download, edit)
@@ -110,8 +111,11 @@ class DocsView(
         val filter = DocDataProvider.Filter(tag, mail)
         val dp = grid.dataProvider as GridViewDataProvider<Doc, DocDataProvider.Filter>
         ui.access {
-            dp.setFilter(filter)
-            dp.refreshAll()
+            try {
+                dp.setFilter(filter)
+                dp.refreshAll()
+            } catch (e: IllegalStateException) {
+            } catch (e: IllegalArgumentException) { }
         }
     }
 

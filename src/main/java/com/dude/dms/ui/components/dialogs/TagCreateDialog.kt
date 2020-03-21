@@ -28,7 +28,7 @@ class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: Ta
         else -> ColorPickerFieldRaw(t("color"))
     }.also { (it as HasSize).setWidthFull() }
 
-    private val attributeSelector = builderFactory.attributes().selector().build().apply { setSizeFull() }
+    private val attributeSelector = builderFactory.attributes().selector().apply { setSizeFull() }
 
     init {
         width = "35vw"

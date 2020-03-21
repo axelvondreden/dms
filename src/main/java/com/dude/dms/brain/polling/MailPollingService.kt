@@ -14,11 +14,11 @@ class MailPollingService(
         private val mailManager: MailManager,
         private val mailFilterService: MailFilterService,
         private val mailService: MailService
-) : PollingService {
+) {
 
     private var tick = 1
 
-    override fun poll() {
+    fun poll() {
         for (filter in mailFilterService.findAll()) {
             LOGGER.info(t("mail.poll", filter.folder))
             val allMails = mailService.findAll()

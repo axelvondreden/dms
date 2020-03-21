@@ -3,8 +3,8 @@ package com.dude.dms.ui.components.search
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
+import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.dialogs.DocImageDialog
-import com.dude.dms.ui.components.tags.TagContainer
 import com.dude.dms.ui.extensions.convert
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.ComponentEventListener
@@ -16,6 +16,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class DocSearchResult(
+        private val builderFactory: BuilderFactory,
         private val doc: Doc,
         private val search: String,
         private val docImageDialog: DocImageDialog,
@@ -29,7 +30,7 @@ class DocSearchResult(
             val pdfButton = Button(VaadinIcon.FILE_TEXT.create(), ComponentEventListener { docImageDialog.open() }).apply {
                 setWidthFull()
             }
-            return VerticalLayout(TagContainer(tagService.findByDoc(doc)), textSnippet, pdfButton).apply {
+            return VerticalLayout(builderFactory.tags().container(tagService.findByDoc(doc).toMutableSet()), textSnippet, pdfButton).apply {
                 setSizeFull()
             }
         }

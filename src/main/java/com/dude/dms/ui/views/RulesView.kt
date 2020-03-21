@@ -50,11 +50,11 @@ class RulesView(
     }
 
     private fun addPlaintext() {
-        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().plainCreateDialog().build().open() }.apply {
+        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().plainCreateDialog().open() }.apply {
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
         val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
-        plainTextRuleService.findAll().map { builderFactory.rules().plainTextCard(it).build() }.forEach { verticalLayout.add(it) }
+        plainTextRuleService.findAll().map { builderFactory.rules().plainTextCard(it) }.forEach { verticalLayout.add(it) }
         val details = Details(t("rules.text"), verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"
@@ -68,11 +68,11 @@ class RulesView(
     }
 
     private fun addRegex() {
-        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().regexCreateDialog().build().open() }.apply {
+        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().regexCreateDialog().open() }.apply {
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
         val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
-        regexRuleService.findAll().map { builderFactory.rules().regexCard(it).build() }.forEach { verticalLayout.add(it) }
+        regexRuleService.findAll().map { builderFactory.rules().regexCard(it) }.forEach { verticalLayout.add(it) }
         val details = Details(t("rules.regex"), verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"
@@ -87,7 +87,7 @@ class RulesView(
 
     private fun addMailFilter() {
         val header = HorizontalLayout(
-                Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().mailCreateDialog().build().open() }.apply {
+                Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().mailCreateDialog().open() }.apply {
                     addThemeVariants(ButtonVariant.LUMO_PRIMARY)
                 },
                 Button(t("check"), VaadinIcon.CLOUD_DOWNLOAD.create()) { mailPollingService.poll() }.apply {
@@ -95,7 +95,7 @@ class RulesView(
                 }
         ).apply { setSizeFull() }
         val verticalLayout = VerticalLayout(header).apply { setSizeFull() }
-        mailFilterService.findAll().map { builderFactory.rules().mailCard(it).build() }.forEach { verticalLayout.add(it) }
+        mailFilterService.findAll().map { builderFactory.rules().mailCard(it) }.forEach { verticalLayout.add(it) }
         val details = Details("Mail Filter", verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"
