@@ -1,7 +1,6 @@
 package com.dude.dms.brain.parsing
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.backend.service.DocService
@@ -31,36 +30,6 @@ class DocParser(
         private val fileManager: FileManager,
         private val pdfStripper: DmsPdfTextStripper
 ) {
-
-    /**
-     * Creates a new [Doc] from imported files
-     *
-     * @param guid GUID of the imported files
-     */
-    /*fun parse(guid: String) {
-        try {
-            var lines = getPdfText(guid)
-            if (lines.isEmpty()) {
-                lines = getOcrText(fileManager.getFirstImage(guid))
-            }
-            val doc = Doc(guid)
-            if (lines.isNotEmpty()) {
-                doc.rawText = docService.getFullTextMemory(lines)
-                doc.documentDate = getMostFrequentDate(lines)
-            }
-            doc.tags = discoverTags(doc.rawText).toMutableSet()
-            docService.create(doc)
-            lines.forEach { line ->
-                line.doc = doc
-                lineService.create(line)
-                line.words.forEach {
-                    wordService.create(it)
-                }
-            }
-        } catch (e: IOException) {
-            e.message?.let { LOGGER.error(it) }
-        }
-    }*/
 
     fun getPdfText(guid: String): Set<Line> {
         LOGGER.info(t("pdf.parse"))

@@ -6,6 +6,7 @@ import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.mails.Mail
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -30,9 +31,16 @@ interface DocRepository : JpaRepository<Doc, Long> {
 
     fun countByAttributeValues_AttributeEquals(attribute: Attribute): Long
 
-    @Query("SELECT doc FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)")
-    fun findByFilter(@Param("tag") tag: Tag?, @Param("mail") mail: Mail?, pageable: Pageable): Page<Doc>
+    @Query("SELECT doc FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)" +
+            " AND (:text is null or doc.rawText LIKE :text)")
+    fun findByFilter(
+            @Param("tag") tag: Tag?,
+            @Param("mail") mail: Mail?,
+            @Param("text") text: String?,
+            pageable: Pageable
+    ): Page<Doc>
 
-    @Query("SELECT COUNT(*) FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)")
-    fun countByFilter(@Param("tag") tag: Tag?, @Param("mail") mail: Mail?): Long
+    @Query("SELECT COUNT(*) FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)" +
+            " AND (:text is null or doc.rawText LIKE :text)")
+    fun countByFilter(@Param("tag") tag: Tag?, @Param("mail") mail: Mail?, @Param("text") text: String?): Long
 }

@@ -5,5 +5,6 @@ data class ViewOptions(
         var dateScanFormats: List<String>,
         var locale: String,
         var darkMode: Boolean,
-        var notificationPosition: String
+        var notificationPosition: String,
+        var docCardSize: Int
 )

@@ -138,7 +138,7 @@ class MainView(
         )
         for (tag in tagService.findAll()) {
             val entry = LeftClickableItem(tag.name, VaadinIcon.TAG.create().apply { color = tag.color }) { }
-            DragSource.create(entry)
+            DragSource.create(entry).addDragStartListener { it.setDragData(tag) }
             tagBadges[tag.id] = DefaultBadgeHolder().apply { bind(entry.badge) }
             fillBadgeCount(tag)
             val attrs = attributeService.findByTag(tag).joinToString("\n") { it.name }

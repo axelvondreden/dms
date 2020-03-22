@@ -2,11 +2,13 @@ package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.*
+import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
-import com.dude.dms.ui.dataproviders.DocDataProvider
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.io.Serializable
 
 @Service
 class DocService(
@@ -18,6 +20,13 @@ class DocService(
         private val wordService: WordService,
         eventManager: EventManager
 ) : EventService<Doc>(docRepository, eventManager) {
+
+    data class Filter(
+            var tag: Tag? = null,
+            var mail: Mail? = null,
+            var text: String? = null,
+            var sort: String = "doc.documentDate desc"
+    ) : Serializable
 
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
@@ -71,9 +80,9 @@ class DocService(
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEquals(attribute)
 
-    fun findByFilter(filter: DocDataProvider.Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, pageable)
+    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, filter.text, pageable)
 
-    fun countByFilter(filter: DocDataProvider.Filter) = docRepository.countByFilter(filter.tag, filter.mail)
+    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.mail, filter.text)
 
     fun getFullTextMemory(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
         line.words.sortedBy { it.x }.joinToString(" ") { it.text }

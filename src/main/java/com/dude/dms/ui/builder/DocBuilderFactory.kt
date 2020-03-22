@@ -7,6 +7,7 @@ import com.dude.dms.backend.service.*
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.polling.DocPollingService
+import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.cards.DocTagImportCard
 import com.dude.dms.ui.components.cards.DocTextImportCard
 import com.dude.dms.ui.components.dialogs.DocDeleteDialog
@@ -45,4 +46,6 @@ class DocBuilderFactory(
     fun textImportCard(fileContainer: DocImportDialog.FileContainer) = DocTextImportCard(builderFactory, fileContainer)
 
     fun tagImportCard(fileContainer: DocImportDialog.FileContainer) = DocTagImportCard(builderFactory, tagService, fileContainer)
+
+    fun card(doc: Doc) = DocCard(builderFactory, docService, tagService, fileManager, doc)
 }

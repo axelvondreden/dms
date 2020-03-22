@@ -8,7 +8,8 @@
     ],
     "locale": "en-Us",
     "darkMode": false,
-    "notificationPosition": "BOTTOM_END"
+    "notificationPosition": "BOTTOM_END",
+    "docCardSize": 200
   },
   "doc": {
     "pollingPath": "docs_in/",
