@@ -1,0 +1,7 @@
+.doc-card:hover .tag-container-compact{
+    flex-wrap: wrap;
+}
+
+.doc-card {
+  transition: transform .2s;
+}

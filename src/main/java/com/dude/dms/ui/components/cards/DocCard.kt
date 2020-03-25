@@ -10,11 +10,12 @@ import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
-import com.github.appreciated.card.RippleClickableCard
+import com.github.appreciated.card.ClickableCard
 import com.github.appreciated.card.label.SecondaryLabel
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.contextmenu.ContextMenu
+import com.vaadin.flow.component.dependency.StyleSheet
 import com.vaadin.flow.component.dnd.DropTarget
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -25,20 +26,21 @@ import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 
-
+@StyleSheet("doc-card.css")
 class DocCard(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
         private val tagService: TagService,
         private val fileManager: FileManager,
         private val doc: Doc
-) : RippleClickableCard() {
+) : ClickableCard() {
 
     private var imgDiv: Div? = null
 
     init {
         addClickListener { builderFactory.docs().imageDialog(doc).open() }
         fill()
+        addClassName("doc-card")
     }
 
     fun resize() {
@@ -91,7 +93,7 @@ class DocCard(
             }
         }
 
-        add(titleWrapper, imgDiv, tagContainer)
+        add(titleWrapper, imgDiv, Div(tagContainer))
         resize()
     }
 
