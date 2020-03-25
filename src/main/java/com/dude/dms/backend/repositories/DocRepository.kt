@@ -32,7 +32,7 @@ interface DocRepository : JpaRepository<Doc, Long> {
     fun countByAttributeValues_AttributeEquals(attribute: Attribute): Long
 
     @Query("SELECT doc FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)" +
-            " AND (:text is null or doc.rawText LIKE :text)")
+            " AND (:text is null or LOWER(doc.rawText) LIKE LOWER(CONCAT('%', :text, '%')))")
     fun findByFilter(
             @Param("tag") tag: Tag?,
             @Param("mail") mail: Mail?,
@@ -41,6 +41,6 @@ interface DocRepository : JpaRepository<Doc, Long> {
     ): Page<Doc>
 
     @Query("SELECT COUNT(*) FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)" +
-            " AND (:text is null or doc.rawText LIKE :text)")
+            " AND (:text is null or LOWER(doc.rawText) LIKE LOWER(CONCAT('%', :text, '%')))")
     fun countByFilter(@Param("tag") tag: Tag?, @Param("mail") mail: Mail?, @Param("text") text: String?): Long
 }

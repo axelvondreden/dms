@@ -19,12 +19,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <vaadin.version>14.1.20</vaadin.version>
+        <vaadin.version>14.1.21</vaadin.version>
 
         <node.version>v8.16.0</node.version>
         <yarn.version>v1.16.0</yarn.version>
 
-        <kotlin.version>1.3.70</kotlin.version>
+        <kotlin.version>1.3.71</kotlin.version>
         <start-class>com.dude.dms.Application</start-class>
     </properties>
 

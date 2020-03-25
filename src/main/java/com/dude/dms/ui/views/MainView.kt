@@ -132,7 +132,7 @@ class MainView(
     private fun createTagsEntry(): LeftSubmenu {
         tagBadges.clear()
         val tagEntries = mutableListOf<Component>(
-                LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create()) {
+                LeftClickableItem(t("tag.add"), VaadinIcon.PLUS_CIRCLE.create()) {
                     builderFactory.tags().createDialog().open()
                 }
         )

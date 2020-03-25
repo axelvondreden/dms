@@ -24,8 +24,7 @@ class DocService(
     data class Filter(
             var tag: Tag? = null,
             var mail: Mail? = null,
-            var text: String? = null,
-            var sort: String = "doc.documentDate desc"
+            var text: String? = null
     ) : Serializable
 
     override fun create(entity: Doc): Doc {
