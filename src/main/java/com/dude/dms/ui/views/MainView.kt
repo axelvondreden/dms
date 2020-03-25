@@ -29,6 +29,7 @@ import com.github.appreciated.app.layout.entity.Section
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.contextmenu.ContextMenu
+import com.vaadin.flow.component.dependency.CssImport
 import com.vaadin.flow.component.dnd.DragSource
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.page.Push

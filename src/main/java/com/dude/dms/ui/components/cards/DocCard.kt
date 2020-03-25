@@ -44,13 +44,13 @@ class DocCard(
     fun resize() {
         val size = Options.get().view.docCardSize
         width = "${size}px"
-        imgDiv?.element?.style?.set("maxHeight", "${(size * 1.5).toInt()}px")
+        imgDiv?.element?.style?.set("height", "${(size * 1.2).toInt()}px")
     }
 
     fun fill() {
         content.removeAll()
 
-        val tagContainer = builderFactory.tags().container(tagService.findByDoc(doc).toMutableSet()).apply { setWidthFull() }
+        val tagContainer = builderFactory.tags().container(tagService.findByDoc(doc).toMutableSet(), compact = true).apply { setWidthFull() }
         val img = fileManager.getFirstImage(doc.guid)
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")

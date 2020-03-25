@@ -33,6 +33,7 @@ class TagBuilderFactory(
     fun container(
             tags: MutableSet<Tag>,
             edit: Boolean = false,
+            compact: Boolean = false,
             onClick: ((ComponentEvent<*>) -> Unit)? = null
-    ) = TagContainer(builderFactory, tags, tagService, edit, onClick)
+    ) = TagContainer(builderFactory, tags, tagService, edit, compact, onClick)
 }
