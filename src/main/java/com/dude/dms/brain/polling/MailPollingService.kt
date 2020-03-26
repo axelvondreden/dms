@@ -18,6 +18,8 @@ class MailPollingService(
 
     private var tick = 1
 
+    private val options = Options.get()
+
     fun poll() {
         for (filter in mailFilterService.findAll()) {
             LOGGER.info(t("mail.poll", filter.folder))
@@ -32,7 +34,7 @@ class MailPollingService(
 
     @Scheduled(fixedRate = 1000)
     fun scheduledPoll() {
-        if (tick < Options.get().mail.pollingInterval * 60) {
+        if (tick < options.mail.pollingInterval * 60) {
             tick++
         } else {
             tick = 1

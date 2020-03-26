@@ -42,6 +42,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
+@CssImport("./styles/styles.css")
 @Push
 class MainView(
         private val docService: DocService,
@@ -103,6 +104,7 @@ class MainView(
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
                         LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().open() },
+                        LeftNavigationItem(t("administration"), VaadinIcon.DASHBOARD.create(), AdminView::class.java),
                         LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java))
                 .build()
     }

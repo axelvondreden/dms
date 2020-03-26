@@ -1,0 +1,22 @@
+.doc-card:hover .tag-container-compact {
+    flex-wrap: wrap;
+}
+
+.doc-card:hover .doc-info-wrapper {
+    position: absolute;
+    bottom: 0px;
+}
+
+.doc-card:hover .attribute-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.doc-card .attribute-container {
+    display: none;
+}
+
+.doc-info-wrapper {
+    width: 100%;
+    background-color: lightGray;
+}

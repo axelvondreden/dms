@@ -9,21 +9,21 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.html.Div
 import java.util.*
 
 class AttributeValueContainer(
         private val builderFactory: BuilderFactory,
         doc: Doc,
         private val attributeValueService: AttributeValueService,
-        eventManager: EventManager
-) : VerticalLayout() {
+        eventManager: EventManager,
+        private val readOnly: Boolean = false
+) : Div() {
 
     private val fields = ArrayList<AttributeValueField>()
 
     init {
-        isPadding = false
-        isSpacing = false
+        addClassName("attribute-container")
 
         fill(doc)
 
@@ -35,7 +35,7 @@ class AttributeValueContainer(
         removeAll()
         fields.clear()
         for (attributeValue in attributeValueService.findByDoc(doc)) {
-            val field = builderFactory.attributes().valueField(attributeValue).apply { setWidthFull() }
+            val field = builderFactory.attributes().valueField(attributeValue, readOnly).apply { setWidthFull() }
             add(field)
             fields.add(field)
         }

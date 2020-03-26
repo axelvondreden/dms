@@ -9,6 +9,7 @@ object Const {
     const val PAGE_RULES = "rules"
     const val PAGE_OPTIONS = "options"
     const val PAGE_LOG = "log"
+    const val PAGE_ADMIN = "admin"
 
     @JvmField
     val LOCALES = arrayOf(

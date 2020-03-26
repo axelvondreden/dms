@@ -29,9 +29,9 @@ class AttributeBuilderFactory(
         it.selectedAttributes = tag?.let { t -> attributeService.findByTag(t) } ?: emptySet()
     }
 
-    fun valueContainer(doc: Doc) = AttributeValueContainer(builderFactory, doc, attributeValueService, eventManager)
+    fun valueContainer(doc: Doc, readOnly: Boolean = false) = AttributeValueContainer(builderFactory, doc, attributeValueService, eventManager, readOnly)
 
-    fun valueField(attributeValue: AttributeValue) = AttributeValueField(attributeValue, attributeService, attributeValueService)
+    fun valueField(attributeValue: AttributeValue, readOnly: Boolean = false) = AttributeValueField(attributeValue, attributeService, attributeValueService, readOnly)
 
     fun createDialog() = AttributeCreateDialog(attributeService)
 

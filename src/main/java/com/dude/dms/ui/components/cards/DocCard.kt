@@ -15,7 +15,6 @@ import com.github.appreciated.card.label.SecondaryLabel
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.contextmenu.ContextMenu
-import com.vaadin.flow.component.dependency.StyleSheet
 import com.vaadin.flow.component.dnd.DropTarget
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -26,7 +25,6 @@ import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 
-@StyleSheet("doc-card.css")
 class DocCard(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
@@ -53,6 +51,7 @@ class DocCard(
         content.removeAll()
 
         val tagContainer = builderFactory.tags().container(tagService.findByDoc(doc).toMutableSet(), compact = true).apply { setWidthFull() }
+        val attributeContainer = builderFactory.attributes().valueContainer(doc, true).apply { setWidthFull() }
         val img = fileManager.getFirstImage(doc.guid)
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")
@@ -93,7 +92,7 @@ class DocCard(
             }
         }
 
-        add(titleWrapper, imgDiv, Div(tagContainer))
+        add(titleWrapper, imgDiv, Div(tagContainer, attributeContainer).apply { addClassName("doc-info-wrapper") })
         resize()
     }
 

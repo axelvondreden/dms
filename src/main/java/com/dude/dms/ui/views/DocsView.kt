@@ -21,8 +21,14 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.*
+import de.mekaso.vaadin.addon.compani.Animator
+import de.mekaso.vaadin.addon.compani.animation.AnimationBuilder
+import de.mekaso.vaadin.addon.compani.animation.AnimationTypes.EntranceAnimation
+import de.mekaso.vaadin.addon.compani.effect.EntranceEffect
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 @Route(value = Const.PAGE_DOCS, layout = MainView::class)
@@ -35,9 +41,13 @@ class DocsView(
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
+    private var scheduler = Timer()
+
     private val sorts = listOf(
-            t("date") + " " + t("descending") to Sort.by(Sort.Direction.DESC, "documentDate"),
-            t("date") + " " + t("ascending") to Sort.by(Sort.Direction.ASC, "documentDate")
+            "${t("date")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "documentDate"),
+            "${t("date")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "documentDate"),
+            "ID ${t("descending")}" to Sort.by(Sort.Direction.DESC, "id"),
+            "ID ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "id")
     )
 
     private val ui = UI.getCurrent()
@@ -63,6 +73,7 @@ class DocsView(
         isClearButtonVisible = true
         addValueChangeListener { refreshFilter() }
         valueChangeMode = ValueChangeMode.LAZY
+        width = "30vw"
     }
 
     private val sortFilter = ComboBox("", sorts).apply {
@@ -73,9 +84,11 @@ class DocsView(
         addValueChangeListener { refreshFilter() }
     }
 
+    private val animator = Animator.init(ui)
+
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fill() } }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { ui.access { fill() } }
+        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { scheduleFill(ui) }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { scheduleFill(ui) }
 
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
@@ -103,6 +116,14 @@ class DocsView(
         }
     }
 
+    private fun scheduleFill(ui: UI) {
+        scheduler.cancel()
+        scheduler = Timer()
+        scheduler.schedule(1000) {
+            ui.access { fill() }
+        }
+    }
+
     private fun fill() {
         itemContainer.removeAll()
         val count = docService.countByFilter(filter)
@@ -110,9 +131,12 @@ class DocsView(
             var page = 0
             while (page <= count / 5) {
                 val items = docService.findByFilter(filter, PageRequest.of(page, 5, sortFilter.value.second))
-                ui.access {
-                    items.forEach { doc: Doc ->
-                        val card = builderFactory.docs().card(doc)
+                items.forEach {
+                    ui.access {
+                        val card = builderFactory.docs().card(it)
+                        animator.prepareComponent(card).apply {
+                            registerEntranceAnimation(AnimationBuilder.createBuilder().create(EntranceAnimation::class.java).withEffect(EntranceEffect.fadeIn))
+                        }
                         itemContainer.add(card)
                     }
                 }
@@ -121,7 +145,6 @@ class DocsView(
         }.start()
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun refreshFilter() {
         filter = DocService.Filter(
                 tag = tagFilter.optionalValue.orElse(null),
