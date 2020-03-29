@@ -22,10 +22,6 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.*
 import de.mekaso.vaadin.addon.compani.Animator
-import de.mekaso.vaadin.addon.compani.animation.AnimationBuilder
-import de.mekaso.vaadin.addon.compani.animation.AnimationTypes.EntranceAnimation
-import de.mekaso.vaadin.addon.compani.effect.EntranceEffect
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import java.util.*
 import kotlin.concurrent.schedule
@@ -95,7 +91,7 @@ class DocsView(
 
         val header = HorizontalLayout(tagFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
         add(header, itemContainer)
-        fill()
+        scheduleFill(ui)
     }
 
     private fun grow() {
@@ -126,23 +122,8 @@ class DocsView(
 
     private fun fill() {
         itemContainer.removeAll()
-        val count = docService.countByFilter(filter)
-        Thread {
-            var page = 0
-            while (page <= count / 5) {
-                val items = docService.findByFilter(filter, PageRequest.of(page, 5, sortFilter.value.second))
-                items.forEach {
-                    ui.access {
-                        val card = builderFactory.docs().card(it)
-                        animator.prepareComponent(card).apply {
-                            registerEntranceAnimation(AnimationBuilder.createBuilder().create(EntranceAnimation::class.java).withEffect(EntranceEffect.fadeIn))
-                        }
-                        itemContainer.add(card)
-                    }
-                }
-                page++
-            }
-        }.start()
+        val items = docService.findByFilter(filter, sortFilter.value.second).map { builderFactory.docs().card(it) }
+        ui.access { items.forEach { itemContainer.add(it) } }
     }
 
     private fun refreshFilter() {

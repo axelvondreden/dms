@@ -40,6 +40,15 @@ interface DocRepository : JpaRepository<Doc, Long> {
             pageable: Pageable
     ): Page<Doc>
 
+    @Query("SELECT doc FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)" +
+            " AND (:text is null or LOWER(doc.rawText) LIKE LOWER(CONCAT('%', :text, '%')))")
+    fun findByFilter(
+            @Param("tag") tag: Tag?,
+            @Param("mail") mail: Mail?,
+            @Param("text") text: String?,
+            sort: Sort
+    ): Set<Doc>
+
     @Query("SELECT COUNT(*) FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags) AND (:mail is null or :mail = doc.mail)" +
             " AND (:text is null or LOWER(doc.rawText) LIKE LOWER(CONCAT('%', :text, '%')))")
     fun countByFilter(@Param("tag") tag: Tag?, @Param("mail") mail: Mail?, @Param("text") text: String?): Long

@@ -81,6 +81,8 @@ class DocService(
 
     fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, filter.text, pageable)
 
+    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.mail, filter.text, sort)
+
     fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.mail, filter.text)
 
     fun getFullTextMemory(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
