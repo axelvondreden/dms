@@ -61,8 +61,8 @@ class AdminView(private val docService: DocService, private val tagService: TagS
                 .withPlotOptions(PlotOptionsBuilder.get().withBar(BarBuilder.get().build()).build())
                 .withLabels(*data.map { it.first }.toTypedArray())
                 .withSeries(Series(*data.map { it.second }.toTypedArray()))
-                .build();
-        add(barChart);
+                .build()
+        add(barChart)
 
         add(createSection(t("tags"), barChart))
     }
