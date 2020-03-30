@@ -26,13 +26,7 @@ class DocImageDialog(
         private val lines: Set<Line> = emptySet()
 ) : Dialog() {
 
-    private val container = ElementFactory.createDiv().apply {
-        style["width"] = "100%"
-        style["height"] = "100%"
-        style["position"] = "relative"
-        style["maxWidth"] = "100%"
-        style["maxHeight"] = "100%"
-    }
+    private val container = ElementFactory.createDiv().apply { classList.add("image-container") }
 
     init {
         val verticalLayout = VerticalLayout().apply {
@@ -50,9 +44,9 @@ class DocImageDialog(
         if (!img.exists()) return
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")
-            style["maxWidth"] = "100%"
-            style["maxHeight"] = "100%"
+            classList.add("inline-image")
             setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
+            //addEventListener("mousedown") { mouseDown(it) }.addEventData("event.clientX").addEventData("element.clientY")
         }
         container.appendChild(image)
         for (line in doc?.let { lineService.findByDoc(it) } ?: lines) {

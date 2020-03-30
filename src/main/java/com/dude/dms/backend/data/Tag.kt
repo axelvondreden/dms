@@ -27,8 +27,6 @@ class Tag(
         @ManyToMany(mappedBy = "tags") var mailFilters: Set<MailFilter> = HashSet()
 ) : DataEntity(), Diffable<Tag>, LogsEvents {
 
-    override fun showEvents() = true
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false

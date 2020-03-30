@@ -25,8 +25,6 @@ class Word(
         var height: Float
 ) : DataEntity(), LogsEvents {
 
-    override fun showEvents() = false
-
     override fun toString() = t("word")
 
     override fun equals(other: Any?): Boolean {

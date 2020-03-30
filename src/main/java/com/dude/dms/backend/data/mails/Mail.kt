@@ -32,8 +32,6 @@ class Mail(
         var docs: MutableSet<Doc> = HashSet()
 ) : DataEntity(), Diffable<Mail>, LogsEvents {
 
-    override fun showEvents() = true
-
     override fun toString() = t("mail")
 
     override fun equals(other: Any?): Boolean {

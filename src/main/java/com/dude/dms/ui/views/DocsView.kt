@@ -21,7 +21,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.*
-import de.mekaso.vaadin.addon.compani.Animator
 import org.springframework.data.domain.Sort
 import java.util.*
 import kotlin.concurrent.schedule
@@ -42,8 +41,8 @@ class DocsView(
     private val sorts = listOf(
             "${t("date")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "documentDate"),
             "${t("date")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "documentDate"),
-            "ID ${t("descending")}" to Sort.by(Sort.Direction.DESC, "id"),
-            "ID ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "id")
+            "${t("created")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "insertTime"),
+            "${t("created")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "insertTime")
     )
 
     private val ui = UI.getCurrent()
@@ -79,8 +78,6 @@ class DocsView(
         setItemLabelGenerator { it.first }
         addValueChangeListener { refreshFilter() }
     }
-
-    private val animator = Animator.init(ui)
 
     init {
         eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { scheduleFill(ui) }

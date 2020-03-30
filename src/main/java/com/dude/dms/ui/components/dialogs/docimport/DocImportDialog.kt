@@ -16,6 +16,7 @@ import com.mlottmann.vstepper.VStepper
 import com.vaadin.flow.component.dialog.Dialog
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 class DocImportDialog(
@@ -71,7 +72,7 @@ class DocImportDialog(
     private fun createDocs(stepData: StepData) {
         stepData.files.filter { it.selected }.forEach {
             val lines = (if (it.useOcrTxt) it.ocrText else it.pdfText)!!
-            val doc = Doc(it.guid!!, it.date)
+            val doc = Doc(it.guid!!, it.date, LocalDateTime.now())
             if (lines.isNotEmpty()) {
                 doc.rawText = docService.getFullTextMemory(lines)
             }

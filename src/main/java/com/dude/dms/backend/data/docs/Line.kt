@@ -17,8 +17,6 @@ class Line(
         var y: Float
 ) : DataEntity(), LogsEvents {
 
-    override fun showEvents() = false
-
     override fun toString() = t("line")
 
     override fun equals(other: Any?): Boolean {

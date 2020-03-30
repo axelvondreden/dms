@@ -15,8 +15,6 @@ import com.dude.dms.brain.polling.DocPollingService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.dialogs.DocUploadDialog
-import com.dude.dms.ui.components.search.DmsSearchOverlayButton
-import com.github.appreciated.app.layout.component.appbar.AppBarBuilder
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts.LeftHybrid
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu
@@ -63,7 +61,6 @@ class MainView(
     init {
         init(AppLayoutBuilder.get(LeftHybrid::class.java)
                 .withTitle("dms")
-                .withAppBar(buildAppBar())
                 .withAppMenu(buildAppMenu())
                 .build())
         val ui = UI.getCurrent()
@@ -172,10 +169,6 @@ class MainView(
     private fun fillBadgeCount(tag: Tag) {
         tagBadges[tag.id]?.count = docService.countByTag(tag).toInt() + mailService.countByTag(tag).toInt()
     }
-
-    private fun buildAppBar() = AppBarBuilder.get().add(initSearchOverlayButton()).build()
-
-    private fun initSearchOverlayButton() = DmsSearchOverlayButton(builderFactory).apply { searchView.initDataproviders(docService, tagService) }
 
     override fun afterNavigation(afterNavigationEvent: AfterNavigationEvent) {
         val themeList = UI.getCurrent().element.themeList

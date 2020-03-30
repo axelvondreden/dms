@@ -26,8 +26,6 @@ class Attribute(
         STRING, INT, FLOAT, DATE
     }
 
-    override fun showEvents() = true
-
     override fun toString() = t("attribute")
 
     override fun equals(other: Any?): Boolean {

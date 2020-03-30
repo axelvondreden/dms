@@ -10,8 +10,6 @@ abstract class Rule : DataEntity(), LogsEvents {
 
     abstract var tags: Set<Tag>
 
-    override fun showEvents() = true
-
     /**
      * Checks a line of text against the rule pattern.
      * @param line line of text

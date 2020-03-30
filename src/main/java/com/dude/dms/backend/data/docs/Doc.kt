@@ -6,6 +6,7 @@ import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.Size
 
@@ -15,6 +16,8 @@ class Doc(
         var guid: String,
 
         var documentDate: LocalDate? = null,
+
+        var insertTime: LocalDateTime? = null,
 
         @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 99999)
@@ -32,8 +35,6 @@ class Doc(
         @ManyToOne
         var mail: Mail? = null
 ) : DataEntity(), Diffable<Doc>, LogsEvents {
-
-    override fun showEvents() = true
 
     override fun toString() = t("doc")
 }
