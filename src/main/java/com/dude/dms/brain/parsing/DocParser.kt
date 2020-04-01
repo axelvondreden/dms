@@ -90,6 +90,33 @@ class DocParser(
         return lines
     }
 
+    fun getOcrTextRect(img: File, x: Float, y: Float, w: Float, h: Float, ocrLang: String = Options.get().doc.ocrLanguage): String {
+        LOGGER.info(t("image.ocr", ocrLang))
+        val api = TessBaseAPI()
+        if (api.Init("tessdata", ocrLang) != 0) {
+            LOGGER.error(t("image.ocr.error"))
+            return ""
+        }
+
+        // Open input image with leptonica library
+        val image = pixRead(img.absolutePath)
+        api.SetImage(image)
+        val xx = image.w().toFloat() * (x / 100.0F)
+        val yy = image.h().toFloat() * (y / 100.0F)
+        val ww = image.w().toFloat() * (w / 100.0F)
+        val hh = image.h().toFloat() * (h / 100.0F)
+        api.SetRectangle(xx.toInt(), yy.toInt(), ww.toInt(), hh.toInt())
+
+        val txtPointer = api.GetUTF8Text()
+        val txt = txtPointer.string
+
+        api.End()
+        txtPointer.deallocate()
+        pixDestroy(image)
+
+        return txt
+    }
+
     fun discoverTags(lines: Set<Line>): Set<Tag> {
         val rawText = docService.getFullTextMemory(lines)
         val tags = Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.toMutableSet()

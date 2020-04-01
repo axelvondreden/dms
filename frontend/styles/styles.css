@@ -24,12 +24,56 @@
 .inline-image {
     width: 100%;
     height: 100%;
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 .image-container {
     width: 100%;
     height: 100%;
     position: relative;
-    maxWidth: 100%;
-    maxHeight: 100%;
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.word-wrapper {
+    position: absolute;
+}
+
+.word-wrapper:hover .word-container {
+    border: 3px solid black;
+}
+
+.word-wrapper:hover .word-dropdown {
+    display: block;
+}
+
+.word-container {
+    width: 100%;
+    height: 100%;
+    border: 2px solid gray;
+    z-index: 3;
+}
+
+.word-dropdown {
+    display: none;
+    background-color: white;
+    border: 1px solid black;
+    z-index: 9;
+    width: max-content;
+}
+
+.draw-div {
+    pointer-events: none;
+    position: absolute;
+    display: none;
+    border: 2px dotted gray;
 }

@@ -23,6 +23,7 @@ class DocService(
 
     data class Filter(
             var tag: Tag? = null,
+            var attribute: Attribute? = null,
             var mail: Mail? = null,
             var text: String? = null
     ) : Serializable
@@ -79,11 +80,11 @@ class DocService(
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEquals(attribute)
 
-    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, filter.text, pageable)
+    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, pageable)
 
-    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.mail, filter.text, sort)
+    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, sort)
 
-    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.mail, filter.text)
+    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail, filter.text)
 
     fun getFullTextMemory(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
         line.words.sortedBy { it.x }.joinToString(" ") { it.text }

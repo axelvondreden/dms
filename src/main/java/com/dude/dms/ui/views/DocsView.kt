@@ -2,6 +2,7 @@ package com.dude.dms.ui.views
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
@@ -33,6 +34,7 @@ class DocsView(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
         private val tagService: TagService,
+        attributeService: AttributeService,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -64,11 +66,20 @@ class DocsView(
         addValueChangeListener { refreshFilter() }
     }
 
+    private val attributeFilter = ComboBox("", attributeService.findAll()).apply {
+        placeholder = t("attribute")
+        isClearButtonVisible = true
+        isPreventInvalidInput = true
+        isAllowCustomValue = false
+        setItemLabelGenerator { it.name }
+        addValueChangeListener { refreshFilter() }
+    }
+
     private val textFilter = TextField("", "Text").apply {
         isClearButtonVisible = true
         addValueChangeListener { refreshFilter() }
         valueChangeMode = ValueChangeMode.LAZY
-        width = "30vw"
+        width = "25vw"
     }
 
     private val sortFilter = ComboBox("", sorts).apply {
@@ -86,7 +97,7 @@ class DocsView(
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
 
-        val header = HorizontalLayout(tagFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
+        val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
         add(header, itemContainer)
         scheduleFill(ui)
     }
@@ -126,6 +137,7 @@ class DocsView(
     private fun refreshFilter() {
         filter = DocService.Filter(
                 tag = tagFilter.optionalValue.orElse(null),
+                attribute = attributeFilter.optionalValue.orElse(null),
                 text = textFilter.optionalValue.orElse(null)
         )
         fill()
