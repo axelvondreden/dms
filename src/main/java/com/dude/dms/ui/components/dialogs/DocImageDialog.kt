@@ -116,7 +116,9 @@ class DocImageDialog(
     }
 
     private fun addWordWrapper(word: Word) {
-        val dlg = builderFactory.docs().wordEditDialog(word, doc, lines)
+        val dlg = builderFactory.docs().wordEditDialog(
+                (if (word.id > 0) wordService.load(word.id) else word)!!, doc, lines
+        )
         val div = Div().apply {
             addClassName("word-container")
             element.setAttribute("id", word.id.toString())
@@ -124,12 +126,12 @@ class DocImageDialog(
         }
         val delBtn = Button(VaadinIcon.TRASH.create()).apply {
             addThemeVariants(ButtonVariant.LUMO_CONTRAST)
-            element.style.set("padding", "0px").set("zIndex", "9")["margin"] = "0px"
+            addClassName("word-dropdown-button")
             Tooltips.getCurrent().setTooltip(this, t("delete"))
         }
         val ocrBtn = Button(VaadinIcon.CROSSHAIRS.create()).apply {
             addThemeVariants(ButtonVariant.LUMO_CONTRAST)
-            element.style.set("padding", "0px").set("zIndex", "9")["margin"] = "0px"
+            addClassName("word-dropdown-button")
             Tooltips.getCurrent().setTooltip(this, t("ocr.run"))
         }
         val dropdown = HorizontalLayout(delBtn, ocrBtn).apply {
@@ -154,7 +156,11 @@ class DocImageDialog(
             wordService.save(word)
             Tooltips.getCurrent().setTooltip(wrapper, word.text)
         }
-        dlg.addOpenedChangeListener { if (!it.isOpened) Tooltips.getCurrent().setTooltip(wrapper, word.text) }
+        dlg.addOpenedChangeListener {
+            if (!it.isOpened) {
+                Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text)
+            }
+        }
         container.appendChild(wrapper.element)
         Tooltips.getCurrent().setTooltip(wrapper, word.text)
     }

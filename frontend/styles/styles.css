@@ -64,11 +64,18 @@
 }
 
 .word-dropdown {
+    position: absolute;
     display: none;
     background-color: white;
     border: 1px solid black;
     z-index: 9;
     width: max-content;
+}
+
+.word-dropdown-button {
+    padding: 0px;
+    margin: 0px;
+    z-index: 9;
 }
 
 .draw-div {

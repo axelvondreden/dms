@@ -55,7 +55,7 @@ class RulesView(
         }
         val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
         plainTextRuleService.findAll().map { builderFactory.rules().plainTextCard(it) }.forEach { verticalLayout.add(it) }
-        val details = Details(t("rules.text"), verticalLayout).apply {
+        val details = Details(t("rules.plain"), verticalLayout).apply {
             isOpened = true
             element.style["padding"] = "5px"
             element.style["width"] = "100%"
