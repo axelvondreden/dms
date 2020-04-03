@@ -1,5 +1,6 @@
 package com.dude.dms.backend.data
 
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDateTime
@@ -17,7 +18,5 @@ class Changelog(
         var version: String
 ) : DataEntity(), LogsEvents {
 
-        override fun showEvents() = false
-
-        override fun toString() = "Changelog($version)"
+        override fun toString() = t("changelog")
 }

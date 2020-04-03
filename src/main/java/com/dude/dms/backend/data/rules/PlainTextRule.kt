@@ -1,6 +1,7 @@
 package com.dude.dms.backend.data.rules
 
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.brain.t
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Entity
 import javax.persistence.ManyToMany
@@ -22,5 +23,5 @@ class PlainTextRule(
         } else false
     }
 
-    override fun toString() = "PlainTextRule($text)"
+    override fun toString() = t("rule.plain")
 }

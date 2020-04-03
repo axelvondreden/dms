@@ -31,10 +31,10 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         if (logEntryService == null) {
             logEntryService = SpringContext.getBean(LogEntryService::class.java)
             if (logEntryService == null) {
-                logger.warn("Logservice can not be found!")
+                logger.warn(t("log.missing"))
                 return
             } else {
-                logger.info("Logservice restored.")
+                logger.info(t("log.restored"))
             }
         }
         logEntryService!!.save(logEntry)
@@ -45,18 +45,13 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.INFO, message)
     }
 
-    fun info(message: String, vararg arguments: Any?) {
-        logger.info(message, *arguments)
-        save(Level.INFO, format(message, *arguments))
-    }
-
     fun showInfo(message: String, ui: UI, persistent: Boolean = false, log: Boolean = true) {
         try {
             val notification = create(message, persistent)
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
             ui.access { notification.open() }
         } catch (e: IllegalStateException) {
-            logger.warn("Could not show UI notification: ${e.message}")
+            logger.warn(t("log.error.ui", e))
         }
         if (log) {
             logger.info(message)
@@ -69,29 +64,14 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
         save(Level.WARN, msg)
     }
 
-    fun warn(msg: String, vararg arguments: Any?) {
-        logger.warn(msg, *arguments)
-        save(Level.WARN, format(msg, *arguments))
-    }
-
     fun error(msg: String) {
         logger.error(msg)
         save(Level.ERROR, msg)
     }
 
-    fun error(msg: String, vararg arguments: Any?) {
-        logger.error(msg, *arguments)
-        save(Level.ERROR, format(msg, *arguments))
-    }
-
     fun error(msg: String, e: Exception) {
         logger.error(msg, e)
         save(Level.ERROR, msg, e)
-    }
-
-    fun error(msg: String, e: Exception, vararg arguments: Any?) {
-        logger.error(msg, e)
-        save(Level.ERROR, format(msg, *arguments), e)
     }
 
     fun showError(message: String, ui: UI, persistent: Boolean = false, log: Boolean = true) {
@@ -100,23 +80,12 @@ class DmsLogger private constructor(private val clazz: Class<*>) {
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR)
             ui.access { notification.open() }
         } catch (e: IllegalStateException) {
-            logger.warn("Could not show UI notification: ${e.message}")
+            logger.warn(t("log.error.ui", e))
         }
         if (log) {
             logger.error(message)
             save(Level.ERROR, message, true)
         }
-    }
-
-    private fun format(msg: String, vararg arguments: Any?): String {
-        var formattedMsg = msg
-        for (argument in arguments) {
-            try {
-                formattedMsg = formattedMsg.replaceFirst("\\{}".toRegex(), argument.toString())
-            } catch (ignored: IllegalArgumentException) {
-            }
-        }
-        return formattedMsg
     }
 
     private fun create(message: String, persistent: Boolean): Notification {

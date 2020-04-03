@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
+import com.dude.dms.brain.t
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.UI
@@ -32,7 +33,7 @@ class MailFilterEditDialog(
         try {
             mailManager.testConnection()
         } catch (e: MessagingException) {
-            LOGGER.showError("IMAP Connection Failed: ${e.message}", UI.getCurrent())
+            LOGGER.showError(t("mail.imap.error", e), UI.getCurrent())
             close()
         }
 
@@ -40,14 +41,14 @@ class MailFilterEditDialog(
         folderGrid.setItems(folders) { mailManager.getSubFolders(it, true) }
         folderGrid.dataProvider.refreshAll()
 
-        folderGrid.addHierarchyColumn { it.fullName }.setHeader("Folder")
-        folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader("Count")
+        folderGrid.addHierarchyColumn { it.fullName }.setHeader(t("folder"))
+        folderGrid.addColumn { if (it.type and Folder.HOLDS_MESSAGES == Folder.HOLDS_MESSAGES) it.messageCount else "-" }.setHeader(t("count"))
         folderGrid.setSelectionMode(Grid.SelectionMode.SINGLE)
         folderGrid.asSingleSelect().value = folders.find { it.fullName == mailFilter.folder }
         folderGrid.height = "90%"
 
-        val saveButton = Button("Save", VaadinIcon.PLUS.create()) { save() }.apply { setWidthFull() }
-        val deleteButton = Button("Delete", VaadinIcon.TRASH.create()) { delete() }.apply {
+        val saveButton = Button(t("save"), VaadinIcon.PLUS.create()) { save() }.apply { setWidthFull() }
+        val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }
@@ -55,17 +56,14 @@ class MailFilterEditDialog(
     }
 
     private fun delete() {
-        ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
+        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
             mailFilterService.delete(mailFilter)
             close()
         }).open()
     }
 
     private fun save() {
-        if (folderGrid.asSingleSelect().isEmpty) {
-            LOGGER.showError("No Folder selected!", UI.getCurrent())
-            return
-        }
+        if (folderGrid.asSingleSelect().isEmpty) return
         mailFilter.folder = folderGrid.asSingleSelect().value.fullName
         mailFilterService.save(mailFilter)
         close()

@@ -2,12 +2,13 @@ package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.*
-import com.dude.dms.backend.data.history.DocHistory
+import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
-import com.dude.dms.ui.dataproviders.DocDataProvider
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.io.Serializable
 
 @Service
 class DocService(
@@ -15,11 +16,17 @@ class DocService(
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
-        private val docHistoryService: DocHistoryService,
         private val lineService: LineService,
         private val wordService: WordService,
         eventManager: EventManager
-) : HistoricalCrudService<Doc, DocHistory>(docRepository, eventManager) {
+) : EventService<Doc>(docRepository, eventManager) {
+
+    data class Filter(
+            var tag: Tag? = null,
+            var attribute: Attribute? = null,
+            var mail: Mail? = null,
+            var text: String? = null
+    ) : Serializable
 
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
@@ -35,7 +42,6 @@ class DocService(
     }
 
     override fun delete(entity: Doc) {
-        docHistoryService.getHistory(entity).forEach(docHistoryService::delete)
         lineService.findByDoc(entity).forEach(lineService::delete)
         attributeValueService.findByDoc(entity).forEach(attributeValueService::delete)
         super.delete(entity)
@@ -56,8 +62,6 @@ class DocService(
                 .distinct().forEach { attributeValueService.delete(it) }
     }
 
-    override fun createHistory(entity: Doc, text: String?, created: Boolean, edited: Boolean) = DocHistory(entity, text, created, edited)
-
     fun findByGuid(guid: String): Doc? = docRepository.findByGuid(guid)
 
     fun findByTag(tag: Tag) = docRepository.findByTags(tag)
@@ -76,9 +80,11 @@ class DocService(
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEquals(attribute)
 
-    fun findByFilter(filter: DocDataProvider.Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.mail, pageable)
+    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, pageable)
 
-    fun countByFilter(filter: DocDataProvider.Filter) = docRepository.countByFilter(filter.tag, filter.mail)
+    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, sort)
+
+    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail, filter.text)
 
     fun getFullTextMemory(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
         line.words.sortedBy { it.x }.joinToString(" ") { it.text }

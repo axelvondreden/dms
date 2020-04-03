@@ -18,6 +18,9 @@ class ConfirmDialog(
 
     init {
         add(Label(message))
-        add(Button(confirmText, icon.create(), event).apply { addThemeVariants(theme) })
+        add(Button(confirmText, icon.create(), event).apply {
+            addThemeVariants(theme)
+            addClickListener { close() }
+        })
     }
 }

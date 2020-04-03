@@ -1,7 +1,6 @@
 package com.dude.dms.brain.events
 
 import com.dude.dms.backend.data.LogsEvents
-import com.dude.dms.brain.DmsLogger
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
@@ -11,20 +10,7 @@ class EventManager {
     private val listeners = HashSet<Event<LogsEvents>>()
 
     fun trigger(entity: LogsEvents, type: EventType) {
-        listeners.filter { it.target == entity::class && it.type == type }.forEach {
-            it.run(entity)
-        }
-        val uis = listeners.filter { it.target == entity::class && it.type == type && it.holder.ui.isPresent }
-                .map { it.holder.ui.get() }.toSet()
-        val text = when(type) {
-            EventType.CREATE -> "Created"
-            EventType.UPDATE -> "Updated"
-            EventType.DELETE -> "Deleted"
-        }
-        if (entity.showEvents()) {
-            uis.forEach { LOGGER.showInfo("$text $entity", it, log = false) }
-        }
-        LOGGER.info("$text $entity")
+        listeners.filter { it.target == entity::class && it.type == type }.forEach { it.run(entity) }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -34,9 +20,5 @@ class EventManager {
             listeners.remove(event)
             listeners.add(event)
         }
-    }
-
-    companion object {
-        private val LOGGER = DmsLogger.getLogger(EventManager::class.java)
     }
 }

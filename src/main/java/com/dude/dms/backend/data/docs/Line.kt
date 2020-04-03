@@ -2,6 +2,7 @@ package com.dude.dms.backend.data.docs
 
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import javax.persistence.Entity
@@ -16,9 +17,7 @@ class Line(
         var y: Float
 ) : DataEntity(), LogsEvents {
 
-    override fun showEvents() = false
-
-    override fun toString() = "Line"
+    override fun toString() = t("line")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

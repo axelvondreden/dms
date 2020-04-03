@@ -4,6 +4,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.Changelog
 import com.dude.dms.backend.service.ChangelogService
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.t
 import com.dude.dms.startup.ShutdownManager
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
@@ -46,7 +47,7 @@ class UpdateChecker(
     }
 
     fun check(force: Boolean) {
-        LOGGER.info("Checking for updates...")
+        LOGGER.info(t("updates.check"))
         try {
             val restTemplate = RestTemplate()
             val releases = restTemplate.getForObject(releaseApi, Array<Release>::class.java)
@@ -55,7 +56,6 @@ class UpdateChecker(
                 var newestRelease: Release? = null
                 for (release in releases) {
                     if (changelogService.findByVersion(release.tag_name) == null) {
-                        LOGGER.info("Saving Changelog for {}", release.tag_name)
                         changelogService.create(Changelog(release.published_at, release.body, release.tag_name))
                     }
                     val v = Version(release.tag_name)
@@ -65,7 +65,6 @@ class UpdateChecker(
                     }
                 }
                 if (newestRelease != null) {
-                    LOGGER.info("New version found: {}", newest.version)
                     if (force) {
                         updateDownloader.download(newestRelease, restTemplate)
                     } else {
@@ -73,7 +72,7 @@ class UpdateChecker(
                         if (current != null) {
                             val finalNewest = newest
                             current.access {
-                                val b = Button("Restart now", VaadinIcon.POWER_OFF.create()) { shutdownManager.initiateShutdown(1337) }.apply {
+                                val b = Button(t("restart"), VaadinIcon.POWER_OFF.create()) { shutdownManager.initiateShutdown(1337) }.apply {
                                     addThemeVariants(ButtonVariant.LUMO_ERROR)
                                 }
                                 val h = HorizontalLayout().apply {
@@ -84,13 +83,13 @@ class UpdateChecker(
                                     duration = 0
                                     position = Notification.Position.BOTTOM_STRETCH
                                 }
-                                h.add(Label("New Version available: ${finalNewest.version}"), b, Button(VaadinIcon.CLOSE.create()) { n.close() })
+                                h.add(Label(t("updates.new", finalNewest.version)), b, Button(VaadinIcon.CLOSE.create()) { n.close() })
                                 n.open()
                             }
                         }
                     }
                 } else {
-                    LOGGER.info("Already running latest version: {}", buildVersion)
+                    LOGGER.info(t("updates.uptodate", buildVersion))
                 }
             }
         } catch (e: Unauthorized) {

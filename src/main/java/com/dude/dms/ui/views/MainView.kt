@@ -11,9 +11,10 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.polling.DocPollingService
+import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.search.DmsSearchOverlayButton
-import com.github.appreciated.app.layout.component.appbar.AppBarBuilder
+import com.dude.dms.ui.components.dialogs.DocUploadDialog
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts.LeftHybrid
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu
@@ -26,6 +27,7 @@ import com.github.appreciated.app.layout.entity.Section
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.contextmenu.ContextMenu
+import com.vaadin.flow.component.dependency.CssImport
 import com.vaadin.flow.component.dnd.DragSource
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.page.Push
@@ -34,7 +36,11 @@ import com.vaadin.flow.router.AfterNavigationObserver
 import com.vaadin.flow.theme.lumo.Lumo
 import dev.mett.vaadin.tooltip.Tooltips
 import org.springframework.beans.factory.annotation.Value
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.concurrent.schedule
 
+@CssImport("./styles/styles.css")
 @Push
 class MainView(
         private val docService: DocService,
@@ -42,18 +48,19 @@ class MainView(
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val builderFactory: BuilderFactory,
+        private val docPollingService: DocPollingService,
         @param:Value("\${build.version}") private val buildVersion: String,
         eventManager: EventManager
 ) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
 
     private var docsBadge: DefaultBadgeHolder? = null
     private var mailsBadge: DefaultBadgeHolder? = null
+    private var importsBadge: DefaultBadgeHolder? = null
     private val tagBadges = HashMap<Long, DefaultBadgeHolder>()
 
     init {
         init(AppLayoutBuilder.get(LeftHybrid::class.java)
                 .withTitle("dms")
-                .withAppBar(buildAppBar())
                 .withAppMenu(buildAppMenu())
                 .build())
         val ui = UI.getCurrent()
@@ -66,77 +73,89 @@ class MainView(
         eventManager.register(this, Mail::class, DELETE) { ui.access { mailsBadge!!.decrease(); fillBadgeCount(it) } }
         eventManager.register(this, Attribute::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
         eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
+
+        Timer().schedule(10 * 1000, 10 * 1000){
+            ui.access { importsBadge!!.count = docPollingService.poll().size }
+        }
     }
 
     private fun buildAppMenu(): Component {
-        val docsEntry = LeftNavigationItem("Docs", VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
+        val uploadDocEntry = LeftClickableItem(t("doc.upload"), VaadinIcon.UPLOAD.create()) { DocUploadDialog().open() }
+        val importDocEntry = LeftClickableItem(t("doc.import"), VaadinIcon.PLUS_CIRCLE.create()) {
+            if (docPollingService.poll().isNotEmpty()) {
+                builderFactory.docs().importDialog().open()
+            }
+        }
+        importsBadge = DefaultBadgeHolder(docPollingService.poll().size).apply { bind(importDocEntry.badge) }
+        val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
-        val mailsEntry = LeftNavigationItem("Mails", VaadinIcon.MAILBOX.create(), MailsView::class.java)
+        val mailsEntry = LeftNavigationItem(t("mails"), VaadinIcon.MAILBOX.create(), MailsView::class.java)
         mailsBadge = DefaultBadgeHolder(mailService.count().toInt()).apply { bind(mailsEntry.badge) }
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
-        val rulesEntry = LeftNavigationItem("Rules", VaadinIcon.MAGIC.create(), RulesView::class.java)
+        val rulesEntry = LeftNavigationItem(t("rules"), VaadinIcon.MAGIC.create(), RulesView::class.java)
         return LeftAppMenuBuilder.get()
-                .addToSection(Section.HEADER, LeftClickableItem("Add doc", VaadinIcon.PLUS_CIRCLE.create()) { builderFactory.docs().createDialog().build().open() })
+                .addToSection(Section.HEADER, uploadDocEntry, importDocEntry)
                 .add(docsEntry, mailsEntry, tagsEntry, attributesEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
-                        LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().build().open() },
-                        LeftNavigationItem("Settings", VaadinIcon.COG.create(), OptionsView::class.java))
+                        LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().open() },
+                        LeftNavigationItem(t("administration"), VaadinIcon.DASHBOARD.create(), AdminView::class.java),
+                        LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java))
                 .build()
     }
 
     private fun createAttributesEntry(): LeftSubmenu {
         val attributeEntries = mutableListOf<Component>(
-                LeftClickableItem("Add Attribute", VaadinIcon.PLUS_CIRCLE.create()) {
-                    builderFactory.attributes().createDialog().build().open()
+                LeftClickableItem(t("attribute.new"), VaadinIcon.PLUS_CIRCLE.create()) {
+                    builderFactory.attributes().createDialog().open()
                 }
         )
         for (attribute in attributeService.findAll()) {
             val entry = LeftClickableItem(attribute.name, VaadinIcon.TEXT_LABEL.create()) { }
             val tags = tagService.findByAttribute(attribute).joinToString("\n") { it.name }
             if (tags.isNotEmpty()) {
-                Tooltips.getCurrent().setTooltip(entry, "Tags:\n$tags")
+                Tooltips.getCurrent().setTooltip(entry, "${t("tags")}:\n$tags")
             }
             attributeEntries.add(entry)
             ContextMenu().apply {
                 target = entry
                 isOpenOnClick = true
-                addItem("Edit") { builderFactory.attributes().editDialog(attribute).build().open() }
-                addItem("Delete") { builderFactory.attributes().deleteDialog(attribute).build().open() }
+                addItem(t("edit")) { builderFactory.attributes().editDialog(attribute).open() }
+                addItem(t("delete")) { builderFactory.attributes().deleteDialog(attribute).open() }
             }
         }
-        return LeftSubmenu("Attributes", VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
+        return LeftSubmenu(t("attributes"), VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
     }
 
     private fun createTagsEntry(): LeftSubmenu {
         tagBadges.clear()
         val tagEntries = mutableListOf<Component>(
-                LeftClickableItem("Add Tag", VaadinIcon.PLUS_CIRCLE.create()) {
-                    builderFactory.tags().createDialog().build().open()
+                LeftClickableItem(t("tag.add"), VaadinIcon.PLUS_CIRCLE.create()) {
+                    builderFactory.tags().createDialog().open()
                 }
         )
         for (tag in tagService.findAll()) {
             val entry = LeftClickableItem(tag.name, VaadinIcon.TAG.create().apply { color = tag.color }) { }
-            DragSource.create(entry)
+            DragSource.create(entry).addDragStartListener { it.setDragData(tag) }
             tagBadges[tag.id] = DefaultBadgeHolder().apply { bind(entry.badge) }
             fillBadgeCount(tag)
             val attrs = attributeService.findByTag(tag).joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
-                Tooltips.getCurrent().setTooltip(entry, "Attributes:\n$attrs")
+                Tooltips.getCurrent().setTooltip(entry, "${t("attributes")}:\n$attrs")
             }
             tagEntries.add(entry)
             ContextMenu().apply {
                 target = entry
                 isOpenOnClick = true
-                addItem("Docs") { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
-                addItem("Mails") { UI.getCurrent().navigate<String, MailsView>(MailsView::class.java, "tag:${tag.name}") }
-                addItem("Edit") { builderFactory.tags().editDialog(tag).build().open() }
-                addItem("Delete") { builderFactory.tags().deleteDialog(tag).build().open() }
+                addItem(t("docs")) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
+                addItem(t("mails")) { UI.getCurrent().navigate<String, MailsView>(MailsView::class.java, "tag:${tag.name}") }
+                addItem(t("edit")) { builderFactory.tags().editDialog(tag).open() }
+                addItem(t("delete")) { builderFactory.tags().deleteDialog(tag).open() }
             }
         }
-        return LeftSubmenu("Tags", VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
+        return LeftSubmenu(t("tags"), VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
     }
 
     private fun fillBadgeCount(doc: Doc) {
@@ -150,10 +169,6 @@ class MainView(
     private fun fillBadgeCount(tag: Tag) {
         tagBadges[tag.id]?.count = docService.countByTag(tag).toInt() + mailService.countByTag(tag).toInt()
     }
-
-    private fun buildAppBar() = AppBarBuilder.get().add(initSearchOverlayButton()).build()
-
-    private fun initSearchOverlayButton() = DmsSearchOverlayButton(builderFactory).apply { searchView.initDataproviders(docService, tagService) }
 
     override fun afterNavigation(afterNavigationEvent: AfterNavigationEvent) {
         val themeList = UI.getCurrent().element.themeList

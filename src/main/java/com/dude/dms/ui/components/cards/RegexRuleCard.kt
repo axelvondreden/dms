@@ -7,7 +7,6 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.tags.TagContainer
 import com.github.appreciated.card.RippleClickableCard
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -24,14 +23,14 @@ class RegexRuleCard(
         eventManager: EventManager
 ) : RippleClickableCard() {
 
-    private val tagContainer = TagContainer(tagService.findByRegexRule(rule)).apply { isPadding = true }
+    private val tagContainer = builderFactory.tags().container(tagService.findByRegexRule(rule).toMutableSet())
 
     private val label = Label(rule.regex)
 
     init {
         setWidthFull()
 
-        val runButton = Button("Run", VaadinIcon.PLAY.create()) { builderFactory.rules().ruleRunnerDialog(regexRuleValidator.runRuleForAll(rule)).build().open() }.apply {
+        val runButton = Button("Run", VaadinIcon.PLAY.create()) { builderFactory.rules().ruleRunnerDialog(regexRuleValidator.runRuleForAll(rule)).open() }.apply {
             addThemeVariants(ButtonVariant.LUMO_SUCCESS)
         }
         val wrapper = HorizontalLayout(runButton, label, tagContainer).apply {
@@ -46,7 +45,7 @@ class RegexRuleCard(
     }
 
     fun fill(rule: RegexRule) {
-        tagContainer.setTags(tagService.findByRegexRule(rule))
+        tagContainer.setTags(tagService.findByRegexRule(rule).toMutableSet())
         label.text = rule.regex
     }
 }

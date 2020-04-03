@@ -3,6 +3,7 @@ package com.dude.dms.backend.data.docs
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.util.*
@@ -25,9 +26,7 @@ class Attribute(
         STRING, INT, FLOAT, DATE
     }
 
-    override fun showEvents() = true
-
-    override fun toString() = "Attribute($name)"
+    override fun toString() = t("attribute")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.Diffable
 import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDateTime
@@ -31,9 +32,7 @@ class Mail(
         var docs: MutableSet<Doc> = HashSet()
 ) : DataEntity(), Diffable<Mail>, LogsEvents {
 
-    override fun showEvents() = true
-
-    override fun toString() = "Mail($sender, $received, $subject)"
+    override fun toString() = t("mail")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

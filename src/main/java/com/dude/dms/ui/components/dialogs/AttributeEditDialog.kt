@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.service.AttributeService
+import com.dude.dms.brain.t
 import com.dude.dms.ui.components.misc.IconToggle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -15,11 +16,11 @@ import com.vaadin.flow.component.textfield.TextField
 
 class AttributeEditDialog(private val attribute: Attribute, private val attributeService: AttributeService) : Dialog() {
 
-    private val nameTextField = TextField("Name", attribute.name, "").apply {
+    private val nameTextField = TextField(t("name"), attribute.name, "").apply {
         setWidthFull()
     }
 
-    private val typeComboBox = ComboBox<Attribute.Type>("Type").apply {
+    private val typeComboBox = ComboBox<Attribute.Type>(t("attribute.type")).apply {
         setWidthFull()
         isPreventInvalidInput = true
         isAllowCustomValue = false
@@ -27,7 +28,7 @@ class AttributeEditDialog(private val attribute: Attribute, private val attribut
         value = attribute.type
     }
 
-    private val requiredToggle = IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), "Required", attribute.isRequired)
+    private val requiredToggle = IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), t("attribute.required"), attribute.isRequired)
 
     init {
         width = "35vw"
@@ -35,11 +36,11 @@ class AttributeEditDialog(private val attribute: Attribute, private val attribut
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
         }
-        val createButton = Button("Save", VaadinIcon.PLUS.create()) { save() }.apply {
+        val createButton = Button(t("save"), VaadinIcon.PLUS.create()) { save() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         }
-        val cancelButton = Button("Close", VaadinIcon.CLOSE.create()) { close() }.apply {
+        val cancelButton = Button(t("close"), VaadinIcon.CLOSE.create()) { close() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }
@@ -56,7 +57,6 @@ class AttributeEditDialog(private val attribute: Attribute, private val attribut
 
     private fun save() {
         if (nameTextField.isEmpty) {
-            nameTextField.errorMessage = "Name can not be empty!"
             return
         }
         attribute.name = nameTextField.value

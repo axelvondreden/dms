@@ -1,11 +1,12 @@
 package com.dude.dms.backend.data.docs
 
 import com.dude.dms.backend.data.*
-import com.dude.dms.backend.data.history.DocHistory
 import com.dude.dms.backend.data.mails.Mail
+import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.Size
 
@@ -15,6 +16,8 @@ class Doc(
         var guid: String,
 
         var documentDate: LocalDate? = null,
+
+        var insertTime: LocalDateTime? = null,
 
         @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 99999)
@@ -30,13 +33,8 @@ class Doc(
         var attributeValues: Set<AttributeValue> = HashSet(),
 
         @ManyToOne
-        var mail: Mail? = null,
+        var mail: Mail? = null
+) : DataEntity(), Diffable<Doc>, LogsEvents {
 
-        @OneToMany(mappedBy = "doc")
-        override var history: Set<DocHistory> = HashSet()
-) : DataEntity(), Diffable<Doc>, Historical<DocHistory>, LogsEvents {
-
-    override fun showEvents() = true
-
-    override fun toString() = "Doc($guid)"
+    override fun toString() = t("doc")
 }

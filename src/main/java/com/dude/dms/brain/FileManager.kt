@@ -2,7 +2,6 @@ package com.dude.dms.brain
 
 import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.brain.options.Options
-import org.apache.commons.net.ftp.FTPClient
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -23,47 +22,36 @@ import javax.imageio.ImageIO
 @Component
 class FileManager {
 
-    fun testFtp(): Boolean {
-        val ftpClient = FTPClient()
-        return try {
-            try {
-                ftpClient.connectTimeout = 3000
-                ftpClient.connect(Options.get().storage.ftp.url, Options.get().storage.ftp.port)
-                ftpClient.login(Options.get().storage.ftp.url, Options.get().storage.ftp.password)
-                ftpClient.listNames()
-                ftpClient.logout()
-                true
-            } finally {
-                ftpClient.disconnect()
-            }
-        } catch (e: IOException) {
-            LOGGER.error(e.message!!)
-            false
-        }
-    }
-
     fun getPdf(guid: String) = File("${Options.get().doc.savePath}/pdf/$guid.pdf")
 
     fun getFirstImage(guid: String) = File("${Options.get().doc.savePath}/img/${guid}_00.png")
 
-    fun getImages(guid: String) = File("${Options.get().doc.savePath}/img/").listFiles { _, name -> name.startsWith(guid) }
+    fun getImages(guid: String) = File("${Options.get().doc.savePath}/img/").listFiles { _, name -> name.startsWith(guid) }!!
+
+    fun delete(guid: String) {
+        getPdf(guid).delete()
+        getImages(guid).forEach { it.delete() }
+    }
 
     fun createDirectories() {
         val saveDir = File(Options.get().doc.savePath)
         if (!saveDir.exists()) {
-            LOGGER.info("Creating directory for saved docs {}", saveDir)
+            LOGGER.info(t("files.createdir", saveDir))
             saveDir.mkdir()
             File(saveDir, "pdf").mkdir()
             File(saveDir, "img").mkdir()
         }
     }
 
-    fun importPdf(pdf: File): String? {
+    fun importPdf(pdf: File, move: Boolean = true): String? {
         val guid = UUID.randomUUID().toString()
         val targetPath = Paths.get(Options.get().doc.savePath, "pdf", "$guid.pdf")
-        LOGGER.info("Importing PDF {}...", pdf.name)
+        LOGGER.info(t("pdf.import", pdf.name))
         try {
-            Files.move(pdf.toPath(), targetPath, StandardCopyOption.ATOMIC_MOVE).toFile()
+            when {
+                move -> Files.move(pdf.toPath(), targetPath, StandardCopyOption.ATOMIC_MOVE).toFile()
+                else -> Files.copy(pdf.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING).toFile()
+            }
         } catch (e: IOException) {
             LOGGER.error(e.message!!, e)
             return null
@@ -73,12 +61,12 @@ class FileManager {
         return guid
     }
 
-    fun importImage(img: File): String? {
+    fun importImage(img: File, move: Boolean = true): String? {
         val guid = UUID.randomUUID().toString()
-        LOGGER.info("Importing Image {}...", img.name)
+        LOGGER.info(t("image.import", img.name))
         try {
             ImageIO.write(processImg(ImageIO.read(img)), "png", Paths.get(Options.get().doc.savePath, "img", "${guid}_00.png").toFile())
-            img.delete()
+            if (move) img.delete()
         } catch (e: IOException) {
             LOGGER.error(e.message!!, e)
             return null
@@ -95,17 +83,17 @@ class FileManager {
             try {
                 val bi = processImg(pr.renderImageWithDPI(i, Options.get().doc.imageParserDpi.toFloat()))
                 val out = File(Options.get().doc.savePath, String.format("img/%s_%02d.png", guid, i))
-                LOGGER.info("Saving Image {}...", out.name)
+                LOGGER.info(t("image.save", out.name))
                 ImageIO.write(bi, "PNG", out)
             } catch (e: IOException) {
-                LOGGER.error("Error saving Image: {}", e, e.message)
+                LOGGER.error(t("image.save.error", e))
             }
         }
     }
 
     private fun createPdfFromImage(guid: String) {
         try {
-            LOGGER.info("Saving PDF {}.pdf...", guid)
+            LOGGER.info(t("pdf.save", guid))
             val pdf = PDDocument()
 
             val page = PDPage()
@@ -123,7 +111,7 @@ class FileManager {
             pdf.save("${Options.get().doc.savePath}/pdf/$guid.pdf")
             pdf.close()
         } catch (e: IOException) {
-            LOGGER.error("Error saving PDF: {}", e, e.message)
+            LOGGER.error(t("pdf.save.error", e))
         }
     }
 

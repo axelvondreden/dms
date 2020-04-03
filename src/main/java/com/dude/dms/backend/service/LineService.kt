@@ -19,6 +19,4 @@ class LineService(
     }
 
     fun findByDoc(doc: Doc) = lineRepository.findByDoc(doc)
-
-    fun countByDoc(doc: Doc) = lineRepository.countByDoc(doc)
 }

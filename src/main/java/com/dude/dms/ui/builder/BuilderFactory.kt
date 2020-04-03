@@ -1,17 +1,13 @@
 package com.dude.dms.ui.builder
 
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.events.EventManager
+import com.dude.dms.brain.mail.MailManager
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.brain.polling.DocPollingService
-import com.dude.dms.backend.service.*
-import com.dude.dms.brain.events.EventManager
-import com.dude.dms.brain.mail.MailManager
-import com.dude.dms.ui.builder.attributes.AttributeBuilderFactory
-import com.dude.dms.ui.builder.docs.DocBuilderFactory
-import com.dude.dms.ui.builder.misc.MiscBuilderFactory
-import com.dude.dms.ui.builder.rules.RuleBuilderFactory
-import com.dude.dms.ui.builder.tags.TagBuilderFactory
 import com.dude.dms.updater.UpdateChecker
 import org.springframework.stereotype.Component
 
@@ -20,6 +16,8 @@ class BuilderFactory(
         private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
         private val changelogService: ChangelogService,
+        private val docParser: DocParser,
+        private val docPollingService: DocPollingService,
         private val docService: DocService,
         private val eventManager: EventManager,
         private val fileManager: FileManager,
@@ -28,7 +26,6 @@ class BuilderFactory(
         private val mailService: MailService,
         private val plainTextRuleService: PlainTextRuleService,
         private val plainTextRuleValidator: PlainTextRuleValidator,
-        private val pollingService: DocPollingService,
         private val regexRuleService: RegexRuleService,
         private val regexRuleValidator: RegexRuleValidator,
         private val tagService: TagService,
@@ -39,7 +36,7 @@ class BuilderFactory(
 
     fun attributes() = AttributeBuilderFactory(this, attributeService, attributeValueService, docService, tagService, eventManager)
 
-    fun docs() = DocBuilderFactory(this, docService, mailService, tagService, lineService, wordService, pollingService, fileManager)
+    fun docs() = DocBuilderFactory(this, docParser, docPollingService, docService, fileManager, lineService, mailService, tagService, wordService)
 
     fun misc() = MiscBuilderFactory(this, changelogService, updateChecker)
 

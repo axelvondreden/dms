@@ -1,12 +1,11 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.brain.DmsLogger
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.PlainTextRuleService
+import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
-import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -26,7 +25,7 @@ class PlainTextRuleEditDialog(
 
     private val ruleTagSelector = builderFactory.tags().selector().forRule(plainTextRule).build().apply { height = "80%" }
 
-    private val caseSensitive = Checkbox("case sensitive", plainTextRule.caseSensitive)
+    private val caseSensitive = Checkbox("Case sensitive", plainTextRule.caseSensitive)
 
     init {
         width = "70vw"
@@ -36,8 +35,8 @@ class PlainTextRuleEditDialog(
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
         }
-        val saveButton = Button("Save", VaadinIcon.PLUS.create()) { save() }.apply { setWidthFull() }
-        val deleteButton = Button("Delete", VaadinIcon.TRASH.create()) { delete() }.apply {
+        val saveButton = Button(t("save"), VaadinIcon.PLUS.create()) { save() }.apply { setWidthFull() }
+        val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }
@@ -45,29 +44,19 @@ class PlainTextRuleEditDialog(
     }
 
     private fun delete() {
-        ConfirmDialog("Are you sure you want to delete the item?", "Delete", VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
+        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
             plainTextRuleService.delete(plainTextRule)
             close()
         }).open()
     }
 
     private fun save() {
-        if (plainText.isEmpty) {
-            LOGGER.showError("Text can not be empty!", UI.getCurrent())
-            return
-        }
-        if (ruleTagSelector.selectedTags.isEmpty()) {
-            LOGGER.showError("At least on tag must be selected!", UI.getCurrent())
-            return
-        }
+        if (plainText.isEmpty) return
+        if (ruleTagSelector.selectedTags.isEmpty()) return
         plainTextRule.text = plainText.value
         plainTextRule.tags = ruleTagSelector.selectedTags
         plainTextRule.caseSensitive = caseSensitive.value
         plainTextRuleService.save(plainTextRule)
         close()
-    }
-
-    companion object {
-        private val LOGGER = DmsLogger.getLogger(PlainTextRuleEditDialog::class.java)
     }
 }

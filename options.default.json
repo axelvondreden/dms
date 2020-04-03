@@ -8,13 +8,13 @@
     ],
     "locale": "en-Us",
     "darkMode": false,
-    "notificationPosition": "BOTTOM_END"
+    "notificationPosition": "BOTTOM_END",
+    "docCardSize": 200
   },
   "doc": {
-    "pollingInterval": 120,
     "pollingPath": "docs_in/",
     "savePath": "docs/",
-    "imageParserDpi": 500.0,
+    "imageParserDpi": 300.0,
     "ocrLanguage": "deu"
   },
   "mail": {

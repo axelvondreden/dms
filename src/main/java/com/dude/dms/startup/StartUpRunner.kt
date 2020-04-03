@@ -13,7 +13,6 @@ class StartUpRunner(
         private val docPollingService: DocPollingService,
         private val updateChecker: UpdateChecker,
         private val directoryChecker: DirectoryChecker,
-        private val demoDataCreator: DemoDataCreator,
         private val optionsChecker: OptionsChecker
 ) : CommandLineRunner {
 
@@ -21,7 +20,6 @@ class StartUpRunner(
         updateChecker.check(true)
         optionsChecker.checkOptions()
         directoryChecker.checkDirectories()
-        demoDataCreator.createDemoData()
         docPollingService.poll()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
     }

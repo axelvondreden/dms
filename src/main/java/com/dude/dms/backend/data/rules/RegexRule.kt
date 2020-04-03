@@ -1,6 +1,7 @@
 package com.dude.dms.backend.data.rules
 
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.brain.t
 import java.util.regex.Pattern
 import javax.persistence.Entity
 import javax.persistence.ManyToMany
@@ -21,5 +22,5 @@ class RegexRule(
         return if (line == null || line.isEmpty()) false else pattern.matcher(line).matches()
     }
 
-    override fun toString() = "RegexRule($regex)"
+    override fun toString() = t("rule.regex")
 }
