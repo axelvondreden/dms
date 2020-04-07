@@ -149,6 +149,7 @@ class DocImageDialog(
         }
         delBtn.addClickListener {
             wordService.delete(word)
+            lines.forEach { it.words = it.words.minus(word) }
             container.removeChild(wrapper.element)
         }
         ocrBtn.addClickListener {
@@ -221,7 +222,10 @@ class DocImageDialog(
         val line = (doc?.let { lineService.findByDoc(it) } ?: lines).minBy { abs(it.y - drawY) }!!
         val txt = docParser.getOcrTextRect(fileManager.getFirstImage((doc?.guid ?: guid)!!), drawX.toFloat(), drawY.toFloat(), drawWidth.toFloat(), drawHeight.toFloat())
         val word = Word(line, txt, drawX.toFloat(), drawY.toFloat(), drawWidth.toFloat(), drawHeight.toFloat())
-        wordService.save(word)
+        line.words = line.words.plus(word)
+        if (doc?.guid != null) {
+            wordService.save(word)
+        }
         addWordWrapper(word)
     }
 }

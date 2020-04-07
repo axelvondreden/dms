@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <vaadin.version>14.1.23</vaadin.version>
+        <vaadin.version>14.1.24</vaadin.version>
 
         <node.version>v8.16.0</node.version>
         <yarn.version>v1.16.0</yarn.version>
@@ -277,7 +277,7 @@
         <dependency>
             <groupId>com.mlottmann.VStepper</groupId>
             <artifactId>VStepper</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>com.github.appreciated</groupId>

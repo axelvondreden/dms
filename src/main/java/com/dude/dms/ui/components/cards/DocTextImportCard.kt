@@ -12,6 +12,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import dev.mett.vaadin.tooltip.Tooltips
 
 class DocTextImportCard(builderFactory: BuilderFactory, private val fileContainer: DocImportDialog.FileContainer) : Card() {
 
@@ -21,8 +22,10 @@ class DocTextImportCard(builderFactory: BuilderFactory, private val fileContaine
         isSpacing = false
     }
 
-    private val pdfCount = fileContainer.pdfText?.flatMap { it.words }?.size ?: 0
-    private val ocrCount = fileContainer.ocrText?.flatMap { it.words }?.size ?: 0
+    private val pdfCount
+        get() = fileContainer.pdfText?.flatMap { it.words }?.size ?: 0
+    private val ocrCount
+        get() = fileContainer.ocrText?.flatMap { it.words }?.size ?: 0
 
     private val pdfCheck = Checkbox("${t("pdf.text")} ($pdfCount ${t("words")})", pdfCount > ocrCount).apply {
         isEnabled = pdfCount > 0
@@ -33,12 +36,28 @@ class DocTextImportCard(builderFactory: BuilderFactory, private val fileContaine
         element.style["paddingTop"] = "10px"
     }
 
+    private val pdfDlg = builderFactory.docs().imageDialog(null, fileContainer.guid, fileContainer.pdfText!!).apply {
+        addOpenedChangeListener {
+            if (!it.isOpened) {
+                pdfCheck.label = "${t("pdf.text")} ($pdfCount ${t("words")})"
+            }
+        }
+    }
+
+    private val ocrDlg = builderFactory.docs().imageDialog(null, fileContainer.guid, fileContainer.ocrText!!).apply {
+        addOpenedChangeListener {
+            if (!it.isOpened) {
+                ocrCheck.label = "${t("ocr.text")} ($ocrCount ${t("words")})"
+            }
+        }
+    }
+
     private val textWrapper = VerticalLayout(
             HorizontalLayout(
                     pdfCheck,
                     Button(VaadinIcon.EYE.create()) {
                         if (!fileContainer.pdfText.isNullOrEmpty()) {
-                            builderFactory.docs().imageDialog(null, fileContainer.guid, fileContainer.pdfText!!).open()
+                            pdfDlg.open()
                         }
                     }.apply { addThemeVariants(ButtonVariant.LUMO_SMALL) }
             ).apply { isPadding = false; isSpacing = false },
@@ -46,7 +65,7 @@ class DocTextImportCard(builderFactory: BuilderFactory, private val fileContaine
                     ocrCheck,
                     Button(VaadinIcon.EYE.create()) {
                         if (!fileContainer.ocrText.isNullOrEmpty()) {
-                            builderFactory.docs().imageDialog(null, fileContainer.guid, fileContainer.ocrText!!).open()
+                            ocrDlg.open()
                         }
                     }.apply { addThemeVariants(ButtonVariant.LUMO_SMALL) }
             ).apply { isPadding = false; isSpacing = false }

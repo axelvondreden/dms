@@ -53,8 +53,10 @@ class DmsPdfTextStripper : PDFTextStripper() {
             val y = yMin / pageHeight * 100.0f - height
             words.add(Word(null, word.joinToString("") { it.unicode }, x, y, width, height))
         }
-        val line = Line(null, words, words.map { it.y }.min()!!)
-        words.forEach { it.line = line }
-        lines.add(line)
+        if (!words.isNullOrEmpty()) {
+            val line = Line(null, words, words.map { it.y }.min()!!)
+            words.forEach { it.line = line }
+            lines.add(line)
+        }
     }
 }
