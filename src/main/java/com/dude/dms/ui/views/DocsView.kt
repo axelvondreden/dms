@@ -1,6 +1,7 @@
 package com.dude.dms.ui.views
 
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
@@ -34,7 +35,7 @@ class DocsView(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
         private val tagService: TagService,
-        attributeService: AttributeService,
+        private val attributeService: AttributeService,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -91,8 +92,9 @@ class DocsView(
     }
 
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { scheduleFill(ui) }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { scheduleFill(ui) }
+        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(ui) }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(ui) }
+        eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
 
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
@@ -100,6 +102,16 @@ class DocsView(
         val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
         add(header, itemContainer)
         scheduleFill(ui)
+    }
+
+    private fun softReload(ui: UI) {
+        scheduleFill(ui)
+        refreshFilterOptions()
+    }
+
+    private fun refreshFilterOptions() {
+        tagFilter.setItems(tagService.findAll())
+        attributeFilter.setItems(attributeService.findAll())
     }
 
     private fun grow() {
