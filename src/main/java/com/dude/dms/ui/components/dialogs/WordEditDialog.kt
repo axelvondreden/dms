@@ -28,13 +28,13 @@ class WordEditDialog(
     private val group = RadioButtonGroup<String>().apply {
         addThemeVariants(RadioGroupVariant.LUMO_VERTICAL)
         val items = listOf(
-                "change this",
-                "change all in document (${doc?.let { wordService.countByTextAndDoc(originalText, it) } ?: lines.sumBy { line -> line.words.filter { it.text == originalText }.size }})"
+                t("word.change"),
+                t("word.change.all", doc?.let { wordService.countByTextAndDoc(originalText, it) } ?: lines.sumBy { line -> line.words.filter { it.text == originalText }.size })
         ).apply {
             if (doc != null) add("change all (${wordService.countByext(originalText)})")
         }
         setItems(items)
-        value = "change this"
+        value = t("word.change")
     }
 
     init {
@@ -56,11 +56,10 @@ class WordEditDialog(
         val newText = text.value
         word.text = newText
         if (doc != null) wordService.save(word)
-        var words = emptySet<Word>()
-        if (group.value.startsWith("change all in doc")) {
-            words = doc?.let { wordService.findByTextAndDoc(originalText, it) } ?: lines.flatMap { it.words }.filter { it.text == originalText }.toSet()
-        } else if (group.value.startsWith("change all (")) {
-            words = wordService.findByText(originalText)
+        val words = if (group.value.contains("(")) {
+            wordService.findByText(originalText)
+        } else {
+            doc?.let { wordService.findByTextAndDoc(originalText, it) } ?: lines.flatMap { it.words }.filter { it.text == originalText }.toSet()
         }
         words.forEach {
             it.text = newText
