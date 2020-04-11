@@ -48,6 +48,10 @@
     position: absolute;
 }
 
+.word-wrapper-selected .word-container {
+    border: 4px dotted black;
+}
+
 .word-wrapper:hover .word-container {
     border: 3px solid black;
 }

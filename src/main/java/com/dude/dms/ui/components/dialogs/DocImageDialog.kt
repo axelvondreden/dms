@@ -42,20 +42,27 @@ class DocImageDialog(
 
     private val zoomButton = Button("100%") { resetZoom() }
 
+    private val deleteButton = Button(VaadinIcon.TRASH.create()) { deleteSelected() }.apply { isEnabled = false }
+
     private var zoom = 100
 
     private val drawDiv = Div().apply {
         addClassName("draw-div")
     }
 
+    private val words = mutableSetOf<Pair<Word, Div>>()
+
+    private val selected = mutableSetOf<Pair<Word, Div>>()
+
     private var drawing = false
-    private var drawStart = 0L
-    private var drawXStart = 0.0
-    private var drawYStart = 0.0
-    private var drawX = 0.0
-    private var drawY = 0.0
-    private var drawWidth = 0.0
-    private var drawHeight = 0.0
+    private var selecting = false
+    private var mouseStart = 0L
+    private var mouseXStart = 0.0
+    private var mouseYStart = 0.0
+    private var mouseX = 0.0
+    private var mouseY = 0.0
+    private var mouseWidth = 0.0
+    private var mouseHeight = 0.0
 
     init {
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
@@ -92,6 +99,15 @@ class DocImageDialog(
         zoomButton.text = "$zoom%"
     }
 
+    private fun deleteSelected() {
+        selected.forEach { pair ->
+            wordService.delete(pair.first)
+            lines.forEach { it.words = it.words.minus(pair.first) }
+            container.removeChild(pair.second.element)
+        }
+        clearSelection()
+    }
+
     private fun fill() {
         container.removeAllChildren()
         val img = fileManager.getFirstImage((doc?.guid ?: guid)!!)
@@ -101,7 +117,7 @@ class DocImageDialog(
             setAttribute("src", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
             setAttribute("ondragstart", "return false;")
             addEventListener("mousedown") { mouseDown(it, this) }
-                    .addEventData("event.offsetX").addEventData("event.offsetY")
+                    .addEventData("event.offsetX").addEventData("event.offsetY").addEventData("event.button")
             addEventListener("mousemove") { mouseMove(it, this) }
                     .addEventData("event.offsetX").addEventData("event.offsetY")
             addEventListener("mouseup") { mouseUp() }
@@ -121,7 +137,6 @@ class DocImageDialog(
         )
         val div = Div().apply {
             addClassName("word-container")
-            element.setAttribute("id", word.id.toString())
             element.addEventListener("click") { dlg.open() }
         }
         val delBtn = Button(VaadinIcon.TRASH.create()).apply {
@@ -146,6 +161,11 @@ class DocImageDialog(
             element.style["left"] = "${word.x}%"
             element.style["width"] = "${word.width}%"
             element.style["height"] = "${word.height}%"
+            addClickListener {
+                clearSelection()
+                addClassName("word-wrapper-selected")
+                addSelection(listOf(word to this))
+            }
         }
         delBtn.addClickListener {
             wordService.delete(word)
@@ -163,26 +183,30 @@ class DocImageDialog(
             }
         }
         container.appendChild(wrapper.element)
+        words.add(word to wrapper)
         Tooltips.getCurrent().setTooltip(wrapper, word.text)
     }
 
     private fun mouseDown(event: DomEvent, img: Element) {
+        clearSelection()
         val x = event.eventData.getNumber("event.offsetX")
         val y = event.eventData.getNumber("event.offsetY")
-        drawing = true
-        drawStart = System.currentTimeMillis()
+        val btn = event.eventData.getNumber("event.button").toInt()
+        drawing = !selecting && btn == 0
+        selecting = !drawing && btn == 2
+        mouseStart = System.currentTimeMillis()
         img.executeJs("return this.clientWidth").then { w ->
             img.executeJs("return this.clientHeight").then { h ->
                 drawDiv.apply {
-                    drawXStart = (x / w.asNumber()) * 100.0
-                    drawYStart = (y / h.asNumber()) * 100.0
+                    mouseXStart = (x / w.asNumber()) * 100.0
+                    mouseYStart = (y / h.asNumber()) * 100.0
                 }
             }
         }
     }
 
     private fun mouseMove(event: DomEvent, img: Element) {
-        if (drawing) {
+        if (drawing || selecting) {
             val x = event.eventData.getNumber("event.offsetX")
             val y = event.eventData.getNumber("event.offsetY")
             img.executeJs("return this.clientWidth").then { w ->
@@ -190,24 +214,24 @@ class DocImageDialog(
                     drawDiv.apply {
                         val xx = (x / w.asNumber()) * 100.0
                         val yy = (y / h.asNumber()) * 100.0
-                        if (xx < drawXStart) {
-                            drawWidth = drawXStart - xx
-                            drawX = xx
+                        if (xx < mouseXStart) {
+                            mouseWidth = mouseXStart - xx
+                            mouseX = xx
                         } else {
-                            drawWidth = xx - drawXStart
-                            drawX = drawXStart
+                            mouseWidth = xx - mouseXStart
+                            mouseX = mouseXStart
                         }
-                        if (yy < drawYStart) {
-                            drawHeight = drawYStart - yy
-                            drawY = yy
+                        if (yy < mouseYStart) {
+                            mouseHeight = mouseYStart - yy
+                            mouseY = yy
                         } else {
-                            drawHeight = yy - drawYStart
-                            drawY = drawYStart
+                            mouseHeight = yy - mouseYStart
+                            mouseY = mouseYStart
                         }
-                        element.style["left"] = "$drawX%"
-                        element.style["top"] = "$drawY%"
-                        element.style["width"] = "$drawWidth%"
-                        element.style["height"] = "$drawHeight%"
+                        element.style["left"] = "$mouseX%"
+                        element.style["top"] = "$mouseY%"
+                        element.style["width"] = "$mouseWidth%"
+                        element.style["height"] = "$mouseHeight%"
                         element.style.set("display", "block")
                     }
                 }
@@ -216,16 +240,39 @@ class DocImageDialog(
     }
 
     private fun mouseUp() {
-        drawing = false
-        if (System.currentTimeMillis() - drawStart < 500) return
+        clearSelection()
+        if (System.currentTimeMillis() - mouseStart < 500) return
         drawDiv.element.style["display"] = "none"
-        val line = (doc?.let { lineService.findByDoc(it) } ?: lines).minBy { abs(it.y - drawY) }!!
-        val txt = docParser.getOcrTextRect(fileManager.getFirstImage((doc?.guid ?: guid)!!), drawX.toFloat(), drawY.toFloat(), drawWidth.toFloat(), drawHeight.toFloat())
-        val word = Word(line, txt, drawX.toFloat(), drawY.toFloat(), drawWidth.toFloat(), drawHeight.toFloat())
-        line.words = line.words.plus(word)
-        if (doc?.guid != null) {
-            wordService.save(word)
+        if (drawing) {
+            val line = (doc?.let { lineService.findByDoc(it) } ?: lines).minBy { abs(it.y - mouseY) }!!
+            val txt = docParser.getOcrTextRect(fileManager.getFirstImage((doc?.guid
+                    ?: guid)!!), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
+            val word = Word(line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
+            line.words = line.words.plus(word)
+            if (doc?.guid != null) {
+                wordService.save(word)
+            }
+            addWordWrapper(word)
+        } else if (selecting) {
+            clearSelection()
+            addSelection(words.filter { containedInSelection(it.first) })
         }
-        addWordWrapper(word)
+        drawing = false
+        selecting = false
     }
+
+    private fun clearSelection() {
+        selected.forEach { it.second.removeClassName("word-wrapper-selected") }
+        selected.clear()
+        deleteButton.isEnabled = false
+    }
+
+    private fun addSelection(pairs: List<Pair<Word, Div>>) {
+        pairs.forEach { it.second.addClassName("word-wrapper-selected") }
+        selected.addAll(pairs)
+        deleteButton.isEnabled = true
+    }
+
+    private fun containedInSelection(word: Word) = word.x >= mouseX && word.y >= mouseY
+            && word.x + word.width <= mouseX + mouseWidth && word.y + word.height <= mouseY + mouseHeight
 }
