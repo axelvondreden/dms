@@ -67,7 +67,7 @@ class DocImageDialog(
     init {
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
-        val horizontalLayout = HorizontalLayout(shrinkButton, zoomButton, growButton).apply {
+        val horizontalLayout = HorizontalLayout(shrinkButton, zoomButton, growButton, deleteButton).apply {
             element.style.set("position", "fixed")["zIndex"] = "11"
         }
         val verticalLayout = VerticalLayout().apply {
@@ -116,6 +116,7 @@ class DocImageDialog(
             classList.add("inline-image")
             setAttribute("src", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
             setAttribute("ondragstart", "return false;")
+            setAttribute("oncontextmenu", "return false;")
             addEventListener("mousedown") { mouseDown(it, this) }
                     .addEventData("event.offsetX").addEventData("event.offsetY").addEventData("event.button")
             addEventListener("mousemove") { mouseMove(it, this) }
@@ -137,6 +138,7 @@ class DocImageDialog(
         )
         val div = Div().apply {
             addClassName("word-container")
+            element.setAttribute("oncontextmenu", "return false;")
             element.addEventListener("click") { dlg.open() }
         }
         val delBtn = Button(VaadinIcon.TRASH.create()).apply {
@@ -161,11 +163,6 @@ class DocImageDialog(
             element.style["left"] = "${word.x}%"
             element.style["width"] = "${word.width}%"
             element.style["height"] = "${word.height}%"
-            addClickListener {
-                clearSelection()
-                addClassName("word-wrapper-selected")
-                addSelection(listOf(word to this))
-            }
         }
         delBtn.addClickListener {
             wordService.delete(word)
@@ -241,21 +238,22 @@ class DocImageDialog(
 
     private fun mouseUp() {
         clearSelection()
-        if (System.currentTimeMillis() - mouseStart < 500) return
         drawDiv.element.style["display"] = "none"
-        if (drawing) {
-            val line = (doc?.let { lineService.findByDoc(it) } ?: lines).minBy { abs(it.y - mouseY) }!!
-            val txt = docParser.getOcrTextRect(fileManager.getFirstImage((doc?.guid
-                    ?: guid)!!), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
-            val word = Word(line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
-            line.words = line.words.plus(word)
-            if (doc?.guid != null) {
-                wordService.save(word)
+        if (System.currentTimeMillis() - mouseStart >= 500) {
+            if (drawing) {
+                val line = (doc?.let { lineService.findByDoc(it) } ?: lines).minBy { abs(it.y - mouseY) }!!
+                val txt = docParser.getOcrTextRect(fileManager.getFirstImage((doc?.guid
+                        ?: guid)!!), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
+                val word = Word(line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
+                if (doc == null) line.words = line.words.plus(word)
+                if (doc?.guid != null) {
+                    wordService.save(word)
+                }
+                addWordWrapper(word)
+            } else if (selecting) {
+                clearSelection()
+                addSelection(words.filter { containedInSelection(it.first) })
             }
-            addWordWrapper(word)
-        } else if (selecting) {
-            clearSelection()
-            addSelection(words.filter { containedInSelection(it.first) })
         }
         drawing = false
         selecting = false
@@ -270,7 +268,7 @@ class DocImageDialog(
     private fun addSelection(pairs: List<Pair<Word, Div>>) {
         pairs.forEach { it.second.addClassName("word-wrapper-selected") }
         selected.addAll(pairs)
-        deleteButton.isEnabled = true
+        deleteButton.isEnabled = selected.isNotEmpty()
     }
 
     private fun containedInSelection(word: Word) = word.x >= mouseX && word.y >= mouseY
