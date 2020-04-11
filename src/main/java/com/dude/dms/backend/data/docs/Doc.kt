@@ -23,7 +23,7 @@ class Doc(
         @Size(max = 99999)
         var rawText: String? = null,
 
-        @ManyToMany
+        @ManyToMany(fetch = FetchType.EAGER)
         var tags: MutableSet<Tag> = HashSet(),
 
         @OneToMany(mappedBy = "doc")
