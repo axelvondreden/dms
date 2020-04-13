@@ -12,31 +12,31 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import dev.mett.vaadin.tooltip.Tooltips
+import kotlin.math.roundToInt
 
-class DocTextImportCard(builderFactory: BuilderFactory, private val fileContainer: DocImportDialog.FileContainer) : Card() {
+class DocTextImportCard(builderFactory: BuilderFactory, private val docContainer: DocImportDialog.DocContainer) : Card() {
 
-    private val label = TitleLabel(fileContainer.file.name).apply {
+    private val label = TitleLabel(docContainer.file.name).apply {
         setAlignSelf(FlexComponent.Alignment.CENTER)
         isPadding = false
         isSpacing = false
     }
 
     private val pdfCount
-        get() = fileContainer.pdfText?.flatMap { it.words }?.size ?: 0
+        get() = docContainer.pdfText?.flatMap { it.words }?.size ?: 0
     private val ocrCount
-        get() = fileContainer.ocrText?.flatMap { it.words }?.size ?: 0
+        get() = docContainer.ocrText?.flatMap { it.words }?.size ?: 0
 
-    private val pdfCheck = Checkbox("${t("pdf.text")} ($pdfCount ${t("words")})", pdfCount > ocrCount).apply {
+    private val pdfCheck = Checkbox("${t("pdf.text")} ($pdfCount ${t("words")}, ${docContainer.pdfSpelling.roundToInt()} % ${t("spelling")})", pdfCount > ocrCount).apply {
         isEnabled = pdfCount > 0
         element.style["paddingTop"] = "10px"
     }
-    private val ocrCheck = Checkbox("${t("ocr.text")} ($ocrCount ${t("words")})", pdfCount <= ocrCount).apply {
+    private val ocrCheck = Checkbox("${t("ocr.text")} ($ocrCount ${t("words")}, ${docContainer.ocrSpelling.roundToInt()} % ${t("spelling")})", pdfCount <= ocrCount).apply {
         isEnabled = ocrCount > 0
         element.style["paddingTop"] = "10px"
     }
 
-    private val pdfDlg = builderFactory.docs().imageDialog(null, fileContainer.guid, fileContainer.pdfText!!).apply {
+    private val pdfDlg = builderFactory.docs().imageDialog(null, docContainer.guid, docContainer.pdfText!!).apply {
         addOpenedChangeListener {
             if (!it.isOpened) {
                 pdfCheck.label = "${t("pdf.text")} ($pdfCount ${t("words")})"
@@ -44,7 +44,7 @@ class DocTextImportCard(builderFactory: BuilderFactory, private val fileContaine
         }
     }
 
-    private val ocrDlg = builderFactory.docs().imageDialog(null, fileContainer.guid, fileContainer.ocrText!!).apply {
+    private val ocrDlg = builderFactory.docs().imageDialog(null, docContainer.guid, docContainer.ocrText!!).apply {
         addOpenedChangeListener {
             if (!it.isOpened) {
                 ocrCheck.label = "${t("ocr.text")} ($ocrCount ${t("words")})"
@@ -56,7 +56,7 @@ class DocTextImportCard(builderFactory: BuilderFactory, private val fileContaine
             HorizontalLayout(
                     pdfCheck,
                     Button(VaadinIcon.EYE.create()) {
-                        if (!fileContainer.pdfText.isNullOrEmpty()) {
+                        if (!docContainer.pdfText.isNullOrEmpty()) {
                             pdfDlg.open()
                         }
                     }.apply { addThemeVariants(ButtonVariant.LUMO_SMALL) }
@@ -64,7 +64,7 @@ class DocTextImportCard(builderFactory: BuilderFactory, private val fileContaine
             HorizontalLayout(
                     ocrCheck,
                     Button(VaadinIcon.EYE.create()) {
-                        if (!fileContainer.ocrText.isNullOrEmpty()) {
+                        if (!docContainer.ocrText.isNullOrEmpty()) {
                             ocrDlg.open()
                         }
                     }.apply { addThemeVariants(ButtonVariant.LUMO_SMALL) }
@@ -74,19 +74,19 @@ class DocTextImportCard(builderFactory: BuilderFactory, private val fileContaine
     init {
         setWidthFull()
 
-        fileContainer.useOcrTxt = ocrCount > pdfCount
+        docContainer.useOcrTxt = ocrCount > pdfCount
 
         pdfCheck.addValueChangeListener {
             if (!ocrCheck.isEnabled && it.isFromClient) it.source.value = it.oldValue
             else if (it.isFromClient) {
-                fileContainer.useOcrTxt = !it.value
+                docContainer.useOcrTxt = !it.value
                 ocrCheck.value = !ocrCheck.value
             }
         }
         ocrCheck.addValueChangeListener {
             if (!pdfCheck.isEnabled && it.isFromClient) it.source.value = it.oldValue
             else if (it.isFromClient) {
-                fileContainer.useOcrTxt = it.value
+                docContainer.useOcrTxt = it.value
                 pdfCheck.value = !pdfCheck.value
             }
         }

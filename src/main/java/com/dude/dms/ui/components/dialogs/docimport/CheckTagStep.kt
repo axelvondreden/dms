@@ -56,7 +56,7 @@ class CheckTagStep(
     }
 
     private fun processFiles(ui: UI) {
-        val files = stepData.files.filter { it.selected }
+        val files = stepData.docs.filter { it.selected }
         ui.access {
             progressBar.max = files.size.toDouble()
             progressBar.value = 0.0

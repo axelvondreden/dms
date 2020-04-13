@@ -4,7 +4,7 @@ import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.AttributeValueService
-import com.dude.dms.ui.extensions.convert
+import com.dude.dms.brain.extensions.convert
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout

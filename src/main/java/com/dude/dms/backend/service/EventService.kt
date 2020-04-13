@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 abstract class EventService<T>(
         repository: JpaRepository<T, Long>,
         private val eventManager: EventManager
-) : CrudService<T>(repository) where T : DataEntity, T : LogsEvents{
+) : CrudService<T>(repository) where T : DataEntity, T : LogsEvents {
 
     override fun create(entity: T): T {
         val new = super.create(entity)

@@ -1,7 +1,7 @@
 package com.dude.dms.startup
 
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.polling.DocPollingService
+import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.updater.UpdateChecker
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.i18n.LocaleContextHolder
@@ -10,7 +10,7 @@ import java.util.*
 
 @Component
 class StartUpRunner(
-        private val docPollingService: DocPollingService,
+        private val docImportService: DocImportService,
         private val updateChecker: UpdateChecker,
         private val directoryChecker: DirectoryChecker,
         private val optionsChecker: OptionsChecker
@@ -20,7 +20,7 @@ class StartUpRunner(
         updateChecker.check(true)
         optionsChecker.checkOptions()
         directoryChecker.checkDirectories()
-        docPollingService.poll()
+        docImportService.count()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
     }
 }

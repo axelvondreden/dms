@@ -1,8 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.Line
-import com.dude.dms.backend.data.docs.Word
+import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.t
 import com.vaadin.flow.component.button.Button
@@ -10,32 +8,16 @@ import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant
 import com.vaadin.flow.component.textfield.TextField
 
 class WordEditDialog(
         private val wordService: WordService,
-        private val word: Word,
-        private val doc: Doc? = null,
-        private val lines: Set<Line> = emptySet()
+        private val wordContainer: WordContainer
 ) : Dialog() {
 
-    private val originalText = word.text
+    private val originalText = wordContainer.word.text
 
     private val text = TextField("Text", originalText, "").apply { setWidthFull() }
-
-    private val group = RadioButtonGroup<String>().apply {
-        addThemeVariants(RadioGroupVariant.LUMO_VERTICAL)
-        val items = listOf(
-                t("word.change"),
-                t("word.change.all", doc?.let { wordService.countByTextAndDoc(originalText, it) } ?: lines.sumBy { line -> line.words.filter { it.text == originalText }.size })
-        ).apply {
-            if (doc != null) add("change all (${wordService.countByext(originalText)})")
-        }
-        setItems(items)
-        value = t("word.change")
-    }
 
     init {
         width = "40vw"
@@ -48,23 +30,14 @@ class WordEditDialog(
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)
         }
-        add(text, group, HorizontalLayout(createButton, cancelButton).apply { setWidthFull() })
+        add(text, HorizontalLayout(createButton, cancelButton).apply { setWidthFull() })
     }
 
     private fun save() {
         if (text.isEmpty) return
         val newText = text.value
-        word.text = newText
-        if (doc != null) wordService.save(word)
-        val words = if (group.value.contains("(")) {
-            wordService.findByText(originalText)
-        } else {
-            doc?.let { wordService.findByTextAndDoc(originalText, it) } ?: lines.flatMap { it.words }.filter { it.text == originalText }.toSet()
-        }
-        words.forEach {
-            it.text = newText
-            if (doc != null) wordService.save(it)
-        }
+        wordContainer.word.text = newText
+        if (wordContainer.word.id > 0) wordService.save(wordContainer.word)
         close()
     }
 }

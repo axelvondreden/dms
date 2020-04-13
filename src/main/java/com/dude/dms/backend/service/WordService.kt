@@ -19,7 +19,7 @@ class WordService(
 
     fun countByTextAndDoc(text: String, doc: Doc) = wordRepository.countByTextAndLine_Doc(text, doc)
 
-    fun countByext(text: String) = wordRepository.countByText(text)
+    fun countByText(text: String) = wordRepository.countByText(text)
 
     fun findByTextAndDoc(text: String, doc: Doc) = wordRepository.findByTextAndLine_Doc(text, doc)
 

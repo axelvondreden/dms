@@ -30,7 +30,7 @@ class Doc(
         var lines: Set<Line> = HashSet(),
 
         @OneToMany(mappedBy = "doc")
-        var attributeValues: Set<AttributeValue> = HashSet(),
+        var attributeValues: MutableSet<AttributeValue> = HashSet(),
 
         @ManyToOne
         var mail: Mail? = null

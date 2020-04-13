@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.brain.t
@@ -11,11 +11,11 @@ import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class DocDeleteDialog(private val doc: Doc, private val docService: DocService, private val mailService: MailService) : Dialog() {
+class DocDeleteDialog(private val docContainer: DocContainer, private val docService: DocService, private val mailService: MailService) : Dialog() {
 
     private val docCheck = Checkbox(t("doc"), true).apply { isEnabled = false }
 
-    private val mailCheck = Checkbox("${t("mail")} (${mailService.countByDoc(doc)})")
+    private val mailCheck = Checkbox("${t("mail")} (${docContainer.doc?.let { mailService.countByDoc(it) }})")
 
     init {
         width = "20vw"
@@ -32,10 +32,12 @@ class DocDeleteDialog(private val doc: Doc, private val docService: DocService, 
     }
 
     private fun delete() {
-        if (mailCheck.value) {
-            mailService.findByDoc(doc).forEach(mailService::delete)
+        docContainer.doc?.let {
+            if (mailCheck.value) {
+                mailService.findByDoc(it).forEach(mailService::delete)
+            }
+            docService.delete(it)
         }
-        docService.delete(doc)
         close()
     }
 }

@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
@@ -13,16 +13,16 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class DocEditDialog(builderFactory: BuilderFactory, private val doc: Doc, private val docService: DocService) : Dialog() {
+class DocEditDialog(builderFactory: BuilderFactory, private val docContainer: DocContainer, private val docService: DocService) : Dialog() {
 
     private val datePicker = DmsDatePicker(t("date")).apply {
         setWidthFull()
-        value = doc.documentDate
+        value = docContainer.date
     }
 
-    private val tagSelector = builderFactory.tags().selector().forDoc(doc).build().apply { height = "25vw" }
+    private val tagSelector = builderFactory.tags().selector(docContainer.doc).apply { height = "25vw" }
 
-    private val attributeValueContainer = builderFactory.attributes().valueContainer(doc).apply {
+    private val attributeValueContainer = builderFactory.attributes().valueContainer(docContainer).apply {
         setSizeFull()
         maxHeight = "40vh"
     }
@@ -52,9 +52,9 @@ class DocEditDialog(builderFactory: BuilderFactory, private val doc: Doc, privat
 
     private fun save() {
         if (attributeValueContainer.validate()) {
-            doc.documentDate = datePicker.value
-            doc.tags = tagSelector.selectedTags.toMutableSet()
-            docService.save(doc)
+            docContainer.date = datePicker.value
+            docContainer.tags = tagSelector.selectedTags.toMutableSet()
+            docContainer.doc?.let { docService.save(it) }
             close()
         }
     }

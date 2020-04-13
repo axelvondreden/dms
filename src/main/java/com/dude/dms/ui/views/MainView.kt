@@ -11,7 +11,7 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.polling.DocPollingService
+import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.dialogs.DocUploadDialog
@@ -48,7 +48,7 @@ class MainView(
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val builderFactory: BuilderFactory,
-        private val docPollingService: DocPollingService,
+        private val docImportService: DocImportService,
         @param:Value("\${build.version}") private val buildVersion: String,
         eventManager: EventManager
 ) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
@@ -75,18 +75,18 @@ class MainView(
         eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
 
         Timer().schedule(10 * 1000, 10 * 1000){
-            ui.access { importsBadge!!.count = docPollingService.poll().size }
+            ui.access { importsBadge!!.count = docImportService.count().size }
         }
     }
 
     private fun buildAppMenu(): Component {
         val uploadDocEntry = LeftClickableItem(t("doc.upload"), VaadinIcon.UPLOAD.create()) { DocUploadDialog().open() }
         val importDocEntry = LeftClickableItem(t("doc.import"), VaadinIcon.PLUS_CIRCLE.create()) {
-            if (docPollingService.poll().isNotEmpty()) {
+            if (docImportService.count().isNotEmpty()) {
                 builderFactory.docs().importDialog().open()
             }
         }
-        importsBadge = DefaultBadgeHolder(docPollingService.poll().size).apply { bind(importDocEntry.badge) }
+        importsBadge = DefaultBadgeHolder(docImportService.count().size).apply { bind(importDocEntry.badge) }
         val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
         val mailsEntry = LeftNavigationItem(t("mails"), VaadinIcon.MAILBOX.create(), MailsView::class.java)

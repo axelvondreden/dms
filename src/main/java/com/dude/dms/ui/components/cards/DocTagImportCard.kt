@@ -1,5 +1,6 @@
 package com.dude.dms.ui.components.cards
 
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.ui.builder.BuilderFactory
@@ -15,22 +16,22 @@ import java.util.*
 class DocTagImportCard(
         builderFactory: BuilderFactory,
         private val tagService: TagService,
-        private val fileContainer: DocImportDialog.FileContainer
+        private val docContainer: DocContainer
 ) : Card() {
 
-    private val label = TitleLabel(fileContainer.file.name).apply {
+    private val label = TitleLabel(docContainer.file.name).apply {
         setAlignSelf(FlexComponent.Alignment.CENTER)
     }
 
     private val date = DatePicker().apply {
-        fileContainer.date?.let { value = it }
-        addValueChangeListener { it.value?.let { date -> fileContainer.date = date } }
+        docContainer.date?.let { value = it }
+        addValueChangeListener { it.value?.let { date -> docContainer.date = date } }
         locale = Locale.forLanguageTag(Options.get().view.locale)
         element.style["padding"] = "10px"
     }
 
-    private val tagContainer = builderFactory.tags().container(fileContainer.tags, true) { event ->
-        event.source.children.findFirst().ifPresent { elem -> fileContainer.tags.remove(tagService.findByName(elem.element.text!!)) }
+    private val tagContainer = builderFactory.tags().container(docContainer.tags, true) { event ->
+        event.source.children.findFirst().ifPresent { elem -> docContainer.tags.remove(tagService.findByName(elem.element.text!!)) }
         fill()
     }.apply { setWidthFull() }
 
@@ -40,7 +41,7 @@ class DocTagImportCard(
     }
 
     private fun fill() {
-        tagContainer.setTags(fileContainer.tags)
+        tagContainer.setTags(docContainer.tags)
         val wrapper = VerticalLayout(
                 HorizontalLayout(label, date).apply { setWidthFull(); alignItems = FlexComponent.Alignment.CENTER },
                 tagContainer

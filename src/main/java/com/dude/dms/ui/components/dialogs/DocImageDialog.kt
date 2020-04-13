@@ -1,9 +1,8 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.Line
+import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.docs.Word
-import com.dude.dms.backend.service.LineService
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.parsing.DocParser
@@ -27,13 +26,10 @@ import kotlin.math.abs
 
 class DocImageDialog(
         private val builderFactory: BuilderFactory,
-        private val lineService: LineService,
         private val wordService: WordService,
         private val fileManager: FileManager,
         private val docParser: DocParser,
-        private val doc: Doc? = null,
-        private val guid: String? = null,
-        private val lines: Set<Line> = emptySet()
+        private val docContainer: DocContainer
 ) : Dialog() {
 
     private val container = ElementFactory.createDiv().apply {
@@ -50,9 +46,9 @@ class DocImageDialog(
         addClassName("draw-div")
     }
 
-    private val words = mutableSetOf<Pair<Word, Div>>()
+    private val words = mutableSetOf<Pair<WordContainer, Div>>()
 
-    private val selected = mutableSetOf<Pair<Word, Div>>()
+    private val selected = mutableSetOf<Pair<WordContainer, Div>>()
 
     private var drawing = false
     private var selecting = false
@@ -101,8 +97,8 @@ class DocImageDialog(
 
     private fun deleteSelected() {
         selected.forEach { pair ->
-            wordService.delete(pair.first)
-            lines.forEach { it.words = it.words.minus(pair.first) }
+            wordService.delete(pair.first.word)
+            docContainer.lines.forEach { it.words = it.words.minus(pair.first) }
             container.removeChild(pair.second.element)
         }
         clearSelection()
@@ -110,7 +106,7 @@ class DocImageDialog(
 
     private fun fill() {
         container.removeAllChildren()
-        val img = fileManager.getFirstImage((doc?.guid ?: guid)!!)
+        val img = fileManager.getFirstImage(docContainer.guid)
         if (!img.exists()) return
         val image = Element("img").apply {
             classList.add("inline-image")
@@ -124,18 +120,13 @@ class DocImageDialog(
             addEventListener("mouseup") { mouseUp() }
         }
         container.appendChild(image)
-        for (line in doc?.let { lineService.findByDoc(it) } ?: lines) {
-            for (word in doc?.let { wordService.findByLine(line) } ?: line.words) {
-                addWordWrapper(word)
-            }
-        }
+        docContainer.lines.flatMap { it.words }.forEach { addWordWrapper(it) }
         container.appendChild(drawDiv.element)
     }
 
-    private fun addWordWrapper(word: Word) {
-        val dlg = builderFactory.docs().wordEditDialog(
-                (if (word.id > 0) wordService.load(word.id) else word)!!, doc, lines
-        )
+    private fun addWordWrapper(wordContainer: WordContainer) {
+        val dlg = builderFactory.docs().wordEditDialog(wordContainer)
+        val word = wordContainer.word
         val div = Div().apply {
             addClassName("word-container")
             element.setAttribute("oncontextmenu", "return false;")
@@ -166,11 +157,11 @@ class DocImageDialog(
         }
         delBtn.addClickListener {
             wordService.delete(word)
-            lines.forEach { it.words = it.words.minus(word) }
+            docContainer.lines.forEach { it.words = it.words.minus(wordContainer) }
             container.removeChild(wrapper.element)
         }
         ocrBtn.addClickListener {
-            word.text = docParser.getOcrTextRect(fileManager.getFirstImage((doc?.guid ?: guid)!!), word.x, word.y, word.width, word.height)
+            word.text = docParser.getOcrTextRect(fileManager.getFirstImage(docContainer.guid), word.x, word.y, word.width, word.height)
             wordService.save(word)
             Tooltips.getCurrent().setTooltip(wrapper, word.text)
         }
@@ -180,7 +171,7 @@ class DocImageDialog(
             }
         }
         container.appendChild(wrapper.element)
-        words.add(word to wrapper)
+        words.add(wordContainer to wrapper)
         Tooltips.getCurrent().setTooltip(wrapper, word.text)
     }
 
@@ -241,15 +232,14 @@ class DocImageDialog(
         drawDiv.element.style["display"] = "none"
         if (System.currentTimeMillis() - mouseStart >= 500) {
             if (drawing) {
-                val line = (doc?.let { lineService.findByDoc(it) } ?: lines).minBy { abs(it.y - mouseY) }!!
-                val txt = docParser.getOcrTextRect(fileManager.getFirstImage((doc?.guid
-                        ?: guid)!!), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
-                val word = Word(line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
-                if (doc == null) line.words = line.words.plus(word)
-                if (doc?.guid != null) {
-                    wordService.save(word)
+                val line = docContainer.lines.minBy { abs(it.y - mouseY) }!!
+                val txt = docParser.getOcrTextRect(fileManager.getFirstImage(docContainer.guid), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
+                val wordContainer = WordContainer(Word(line.toLine(), txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat()))
+                line.words = line.words.plus(wordContainer)
+                if (docContainer.inDB) {
+                    wordService.save(wordContainer.word)
                 }
-                addWordWrapper(word)
+                addWordWrapper(wordContainer)
             } else if (selecting) {
                 clearSelection()
                 addSelection(words.filter { containedInSelection(it.first) })
@@ -265,12 +255,14 @@ class DocImageDialog(
         deleteButton.isEnabled = false
     }
 
-    private fun addSelection(pairs: List<Pair<Word, Div>>) {
+    private fun addSelection(pairs: List<Pair<WordContainer, Div>>) {
         pairs.forEach { it.second.addClassName("word-wrapper-selected") }
         selected.addAll(pairs)
         deleteButton.isEnabled = selected.isNotEmpty()
     }
 
-    private fun containedInSelection(word: Word) = word.x >= mouseX && word.y >= mouseY
-            && word.x + word.width <= mouseX + mouseWidth && word.y + word.height <= mouseY + mouseHeight
+    private fun containedInSelection(wordContainer: WordContainer): Boolean {
+        val word = wordContainer.word
+        return (word.x >= mouseX && word.y >= mouseY && word.x + word.width <= mouseX + mouseWidth && word.y + word.height <= mouseY + mouseHeight)
+    }
 }

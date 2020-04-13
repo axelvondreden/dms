@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
 class AttributeValue(
-        @ManyToOne var doc: Doc,
+        @ManyToOne var doc: Doc?,
         @ManyToOne var attribute: Attribute,
         var stringValue: String? = null,
         var intValue: Int? = null,
