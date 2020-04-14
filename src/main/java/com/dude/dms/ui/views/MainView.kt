@@ -75,18 +75,14 @@ class MainView(
         eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
 
         Timer().schedule(10 * 1000, 10 * 1000){
-            ui.access { importsBadge!!.count = docImportService.count().size }
+            ui.access { importsBadge!!.count = docImportService.count }
         }
     }
 
     private fun buildAppMenu(): Component {
         val uploadDocEntry = LeftClickableItem(t("doc.upload"), VaadinIcon.UPLOAD.create()) { DocUploadDialog().open() }
-        val importDocEntry = LeftClickableItem(t("doc.import"), VaadinIcon.PLUS_CIRCLE.create()) {
-            if (docImportService.count().isNotEmpty()) {
-                builderFactory.docs().importDialog().open()
-            }
-        }
-        importsBadge = DefaultBadgeHolder(docImportService.count().size).apply { bind(importDocEntry.badge) }
+        val importDocEntry = LeftNavigationItem(t("doc.import"), VaadinIcon.PLUS_CIRCLE.create(), DocImportView::class.java)
+        importsBadge = DefaultBadgeHolder(docImportService.count).apply { bind(importDocEntry.badge) }
         val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
         val mailsEntry = LeftNavigationItem(t("mails"), VaadinIcon.MAILBOX.create(), MailsView::class.java)
@@ -159,7 +155,7 @@ class MainView(
     }
 
     private fun fillBadgeCount(doc: Doc) {
-        tagService.findByDoc(doc).forEach { fillBadgeCount(it) }
+        doc.tags.forEach { fillBadgeCount(it) }
     }
 
     private fun fillBadgeCount(mail: Mail) {

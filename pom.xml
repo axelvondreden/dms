@@ -24,7 +24,7 @@
         <node.version>v8.16.0</node.version>
         <yarn.version>v1.16.0</yarn.version>
 
-        <kotlin.version>1.3.71</kotlin.version>
+        <kotlin.version>1.3.72</kotlin.version>
         <start-class>com.dude.dms.Application</start-class>
     </properties>
 

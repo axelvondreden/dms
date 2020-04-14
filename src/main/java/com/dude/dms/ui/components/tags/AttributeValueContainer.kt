@@ -31,8 +31,8 @@ class AttributeValueContainer(
     private fun fill() {
         removeAll()
         fields.clear()
-        for (attributeValue in docContainer.attributeValues) {
-            val field = builderFactory.attributes().valueField(attributeValue, readOnly).apply { setWidthFull() }
+        docContainer.attributeValues?.forEach {
+            val field = builderFactory.attributes().valueField(it, readOnly).apply { setWidthFull() }
             add(field)
             fields.add(field)
         }

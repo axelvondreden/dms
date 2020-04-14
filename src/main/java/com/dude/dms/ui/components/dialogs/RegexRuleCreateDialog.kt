@@ -15,7 +15,7 @@ class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRul
         setWidthFull()
     }
 
-    private val ruleTagSelector = builderFactory.tags().selector().build().apply {
+    private val ruleTagSelector = builderFactory.tags().selector().apply {
         height = "80%"
     }
 

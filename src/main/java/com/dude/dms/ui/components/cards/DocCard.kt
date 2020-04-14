@@ -26,7 +26,7 @@ import dev.mett.vaadin.tooltip.Tooltips
 class DocCard(
         private val builderFactory: BuilderFactory,
         private val fileManager: FileManager,
-        private val docContainer: DocContainer
+        val docContainer: DocContainer
 ) : ClickableCard() {
 
     private var imgDiv: Div? = null

@@ -19,14 +19,6 @@ interface DocRepository : JpaRepository<Doc, Long> {
 
     fun countByTags(tag: Tag): Long
 
-    fun findTop10ByRawTextContaining(rawText: String): Set<Doc>
-
-    fun countByRawTextContaining(rawText: String): Long
-
-    fun findTop10ByRawTextContainingIgnoreCase(rawText: String): Set<Doc>
-
-    fun countByRawTextContainingIgnoreCase(rawText: String): Long
-
     fun findByAttributeValues_AttributeEquals(attribute: Attribute): Set<Doc>
 
     fun countByAttributeValues_AttributeEquals(attribute: Attribute): Long
@@ -54,15 +46,4 @@ interface DocRepository : JpaRepository<Doc, Long> {
             @Param("text") text: String?,
             sort: Sort
     ): Set<Doc>
-
-    @Query("SELECT COUNT(*) FROM Doc doc WHERE (:tag is null or :tag MEMBER OF doc.tags)" +
-            " AND (:attribute is null or :attribute IN (SELECT av.attribute FROM AttributeValue av WHERE av.doc = doc))" +
-            " AND (:mail is null or :mail = doc.mail)" +
-            " AND (:text is null or LOWER(doc.rawText) LIKE LOWER(CONCAT('%', :text, '%')))")
-    fun countByFilter(
-            @Param("tag") tag: Tag?,
-            @Param("attribute") attribute: Attribute?,
-            @Param("mail") mail: Mail?,
-            @Param("text") text: String?
-    ): Long
 }

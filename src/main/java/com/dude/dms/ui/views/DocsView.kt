@@ -1,5 +1,6 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
@@ -142,7 +143,7 @@ class DocsView(
 
     private fun fill() {
         itemContainer.removeAll()
-        val items = docService.findByFilter(filter, sortFilter.value.second).map { builderFactory.docs().card(it) }
+        val items = docService.findByFilter(filter, sortFilter.value.second).map { builderFactory.docs().card(DocContainer(it)) }
         ui.access { items.forEach { itemContainer.add(it) } }
     }
 

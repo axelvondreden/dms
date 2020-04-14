@@ -2,7 +2,6 @@ package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
@@ -44,17 +43,7 @@ class TagService(
 
     fun findByRegexRule(rule: RegexRule) = tagRepository.findByRegexRules(rule)
 
-    fun findByMailFilter(mailFilter: MailFilter) = tagRepository.findByMailFilters(mailFilter)
-
-    fun findTop10ByNameContaining(name: String) = tagRepository.findTop10ByNameContaining(name)
-
-    fun countByNameContaining(name: String) = tagRepository.countByNameContaining(name)
-
-    fun findTop10ByNameContainingIgnoreCase(name: String) = tagRepository.findTop10ByNameContainingIgnoreCase(name)
-
-    fun countByNameContainingIgnoreCase(name: String) = tagRepository.countByNameContainingIgnoreCase(name)
-
-    fun findByDoc(doc: Doc) = tagRepository.findByDocs(doc)
+    private fun findByMailFilter(mailFilter: MailFilter) = tagRepository.findByMailFilters(mailFilter)
 
     fun findByMail(mail: Mail) = tagRepository.findByMails(mail)
 

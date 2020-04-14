@@ -2,7 +2,6 @@ package com.dude.dms.backend.repositories
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
@@ -18,16 +17,6 @@ interface TagRepository : JpaRepository<Tag, Long> {
     fun findByRegexRules(rule: RegexRule): Set<Tag>
 
     fun findByMailFilters(mailFilter: MailFilter): Set<Tag>
-
-    fun findTop10ByNameContaining(name: String): Set<Tag>
-
-    fun countByNameContaining(name: String): Long
-
-    fun findTop10ByNameContainingIgnoreCase(name: String): Set<Tag>
-
-    fun countByNameContainingIgnoreCase(name: String): Long
-
-    fun findByDocs(doc: Doc): Set<Tag>
 
     fun findByMails(mail: Mail): Set<Tag>
 

@@ -26,10 +26,10 @@ class Doc(
         @ManyToMany(fetch = FetchType.EAGER)
         var tags: MutableSet<Tag> = HashSet(),
 
-        @OneToMany(mappedBy = "doc")
+        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
         var lines: Set<Line> = HashSet(),
 
-        @OneToMany(mappedBy = "doc")
+        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
         var attributeValues: MutableSet<AttributeValue> = HashSet(),
 
         @ManyToOne

@@ -20,7 +20,7 @@ class RegexRuleEditDialog(
 
     private val regex = RegexField("Regex", regexRule.regex).apply { setWidthFull() }
 
-    private val ruleTagSelector = builderFactory.tags().selector().forRule(regexRule).build().apply { height = "80%" }
+    private val ruleTagSelector = builderFactory.tags().selector(rRule = regexRule).apply { height = "80%" }
 
     init {
         width = "70vw"

@@ -20,7 +20,7 @@ class StartUpRunner(
         updateChecker.check(true)
         optionsChecker.checkOptions()
         directoryChecker.checkDirectories()
-        docImportService.count()
+        Thread { docImportService.import() }.start()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
     }
 }

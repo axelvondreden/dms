@@ -23,7 +23,7 @@ class PlainTextRuleEditDialog(
 
     private val plainText = TextField("Text", plainTextRule.text, "").apply { setWidthFull() }
 
-    private val ruleTagSelector = builderFactory.tags().selector().forRule(plainTextRule).build().apply { height = "80%" }
+    private val ruleTagSelector = builderFactory.tags().selector(pRule = plainTextRule).apply { height = "80%" }
 
     private val caseSensitive = Checkbox("Case sensitive", plainTextRule.caseSensitive)
 
