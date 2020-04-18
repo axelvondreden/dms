@@ -20,11 +20,12 @@ class DocEditDialog(builderFactory: BuilderFactory, private val docContainer: Do
         value = docContainer.date
     }
 
-    private val tagSelector = builderFactory.tags().selector(docContainer.doc).apply { height = "25vw" }
+    private val tagSelector = builderFactory.tags().selector(docContainer).apply { height = "25vw" }
 
-    private val attributeValueContainer = builderFactory.attributes().valueContainer(docContainer).apply {
+    private val attributeValueContainer = builderFactory.attributes().valueContainer().apply {
         setSizeFull()
         maxHeight = "40vh"
+        fill(docContainer)
     }
 
     init {

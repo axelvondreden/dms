@@ -91,7 +91,6 @@ class DocParser(
     }
 
     fun getOcrTextRect(img: File, x: Float, y: Float, w: Float, h: Float, ocrLang: String = Options.get().doc.ocrLanguage): String {
-        LOGGER.info(t("image.ocr", ocrLang))
         val api = TessBaseAPI()
         if (api.Init("tessdata", ocrLang) != 0) {
             LOGGER.error(t("image.ocr.error"))

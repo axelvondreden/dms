@@ -16,7 +16,6 @@ import java.io.Serializable
 @Service
 class DocService(
         private val docRepository: DocRepository,
-        private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
         private val lineService: LineService,
         eventManager: EventManager
@@ -28,6 +27,15 @@ class DocService(
             var mail: Mail? = null,
             var text: String? = null
     ) : Serializable
+
+    fun create(entity: Doc, attributeValues: Set<AttributeValue>): Doc {
+        val new = super.create(entity)
+        attributeValues.forEach {
+            it.doc = new
+            attributeValueService.create(it)
+        }
+        return new
+    }
 
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
@@ -49,7 +57,7 @@ class DocService(
     }
 
     private fun createAttributeValues(doc: Doc) {
-        doc.tags.flatMap { attributeService.findByTag(it) }
+        doc.tags.flatMap { it.attributes }
                 .filter { attributeValueService.findByDocAndAttribute(doc, it) == null }
                 .map { AttributeValue(doc, it) }
                 .distinct()
@@ -57,9 +65,9 @@ class DocService(
     }
 
     private fun deleteAttributeValues(doc: Doc) {
-        val attributes = doc.tags.flatMap { attributeService.findByTag(it) }
+        val attributes = doc.tags.flatMap { it.attributes }
         doc.attributeValues
-                .filter { attributeService.findByAttributeValue(it) !in attributes }
+                .filter { it.attribute !in attributes }
                 .distinct().forEach { attributeValueService.delete(it) }
     }
 

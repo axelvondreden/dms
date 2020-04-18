@@ -1,7 +1,7 @@
 package com.dude.dms.ui.builder
 
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.*
@@ -29,9 +29,12 @@ class TagBuilderFactory(
 
     fun deleteDialog(tag: Tag) = TagDeleteDialog(tag, tagService, docService, mailService, attributeService, plainTextRuleService, regexRuleService, mailFilterService)
 
-    fun selector(doc: Doc? = null, pRule: PlainTextRule? = null, rRule: RegexRule? = null) = TagSelector(tagService).apply {
+    fun selector(doc: DocContainer? = null, pRule: PlainTextRule? = null, rRule: RegexRule? = null) = TagSelector(tagService).apply {
         selectedTags = doc?.tags ?: pRule?.tags ?: rRule?.tags ?: emptySet()
-        doc?.let { setContainedTags(docService.getFullText(doc.lines)) }
+        doc?.let {
+            rawText = (if (doc.inDB) docService.getFullText(doc.lineEntities) else docService.getFullTextMemory(doc.lineEntities))
+            showContainedTags(true)
+        }
     }
 
     fun container(

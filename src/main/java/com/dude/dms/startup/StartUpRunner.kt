@@ -2,6 +2,7 @@ package com.dude.dms.startup
 
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
+import com.dude.dms.brain.t
 import com.dude.dms.updater.UpdateChecker
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.i18n.LocaleContextHolder
@@ -22,5 +23,6 @@ class StartUpRunner(
         directoryChecker.checkDirectories()
         Thread { docImportService.import() }.start()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
+        println(t("startup.complete"))
     }
 }

@@ -15,7 +15,7 @@ import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.dialogs.DocUploadDialog
-import com.github.appreciated.app.layout.component.applayout.LeftLayouts.LeftHybrid
+import com.github.appreciated.app.layout.component.applayout.LeftLayouts
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu
 import com.github.appreciated.app.layout.component.menu.left.builder.LeftAppMenuBuilder
@@ -51,7 +51,7 @@ class MainView(
         private val docImportService: DocImportService,
         @param:Value("\${build.version}") private val buildVersion: String,
         eventManager: EventManager
-) : AppLayoutRouterLayout<LeftHybrid>(), AfterNavigationObserver {
+) : AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybridNoAppBar>(), AfterNavigationObserver {
 
     private var docsBadge: DefaultBadgeHolder? = null
     private var mailsBadge: DefaultBadgeHolder? = null
@@ -59,7 +59,7 @@ class MainView(
     private val tagBadges = HashMap<Long, DefaultBadgeHolder>()
 
     init {
-        init(AppLayoutBuilder.get(LeftHybrid::class.java)
+        init(AppLayoutBuilder.get(LeftLayouts.LeftResponsiveHybridNoAppBar::class.java)
                 .withTitle("dms")
                 .withAppMenu(buildAppMenu())
                 .build())
@@ -137,7 +137,7 @@ class MainView(
             DragSource.create(entry).addDragStartListener { it.setDragData(tag) }
             tagBadges[tag.id] = DefaultBadgeHolder().apply { bind(entry.badge) }
             fillBadgeCount(tag)
-            val attrs = attributeService.findByTag(tag).joinToString("\n") { it.name }
+            val attrs = tag.attributes.joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
                 Tooltips.getCurrent().setTooltip(entry, "${t("attributes")}:\n$attrs")
             }

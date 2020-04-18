@@ -26,7 +26,7 @@ import dev.mett.vaadin.tooltip.Tooltips
 class DocCard(
         private val builderFactory: BuilderFactory,
         private val fileManager: FileManager,
-        val docContainer: DocContainer
+        private val docContainer: DocContainer
 ) : ClickableCard() {
 
     private var imgDiv: Div? = null
@@ -47,7 +47,10 @@ class DocCard(
         content.removeAll()
 
         val tagContainer = builderFactory.tags().container(docContainer.tags.toMutableSet(), compact = true).apply { setWidthFull() }
-        val attributeContainer = builderFactory.attributes().valueContainer(docContainer, true).apply { setWidthFull() }
+        val attributeContainer = builderFactory.attributes().valueContainer(true).apply {
+            setWidthFull()
+            fill(docContainer)
+        }
         val img = fileManager.getFirstImage(docContainer.guid)
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")

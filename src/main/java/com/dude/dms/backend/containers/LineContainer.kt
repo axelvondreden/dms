@@ -1,15 +1,24 @@
 package com.dude.dms.backend.containers
 
-import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Line
 
 data class LineContainer(var y: Float, var words: Set<WordContainer> = emptySet()) {
 
     constructor(line: Line) : this(line.y, line.words.map { WordContainer(it) }.toSet()) {
-        this.line = line
+        _line = line
     }
 
-    var line: Line? = null
+    private var _line: Line? = null
+    val line: Line
+        get() = _line ?: Line(null, words.map { it.word }.toSet(), y)
 
-    fun toLine(doc: Doc? = null) = Line(doc, words.map { it.word }.toSet(), y)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as LineContainer
+        if (y != other.y) return false
+        return true
+    }
+
+    override fun hashCode() = y.hashCode()
 }

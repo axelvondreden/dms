@@ -2,7 +2,6 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
-import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.brain.extensions.convert
 import com.vaadin.flow.component.datepicker.DatePicker
@@ -11,23 +10,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.NumberField
 import com.vaadin.flow.component.textfield.TextField
 
-class AttributeValueField(
-        attributeValue: AttributeValue,
-        attributeService: AttributeService,
-        attributeValueService: AttributeValueService,
-        readOnly: Boolean = false
-) : HorizontalLayout() {
+class AttributeValueField(attributeValue: AttributeValue, attributeValueService: AttributeValueService, readOnly: Boolean = false) : HorizontalLayout() {
 
     private val validation: () -> Boolean
 
-    private val attribute = attributeService.findByAttributeValue(attributeValue)
+    private val isRequired = attributeValue.attribute.isRequired
 
-    val label = attribute.name
+    val label = attributeValue.attribute.name + if (isRequired) " *" else ""
 
-    private val isRequired = attribute.isRequired
+    var onChange: (() -> Unit)? = null
 
     init {
-        when (attribute.type) {
+        when (attributeValue.attribute.type) {
             Attribute.Type.STRING -> {
                 if (readOnly) {
                     add(Label("$label: ${attributeValue.stringValue}"))
@@ -38,7 +32,8 @@ class AttributeValueField(
                         addValueChangeListener { event ->
                             if (!event.hasValue.isEmpty() || !isRequired) {
                                 attributeValue.stringValue = event.value
-                                attributeValueService.save(attributeValue)
+                                if (attributeValue.doc != null) attributeValueService.save(attributeValue)
+                                onChange?.invoke()
                             }
                         }
                         setWidthFull()
@@ -58,7 +53,8 @@ class AttributeValueField(
                         addValueChangeListener { event ->
                             if (!event.hasValue.isEmpty() || !isRequired) {
                                 attributeValue.intValue = event.value.toInt()
-                                attributeValueService.save(attributeValue)
+                                if (attributeValue.doc != null) attributeValueService.save(attributeValue)
+                                onChange?.invoke()
                             }
                         }
                         setWidthFull()
@@ -78,7 +74,8 @@ class AttributeValueField(
                         addValueChangeListener { event ->
                             if (!event.hasValue.isEmpty() || !isRequired) {
                                 attributeValue.floatValue = event.value.toFloat()
-                                attributeValueService.save(attributeValue)
+                                if (attributeValue.doc != null) attributeValueService.save(attributeValue)
+                                onChange?.invoke()
                             }
                         }
                         setWidthFull()
@@ -97,7 +94,8 @@ class AttributeValueField(
                         addValueChangeListener { event ->
                             if (!event.hasValue.isEmpty() || !isRequired) {
                                 attributeValue.dateValue = event.value
-                                attributeValueService.save(attributeValue)
+                                if (attributeValue.doc != null) attributeValueService.save(attributeValue)
+                                onChange?.invoke()
                             }
                         }
                         setWidthFull()

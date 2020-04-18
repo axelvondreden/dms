@@ -3,7 +3,7 @@ package com.dude.dms.backend.containers
 import com.dude.dms.backend.data.docs.Word
 import org.languagetool.rules.RuleMatch
 
-data class WordContainer(var word: Word, var spelling: Set<RuleMatch>? = null) {
+data class WordContainer(var word: Word, var spelling: RuleMatch? = null) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

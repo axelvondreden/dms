@@ -6,11 +6,12 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.github.appreciated.apexcharts.ApexChartsBuilder
-import com.github.appreciated.apexcharts.config.builder.*
+import com.github.appreciated.apexcharts.config.builder.ChartBuilder
+import com.github.appreciated.apexcharts.config.builder.LegendBuilder
+import com.github.appreciated.apexcharts.config.builder.PlotOptionsBuilder
 import com.github.appreciated.apexcharts.config.chart.Type
 import com.github.appreciated.apexcharts.config.legend.Position
 import com.github.appreciated.apexcharts.config.plotoptions.builder.BarBuilder
-import com.github.appreciated.apexcharts.config.responsive.builder.OptionsBuilder
 import com.github.appreciated.apexcharts.helper.Series
 import com.github.appreciated.card.Card
 import com.vaadin.flow.component.Component
@@ -19,13 +20,17 @@ import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
+import org.springframework.stereotype.Service
 import java.io.File
+import java.math.BigInteger
+import javax.persistence.EntityManager
+import javax.persistence.PersistenceContext
 import kotlin.math.round
 
 
 @Route(value = Const.PAGE_ADMIN, layout = MainView::class)
 @PageTitle("Administration")
-class AdminView(private val docService: DocService, private val tagService: TagService) : VerticalLayout() {
+class AdminView(private val docService: DocService, private val tagService: TagService, private val dbService: DbService) : VerticalLayout() {
 
     private val options = Options.get()
 
@@ -43,26 +48,27 @@ class AdminView(private val docService: DocService, private val tagService: TagS
                 .withLabels("PDFs: $pdfSize MB", "${t("images")}: $imgSize MB")
                 .withLegend(LegendBuilder.get().withPosition(Position.right).build())
                 .withSeries(pdfSize, imgSize)
-                .withResponsive(ResponsiveBuilder.get()
-                        .withOptions(OptionsBuilder.get()
-                                .withLegend(LegendBuilder.get().withPosition(Position.bottom).build())
-                                .build())
-                        .build())
-                .build().apply {  }
-        add(pieChart)
+                .build()
 
-        add(createSection(t("storage"), pieChart))
-    }
-
-    private fun createTagSection() {
-        val data = tagService.findAll().map { it.name to docService.countByTag(it).toDouble() }
+        val data = listOf("DOC", "TAG", "ATTRIBUTE_VALUE", "LOG_ENTRY", "WORD").map { it to (dbService.getTableSize(it) / (1024.0 * 1024.0)).round(2) }.toMap()
         val barChart = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.bar).build())
                 .withPlotOptions(PlotOptionsBuilder.get().withBar(BarBuilder.get().build()).build())
-                .withLabels(*data.map { it.first }.toTypedArray())
-                .withSeries(Series(*data.map { it.second }.toTypedArray()))
+                .withLabels(*data.map { "${it.key}: ${it.value} MB" }.toTypedArray())
+                .withSeries(Series(*data.values.toTypedArray()))
                 .build()
-        add(barChart)
+
+        add(createSection(t("storage"), pieChart, barChart))
+    }
+
+    private fun createTagSection() {
+        val data = tagService.findAll().map { it.name to docService.countByTag(it).toDouble() }.toMap()
+        val barChart = ApexChartsBuilder.get()
+                .withChart(ChartBuilder.get().withType(Type.bar).build())
+                .withPlotOptions(PlotOptionsBuilder.get().withBar(BarBuilder.get().build()).build())
+                .withLabels(*data.keys.toTypedArray())
+                .withSeries(Series(*data.values.toTypedArray()))
+                .build()
 
         add(createSection(t("tags"), barChart))
     }
@@ -79,5 +85,13 @@ class AdminView(private val docService: DocService, private val tagService: TagS
         var multiplier = 1.0
         repeat(decimals) { multiplier *= 10 }
         return round(this * multiplier) / multiplier
+    }
+
+    @Service
+    class DbService {
+        @PersistenceContext
+        private lateinit var entityManager: EntityManager
+
+        fun getTableSize(table: String) = (entityManager.createNativeQuery("CALL DISK_SPACE_USED('$table')").singleResult as BigInteger).toInt()
     }
 }

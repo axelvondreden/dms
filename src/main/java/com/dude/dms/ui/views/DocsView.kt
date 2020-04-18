@@ -49,7 +49,7 @@ class DocsView(
             "${t("created")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "insertTime")
     )
 
-    private val ui = UI.getCurrent()
+    private val viewUI = UI.getCurrent()
 
     private var filter = DocService.Filter()
 
@@ -93,8 +93,8 @@ class DocsView(
     }
 
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(ui) }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(ui) }
+        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
 
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
@@ -102,7 +102,7 @@ class DocsView(
 
         val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
         add(header, itemContainer)
-        scheduleFill(ui)
+        scheduleFill(viewUI)
     }
 
     private fun softReload(ui: UI) {
@@ -137,14 +137,16 @@ class DocsView(
         scheduler.cancel()
         scheduler = Timer()
         scheduler.schedule(1000) {
-            ui.access { fill() }
+            fill(ui)
         }
     }
 
-    private fun fill() {
-        itemContainer.removeAll()
-        val items = docService.findByFilter(filter, sortFilter.value.second).map { builderFactory.docs().card(DocContainer(it)) }
-        ui.access { items.forEach { itemContainer.add(it) } }
+    private fun fill(ui: UI) {
+        ui.access { itemContainer.removeAll() }
+        docService.findByFilter(filter, sortFilter.value.second).forEach {
+            val dc = DocContainer(it)
+            ui.access { itemContainer.add(builderFactory.docs().card(dc)) }
+        }
     }
 
     private fun refreshFilter() {
@@ -153,7 +155,7 @@ class DocsView(
                 attribute = attributeFilter.optionalValue.orElse(null),
                 text = textFilter.optionalValue.orElse(null)
         )
-        fill()
+        fill(viewUI)
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, @OptionalParameter t: String?) {

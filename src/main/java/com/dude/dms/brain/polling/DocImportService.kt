@@ -4,17 +4,29 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.LineContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
+import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.LineService
+import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
+import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import org.springframework.stereotype.Component
 import java.io.File
 import java.io.Serializable
+import java.time.LocalDateTime
 
 @Component
-class DocImportService(private val fileManager: FileManager, private val docParser: DocParser) {
+class DocImportService(
+        private val fileManager: FileManager,
+        private val docParser: DocParser,
+        private val docService: DocService,
+        private val lineService: LineService,
+        private val wordService: WordService
+) {
 
     data class Filter(
             var tag: Tag? = null,
@@ -26,6 +38,9 @@ class DocImportService(private val fileManager: FileManager, private val docPars
 
     val progress
         get() = _progress
+
+    val progressText
+        get() = _progressText
 
     val count: Int
         get() {
@@ -57,17 +72,22 @@ class DocImportService(private val fileManager: FileManager, private val docPars
             }
             currentImports.addAll(dcs.mapNotNull { it.file?.name })
             val spellcheckers = Const.OCR_LANGUAGES.map { it to Spellchecker(it) }.toMap()
-            val progressMax = dcs.size * 4.0
+            val size = dcs.size
+            val progressMax = size * 4.0
             dcs.forEachIndexed { index, dc ->
+                _progressText = "${index + 1} / $size    " + t("pdf.parse")
                 dc.pdfLines = docParser.getPdfText(dc.guid).map { LineContainer(it) }.toSet()
                 if (dc.pdfLines.isNotEmpty()) {
-                    dc.language = spellcheckers.minBy { entry -> dc.pdfLines.flatMap { it.words }.sumBy { entry.value.check(it.word.text).size } }!!.key
+                    dc.language = spellcheckers.minBy { entry -> dc.pdfLines.flatMap { it.words }.count { entry.value.check(it.word.text) != null } }!!.key
                 }
+                _progressText += " > ${t("recognized.language")}: ${dc.language}"
                 _progress = (index * 4 + 1) / progressMax
-                dc.ocrLines = docParser.getOcrText(fileManager.getFirstImage(dc.guid), dc.language).map { LineContainer(it) }.toSet()
+                dc.image = fileManager.getFirstImage(dc.guid)
+                _progressText += " > " + t("image.ocr", dc.language)
+                dc.ocrLines = docParser.getOcrText(dc.image!!, dc.language).map { LineContainer(it) }.toSet()
                 _progress = (index * 4 + 2) / progressMax
-                dc.pdfLines.flatMap { it.words }.forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text).toSet() }
-                dc.ocrLines.flatMap { it.words }.forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text).toSet() }
+                dc.pdfLines.flatMap { it.words }.forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
+                dc.ocrLines.flatMap { it.words }.forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
                 _progress = (index * 4 + 3) / progressMax
 
                 dc.date = docParser.getMostFrequentDate(dc.lineEntities)
@@ -84,17 +104,39 @@ class DocImportService(private val fileManager: FileManager, private val docPars
         }
     }
 
-    fun findByFilter(filter: Filter): Set<DocContainer> {
-        return docs.filter { dc ->
-            filter.tag?.let { dc.tags.contains(it) } ?: true
-                    && filter.attribute?.let { attribute -> dc.tags.flatMap { it.attributes }.contains(attribute) } ?: true
-                    && filter.text?.let { text -> (if (dc.useOcrTxt) dc.ocrLines else dc.pdfLines).flatMap { it.words }.any { text.contains(it.word.text, true) } } ?: true
-        }.toSet()
+    fun create(docContainer: DocContainer) {
+        val lines = docContainer.lineEntities
+        val doc = Doc(
+                docContainer.guid,
+                docContainer.date,
+                LocalDateTime.now(),
+                if (lines.isNotEmpty()) docService.getFullTextMemory(lines) else null,
+                docContainer.tags
+        )
+        docService.create(doc, docContainer.attributeValues)
+        lines.forEach { line ->
+            line.doc = doc
+            lineService.create(line)
+            line.words.forEach { word ->
+                wordService.create(word)
+            }
+        }
+        docContainer.file?.delete()
+        docs.remove(docContainer)
     }
+
+    fun findAll() = docs.toSet()
+
+    fun findByFilter(filter: Filter) = docs.filter { dc ->
+        filter.tag?.let { dc.tags.contains(it) } ?: true
+                && filter.attribute?.let { attribute -> dc.tags.flatMap { it.attributes }.contains(attribute) } ?: true
+                && filter.text?.let { text -> (if (dc.useOcrTxt) dc.ocrLines else dc.pdfLines).flatMap { it.words }.any { text.contains(it.word.text, true) } } ?: true
+    }.toSet()
 
     companion object {
         private var importing = false
         private val currentImports = mutableSetOf<String>()
         private var _progress = 0.0
+        private var _progressText = ""
     }
 }

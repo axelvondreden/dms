@@ -1,6 +1,7 @@
 package com.dude.dms.backend.containers
 
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.brain.options.Options
@@ -16,16 +17,24 @@ class DocContainer(var guid: String, var file: File? = null) {
         lines = doc.lines.map { LineContainer(it) }.toSet()
     }
 
+    var done: Boolean = false
+
+    var image: File? = null
+
     var doc: Doc? = null
 
     var tags: MutableSet<Tag> = mutableSetOf()
         set(value) {
             field = value
-            doc?.let { it.tags = value }
+            if (doc != null) {
+                doc!!.tags = value
+                attributeValues = doc!!.attributeValues
+            } else {
+                attributeValues = value.flatMap { it.attributes }.map { AttributeValue(doc, it) }.distinct().toMutableSet()
+            }
         }
 
-    val attributeValues
-        get() = doc?.attributeValues
+    var attributeValues: MutableSet<AttributeValue> = mutableSetOf()
 
     var language: String = Options.get().doc.ocrLanguage
 
@@ -48,7 +57,7 @@ class DocContainer(var guid: String, var file: File? = null) {
         set(value) = if (useOcrTxt) ocrLines = value else pdfLines = value
 
     var lineEntities: Set<Line>
-        get() = lines.mapNotNull { it.line }.toSet()
+        get() = lines.map { it.line }.toSet()
         set(value) { lines = value.map { LineContainer(it) }.toSet() }
 
     val words: Set<WordContainer>
