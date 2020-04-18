@@ -250,7 +250,7 @@ class DocImageEditor(
                 docContainer!!.lines = docContainer!!.lines.minus(line).plus(line)
                 if (docContainer!!.inDB) {
                     lineService.save(line.line)
-                    wordService.save(wordContainer.word)
+                    wordService.create(wordContainer.word)
                 }
                 addWordWrapper(wordContainer)
             } else if (selecting) {
