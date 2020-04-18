@@ -45,6 +45,7 @@ class DocService(
 
     override fun save(entity: Doc): Doc {
         createAttributeValues(entity)
+        entity.rawText = getFullText(entity.lines)
         super.save(entity)
         deleteAttributeValues(entity)
         return entity
