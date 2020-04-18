@@ -12,11 +12,13 @@ import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.helger.commons.io.file.FileHelper
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.dom.DomEvent
 import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
@@ -93,11 +95,24 @@ class DocImageEditor(
     fun fillWords(docContainer: DocContainer) {
         val old = element.children.filter { it.tag == "div" }.toList()
         old.forEach { element.removeChild(it) }
-        docContainer.lines.flatMap { it.words }.forEach { addWordWrapper(it) }
-        element.appendChild(drawDiv.element)
+        val ui = UI.getCurrent()
+        Thread {
+            val words = docContainer.lines.flatMap { it.words }
+            val progress = ProgressBar(0.0, words.size.toDouble()).apply {
+                setWidthFull()
+                style["position"] = "absolute"
+            }
+            ui.access { add(progress) }
+            for ((index, wordContainer) in words.withIndex()) {
+                addWordWrapper(wordContainer, ui)
+                progress.value = index.toDouble()
+            }
+            ui.access { element.appendChild(drawDiv.element) }
+            remove(progress)
+        }.start()
     }
 
-    private fun addWordWrapper(wordContainer: WordContainer) {
+    private fun addWordWrapper(wordContainer: WordContainer, ui: UI? = null) {
         val dlg = builderFactory.docs().wordEditDialog(wordContainer)
         val word = wordContainer.word
         val div = Div().apply {
@@ -108,12 +123,10 @@ class DocImageEditor(
         val delBtn = Button(VaadinIcon.TRASH.create()).apply {
             addThemeVariants(ButtonVariant.LUMO_CONTRAST)
             addClassName("word-dropdown-button")
-            Tooltips.getCurrent().setTooltip(this, t("delete"))
         }
         val ocrBtn = Button(VaadinIcon.CROSSHAIRS.create()).apply {
             addThemeVariants(ButtonVariant.LUMO_CONTRAST)
             addClassName("word-dropdown-button")
-            Tooltips.getCurrent().setTooltip(this, t("ocr.run"))
         }
         val dropdown = HorizontalLayout(delBtn, ocrBtn).apply {
             addClassName("word-dropdown")
@@ -134,19 +147,20 @@ class DocImageEditor(
         delBtn.addClickListener {
             wordService.delete(word)
             docContainer?.lines?.forEach { it.words = it.words.minus(wordContainer) }
-            element.removeChild(wrapper.element)
+            if (ui != null) ui.access { element.removeChild(wrapper.element) } else element.removeChild(wrapper.element)
             onTextChange?.invoke(docContainer!!)
         }
         ocrBtn.addClickListener {
             word.text = docParser.getOcrTextRect(fileManager.getFirstImage(docContainer!!.guid), word.x, word.y, word.width, word.height)
             word.line?.let { line -> lineService.save(line) }
             wordService.save(word)
-            Tooltips.getCurrent().setTooltip(wrapper, word.text)
+            if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, word.text) } else Tooltips.getCurrent().setTooltip(wrapper, word.text)
             onTextChange?.invoke(docContainer!!)
         }
         dlg.addOpenedChangeListener {
             if (!it.isOpened) {
-                Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text)
+                if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text) }
+                else Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text)
                 wordContainer.spelling = Spellchecker(docContainer!!.language).check(wordContainer.word.text)
                 if (wordContainer.spelling != null) {
                     wrapper.addClassName("word-wrapper-error")
@@ -156,9 +170,24 @@ class DocImageEditor(
                 onTextChange?.invoke(docContainer!!)
             }
         }
-        element.appendChild(wrapper.element)
         words.add(wordContainer to wrapper)
-        Tooltips.getCurrent().setTooltip(wrapper, word.text)
+        if (ui != null) {
+            ui.access {
+                element.appendChild(wrapper.element)
+                Tooltips.getCurrent().apply {
+                    setTooltip(wrapper, word.text)
+                    setTooltip(delBtn, t("delete"))
+                    setTooltip(ocrBtn, t("ocr.run"))
+                }
+            }
+        } else {
+            element.appendChild(wrapper.element)
+            Tooltips.getCurrent().apply {
+                setTooltip(wrapper, word.text)
+                setTooltip(delBtn, t("delete"))
+                setTooltip(ocrBtn, t("ocr.run"))
+            }
+        }
     }
 
     fun resetZoom(zoomButton: Button) {

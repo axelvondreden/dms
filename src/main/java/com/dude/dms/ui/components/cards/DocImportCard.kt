@@ -48,6 +48,11 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
     }
 
     fun select(selected: Boolean) {
-        style["border"] = if (selected) "3px solid darkGray" else null
+        if (selected) {
+            style["border"] = "4px solid darkGray"
+            element.executeJs("this.scrollIntoView();")
+        } else {
+            style["border"] = null
+        }
     }
 }
