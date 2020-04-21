@@ -24,13 +24,14 @@ class FileManager {
 
     fun getPdf(guid: String) = File("${Options.get().doc.savePath}/pdf/$guid.pdf")
 
-    fun getFirstImage(guid: String) = File("${Options.get().doc.savePath}/img/${guid}_00.png")
+    fun getImage(guid: String, page: Int = 1) = File(String.format("%s/img/%s_%04d.png", Options.get().doc.savePath, guid, page))
 
-    fun getImages(guid: String) = File("${Options.get().doc.savePath}/img/").listFiles { _, name -> name.startsWith(guid) }!!
+    fun getImages(guid: String) = File("${Options.get().doc.savePath}/img/").listFiles { _, name ->
+        name.startsWith(guid) }!!.sortedBy { it.name }.withIndex()
 
     fun delete(guid: String) {
         getPdf(guid).delete()
-        getImages(guid).forEach { it.delete() }
+        getImages(guid).forEach { it.value.delete() }
     }
 
     fun createDirectories() {
@@ -65,7 +66,7 @@ class FileManager {
         val guid = UUID.randomUUID().toString()
         LOGGER.info(t("image.import", img.name))
         try {
-            ImageIO.write(processImg(ImageIO.read(img)), "png", Paths.get(Options.get().doc.savePath, "img", "${guid}_00.png").toFile())
+            ImageIO.write(processImg(ImageIO.read(img)), "png", Paths.get(Options.get().doc.savePath, "img", "${guid}_0001.png").toFile())
             if (move) img.delete()
         } catch (e: IOException) {
             LOGGER.error(e.message!!, e)
@@ -82,7 +83,7 @@ class FileManager {
         for (i in 0 until pdDoc.numberOfPages) {
             try {
                 val bi = processImg(pr.renderImageWithDPI(i, Options.get().doc.imageParserDpi.toFloat()))
-                val out = File(Options.get().doc.savePath, String.format("img/%s_%02d.png", guid, i))
+                val out = File(Options.get().doc.savePath, String.format("img/%s_%04d.png", guid, i + 1))
                 LOGGER.info(t("image.save", out.name))
                 ImageIO.write(bi, "PNG", out)
             } catch (e: IOException) {
@@ -99,7 +100,7 @@ class FileManager {
             val page = PDPage()
             pdf.addPage(page)
 
-            val pdImage = PDImageXObject.createFromFile(getFirstImage(guid).absolutePath, pdf)
+            val pdImage = PDImageXObject.createFromFile(getImage(guid).absolutePath, pdf)
             val contents = PDPageContentStream(pdf, page)
             val mediaBox = page.mediaBox
             val startX = (mediaBox.width - pdImage.width) / 2

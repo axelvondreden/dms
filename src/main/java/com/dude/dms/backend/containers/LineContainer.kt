@@ -10,7 +10,7 @@ data class LineContainer(var y: Float, var words: Set<WordContainer> = emptySet(
 
     private var _line: Line? = null
     val line: Line
-        get() = _line ?: Line(null, words.map { it.word }.toSet(), y)
+        get() = _line ?: Line(null, words.map { it.word }.toMutableSet(), y)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

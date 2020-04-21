@@ -4,7 +4,7 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.Line
+import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
@@ -17,7 +17,7 @@ import java.io.Serializable
 class DocService(
         private val docRepository: DocRepository,
         private val attributeValueService: AttributeValueService,
-        private val lineService: LineService,
+        private val pageService: PageService,
         eventManager: EventManager
 ) : EventService<Doc>(docRepository, eventManager) {
 
@@ -45,14 +45,14 @@ class DocService(
 
     override fun save(entity: Doc): Doc {
         createAttributeValues(entity)
-        entity.rawText = getFullText(entity.lines)
+        entity.rawText = getFullText(entity.pages)
         super.save(entity)
         deleteAttributeValues(entity)
         return entity
     }
 
     override fun delete(entity: Doc) {
-        entity.lines.forEach(lineService::delete)
+        entity.pages.forEach(pageService::delete)
         entity.attributeValues.forEach(attributeValueService::delete)
         super.delete(entity)
     }
@@ -86,11 +86,9 @@ class DocService(
 
     fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, sort)
 
-    fun getFullTextMemory(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
-        line.words.sortedBy { it.x }.joinToString(" ") { it.text }
-    }
-
-    fun getFullText(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
-        line.words.sortedBy { it.x }.joinToString(" ") { it.text }
+    fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString(" ") { page ->
+        page.lines.sortedBy { it.y }.joinToString(" ") { line ->
+            line.words.sortedBy { it.x }.joinToString(" ") { it.text }
+        }
     }
 }

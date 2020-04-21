@@ -82,7 +82,7 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
             setPrimaryStyle("maxHeight", "300px")
         }
         add(header, split)
-        fill()
+        refresh()
     }
 
     private fun fill(ui: UI = UI.getCurrent(), update: Boolean = false) {

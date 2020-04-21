@@ -52,18 +52,20 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         locale = Locale.forLanguageTag(Options.get().view.locale)
     }
 
+    private val pageSelector = PageSelector()
+
     private val pdfButton = Button("PDF") {
-        docContainer?.let {
-            it.useOcrTxt = false
-            imageEditor.fillWords(it)
-            refreshTextTools(it)
+        docContainer?.let { dc ->
+            dc.useOcrTxt = false
+            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!)
+            refreshTextTools(dc)
         }
     }
     private val ocrButton = Button("OCR") {
-        docContainer?.let {
-            it.useOcrTxt = true
-            imageEditor.fillWords(it)
-            refreshTextTools(it)
+        docContainer?.let { dc ->
+            dc.useOcrTxt = true
+            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!)
+            refreshTextTools(dc)
         }
     }
 
@@ -72,6 +74,8 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
     private val doneButton = Button(t("done")) { onDone?.invoke(docContainer!!) }.apply {
         addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         isEnabled = false
+        style["margin"] = "auto"
+        style["marginRight"] = "0px"
     }
 
     init {
@@ -80,7 +84,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { imageEditor.shrink(zoomButton) }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
-        val header = HorizontalLayout(shrinkButton, zoomButton, growButton, pdfButton, ocrButton, date, doneButton).apply {
+        val header = HorizontalLayout(pageSelector, shrinkButton, zoomButton, growButton, pdfButton, ocrButton, date, doneButton).apply {
             setWidthFull()
         }
         val imageWrapper = Div(header, editContainer).apply {
@@ -100,9 +104,12 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     fun fill(docContainer: DocContainer) {
         this.docContainer = docContainer
-        imageEditor.fill(docContainer)
+        pageSelector.max = docContainer.pages.size
+        pageSelector.page = 1
+        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page}!!) }
+        imageEditor.fill(docContainer, docContainer.pages.find { it.nr == 1 }!!)
         tagSelector.selectedTags = docContainer.tags
-        tagSelector.rawText = docService.getFullTextMemory(docContainer.lineEntities)
+        tagSelector.rawText = docService.getFullText(docContainer.pageEntities)
         tagSelector.showContainedTags(true)
         attributeValueContainer.fill(docContainer)
         date.value = docContainer.date
@@ -114,6 +121,8 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
     fun clear() {
         docContainer = null
         date.clear()
+        pageSelector.page = 1
+        pageSelector.max = 1
         pdfButton.text = "PDF"
         ocrButton.text = "OCR"
         imageEditor.clear()
@@ -123,10 +132,10 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
     }
 
     private fun refreshTextTools(docContainer: DocContainer) {
-        val pdfCount = docContainer.pdfLines.sumBy { it.words.size }
-        val ocrCount = docContainer.ocrLines.sumBy { it.words.size }
-        val pdfSpelling = ((1F - (docContainer.pdfLines.flatMap { it.words }.count { it.spelling != null } / pdfCount.toFloat())) * 100.0F).toInt()
-        val ocrSpelling = ((1F - (docContainer.ocrLines.flatMap { it.words }.count { it.spelling != null } / ocrCount.toFloat())) * 100.0F).toInt()
+        val pdfCount = docContainer.pdfPages.flatMap { it.lines }.sumBy { it.words.size }
+        val ocrCount = docContainer.ocrPages.flatMap { it.lines }.sumBy { it.words.size }
+        val pdfSpelling = ((1F - (docContainer.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { it.spelling != null } / pdfCount.toFloat())) * 100.0F).toInt()
+        val ocrSpelling = ((1F - (docContainer.ocrPages.flatMap { it.lines }.flatMap { it.words }.count { it.spelling != null } / ocrCount.toFloat())) * 100.0F).toInt()
 
         pdfButton.text = "PDF $pdfCount / $pdfSpelling %"
         Tooltips.getCurrent().removeTooltip(pdfButton)

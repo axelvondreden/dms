@@ -27,7 +27,7 @@ class Doc(
         var tags: MutableSet<Tag> = HashSet(),
 
         @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
-        var lines: Set<Line> = HashSet(),
+        var pages: Set<Page> = HashSet(),
 
         @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
         var attributeValues: MutableSet<AttributeValue> = HashSet(),

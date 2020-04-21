@@ -32,7 +32,7 @@ class TagBuilderFactory(
     fun selector(doc: DocContainer? = null, pRule: PlainTextRule? = null, rRule: RegexRule? = null) = TagSelector(tagService).apply {
         selectedTags = doc?.tags ?: pRule?.tags ?: rRule?.tags ?: emptySet()
         doc?.let {
-            rawText = (if (doc.inDB) docService.getFullText(doc.lineEntities) else docService.getFullTextMemory(doc.lineEntities))
+            rawText = docService.getFullText(doc.pageEntities)
             showContainedTags(true)
         }
     }

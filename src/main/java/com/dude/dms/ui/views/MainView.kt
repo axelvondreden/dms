@@ -33,6 +33,8 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.router.AfterNavigationEvent
 import com.vaadin.flow.router.AfterNavigationObserver
+import com.vaadin.flow.server.InitialPageSettings
+import com.vaadin.flow.server.PageConfigurator
 import com.vaadin.flow.theme.lumo.Lumo
 import dev.mett.vaadin.tooltip.Tooltips
 import org.springframework.beans.factory.annotation.Value
@@ -51,7 +53,7 @@ class MainView(
         private val docImportService: DocImportService,
         @param:Value("\${build.version}") private val buildVersion: String,
         eventManager: EventManager
-) : AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybridNoAppBar>(), AfterNavigationObserver {
+) : AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybridNoAppBar>(), AfterNavigationObserver, PageConfigurator {
 
     private var docsBadge: DefaultBadgeHolder? = null
     private var mailsBadge: DefaultBadgeHolder? = null
@@ -170,5 +172,9 @@ class MainView(
         val themeList = UI.getCurrent().element.themeList
         themeList.clear()
         themeList.add(if (Options.get().view.darkMode) Lumo.DARK else Lumo.LIGHT)
+    }
+
+    override fun configurePage(settings: InitialPageSettings) {
+        settings.loadingIndicatorConfiguration.isApplyDefaultTheme = false
     }
 }

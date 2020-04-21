@@ -25,7 +25,7 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
         element.appendChild(Element("object").apply {
             setAttribute("attribute.type", "image/png")
             style["maxWidth"] = "100%"
-            setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(docContainer.image!!) }))
+            setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(docContainer.pages.first { it.nr == 1 }.image!!) }))
         })
     }
 

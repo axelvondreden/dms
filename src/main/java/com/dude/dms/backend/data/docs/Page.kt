@@ -12,29 +12,27 @@ import javax.persistence.OneToMany
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
-class Line(
-        @ManyToOne var page: Page?,
-        @OneToMany(mappedBy = "line", fetch = FetchType.EAGER) var words: MutableSet<Word> = HashSet(),
-        var y: Float
+class Page(
+        @ManyToOne var doc: Doc?,
+        @OneToMany(mappedBy = "page", fetch = FetchType.EAGER) var lines: MutableSet<Line> = HashSet(),
+        var nr: Int
 ) : DataEntity(), LogsEvents {
 
-    override fun toString() = t("line")
+    override fun toString() = t("page")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Line
-
+        other as Page
         if (id > 0 && other.id > 0) return super.equals(other)
-        if (y != other.y) return false
-
+        if (nr != other.nr) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + y.hashCode()
+        result = 31 * result + nr.hashCode()
         return result
     }
 }

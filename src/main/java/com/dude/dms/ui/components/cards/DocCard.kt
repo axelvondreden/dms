@@ -2,7 +2,6 @@ package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
@@ -23,11 +22,7 @@ import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 
-class DocCard(
-        private val builderFactory: BuilderFactory,
-        private val fileManager: FileManager,
-        private val docContainer: DocContainer
-) : ClickableCard() {
+class DocCard(private val builderFactory: BuilderFactory, private val docContainer: DocContainer) : ClickableCard() {
 
     private var imgDiv: Div? = null
 
@@ -51,7 +46,7 @@ class DocCard(
             setWidthFull()
             fill(docContainer)
         }
-        val img = fileManager.getFirstImage(docContainer.guid)
+        val img = docContainer.pages.first { it.nr == 1 }.image!!
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")
             style["maxWidth"] = "100%"

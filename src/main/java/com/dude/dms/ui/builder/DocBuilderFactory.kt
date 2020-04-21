@@ -34,7 +34,7 @@ class DocBuilderFactory(
 
     fun wordEditDialog(wordContainer: WordContainer) = WordEditDialog(wordService, wordContainer)
 
-    fun card(docContainer: DocContainer) = DocCard(builderFactory, fileManager, docContainer)
+    fun card(docContainer: DocContainer) = DocCard(builderFactory, docContainer)
 
     fun imageEditor() = DocImageEditor(builderFactory, lineService, wordService, docParser, fileManager)
 
