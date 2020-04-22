@@ -16,6 +16,7 @@ class TagService(
         private val plainTextRuleService: PlainTextRuleService,
         private val regexRuleService: RegexRuleService,
         private val mailFilterService: MailFilterService,
+        private val docService: DocService,
         eventManager: EventManager
 ) : EventService<Tag>(tagRepository, eventManager) {
 
@@ -33,6 +34,10 @@ class TagService(
         mailFilterService.findByTag(entity).forEach {
             it.tags = findByMailFilter(it).minus(entity)
             mailFilterService.save(it)
+        }
+        docService.findByTag(entity).forEach {
+            it.tags.remove(entity)
+            docService.save(it)
         }
         super.delete(entity)
     }

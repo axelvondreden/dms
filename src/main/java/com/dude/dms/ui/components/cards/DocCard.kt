@@ -5,7 +5,7 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.brain.extensions.convert
+import com.dude.dms.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.github.appreciated.card.ClickableCard
 import com.github.appreciated.card.label.SecondaryLabel

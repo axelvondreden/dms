@@ -133,11 +133,11 @@ class DocImageEditor(
                 element.addEventListener("click") { dlg.open() }
             }
             val delBtn = Button(VaadinIcon.TRASH.create()).apply {
-                addThemeVariants(ButtonVariant.LUMO_CONTRAST)
+                //addThemeVariants(ButtonVariant.LUMO_CONTRAST)
                 addClassName("word-dropdown-button")
             }
             val ocrBtn = Button(VaadinIcon.CROSSHAIRS.create()).apply {
-                addThemeVariants(ButtonVariant.LUMO_CONTRAST)
+                //addThemeVariants(ButtonVariant.LUMO_CONTRAST)
                 addClassName("word-dropdown-button")
             }
             val dropdown = HorizontalLayout(delBtn, ocrBtn).apply {

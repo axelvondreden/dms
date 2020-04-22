@@ -61,27 +61,24 @@ class DocImportService(
         importing = true
         _progress = 0.0
         try {
-            val pdfs = File(Options.get().doc.pollingPath).listFiles { _, name -> name.endsWith(".pdf") }
-                    ?: emptyArray()
-            val imgs = File(Options.get().doc.pollingPath).listFiles { _, name -> Const.IMAGE_FORMATS.any { name.endsWith(it) } }
-                    ?: emptyArray()
             val dcs = mutableSetOf<DocContainer>()
             val newPdfs = pdfs.filter { pdf -> pdf.name !in docs.mapNotNull { it.file?.name } && pdf.name !in currentImports }
             for (pdf in newPdfs.withIndex()) {
                 _progressText = "${pdf.index + 1} / ${newPdfs.size} ${t("saving", pdf.value.name)}"
-                _progress = (pdf.index + 1).toDouble()
+                _progress = pdf.index.toDouble() / newPdfs.size
                 dcs.add(fileManager.importPdf(pdf.value, false)?.let { guid -> DocContainer(guid, pdf.value) } ?: continue)
             }
             val newImgs = imgs.filter { img -> img.name !in docs.mapNotNull { it.file?.name } && img.name !in currentImports }
             for (img in newImgs.withIndex()) {
                 _progressText = "${img.index + 1} / ${newImgs.size} ${t("saving", img.value.name)}"
-                _progress = (img.index + 1).toDouble()
+                _progress = img.index.toDouble() / newImgs.size
                 dcs.add(fileManager.importImage(img.value, false)?.let { guid -> DocContainer(guid, img.value) } ?: continue)
             }
             currentImports.addAll(dcs.mapNotNull { it.file?.name })
             val spellcheckers = Const.OCR_LANGUAGES.map { it to Spellchecker(it) }.toMap()
             val size = dcs.size
             val progressMax = size * 4.0
+            _progress = 0.0
             dcs.forEachIndexed { index, dc ->
                 _progressText = "${index + 1} / $size    " + t("pdf.parse")
                 dc.pdfPages = docParser.getPdfText(dc.guid).map { PageContainer(it) }.toSet()
@@ -96,11 +93,11 @@ class DocImportService(
                 dc.ocrPages = docParser.getOcrText(dc.guid, dc.language).map { PageContainer(it) }.toSet()
                 dc.ocrPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
                 _progress = (index * 4 + 2) / progressMax
-                dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
-                dc.ocrPages.flatMap { it.lines }.flatMap { it.words }.forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
+                dc.pdfPages.words().forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
+                dc.ocrPages.words().forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
                 _progress = (index * 4 + 3) / progressMax
 
-                dc.useOcrTxt = dc.ocrPages.flatMap { it.lines }.sumBy { it.words.size } > dc.pdfPages.flatMap { it.lines }.sumBy { it.words.size }
+                dc.useOcrTxt = dc.ocrPages.wordCount() > dc.pdfPages.wordCount()
 
                 dc.date = docParser.getMostFrequentDate(dc.pageEntities)
                 dc.tags = docParser.discoverTags(dc.pageEntities).toMutableSet()
@@ -141,9 +138,11 @@ class DocImportService(
         docs.remove(docContainer)
     }
 
-    fun findAll(): Set<DocContainer> {
-        return docs.toSet()
-    }
+    fun findAll() = docs.toSet()
+
+    private fun Set<PageContainer>.words() = flatMap { it.lines }.flatMap { it.words }
+
+    private fun Set<PageContainer>.wordCount() = flatMap { it.lines }.sumBy { it.words.size }
 
     companion object {
         private var importing = false

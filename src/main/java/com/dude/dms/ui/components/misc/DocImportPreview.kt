@@ -45,7 +45,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         }
     }
 
-    private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }
+    private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }.apply { style["margin"] = "auto 5px" }
 
     private val date = DatePicker().apply {
         addValueChangeListener { it.value?.let { date -> docContainer?.date = date } }
@@ -75,18 +75,25 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         isEnabled = false
         style["margin"] = "auto"
-        style["marginRight"] = "0px"
+        style["marginRight"] = "4px"
     }
 
     init {
         setSizeFull()
         isPadding = false
 
-        val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { imageEditor.shrink(zoomButton) }
-        val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
-        val header = HorizontalLayout(pageSelector, shrinkButton, zoomButton, growButton, pdfButton, ocrButton, date, doneButton).apply {
-            setWidthFull()
-        }
+        val header = HorizontalLayout(
+                pageSelector,
+                HorizontalLayout(
+                        Button(VaadinIcon.MINUS_CIRCLE.create()) { imageEditor.shrink(zoomButton) },
+                        zoomButton,
+                        Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
+                ).apply { isSpacing = false; isPadding = false },
+                HorizontalLayout(pdfButton, ocrButton).apply { isSpacing = false; isPadding = false },
+                date,
+                doneButton
+        ).apply { setWidthFull() }
+        ocrButton.style["marginLeft"] = "5px"
         val imageWrapper = Div(header, editContainer).apply {
             setSizeFull()
             style["overflowY"] = "hidden"
@@ -104,10 +111,9 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     fun fill(docContainer: DocContainer) {
         this.docContainer = docContainer
+        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page}!!) }
         pageSelector.max = docContainer.pages.size
         pageSelector.page = 1
-        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page}!!) }
-        imageEditor.fill(docContainer, docContainer.pages.find { it.nr == 1 }!!)
         tagSelector.selectedTags = docContainer.tags
         tagSelector.rawText = docService.getFullText(docContainer.pageEntities)
         tagSelector.showContainedTags(true)
@@ -121,7 +127,6 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
     fun clear() {
         docContainer = null
         date.clear()
-        pageSelector.page = 1
         pageSelector.max = 1
         pdfButton.text = "PDF"
         ocrButton.text = "OCR"

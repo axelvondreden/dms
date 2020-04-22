@@ -15,6 +15,7 @@ class PageSelector(max: Int = 1) : HorizontalLayout() {
         value = page
         width = "80px"
         isEmptySelectionAllowed = false
+        style["padding"] = "0px 5px"
         addValueChangeListener { if (it.isFromClient) page = it.value }
     }
 
@@ -35,6 +36,7 @@ class PageSelector(max: Int = 1) : HorizontalLayout() {
 
     init {
         isPadding = false
+        isSpacing = false
         add(prev, current, next)
     }
 

@@ -1,4 +1,4 @@
-package com.dude.dms.brain.extensions
+package com.dude.dms.extensions
 
 import com.dude.dms.brain.options.Options
 import java.time.LocalDate

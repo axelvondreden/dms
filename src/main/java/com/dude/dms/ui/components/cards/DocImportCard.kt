@@ -5,7 +5,11 @@ import com.github.appreciated.card.Card
 import com.github.appreciated.card.label.SecondaryLabel
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.html.Label
+import com.vaadin.flow.component.icon.Icon
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
@@ -38,7 +42,22 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
     }
 
     private fun fill() {
-        val wrapper = VerticalLayout(label, imgDiv).apply {
+        val wrapper = VerticalLayout(
+                HorizontalLayout(
+                        label,
+                        Label(docContainer.pages.size.toString()).apply { style["margin"] = "auto 0px auto auto" },
+                        Icon(VaadinIcon.FILE_TEXT).apply {
+                            style["maxWidth"] = "15px"
+                            style["margin"] = "2px"
+                        }
+                ).apply {
+                    setWidthFull()
+                    alignItems = FlexComponent.Alignment.CENTER
+                    isPadding = false
+                    isSpacing = false
+                },
+                imgDiv
+        ).apply {
             setSizeFull()
             alignItems = FlexComponent.Alignment.CENTER
             isPadding = false

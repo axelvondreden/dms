@@ -14,6 +14,6 @@ class LineService(
 
     override fun delete(entity: Line) {
         entity.words.forEach(wordService::delete)
-        super.delete(entity)
+        load(entity.id)?.let { super.delete(it) }
     }
 }

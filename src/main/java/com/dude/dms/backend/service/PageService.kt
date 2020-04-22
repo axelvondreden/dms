@@ -14,6 +14,6 @@ class PageService(
 
     override fun delete(entity: Page) {
         entity.lines.forEach(lineService::delete)
-        super.delete(entity)
+        load(entity.id)?.let { super.delete(it) }
     }
 }

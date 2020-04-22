@@ -36,7 +36,7 @@ class DocDeleteDialog(private val docContainer: DocContainer, private val docSer
             if (mailCheck.value) {
                 mailService.findByDoc(it).forEach(mailService::delete)
             }
-            docService.delete(it)
+            docService.findByGuid(it.guid)?.let { doc -> docService.delete(doc) }
         }
         close()
     }

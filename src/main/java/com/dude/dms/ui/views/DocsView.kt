@@ -7,6 +7,7 @@ import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
@@ -37,6 +38,7 @@ class DocsView(
         private val docService: DocService,
         private val tagService: TagService,
         private val attributeService: AttributeService,
+        private val fileManager: FileManager,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -143,8 +145,9 @@ class DocsView(
 
     private fun fill(ui: UI) {
         ui.access { itemContainer.removeAll() }
-        docService.findByFilter(filter, sortFilter.value.second).forEach {
-            val dc = DocContainer(it)
+        docService.findByFilter(filter, sortFilter.value.second).forEach { doc ->
+            val dc = DocContainer(doc)
+            dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
             ui.access { itemContainer.add(builderFactory.docs().card(dc)) }
         }
     }

@@ -19,7 +19,7 @@ class RegexRule(
         get() = Pattern.compile(regex)
 
     override fun validate(line: String?): Boolean {
-        return if (line == null || line.isEmpty()) false else pattern.matcher(line).matches()
+        return if (line == null || line.isEmpty()) false else pattern.matcher(line).find()
     }
 
     override fun toString() = t("rule.regex")

@@ -54,7 +54,7 @@ class DocService(
     override fun delete(entity: Doc) {
         entity.pages.forEach(pageService::delete)
         entity.attributeValues.forEach(attributeValueService::delete)
-        super.delete(entity)
+        load(entity.id)?.let { super.delete(it) }
     }
 
     private fun createAttributeValues(doc: Doc) {

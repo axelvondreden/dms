@@ -13,7 +13,7 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.dataproviders.GridViewDataProvider
 import com.dude.dms.ui.dataproviders.MailDataProvider
-import com.dude.dms.brain.extensions.convert
+import com.dude.dms.extensions.convert
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
