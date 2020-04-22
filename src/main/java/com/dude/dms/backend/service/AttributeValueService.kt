@@ -15,7 +15,5 @@ class AttributeValueService(
 
     fun findByDocAndAttribute(doc: Doc, attribute: Attribute) = attributeValueRepository.findByDocAndAttribute(doc, attribute)
 
-    fun findByDoc(doc: Doc) = attributeValueRepository.findByDoc(doc)
-
     fun findByAttribute(attribute: Attribute) = attributeValueRepository.findByAttribute(attribute)
 }

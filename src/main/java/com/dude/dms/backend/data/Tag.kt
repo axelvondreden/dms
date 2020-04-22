@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.util.*
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.ManyToMany
 import kotlin.collections.HashSet
 
@@ -21,7 +22,7 @@ class Tag(
         var color: String,
         @ManyToMany(mappedBy = "tags") var docs: Set<Doc> = HashSet(),
         @ManyToMany(mappedBy = "tags") var mails: Set<Mail> = HashSet(),
-        @ManyToMany var attributes: Set<Attribute> = HashSet(),
+        @ManyToMany(fetch = FetchType.EAGER) var attributes: Set<Attribute> = HashSet(),
         @ManyToMany(mappedBy = "tags") var plainTextRules: Set<PlainTextRule> = HashSet(),
         @ManyToMany(mappedBy = "tags") var regexRules: Set<RegexRule> = HashSet(),
         @ManyToMany(mappedBy = "tags") var mailFilters: Set<MailFilter> = HashSet()

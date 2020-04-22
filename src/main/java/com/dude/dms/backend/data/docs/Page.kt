@@ -5,29 +5,34 @@ import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
-import java.time.LocalDate
-import java.util.*
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
-class AttributeValue(
+class Page(
         @ManyToOne var doc: Doc?,
-        @ManyToOne var attribute: Attribute,
-        var stringValue: String? = null,
-        var intValue: Int? = null,
-        var floatValue: Float? = null,
-        var dateValue: LocalDate? = null
+        @OneToMany(mappedBy = "page", fetch = FetchType.EAGER) var lines: MutableSet<Line> = HashSet(),
+        var nr: Int
 ) : DataEntity(), LogsEvents {
+
+    override fun toString() = t("page")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        return doc == (other as AttributeValue).doc && attribute == other.attribute
+        if (javaClass != other?.javaClass) return false
+
+        other as Page
+        if (id > 0 && other.id > 0) return super.equals(other)
+        if (nr != other.nr) return false
+        return true
     }
 
-    override fun hashCode(): Int = Objects.hash(super.hashCode(), doc, attribute)
-
-    override fun toString() = t("attributevalue")
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + nr.hashCode()
+        return result
+    }
 }

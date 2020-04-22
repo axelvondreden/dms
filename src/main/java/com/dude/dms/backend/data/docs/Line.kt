@@ -6,14 +6,15 @@ import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
 class Line(
-        @ManyToOne var doc: Doc?,
-        @OneToMany(mappedBy = "line") var words: Set<Word> = HashSet(),
+        @ManyToOne var page: Page?,
+        @OneToMany(mappedBy = "line", fetch = FetchType.EAGER) var words: MutableSet<Word> = HashSet(),
         var y: Float
 ) : DataEntity(), LogsEvents {
 

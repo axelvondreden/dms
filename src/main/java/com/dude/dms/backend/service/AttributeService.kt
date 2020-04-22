@@ -1,8 +1,6 @@
 package com.dude.dms.backend.service
 
-import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.repositories.AttributeRepository
 import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.brain.events.EventManager
@@ -27,7 +25,7 @@ class AttributeService(
 
     override fun delete(entity: Attribute) {
         tagService.findByAttribute(entity).forEach {
-            it.attributes = findByTag(it).minus(entity)
+            it.attributes = it.attributes.minus(entity)
             tagService.save(it)
         }
         attributeValueService.findByAttribute(entity).forEach(attributeValueService::delete)
@@ -35,12 +33,6 @@ class AttributeService(
     }
 
     fun findByName(name: String) = attributeRepository.findByName(name)
-
-    fun findByTag(tag: Tag) = attributeRepository.findByTags(tag)
-
-    fun countByTag(tag: Tag) = attributeRepository.countByTags(tag)
-
-    fun findByAttributeValue(attributeValue: AttributeValue) = attributeRepository.findByAttributeValues(attributeValue)
 
     companion object {
         private val LOGGER = getLogger(AttributeService::class.java)

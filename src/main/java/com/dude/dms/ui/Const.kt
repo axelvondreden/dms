@@ -5,6 +5,7 @@ import java.util.*
 object Const {
     const val PAGE_ROOT = ""
     const val PAGE_DOCS = "docs"
+    const val PAGE_DOCIMPORT = "import"
     const val PAGE_MAILS = "mails"
     const val PAGE_RULES = "rules"
     const val PAGE_OPTIONS = "options"

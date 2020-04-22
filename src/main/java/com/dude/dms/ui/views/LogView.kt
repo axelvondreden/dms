@@ -9,7 +9,7 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.dude.dms.ui.dataproviders.LogDataProvider
 import com.dude.dms.ui.dataproviders.LogDataProvider.Filter
-import com.dude.dms.ui.extensions.convert
+import com.dude.dms.extensions.convert
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox

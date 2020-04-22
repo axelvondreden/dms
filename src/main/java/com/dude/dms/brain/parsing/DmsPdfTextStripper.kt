@@ -1,6 +1,7 @@
 package com.dude.dms.brain.parsing
 
 import com.dude.dms.backend.data.docs.Line
+import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.docs.Word
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
@@ -12,12 +13,12 @@ import kotlin.math.min
 @Component
 class DmsPdfTextStripper : PDFTextStripper() {
 
-    private var lines = mutableSetOf<Line>()
+    private var pages = mutableSetOf<Page>()
 
-    fun getLines(doc: PDDocument): Set<Line> {
-        lines = mutableSetOf()
+    fun getPages(doc: PDDocument): Set<Page> {
+        pages = mutableSetOf()
         getText(doc)
-        return lines
+        return pages
     }
 
     override fun writeString(text: String?, textPositions: List<TextPosition>) {
@@ -26,11 +27,19 @@ class DmsPdfTextStripper : PDFTextStripper() {
     }
 
     private fun createLine(textPositions: List<TextPosition>) {
-        val pageWidth = textPositions[0].pageWidth
-        val pageHeight = textPositions[0].pageHeight
+        val words = createWords(textPositions.toList(), textPositions[0].pageWidth, textPositions[0].pageHeight)
+        if (!words.isNullOrEmpty()) {
+            val line = Line(null, words, words.map { it.y }.min()!!)
+            words.forEach { it.line = line }
+            val page = pages.firstOrNull { it.nr == currentPageNo }
+            if (page != null) page.lines.add(line)
+            else pages.add(Page(null, mutableSetOf(line), currentPageNo))
+        }
+    }
 
-        var positions = textPositions.toList()
+    private fun createWords(positionsInput: List<TextPosition>, pageWidth: Float, pageHeight: Float): MutableSet<Word> {
         val words = mutableSetOf<Word>()
+        var positions = positionsInput
         while (positions.isNotEmpty()) {
             positions = positions.dropWhile { it.unicode == " " }
             val word = positions.takeWhile { it.unicode != " " }
@@ -53,8 +62,6 @@ class DmsPdfTextStripper : PDFTextStripper() {
             val y = yMin / pageHeight * 100.0f - height
             words.add(Word(null, word.joinToString("") { it.unicode }, x, y, width, height))
         }
-        val line = Line(null, words, words.map { it.y }.min()!!)
-        words.forEach { it.line = line }
-        lines.add(line)
+        return words
     }
 }

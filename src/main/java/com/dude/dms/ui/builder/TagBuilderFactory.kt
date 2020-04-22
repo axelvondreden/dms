@@ -1,11 +1,15 @@
 package com.dude.dms.ui.builder
 
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.rules.PlainTextRule
+import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.*
 import com.dude.dms.ui.components.dialogs.TagCreateDialog
 import com.dude.dms.ui.components.dialogs.TagDeleteDialog
 import com.dude.dms.ui.components.dialogs.TagEditDialog
 import com.dude.dms.ui.components.tags.TagContainer
+import com.dude.dms.ui.components.tags.TagSelector
 import com.vaadin.flow.component.ComponentEvent
 
 class TagBuilderFactory(
@@ -25,7 +29,13 @@ class TagBuilderFactory(
 
     fun deleteDialog(tag: Tag) = TagDeleteDialog(tag, tagService, docService, mailService, attributeService, plainTextRuleService, regexRuleService, mailFilterService)
 
-    fun selector() = TagSelectorBuilder(tagService)
+    fun selector(doc: DocContainer? = null, pRule: PlainTextRule? = null, rRule: RegexRule? = null) = TagSelector(tagService).apply {
+        selectedTags = doc?.tags ?: pRule?.tags ?: rRule?.tags ?: emptySet()
+        doc?.let {
+            rawText = docService.getFullText(doc.pageEntities)
+            showContainedTags(true)
+        }
+    }
 
     fun container(
             tags: MutableSet<Tag>,

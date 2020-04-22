@@ -3,7 +3,6 @@ package com.dude.dms.ui.builder
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
-import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.backend.service.DocService
@@ -26,12 +25,12 @@ class AttributeBuilderFactory(
 ) : Factory(builderFactory) {
 
     fun selector(tag: Tag? = null) = AttributeSelector(builderFactory, attributeService, eventManager).also {
-        it.selectedAttributes = tag?.let { t -> attributeService.findByTag(t) } ?: emptySet()
+        it.selectedAttributes = tag?.attributes ?: emptySet()
     }
 
-    fun valueContainer(doc: Doc, readOnly: Boolean = false) = AttributeValueContainer(builderFactory, doc, attributeValueService, eventManager, readOnly)
+    fun valueContainer(readOnly: Boolean = false) = AttributeValueContainer(builderFactory, readOnly)
 
-    fun valueField(attributeValue: AttributeValue, readOnly: Boolean = false) = AttributeValueField(attributeValue, attributeService, attributeValueService, readOnly)
+    fun valueField(attributeValue: AttributeValue, readOnly: Boolean = false) = AttributeValueField(attributeValue, attributeValueService, readOnly)
 
     fun createDialog() = AttributeCreateDialog(attributeService)
 

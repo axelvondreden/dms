@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dude.dms</groupId>
     <artifactId>dms</artifactId>
-    <version>0.2</version>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
     <name>dms</name>
     <parent>
@@ -19,12 +19,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <vaadin.version>14.1.23</vaadin.version>
+        <vaadin.version>14.1.25</vaadin.version>
 
         <node.version>v8.16.0</node.version>
         <yarn.version>v1.16.0</yarn.version>
 
-        <kotlin.version>1.3.71</kotlin.version>
+        <kotlin.version>1.3.72</kotlin.version>
         <start-class>com.dude.dms.Application</start-class>
     </properties>
 
@@ -235,11 +235,6 @@
             <version>2.9.2</version>
         </dependency>
         <dependency>
-            <groupId>org.vaadin.gatanaso</groupId>
-            <artifactId>multiselect-combo-box-flow</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>3.6</version>
@@ -247,7 +242,7 @@
         <dependency>
             <groupId>dev.mett.vaadin</groupId>
             <artifactId>tooltip</artifactId>
-            <version>1.4.4</version>
+            <version>1.4.9</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -275,14 +270,14 @@
             <version>4.1.0-1.5.2</version>
         </dependency>
         <dependency>
-            <groupId>com.mlottmann.VStepper</groupId>
-            <artifactId>VStepper</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.appreciated</groupId>
             <artifactId>apexcharts</artifactId>
             <version>2.0.0.beta9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.languagetool</groupId>
+            <artifactId>language-all</artifactId>
+            <version>4.9</version>
         </dependency>
     </dependencies>
 

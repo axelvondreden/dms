@@ -2,6 +2,7 @@ package com.dude.dms.brain.parsing
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Line
+import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
@@ -31,67 +32,71 @@ class DocParser(
         private val pdfStripper: DmsPdfTextStripper
 ) {
 
-    fun getPdfText(guid: String): Set<Line> {
+    fun getPdfText(guid: String): Set<Page> {
         LOGGER.info(t("pdf.parse"))
-        PDDocument.load(fileManager.getPdf(guid)).use { return pdfStripper.getLines(it) }
+        PDDocument.load(fileManager.getPdf(guid)).use { return pdfStripper.getPages(it) }
     }
 
-    fun getOcrText(img: File, ocrLang: String = Options.get().doc.ocrLanguage): Set<Line> {
-        LOGGER.info(t("image.ocr", ocrLang))
+    fun getOcrText(guid: String, ocrLang: String = Options.get().doc.ocrLanguage): Set<Page> {
         val api = TessBaseAPI()
         if (api.Init("tessdata", ocrLang) != 0) {
             LOGGER.error(t("image.ocr.error"))
             return emptySet()
         }
 
-        // Open input image with leptonica library
-        val image = pixRead(img.absolutePath)
-        api.SetImage(image)
+        val pages = mutableSetOf<Page>()
+        fileManager.getImages(guid).forEach {
+            LOGGER.info(t("image.ocr.page", ocrLang, it.index + 1))
 
-        val alto = api.GetAltoText(0)
-        val xml = alto.string
+            // Open input image with leptonica library
+            val image = pixRead(it.value.absolutePath)
+            api.SetImage(image)
 
-        api.End()
-        alto.deallocate()
-        pixDestroy(image)
+            val alto = api.GetAltoText(0)
+            val xml = alto.string
 
-        val factory = DocumentBuilderFactory.newInstance()
-        val builder = factory.newDocumentBuilder()
+            alto.deallocate()
+            pixDestroy(image)
 
-        // Parse Alto-XML
-        val doc = builder.parse(xml.byteInputStream())
-        val page = doc.documentElement
-        val textLines = doc.getElementsByTagName("TextLine")
+            val factory = DocumentBuilderFactory.newInstance()
+            val builder = factory.newDocumentBuilder()
+
+            // Parse Alto-XML
+            val doc = builder.parse(xml.byteInputStream())
+            val page = doc.documentElement
+            val textLines = doc.getElementsByTagName("TextLine")
 
 
-        val pageWidth = page.getAttribute("WIDTH").toFloat()
-        val pageHeight = page.getAttribute("HEIGHT").toFloat()
+            val pageWidth = page.getAttribute("WIDTH").toFloat()
+            val pageHeight = page.getAttribute("HEIGHT").toFloat()
 
-        val lines = mutableSetOf<Line>()
+            val lines = mutableSetOf<Line>()
 
-        for (i in 0 until textLines.length) {
-            val textLine = textLines.item(i)
-            val words = mutableSetOf<Word>()
-            val line = Line(null, words, textLine.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F)
-            val textWords = textLine.childNodes
-            for (j in 0 until textWords.length) {
-                val textWord = textWords.item(j)
-                if (textWord.nodeName == "String") {
-                    val width = textWord.attributes.getNamedItem("WIDTH").nodeValue.toFloat() / pageWidth * 100.0F
-                    val x = textWord.attributes.getNamedItem("HPOS").nodeValue.toFloat() / pageWidth * 100.0F
-                    val height = textWord.attributes.getNamedItem("HEIGHT").nodeValue.toFloat() / pageHeight * 100.0F
-                    val y = textWord.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F
-                    val text = textWord.attributes.getNamedItem("CONTENT").nodeValue
-                    words.add(Word(line, text, x, y, width, height))
+            for (i in 0 until textLines.length) {
+                val textLine = textLines.item(i)
+                val words = mutableSetOf<Word>()
+                val line = Line(null, words, textLine.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F)
+                val textWords = textLine.childNodes
+                for (j in 0 until textWords.length) {
+                    val textWord = textWords.item(j)
+                    if (textWord.nodeName == "String") {
+                        val width = textWord.attributes.getNamedItem("WIDTH").nodeValue.toFloat() / pageWidth * 100.0F
+                        val x = textWord.attributes.getNamedItem("HPOS").nodeValue.toFloat() / pageWidth * 100.0F
+                        val height = textWord.attributes.getNamedItem("HEIGHT").nodeValue.toFloat() / pageHeight * 100.0F
+                        val y = textWord.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F
+                        val text = textWord.attributes.getNamedItem("CONTENT").nodeValue
+                        words.add(Word(line, text, x, y, width, height))
+                    }
                 }
+                lines.add(line)
             }
-            lines.add(line)
+            pages.add(Page(null, lines, it.index + 1))
         }
-        return lines
+        api.End()
+        return pages
     }
 
     fun getOcrTextRect(img: File, x: Float, y: Float, w: Float, h: Float, ocrLang: String = Options.get().doc.ocrLanguage): String {
-        LOGGER.info(t("image.ocr", ocrLang))
         val api = TessBaseAPI()
         if (api.Init("tessdata", ocrLang) != 0) {
             LOGGER.error(t("image.ocr.error"))
@@ -117,8 +122,8 @@ class DocParser(
         return txt
     }
 
-    fun discoverTags(lines: Set<Line>): Set<Tag> {
-        val rawText = docService.getFullTextMemory(lines)
+    fun discoverTags(pages: Set<Page>): Set<Tag> {
+        val rawText = docService.getFullText(pages)
         val tags = Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.toMutableSet()
         if (rawText.isNotEmpty()) {
             tags.addAll(plainTextRuleValidator.getTags(rawText))
@@ -128,9 +133,9 @@ class DocParser(
         return tags
     }
 
-    fun getMostFrequentDate(lines: Set<Line>): LocalDate? {
+    fun getMostFrequentDate(pages: Set<Page>): LocalDate? {
         LOGGER.info(t("doc.parse.date.detect"))
-        val rawText = docService.getFullTextMemory(lines)
+        val rawText = docService.getFullText(pages)
         val map = mutableMapOf<LocalDate, Int>()
         for (pattern in Options.get().view.dateScanFormats) {
             for (line in rawText.split("\n").toTypedArray()) {

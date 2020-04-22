@@ -1,47 +1,42 @@
 package com.dude.dms.ui.builder
 
-import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.Line
-import com.dude.dms.backend.data.docs.Word
-import com.dude.dms.backend.service.*
+import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.backend.containers.WordContainer
+import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.LineService
+import com.dude.dms.backend.service.MailService
+import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.parsing.DocParser
-import com.dude.dms.brain.polling.DocPollingService
 import com.dude.dms.ui.components.cards.DocCard
-import com.dude.dms.ui.components.cards.DocTagImportCard
-import com.dude.dms.ui.components.cards.DocTextImportCard
 import com.dude.dms.ui.components.dialogs.DocDeleteDialog
 import com.dude.dms.ui.components.dialogs.DocEditDialog
 import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.dialogs.WordEditDialog
-import com.dude.dms.ui.components.dialogs.docimport.DocImportDialog
+import com.dude.dms.ui.components.misc.DocImageEditor
+import com.dude.dms.ui.components.misc.DocImportPreview
 
 class DocBuilderFactory(
         builderFactory: BuilderFactory,
         private val docParser: DocParser,
-        private val docPollingService: DocPollingService,
         private val docService: DocService,
         private val fileManager: FileManager,
-        private val lineService: LineService,
         private val mailService: MailService,
-        private val tagService: TagService,
+        private val lineService: LineService,
         private val wordService: WordService
 ) : Factory(builderFactory) {
 
-    fun editDialog(doc: Doc) = DocEditDialog(builderFactory, doc, docService)
+    fun editDialog(docContainer: DocContainer) = DocEditDialog(builderFactory, docContainer, docService)
 
-    fun deleteDialog(doc: Doc) = DocDeleteDialog(doc, docService, mailService)
+    fun deleteDialog(docContainer: DocContainer) = DocDeleteDialog(docContainer, docService, mailService)
 
-    fun imageDialog(doc: Doc? = null, guid: String? = null, lines: Set<Line> = emptySet())
-            = DocImageDialog(builderFactory, lineService, wordService, fileManager, docParser, doc, guid, lines)
+    fun imageDialog(docContainer: DocContainer) = DocImageDialog(builderFactory, docContainer, docService)
 
-    fun wordEditDialog(word: Word, doc: Doc? = null, lines: Set<Line> = emptySet()) = WordEditDialog(wordService, word, doc, lines)
+    fun wordEditDialog(wordContainer: WordContainer) = WordEditDialog(wordService, wordContainer)
 
-    fun importDialog() = DocImportDialog(builderFactory, docService, lineService, wordService, docPollingService, fileManager, docParser)
+    fun card(docContainer: DocContainer) = DocCard(builderFactory, docContainer)
 
-    fun textImportCard(fileContainer: DocImportDialog.FileContainer) = DocTextImportCard(builderFactory, fileContainer)
+    fun imageEditor() = DocImageEditor(builderFactory, lineService, wordService, docParser, fileManager)
 
-    fun tagImportCard(fileContainer: DocImportDialog.FileContainer) = DocTagImportCard(builderFactory, tagService, fileContainer)
-
-    fun card(doc: Doc) = DocCard(builderFactory, docService, tagService, fileManager, doc)
+    fun importPreview() = DocImportPreview(builderFactory, docService)
 }

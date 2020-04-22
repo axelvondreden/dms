@@ -1,10 +1,13 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
@@ -34,7 +37,8 @@ class DocsView(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
         private val tagService: TagService,
-        attributeService: AttributeService,
+        private val attributeService: AttributeService,
+        private val fileManager: FileManager,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -47,7 +51,7 @@ class DocsView(
             "${t("created")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "insertTime")
     )
 
-    private val ui = UI.getCurrent()
+    private val viewUI = UI.getCurrent()
 
     private var filter = DocService.Filter()
 
@@ -91,15 +95,26 @@ class DocsView(
     }
 
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { scheduleFill(ui) }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { scheduleFill(ui) }
+        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
+        eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
 
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
 
         val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
         add(header, itemContainer)
+        scheduleFill(viewUI)
+    }
+
+    private fun softReload(ui: UI) {
         scheduleFill(ui)
+        refreshFilterOptions()
+    }
+
+    private fun refreshFilterOptions() {
+        tagFilter.setItems(tagService.findAll())
+        attributeFilter.setItems(attributeService.findAll())
     }
 
     private fun grow() {
@@ -124,14 +139,17 @@ class DocsView(
         scheduler.cancel()
         scheduler = Timer()
         scheduler.schedule(1000) {
-            ui.access { fill() }
+            fill(ui)
         }
     }
 
-    private fun fill() {
-        itemContainer.removeAll()
-        val items = docService.findByFilter(filter, sortFilter.value.second).map { builderFactory.docs().card(it) }
-        ui.access { items.forEach { itemContainer.add(it) } }
+    private fun fill(ui: UI) {
+        ui.access { itemContainer.removeAll() }
+        docService.findByFilter(filter, sortFilter.value.second).forEach { doc ->
+            val dc = DocContainer(doc)
+            dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
+            ui.access { itemContainer.add(builderFactory.docs().card(dc)) }
+        }
     }
 
     private fun refreshFilter() {
@@ -140,7 +158,7 @@ class DocsView(
                 attribute = attributeFilter.optionalValue.orElse(null),
                 text = textFilter.optionalValue.orElse(null)
         )
-        fill()
+        fill(viewUI)
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, @OptionalParameter t: String?) {

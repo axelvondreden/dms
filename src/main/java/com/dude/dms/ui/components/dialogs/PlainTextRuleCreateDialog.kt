@@ -16,7 +16,7 @@ class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plai
 
     private val plainText = TextField("Text").apply { setWidthFull() }
 
-    private val ruleTagSelector = builderFactory.tags().selector().build().apply { height = "80%" }
+    private val ruleTagSelector = builderFactory.tags().selector().apply { height = "80%" }
 
     private val caseSensitive = Checkbox("Case sensitive")
 

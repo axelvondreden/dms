@@ -23,14 +23,14 @@ class Doc(
         @Size(max = 99999)
         var rawText: String? = null,
 
-        @ManyToMany
+        @ManyToMany(fetch = FetchType.EAGER)
         var tags: MutableSet<Tag> = HashSet(),
 
-        @OneToMany(mappedBy = "doc")
-        var lines: Set<Line> = HashSet(),
+        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
+        var pages: Set<Page> = HashSet(),
 
-        @OneToMany(mappedBy = "doc")
-        var attributeValues: Set<AttributeValue> = HashSet(),
+        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
+        var attributeValues: MutableSet<AttributeValue> = HashSet(),
 
         @ManyToOne
         var mail: Mail? = null

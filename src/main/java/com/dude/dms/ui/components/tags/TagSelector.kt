@@ -11,12 +11,18 @@ class TagSelector(tagService: TagService) : Grid<Tag>() {
     var selectedTags: Set<Tag>
         get() = asMultiSelect().selectedItems
         set(tags) {
+            asMultiSelect().deselectAll()
             asMultiSelect().select(tags)
         }
+
+    var rawText: String? = null
 
     init {
         setItems(tagService.findAll())
         addColumn { it.name }.setHeader(t("tags")).isAutoWidth = true
+        addComponentColumn {
+            Checkbox(rawText?.contains(it.name) ?: false).apply { isReadOnly = true }
+        }.setHeader(t("contained")).setAutoWidth(true).setKey("contained").isVisible = false
         setSizeFull()
         setSelectionMode(SelectionMode.MULTI)
         addItemClickListener { event ->
@@ -28,7 +34,7 @@ class TagSelector(tagService: TagService) : Grid<Tag>() {
         }
     }
 
-    fun setContainedTags(rawText: String?) {
-        addComponentColumn { Checkbox(rawText != null && rawText.contains(it.name)).apply { isReadOnly = true } }.setHeader(t("contained")).isAutoWidth = true
+    fun showContainedTags(show: Boolean) {
+        getColumnByKey("contained").isVisible = show
     }
 }

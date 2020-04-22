@@ -27,7 +27,7 @@ class TagDeleteDialog(
 
     private val mailCheck = Checkbox("${t("mails")} (${mailService.countByTag(tag)})")
 
-    private val attributeCheck = Checkbox("${t("attributes")} (${attributeService.countByTag(tag)}")
+    private val attributeCheck = Checkbox("${t("attributes")} (${tag.attributes.size}")
 
     private val plainTextRuleCheck = Checkbox("${t("rules.plain")} (${plainTextRuleService.countByTag(tag)}")
 
@@ -57,7 +57,7 @@ class TagDeleteDialog(
             mailService.findByTag(tag).forEach(mailService::delete)
         }
         if (attributeCheck.value) {
-            attributeService.findByTag(tag).forEach(attributeService::delete)
+            tag.attributes.forEach(attributeService::delete)
         }
         if (plainTextRuleCheck.value) {
             plainTextRuleService.findByTag(tag).forEach(plainTextRuleService::delete)

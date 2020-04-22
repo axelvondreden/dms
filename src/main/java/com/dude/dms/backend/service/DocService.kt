@@ -1,7 +1,10 @@
 package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.docs.*
+import com.dude.dms.backend.data.docs.Attribute
+import com.dude.dms.backend.data.docs.AttributeValue
+import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
@@ -13,11 +16,8 @@ import java.io.Serializable
 @Service
 class DocService(
         private val docRepository: DocRepository,
-        private val tagService: TagService,
-        private val attributeService: AttributeService,
         private val attributeValueService: AttributeValueService,
-        private val lineService: LineService,
-        private val wordService: WordService,
+        private val pageService: PageService,
         eventManager: EventManager
 ) : EventService<Doc>(docRepository, eventManager) {
 
@@ -28,6 +28,15 @@ class DocService(
             var text: String? = null
     ) : Serializable
 
+    fun create(entity: Doc, attributeValues: Set<AttributeValue>): Doc {
+        val new = super.create(entity)
+        attributeValues.forEach {
+            it.doc = new
+            attributeValueService.create(it)
+        }
+        return new
+    }
+
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
         createAttributeValues(new)
@@ -36,19 +45,20 @@ class DocService(
 
     override fun save(entity: Doc): Doc {
         createAttributeValues(entity)
+        entity.rawText = getFullText(entity.pages)
         super.save(entity)
         deleteAttributeValues(entity)
         return entity
     }
 
     override fun delete(entity: Doc) {
-        lineService.findByDoc(entity).forEach(lineService::delete)
-        attributeValueService.findByDoc(entity).forEach(attributeValueService::delete)
-        super.delete(entity)
+        entity.pages.forEach(pageService::delete)
+        entity.attributeValues.forEach(attributeValueService::delete)
+        load(entity.id)?.let { super.delete(it) }
     }
 
     private fun createAttributeValues(doc: Doc) {
-        tagService.findByDoc(doc).flatMap { attributeService.findByTag(it) }
+        doc.tags.flatMap { it.attributes }
                 .filter { attributeValueService.findByDocAndAttribute(doc, it) == null }
                 .map { AttributeValue(doc, it) }
                 .distinct()
@@ -56,9 +66,9 @@ class DocService(
     }
 
     private fun deleteAttributeValues(doc: Doc) {
-        val attributes = tagService.findByDoc(doc).flatMap { attributeService.findByTag(it) }
-        attributeValueService.findByDoc(doc)
-                .filter { attributeService.findByAttributeValue(it) !in attributes }
+        val attributes = doc.tags.flatMap { it.attributes }
+        doc.attributeValues
+                .filter { it.attribute !in attributes }
                 .distinct().forEach { attributeValueService.delete(it) }
     }
 
@@ -68,14 +78,6 @@ class DocService(
 
     fun countByTag(tag: Tag) = docRepository.countByTags(tag)
 
-    fun findTop10ByRawTextContaining(rawText: String) = docRepository.findTop10ByRawTextContaining(rawText)
-
-    fun countByRawTextContaining(rawText: String) = docRepository.countByRawTextContaining(rawText)
-
-    fun findTop10ByRawTextContainingIgnoreCase(rawText: String) = docRepository.findTop10ByRawTextContainingIgnoreCase(rawText)
-
-    fun countByRawTextContainingIgnoreCase(rawText: String) = docRepository.countByRawTextContainingIgnoreCase(rawText)
-
     fun findByAttribute(attribute: Attribute) = docRepository.findByAttributeValues_AttributeEquals(attribute)
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEquals(attribute)
@@ -84,13 +86,9 @@ class DocService(
 
     fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, sort)
 
-    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail, filter.text)
-
-    fun getFullTextMemory(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
-        line.words.sortedBy { it.x }.joinToString(" ") { it.text }
-    }
-
-    fun getFullText(lines: Set<Line>) = lines.sortedBy { it.y }.joinToString(" ") { line ->
-        wordService.findByLine(line).sortedBy { it.x }.joinToString(" ") { it.text }
+    fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString(" ") { page ->
+        page.lines.sortedBy { it.y }.joinToString(" ") { line ->
+            line.words.sortedBy { it.x }.joinToString(" ") { it.text }
+        }
     }
 }
