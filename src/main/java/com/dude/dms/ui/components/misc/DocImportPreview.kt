@@ -54,6 +54,8 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     private val pageSelector = PageSelector()
 
+    private val modeSelector = ModeSelector()
+
     private val pdfButton = Button("PDF") {
         docContainer?.let { dc ->
             dc.useOcrTxt = false
@@ -90,6 +92,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
                         Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
                 ).apply { isSpacing = false; isPadding = false },
                 HorizontalLayout(pdfButton, ocrButton).apply { isSpacing = false; isPadding = false },
+                modeSelector,
                 date,
                 doneButton
         ).apply { setWidthFull() }
@@ -114,6 +117,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page}!!) }
         pageSelector.max = docContainer.pages.size
         pageSelector.page = 1
+        modeSelector.setChangeListener { imageEditor.mode = it }
         tagSelector.selectedTags = docContainer.tags
         tagSelector.rawText = docService.getFullText(docContainer.pageEntities)
         tagSelector.showContainedTags(true)

@@ -1,5 +1,8 @@
 package com.dude.dms.startup
 
+import com.dude.dms.backend.service.DocService
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
@@ -11,6 +14,8 @@ import java.util.*
 
 @Component
 class StartUpRunner(
+        private val docService: DocService,
+        private val fileManager: FileManager,
         private val docImportService: DocImportService,
         private val updateChecker: UpdateChecker,
         private val directoryChecker: DirectoryChecker,
@@ -21,8 +26,15 @@ class StartUpRunner(
         updateChecker.check(true)
         optionsChecker.checkOptions()
         directoryChecker.checkDirectories()
+        LOGGER.info("Cleaning up files...")
+        fileManager.getAllPdfs().forEach { file -> if (docService.findByGuid(file.name.takeWhile { it != '.' }) == null) file.delete() }
+        fileManager.getAllImages().forEach { file -> if (docService.findByGuid(file.name.takeWhile { it != '_' }) == null) file.delete() }
         Thread { docImportService.import() }.start()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
-        println(t("startup.complete"))
+        LOGGER.info(t("startup.complete"))
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(StartUpRunner::class.java)
     }
 }

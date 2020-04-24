@@ -11,11 +11,11 @@ import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
+import com.dude.dms.ui.EditMode
 import com.dude.dms.ui.builder.BuilderFactory
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -45,10 +45,7 @@ class DocImageEditor(
 
     private val words = mutableSetOf<Pair<WordContainer, Div>>()
 
-    private val selected = mutableSetOf<Pair<WordContainer, Div>>()
-
     private var drawing = false
-    private var selecting = false
     private var mouseStart = 0L
     private var mouseXStart = 0.0
     private var mouseYStart = 0.0
@@ -69,8 +66,20 @@ class DocImageEditor(
 
     var onTextChange: ((DocContainer) -> Unit)? = null
 
+    var mode = EditMode.EDIT
+        set(value) {
+            field = value
+            removeClassNames("mode-add", "mode-edit", "mode-delete")
+            when (value) {
+                EditMode.ADD -> addClassName("mode-add")
+                EditMode.EDIT -> addClassName("mode-edit")
+                EditMode.DELETE -> addClassName("mode-delete")
+            }
+        }
+
     init {
-        element.classList.add("image-container")
+        addClassName("image-container")
+        mode = EditMode.EDIT
     }
 
     fun fill(docContainer: DocContainer, pageContainer: PageContainer) {
@@ -78,7 +87,6 @@ class DocImageEditor(
         this.pageContainer = pageContainer
         element.removeAllChildren()
         words.clear()
-        selected.clear()
         val img = fileManager.getImage(docContainer.guid, pageContainer.nr)
         val image = Element("img").apply {
             classList.add("inline-image")
@@ -100,7 +108,6 @@ class DocImageEditor(
         pageContainer = null
         element.removeAllChildren()
         words.clear()
-        selected.clear()
     }
 
     fun fillWords(pageContainer: PageContainer) {
@@ -130,16 +137,9 @@ class DocImageEditor(
             val div = Div().apply {
                 addClassName("word-container")
                 element.setAttribute("oncontextmenu", "return false;")
-                element.addEventListener("click") { dlg.open() }
             }
-            val delBtn = Button(VaadinIcon.TRASH.create()).apply {
-                //addThemeVariants(ButtonVariant.LUMO_CONTRAST)
-                addClassName("word-dropdown-button")
-            }
-            val ocrBtn = Button(VaadinIcon.CROSSHAIRS.create()).apply {
-                //addThemeVariants(ButtonVariant.LUMO_CONTRAST)
-                addClassName("word-dropdown-button")
-            }
+            val delBtn = Button(VaadinIcon.TRASH.create()).apply { addClassName("word-dropdown-button") }
+            val ocrBtn = Button(VaadinIcon.CROSSHAIRS.create()).apply { addClassName("word-dropdown-button") }
             val dropdown = HorizontalLayout(delBtn, ocrBtn).apply {
                 addClassName("word-dropdown")
                 isPadding = false
@@ -156,12 +156,14 @@ class DocImageEditor(
                 element.style["width"] = "${word.width}%"
                 element.style["height"] = "${word.height}%"
             }
-            delBtn.addClickListener {
-                wordService.delete(word)
-                pageContainer?.lines?.forEach { it.words = it.words.minus(wordContainer) }
-                if (ui != null) ui.access { element.removeChild(wrapper.element) } else element.removeChild(wrapper.element)
-                onTextChange?.invoke(docContainer!!)
+            div.element.addEventListener("click") {
+                when (mode) {
+                    EditMode.ADD -> { }
+                    EditMode.EDIT -> dlg.open()
+                    EditMode.DELETE -> delete(wordContainer, wrapper, ui)
+                }
             }
+            delBtn.addClickListener { delete(wordContainer, wrapper, ui) }
             ocrBtn.addClickListener {
                 word.text = docParser.getOcrTextRect(pageContainer!!.image!!, word.x, word.y, word.width, word.height)
                 wordService.save(word)
@@ -186,6 +188,13 @@ class DocImageEditor(
         }
 
         if (ui != null) ui.access { addWrappersToView(data) } else addWrappersToView(data)
+    }
+
+    private fun delete(wordContainer: WordContainer, wrapper: Div, ui: UI? = null) {
+        wordService.delete(wordContainer.word)
+        pageContainer?.lines?.forEach { it.words = it.words.minus(wordContainer) }
+        if (ui != null) ui.access { element.removeChild(wrapper.element) } else element.removeChild(wrapper.element)
+        onTextChange?.invoke(docContainer!!)
     }
 
     private fun addWrappersToView(wrappers: Set<WordWrapperData>) {
@@ -220,12 +229,9 @@ class DocImageEditor(
     }
 
     private fun mouseDown(event: DomEvent, img: Element) {
-        clearSelection()
         val x = event.eventData.getNumber("event.offsetX")
         val y = event.eventData.getNumber("event.offsetY")
-        val btn = event.eventData.getNumber("event.button").toInt()
-        drawing = !selecting && btn == 0
-        selecting = !drawing && btn == 2
+        drawing = true
         mouseStart = System.currentTimeMillis()
         img.executeJs("return this.clientWidth").then { w ->
             img.executeJs("return this.clientHeight").then { h ->
@@ -238,7 +244,7 @@ class DocImageEditor(
     }
 
     private fun mouseMove(event: DomEvent, img: Element) {
-        if (drawing || selecting) {
+        if (drawing) {
             val x = event.eventData.getNumber("event.offsetX")
             val y = event.eventData.getNumber("event.offsetY")
             img.executeJs("return this.clientWidth").then { w ->
@@ -272,43 +278,37 @@ class DocImageEditor(
     }
 
     private fun mouseUp() {
-        clearSelection()
         drawDiv.element.style["display"] = "none"
         if (System.currentTimeMillis() - mouseStart >= 500) {
             if (drawing) {
-                val line = if (docContainer!!.inDB) {
-                    LineContainer(pageContainer!!.page.lines.minBy { abs(it.y - mouseY) }!!)
-                } else {
-                    pageContainer!!.lines.minBy { abs(it.y - mouseY) }!!
+                when (mode) {
+                    EditMode.ADD -> {
+                        val line = if (docContainer!!.inDB) {
+                            LineContainer(pageContainer!!.page.lines.minBy { abs(it.y - mouseY) }!!)
+                        } else {
+                            pageContainer!!.lines.minBy { abs(it.y - mouseY) }!!
+                        }
+                        val txt = docParser.getOcrTextRect(fileManager.getImage(docContainer!!.guid, pageContainer!!.nr), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
+                        val wordContainer = WordContainer(Word(line.line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat()))
+                        line.words = line.words.plus(wordContainer)
+                        wordContainer.spelling = Spellchecker(docContainer!!.language).check(txt)
+                        pageContainer!!.lines = pageContainer!!.lines.minus(line).plus(line)
+                        if (docContainer!!.inDB) {
+                            wordService.create(wordContainer.word)
+                            lineService.save(line.line)
+                        }
+                        addWordWrappers(setOf(wordContainer))
+                        onTextChange?.invoke(docContainer!!)
+                    }
+                    EditMode.DELETE -> {
+                        words.filter { containedInSelection(it.first) }.forEach { delete(it.first, it.second) }
+                        onTextChange?.invoke(docContainer!!)
+                    }
+                    else -> { }
                 }
-                val txt = docParser.getOcrTextRect(fileManager.getImage(docContainer!!.guid, pageContainer!!.nr), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
-                val wordContainer = WordContainer(Word(line.line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat()))
-                line.words = line.words.plus(wordContainer)
-                wordContainer.spelling = Spellchecker(docContainer!!.language).check(txt)
-                pageContainer!!.lines = pageContainer!!.lines.minus(line).plus(line)
-                if (docContainer!!.inDB) {
-                    wordService.create(wordContainer.word)
-                    lineService.save(line.line)
-                }
-                addWordWrappers(setOf(wordContainer))
-            } else if (selecting) {
-                clearSelection()
-                addSelection(words.filter { containedInSelection(it.first) })
             }
-            onTextChange?.invoke(docContainer!!)
         }
         drawing = false
-        selecting = false
-    }
-
-    private fun clearSelection() {
-        selected.forEach { it.second.removeClassName("word-wrapper-selected") }
-        selected.clear()
-    }
-
-    private fun addSelection(pairs: List<Pair<WordContainer, Div>>) {
-        pairs.forEach { it.second.addClassName("word-wrapper-selected") }
-        selected.addAll(pairs)
     }
 
     private fun containedInSelection(wordContainer: WordContainer): Boolean {
