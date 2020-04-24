@@ -134,6 +134,10 @@ class DocImportService(
                 }
             }
         }
+        delete(docContainer)
+    }
+
+    fun delete(docContainer: DocContainer) {
         docContainer.file?.delete()
         docs.remove(docContainer)
     }

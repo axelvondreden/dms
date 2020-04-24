@@ -10,6 +10,7 @@ import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -94,7 +95,16 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         docs.addAll(newDocs)
         ui.access {
             importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
-            newDocs.forEach { dc -> itemContainer.add(DocImportCard(dc).apply { addClickListener { select(dc) } }) }
+            newDocs.forEach { dc ->
+                val dic = DocImportCard(dc).apply {
+                    addClickListener { select(dc) }
+                }
+                ContextMenu().apply {
+                    target = dic
+                    addItem(t("delete")) { delete(dc) }
+                }
+                itemContainer.add(dic)
+            }
         }
     }
 
@@ -151,6 +161,13 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         val done = docs.filter { it.done }
         done.forEach { docImportService.create(it) }
         docs.removeAll(done)
+        itemPreview.clear()
+        fill()
+    }
+
+    private fun delete(docContainer: DocContainer) {
+        docs.remove(docContainer)
+        docImportService.delete(docContainer)
         itemPreview.clear()
         fill()
     }
