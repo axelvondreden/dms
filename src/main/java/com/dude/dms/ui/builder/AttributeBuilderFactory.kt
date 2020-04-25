@@ -29,7 +29,7 @@ class AttributeBuilderFactory(
         it.selectedAttributes = tag?.attributes ?: emptySet()
     }
 
-    fun valueContainer(readOnly: Boolean = false) = AttributeValueContainer(builderFactory, readOnly)
+    fun valueContainer(readOnly: Boolean = false, imageEditor: DocImageEditor? = null) = AttributeValueContainer(builderFactory, readOnly, imageEditor)
 
     fun valueField(attributeValue: AttributeValue, readOnly: Boolean = false, imageEditor: DocImageEditor? = null) = AttributeValueField(attributeValue, attributeValueService, readOnly, imageEditor)
 

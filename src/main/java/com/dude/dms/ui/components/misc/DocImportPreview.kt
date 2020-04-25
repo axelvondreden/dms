@@ -32,7 +32,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         style["flexGrow"] = "1"
     }
 
-    private val attributeValueContainer = builderFactory.attributes().valueContainer().apply {
+    private val attributeValueContainer = builderFactory.attributes().valueContainer(false, imageEditor).apply {
         setWidthFull()
         maxHeight = "50%"
     }

@@ -3,10 +3,15 @@ package com.dude.dms.ui.components.tags
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
 
-class AttributeValueContainer(private val builderFactory: BuilderFactory, private val readOnly: Boolean = false) : Div() {
+class AttributeValueContainer(
+        private val builderFactory: BuilderFactory,
+        private val readOnly: Boolean = false,
+        private val imageEditor: DocImageEditor? = null
+) : Div() {
 
     private val fields = mutableListOf<AttributeValueField>()
 
@@ -19,7 +24,7 @@ class AttributeValueContainer(private val builderFactory: BuilderFactory, privat
     fun fill(docContainer: DocContainer) {
         clear()
         docContainer.attributeValues.forEach {
-            val field = builderFactory.attributes().valueField(it, readOnly).also { field ->
+            val field = builderFactory.attributes().valueField(it, readOnly, imageEditor).also { field ->
                 field.setWidthFull()
                 field.onChange = onChange
             }

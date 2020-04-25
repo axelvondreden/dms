@@ -20,7 +20,7 @@ fun LocalDate.convert() = format(userDateFormat)
 fun LocalDateTime.convert() = format(userDateTimeFormat)
 
 fun String.findDate() = scanFormats.flatMap { entry ->
-    (0 until length - entry.key.length).mapNotNull {
+    (0..length - entry.key.length).mapNotNull {
         try {
             LocalDate.parse(substring(it, it + entry.key.length), entry.value)
         } catch (e: DateTimeParseException) {
