@@ -11,6 +11,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.findDate
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.bytedeco.leptonica.global.lept.pixDestroy
 import org.bytedeco.leptonica.global.lept.pixRead
@@ -18,8 +19,6 @@ import org.bytedeco.tesseract.TessBaseAPI
 import org.springframework.stereotype.Component
 import java.io.File
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import javax.xml.parsers.DocumentBuilderFactory
 
 
@@ -137,26 +136,7 @@ class DocParser(
 
     fun getMostFrequentDate(pages: Set<Page>): LocalDate? {
         LOGGER.info(t("doc.parse.date.detect"))
-        val rawText = docService.getFullText(pages)
-        val map = mutableMapOf<LocalDate, Int>()
-        for (pattern in Options.get().view.dateScanFormats) {
-            for (line in rawText.split("\n").toTypedArray()) {
-                for (i in 0 until line.length - pattern.length) {
-                    val snippet = line.substring(i, i + pattern.length)
-                    try {
-                        val date = LocalDate.parse(snippet, DateTimeFormatter.ofPattern(pattern))
-                        map[date] = map.getOrDefault(date, 0) + 1
-                    } catch (ignored: DateTimeParseException) {
-                    }
-                }
-            }
-        }
-        map.entries.maxBy { it.value }?.let {
-            LOGGER.info(t("doc.parse.date.detect.success", it.key, it.value))
-            return it.key
-        }
-        LOGGER.info(t("doc.parse.date.detect.failed"))
-        return null
+        return docService.getFullText(pages).findDate()
     }
 
     companion object {

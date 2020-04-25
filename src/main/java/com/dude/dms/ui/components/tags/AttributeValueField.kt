@@ -4,14 +4,23 @@ import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.extensions.convert
+import com.dude.dms.extensions.findDate
+import com.dude.dms.ui.components.misc.DocImageEditor
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Label
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.NumberField
-import com.vaadin.flow.component.textfield.TextField
 
-class AttributeValueField(attributeValue: AttributeValue, attributeValueService: AttributeValueService, readOnly: Boolean = false) : HorizontalLayout() {
+class AttributeValueField(
+        attributeValue: AttributeValue,
+        attributeValueService: AttributeValueService,
+        readOnly: Boolean = false,
+        imageEditor: DocImageEditor? = null
+) : HorizontalLayout() {
 
     private val validation: () -> Boolean
 
@@ -44,6 +53,16 @@ class AttributeValueField(attributeValue: AttributeValue, attributeValueService:
                     }
                     add(textField)
                     validation = { !isRequired || (!textField.isEmpty && !textField.value.isNullOrBlank()) }
+                    if (imageEditor != null) {
+                        val pick = Button(VaadinIcon.CROSSHAIRS.create()) { event ->
+                            imageEditor.pickEvent = {
+                                textField.value = it?.word?.text ?: textField.value
+                                event.source.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                            }
+                            event.source.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                        }
+                        add(pick)
+                    }
                 }
             }
             Attribute.Type.INT -> {
@@ -65,6 +84,16 @@ class AttributeValueField(attributeValue: AttributeValue, attributeValueService:
                     }
                     add(intField)
                     validation = { !isRequired || !intField.isEmpty }
+                    if (imageEditor != null) {
+                        val pick = Button(VaadinIcon.CROSSHAIRS.create()) { event ->
+                            imageEditor.pickEvent = {
+                                intField.value = it?.word?.text?.toDoubleOrNull() ?: intField.value
+                                event.source.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                            }
+                            event.source.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                        }
+                        add(pick)
+                    }
                 }
             }
             Attribute.Type.FLOAT -> {
@@ -86,6 +115,16 @@ class AttributeValueField(attributeValue: AttributeValue, attributeValueService:
                     }
                     add(floatField)
                     validation = { !isRequired || !floatField.isEmpty }
+                    if (imageEditor != null) {
+                        val pick = Button(VaadinIcon.CROSSHAIRS.create()) { event ->
+                            imageEditor.pickEvent = {
+                                floatField.value = it?.word?.text?.toDoubleOrNull() ?: floatField.value
+                                event.source.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                            }
+                            event.source.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                        }
+                        add(pick)
+                    }
                 }
             }
             Attribute.Type.DATE -> {
@@ -106,6 +145,16 @@ class AttributeValueField(attributeValue: AttributeValue, attributeValueService:
                     }
                     add(datePicker)
                     validation = { !isRequired || !datePicker.isEmpty }
+                    if (imageEditor != null) {
+                        val pick = Button(VaadinIcon.CROSSHAIRS.create()) { event ->
+                            imageEditor.pickEvent = {
+                                datePicker.value = it?.word?.text?.findDate() ?: datePicker.value
+                                event.source.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                            }
+                            event.source.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                        }
+                        add(pick)
+                    }
                 }
             }
         }

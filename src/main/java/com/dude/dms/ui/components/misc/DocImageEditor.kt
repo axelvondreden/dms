@@ -66,12 +66,17 @@ class DocImageEditor(
 
     var onTextChange: ((DocContainer) -> Unit)? = null
 
+    var pickEvent: ((WordContainer?) -> Unit)? = null
+        set(value) {
+            field?.invoke(null)
+            field = value
+        }
+
     var mode = EditMode.EDIT
         set(value) {
             field = value
             removeClassNames("mode-add", "mode-edit", "mode-delete")
             when (value) {
-                EditMode.ADD -> addClassName("mode-add")
                 EditMode.EDIT -> addClassName("mode-edit")
                 EditMode.DELETE -> addClassName("mode-delete")
             }
@@ -157,10 +162,13 @@ class DocImageEditor(
                 element.style["height"] = "${word.height}%"
             }
             div.element.addEventListener("click") {
-                when (mode) {
-                    EditMode.ADD -> { }
-                    EditMode.EDIT -> dlg.open()
-                    EditMode.DELETE -> delete(wordContainer, wrapper, ui)
+                when {
+                    pickEvent != null -> {
+                        pickEvent?.invoke(wordContainer)
+                        pickEvent = null
+                    }
+                    mode == EditMode.EDIT -> dlg.open()
+                    mode == EditMode.DELETE -> delete(wordContainer, wrapper, ui)
                 }
             }
             delBtn.addClickListener { delete(wordContainer, wrapper, ui) }
@@ -282,7 +290,7 @@ class DocImageEditor(
         if (System.currentTimeMillis() - mouseStart >= 500) {
             if (drawing) {
                 when (mode) {
-                    EditMode.ADD -> {
+                    EditMode.EDIT -> {
                         val line = if (docContainer!!.inDB) {
                             LineContainer(pageContainer!!.page.lines.minBy { abs(it.y - mouseY) }!!)
                         } else {
@@ -304,7 +312,6 @@ class DocImageEditor(
                         words.filter { containedInSelection(it.first) }.forEach { delete(it.first, it.second) }
                         onTextChange?.invoke(docContainer!!)
                     }
-                    else -> { }
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.ui.components.dialogs.AttributeCreateDialog
 import com.dude.dms.ui.components.dialogs.AttributeDeleteDialog
 import com.dude.dms.ui.components.dialogs.AttributeEditDialog
+import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.tags.AttributeSelector
 import com.dude.dms.ui.components.tags.AttributeValueContainer
 import com.dude.dms.ui.components.tags.AttributeValueField
@@ -30,7 +31,7 @@ class AttributeBuilderFactory(
 
     fun valueContainer(readOnly: Boolean = false) = AttributeValueContainer(builderFactory, readOnly)
 
-    fun valueField(attributeValue: AttributeValue, readOnly: Boolean = false) = AttributeValueField(attributeValue, attributeValueService, readOnly)
+    fun valueField(attributeValue: AttributeValue, readOnly: Boolean = false, imageEditor: DocImageEditor? = null) = AttributeValueField(attributeValue, attributeValueService, readOnly, imageEditor)
 
     fun createDialog() = AttributeCreateDialog(attributeService)
 

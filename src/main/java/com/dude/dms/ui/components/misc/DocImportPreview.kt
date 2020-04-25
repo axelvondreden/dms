@@ -4,6 +4,7 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.findDate
 import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -46,8 +47,10 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }.apply { style["margin"] = "auto 5px" }
 
+    private val datePick = Button(VaadinIcon.CROSSHAIRS.create()) { pickDate() }
+
     private val date = DatePicker().apply {
-        addValueChangeListener { it.value?.let { date -> docContainer?.date = date } }
+        addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
         locale = Locale.forLanguageTag(Options.get().view.locale)
     }
 
@@ -91,7 +94,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
                 ).apply { isSpacing = false; isPadding = false },
                 HorizontalLayout(pdfButton, ocrButton).apply { isSpacing = false; isPadding = false },
                 modeSelector,
-                date,
+                HorizontalLayout(date, datePick).apply { isSpacing = false; isPadding = false },
                 doneButton
         ).apply { setWidthFull() }
         ocrButton.style["marginLeft"] = "5px"
@@ -110,9 +113,17 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         add(split)
     }
 
+    private fun pickDate() {
+        imageEditor.pickEvent = {
+            date.value = it?.word?.text?.findDate() ?: date.value
+            datePick.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+        }
+        datePick.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+    }
+
     fun fill(docContainer: DocContainer) {
         this.docContainer = docContainer
-        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page}!!) }
+        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
         pageSelector.max = docContainer.pages.size
         pageSelector.page = 1
         modeSelector.setChangeListener { imageEditor.mode = it }
