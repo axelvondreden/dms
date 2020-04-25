@@ -4,13 +4,14 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.t
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.ManyToMany
 
 @Entity
 class PlainTextRule(
         var text: String,
         var caseSensitive: Boolean,
-        @ManyToMany override var tags: Set<Tag> = HashSet()
+        @ManyToMany(fetch = FetchType.EAGER) override var tags: Set<Tag> = HashSet()
 ) : Rule() {
 
     override fun validate(line: String?): Boolean {

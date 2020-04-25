@@ -1,6 +1,5 @@
 package com.dude.dms.backend.containers
 
-import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.backend.data.docs.Page
 import java.io.File
 
@@ -15,10 +14,6 @@ data class PageContainer(var nr: Int, var lines: Set<LineContainer> = emptySet()
         get() = _page ?: Page(null, lines.map { it.line }.toMutableSet(), nr)
 
     var image: File? = null
-
-    var lineEntities: Set<Line>
-        get() = lines.map { it.line }.toSet()
-        set(value) { lines = value.map { LineContainer(it) }.toSet() }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

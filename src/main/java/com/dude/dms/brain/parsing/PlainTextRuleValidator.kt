@@ -16,7 +16,7 @@ class PlainTextRuleValidator(
 
     override fun getTagsForRule(rawText: String?, rule: PlainTextRule) = rawText?.let { text ->
         if (text.split("\n").any { rule.validate(it) }) {
-            return tagService.findByPlainTextRule(rule).map { TagContainer(it, t("rule") + ": " + rule.text) }.toSet()
+            return rule.tags.map { TagContainer(it, t("rule") + ": " + rule.text) }.toSet()
         }
         emptySet<TagContainer>()
     } ?: emptySet()

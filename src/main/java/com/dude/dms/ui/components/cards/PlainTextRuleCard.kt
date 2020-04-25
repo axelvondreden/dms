@@ -2,7 +2,6 @@ package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.parsing.PlainTextRuleValidator
@@ -19,13 +18,12 @@ class PlainTextRuleCard(
         builderFactory: BuilderFactory,
         rule: PlainTextRule,
         plainTextRuleValidator: PlainTextRuleValidator,
-        private val tagService: TagService,
         eventManager: EventManager
 ) : RippleClickableCard() {
 
     private val label = Label(rule.text)
 
-    private val tagContainer = builderFactory.tags().container(tagService.findByPlainTextRule(rule).toMutableSet())
+    private val tagContainer = builderFactory.tags().container(rule.tags.toMutableSet())
 
     init {
         setWidthFull()
@@ -45,7 +43,7 @@ class PlainTextRuleCard(
     }
 
     fun fill(rule: PlainTextRule) {
-        tagContainer.setTags(tagService.findByPlainTextRule(rule).toMutableSet())
+        tagContainer.setTags(rule.tags.toMutableSet())
         label.text = rule.text
     }
 }

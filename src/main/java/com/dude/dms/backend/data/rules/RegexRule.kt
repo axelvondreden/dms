@@ -4,13 +4,14 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.t
 import java.util.regex.Pattern
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.ManyToMany
 import javax.persistence.Transient
 
 @Entity
 class RegexRule(
         var regex: String,
-        @ManyToMany override var tags: Set<Tag> = HashSet()
+        @ManyToMany(fetch = FetchType.EAGER) override var tags: Set<Tag> = HashSet()
 ) : Rule() {
 
     @Suppress("SuspiciousVarProperty")

@@ -17,7 +17,7 @@ class RegexRuleValidator(
 
     override fun getTagsForRule(rawText: String?, rule: RegexRule) = rawText?.let { text ->
         if (text.split("\n").any { rule.validate(it) }) {
-            return tagService.findByRegexRule(rule).map { TagContainer(it, t("rule") + ": " + rule.regex) }.toSet()
+            return rule.tags.map { TagContainer(it, t("rule") + ": " + rule.regex) }.toSet()
         }
         emptySet<TagContainer>()
     } ?: emptySet()

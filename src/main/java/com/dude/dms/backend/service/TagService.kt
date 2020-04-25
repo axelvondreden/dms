@@ -4,8 +4,6 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.data.mails.MailFilter
-import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.repositories.TagRepository
 import com.dude.dms.brain.events.EventManager
 import org.springframework.stereotype.Service
@@ -24,11 +22,11 @@ class TagService(
 
     override fun delete(entity: Tag) {
         plainTextRuleService.findByTag(entity).forEach {
-            it.tags = findByPlainTextRule(it).minus(entity)
+            it.tags = it.tags.minus(entity)
             plainTextRuleService.save(it)
         }
         regexRuleService.findByTag(entity).forEach {
-            it.tags = findByRegexRule(it).minus(entity)
+            it.tags = it.tags.minus(entity)
             regexRuleService.save(it)
         }
         mailFilterService.findByTag(entity).forEach {
@@ -43,10 +41,6 @@ class TagService(
     }
 
     fun findByName(name: String) = tagRepository.findByName(name)
-
-    fun findByPlainTextRule(rule: PlainTextRule) = tagRepository.findByPlainTextRules(rule)
-
-    fun findByRegexRule(rule: RegexRule) = tagRepository.findByRegexRules(rule)
 
     private fun findByMailFilter(mailFilter: MailFilter) = tagRepository.findByMailFilters(mailFilter)
 
