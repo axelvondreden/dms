@@ -8,7 +8,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class TagContainer(
+class TagLayout(
         private val builderFactory: BuilderFactory,
         private var tags: MutableSet<Tag>,
         private val tagService: TagService,

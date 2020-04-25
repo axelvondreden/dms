@@ -1,5 +1,6 @@
 package com.dude.dms.ui.builder
 
+import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.backend.data.Tag
@@ -52,5 +53,5 @@ class RuleBuilderFactory(
 
     fun mailEditDialog(mailFilter: MailFilter) = MailFilterEditDialog(mailFilter, mailFilterService, mailManager)
 
-    fun ruleRunnerDialog(result: Map<Doc, Set<Tag>>) = RuleRunnerDialog(result, docService)
+    fun ruleRunnerDialog(result: Map<Doc, Set<TagContainer>>) = RuleRunnerDialog(result, docService)
 }

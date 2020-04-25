@@ -54,7 +54,8 @@ class DocImportService(
     private val pdfs
         get() = File(Options.get().doc.pollingPath).listFiles { _, name -> name.endsWith(".pdf") } ?: emptyArray()
     private val imgs
-        get() = File(Options.get().doc.pollingPath).listFiles { _, name -> Const.IMAGE_FORMATS.any { name.endsWith(it) } } ?: emptyArray()
+        get() = File(Options.get().doc.pollingPath).listFiles { _, name -> Const.IMAGE_FORMATS.any { name.endsWith(it) } }
+                ?: emptyArray()
 
     fun import() {
         if (importing) return
@@ -81,7 +82,7 @@ class DocImportService(
             _progress = 0.0
             dcs.forEachIndexed { index, dc ->
                 _progressText = "${index + 1} / $size    " + t("pdf.parse")
-                dc.pdfPages = docParser.getPdfText(dc.guid).map { PageContainer(it) }.toSet()
+                dc.pdfPages = docParser.getPdfText(dc.guid)
                 if (dc.pdfPages.isNotEmpty()) {
                     dc.language = spellcheckers.minBy { entry -> dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { entry.value.check(it.word.text) != null } }!!.key
                 }
@@ -90,7 +91,7 @@ class DocImportService(
                 dc.pdfPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
                 _progressText += " > " + t("image.ocr", dc.language)
 
-                dc.ocrPages = docParser.getOcrText(dc.guid, dc.language).map { PageContainer(it) }.toSet()
+                dc.ocrPages = docParser.getOcrText(dc.guid, dc.language)
                 dc.ocrPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
                 _progress = (index * 4 + 2) / progressMax
                 dc.pdfPages.words().forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
@@ -100,7 +101,7 @@ class DocImportService(
                 dc.useOcrTxt = dc.ocrPages.wordCount() > dc.pdfPages.wordCount()
 
                 dc.date = docParser.getMostFrequentDate(dc.pageEntities)
-                dc.tags = docParser.discoverTags(dc.pageEntities).toMutableSet()
+                dc.tags = docParser.discoverTags(dc.pages).toMutableSet()
 
                 docs.add(dc)
                 currentImports.remove(dc.file?.name)
@@ -119,7 +120,7 @@ class DocImportService(
                 docContainer.date,
                 LocalDateTime.now(),
                 if (pages.isNotEmpty()) docService.getFullText(pages) else null,
-                docContainer.tags
+                docContainer.tagEntities.toMutableSet()
         )
         docService.create(doc, docContainer.attributeValues)
         pages.forEach { page ->

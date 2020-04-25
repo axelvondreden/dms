@@ -1,6 +1,7 @@
 package com.dude.dms.brain.parsing
 
-import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.containers.PageContainer
+import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.docs.Word
@@ -32,19 +33,19 @@ class DocParser(
         private val pdfStripper: DmsPdfTextStripper
 ) {
 
-    fun getPdfText(guid: String): Set<Page> {
+    fun getPdfText(guid: String): Set<PageContainer> {
         LOGGER.info(t("pdf.parse"))
         PDDocument.load(fileManager.getPdf(guid)).use { return pdfStripper.getPages(it) }
     }
 
-    fun getOcrText(guid: String, ocrLang: String = Options.get().doc.ocrLanguage): Set<Page> {
+    fun getOcrText(guid: String, ocrLang: String = Options.get().doc.ocrLanguage): Set<PageContainer> {
         val api = TessBaseAPI()
         if (api.Init("tessdata", ocrLang) != 0) {
             LOGGER.error(t("image.ocr.error"))
             return emptySet()
         }
 
-        val pages = mutableSetOf<Page>()
+        val pages = mutableSetOf<PageContainer>()
         fileManager.getImages(guid).forEach {
             LOGGER.info(t("image.ocr.page", ocrLang, it.index + 1))
 
@@ -90,7 +91,7 @@ class DocParser(
                 }
                 lines.add(line)
             }
-            pages.add(Page(null, lines, it.index + 1))
+            pages.add(PageContainer(Page(null, lines, it.index + 1)))
         }
         api.End()
         return pages
@@ -122,14 +123,15 @@ class DocParser(
         return txt
     }
 
-    fun discoverTags(pages: Set<Page>): Set<Tag> {
-        val rawText = docService.getFullText(pages)
-        val tags = Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.toMutableSet()
+    fun discoverTags(pages: Set<PageContainer>): Set<TagContainer> {
+        val rawText = docService.getFullText2(pages)
+        val tags = mutableSetOf<TagContainer>()
+        tags.addAll(Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.map { TagContainer(it, t("automatic")) })
         if (rawText.isNotEmpty()) {
             tags.addAll(plainTextRuleValidator.getTags(rawText))
             tags.addAll(regexRuleValidator.getTags(rawText))
         }
-        LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.name }))
+        LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.tag.name }))
         return tags
     }
 

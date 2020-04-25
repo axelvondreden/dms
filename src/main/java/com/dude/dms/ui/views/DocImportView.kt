@@ -1,6 +1,7 @@
 package com.dude.dms.ui.views
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
@@ -18,12 +19,13 @@ import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.splitlayout.SplitLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
+import dev.mett.vaadin.tooltip.Tooltips
 import kotlin.streams.toList
 
 
 @Route(value = Const.PAGE_DOCIMPORT, layout = MainView::class)
 @PageTitle("Doc Import")
-class DocImportView(builderFactory: BuilderFactory, private val docImportService: DocImportService) : VerticalLayout() {
+class DocImportView(builderFactory: BuilderFactory, private val docImportService: DocImportService, private val docParser: DocParser) : VerticalLayout() {
 
     private val progressBar = ProgressBar().apply { setWidthFull() }
 
@@ -68,13 +70,15 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         isSpacing = false
 
         val refreshButton = Button(t("refresh"), VaadinIcon.REFRESH.create()) { refresh() }.apply { width = "250px" }
+        val rerunRules = Button(t("rules.rerun"), VaadinIcon.MAGIC.create()) { rerunRules() }
+        Tooltips.getCurrent().setTooltip(rerunRules, t("rules.rerun.tooltip"))
 
         val progress = VerticalLayout(progressBar, progressText).apply {
             setWidthFull()
             isSpacing = false
             isPadding = false
         }
-        val header = HorizontalLayout(refreshButton, progress, importButton).apply { setWidthFull() }
+        val header = HorizontalLayout(refreshButton, rerunRules, progress, importButton).apply { setWidthFull() }
         val split = SplitLayout(itemContainer, itemPreview).apply {
             setSizeFull()
             orientation = SplitLayout.Orientation.VERTICAL
@@ -106,6 +110,12 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
                 itemContainer.add(dic)
             }
         }
+    }
+
+    private fun rerunRules() {
+        docs.filter { !it.done }.forEach { it.tags = docParser.discoverTags(it.pages) }
+        itemPreview.clear()
+        fill()
     }
 
     private fun select(dc: DocContainer) {

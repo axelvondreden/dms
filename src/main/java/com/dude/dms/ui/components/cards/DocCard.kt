@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
@@ -41,7 +42,7 @@ class DocCard(private val builderFactory: BuilderFactory, private val docContain
     fun fill() {
         content.removeAll()
 
-        val tagContainer = builderFactory.tags().container(docContainer.tags.toMutableSet(), compact = true).apply { setWidthFull() }
+        val tagContainer = builderFactory.tags().container(docContainer.tags.map { it.tag }.toMutableSet(), compact = true).apply { setWidthFull() }
         val attributeContainer = builderFactory.attributes().valueContainer(true).apply {
             setWidthFull()
             fill(docContainer)
@@ -76,8 +77,9 @@ class DocCard(private val builderFactory: BuilderFactory, private val docContain
         DropTarget.create(this).addDropListener { event ->
             val comp = event.source.ui.get().internals.activeDragSourceComponent
             if (comp is LeftClickableItem) {
-                val tag = event.dragData.get() as Tag
-                if (docContainer.tags.add(tag)) {
+                val tag = TagContainer(event.dragData.get() as Tag)
+                if (tag in docContainer.tags) {
+                    docContainer.tags = docContainer.tags.plus(tag)
                     fill()
                 }
             }

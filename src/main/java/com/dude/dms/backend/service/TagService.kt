@@ -36,7 +36,7 @@ class TagService(
             mailFilterService.save(it)
         }
         docService.findByTag(entity).forEach {
-            it.tags.remove(entity)
+            it.tags = it.tags.minus(entity)
             docService.save(it)
         }
         super.delete(entity)

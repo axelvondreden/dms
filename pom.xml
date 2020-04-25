@@ -188,11 +188,6 @@
             <groupId>org.reactivestreams</groupId>
             <artifactId>reactive-streams</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>javax.persistence-api</artifactId>
@@ -223,16 +218,6 @@
             <groupId>com.github.appreciated</groupId>
             <artifactId>app-layout-addon</artifactId>
             <version>4.0.0.rc5</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
         </dependency>
         <dependency>
             <groupId>commons-net</groupId>
@@ -276,7 +261,17 @@
         </dependency>
         <dependency>
             <groupId>org.languagetool</groupId>
-            <artifactId>language-all</artifactId>
+            <artifactId>languagetool-core</artifactId>
+            <version>4.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.languagetool</groupId>
+            <artifactId>language-de</artifactId>
+            <version>4.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.languagetool</groupId>
+            <artifactId>language-en</artifactId>
             <version>4.9</version>
         </dependency>
     </dependencies>

@@ -1,5 +1,8 @@
 package com.dude.dms.brain.parsing
 
+import com.dude.dms.backend.containers.LineContainer
+import com.dude.dms.backend.containers.PageContainer
+import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.docs.Word
@@ -13,9 +16,9 @@ import kotlin.math.min
 @Component
 class DmsPdfTextStripper : PDFTextStripper() {
 
-    private var pages = mutableSetOf<Page>()
+    private var pages = mutableSetOf<PageContainer>()
 
-    fun getPages(doc: PDDocument): Set<Page> {
+    fun getPages(doc: PDDocument): Set<PageContainer> {
         pages = mutableSetOf()
         getText(doc)
         return pages
@@ -29,16 +32,16 @@ class DmsPdfTextStripper : PDFTextStripper() {
     private fun createLine(textPositions: List<TextPosition>) {
         val words = createWords(textPositions.toList(), textPositions[0].pageWidth, textPositions[0].pageHeight)
         if (!words.isNullOrEmpty()) {
-            val line = Line(null, words, words.map { it.y }.min()!!)
-            words.forEach { it.line = line }
+            val line = Line(null, words.map { it.word }.toMutableSet(), words.map { it.word.y }.min()!!)
+            words.forEach { it.word.line = line }
             val page = pages.firstOrNull { it.nr == currentPageNo }
-            if (page != null) page.lines.add(line)
-            else pages.add(Page(null, mutableSetOf(line), currentPageNo))
+            if (page != null) page.lines = page.lines.plus(LineContainer(line))
+            else pages.add(PageContainer(Page(null, mutableSetOf(line), currentPageNo)))
         }
     }
 
-    private fun createWords(positionsInput: List<TextPosition>, pageWidth: Float, pageHeight: Float): MutableSet<Word> {
-        val words = mutableSetOf<Word>()
+    private fun createWords(positionsInput: List<TextPosition>, pageWidth: Float, pageHeight: Float): MutableSet<WordContainer> {
+        val words = mutableSetOf<WordContainer>()
         var positions = positionsInput
         while (positions.isNotEmpty()) {
             positions = positions.dropWhile { it.unicode == " " }
@@ -60,7 +63,7 @@ class DmsPdfTextStripper : PDFTextStripper() {
             val x = xMin / pageWidth * 100.0f
             val height = (yMax - yMin) / pageHeight * 100.0f * 2.0F
             val y = yMin / pageHeight * 100.0f - height
-            words.add(Word(null, word.joinToString("") { it.unicode }, x, y, width, height))
+            words.add(WordContainer(Word(null, word.joinToString("") { it.unicode }, x, y, width, height)))
         }
         return words
     }
