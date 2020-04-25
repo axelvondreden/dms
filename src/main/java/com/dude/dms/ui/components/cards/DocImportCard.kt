@@ -45,6 +45,11 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
         val wrapper = VerticalLayout(
                 HorizontalLayout(
                         label,
+                        Label(docContainer.tags.size.toString()).apply { style["margin"] = "auto 0px auto auto" },
+                        Icon(VaadinIcon.TAGS).apply {
+                            style["maxWidth"] = "15px"
+                            style["margin"] = "auto 0px auto auto"
+                        },
                         Label(docContainer.pages.size.toString()).apply { style["margin"] = "auto 0px auto auto" },
                         Icon(VaadinIcon.FILE_TEXT).apply {
                             style["maxWidth"] = "15px"

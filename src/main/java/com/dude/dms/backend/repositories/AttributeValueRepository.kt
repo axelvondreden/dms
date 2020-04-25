@@ -10,4 +10,6 @@ interface AttributeValueRepository : JpaRepository<AttributeValue, Long> {
     fun findByDocAndAttribute(doc: Doc, attribute: Attribute): AttributeValue?
 
     fun findByAttribute(attribute: Attribute): Set<AttributeValue>
+
+    fun findByAttributeAndStringValueStartsWith(attribute: Attribute, text: String): Set<AttributeValue>
 }

@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.extensions.convert
+import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -16,7 +17,7 @@ class AttributeValueField(attributeValue: AttributeValue, attributeValueService:
 
     private val isRequired = attributeValue.attribute.isRequired
 
-    val label = attributeValue.attribute.name + if (isRequired) " *" else ""
+    val label = attributeValue.attribute.name + if (isRequired && !readOnly) " *" else ""
 
     var onChange: (() -> Unit)? = null
 
@@ -27,7 +28,9 @@ class AttributeValueField(attributeValue: AttributeValue, attributeValueService:
                     add(Label("$label: ${attributeValue.stringValue}"))
                     validation = { true }
                 } else {
-                    val textField = TextField(label).apply {
+                    val textField = ComboBox<String>(label).apply {
+                        isAllowCustomValue = true
+                        setItems(attributeValueService.findAutocomplete(attributeValue.attribute))
                         value = attributeValue.stringValue ?: ""
                         addValueChangeListener { event ->
                             if (!event.hasValue.isEmpty() || !isRequired) {
@@ -36,10 +39,11 @@ class AttributeValueField(attributeValue: AttributeValue, attributeValueService:
                                 onChange?.invoke()
                             }
                         }
+                        addCustomValueSetListener { value = it.detail }
                         setWidthFull()
                     }
                     add(textField)
-                    validation = { !isRequired || !textField.isEmpty }
+                    validation = { !isRequired || (!textField.isEmpty && !textField.value.isNullOrBlank()) }
                 }
             }
             Attribute.Type.INT -> {

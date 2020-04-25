@@ -34,7 +34,6 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
     private val attributeValueContainer = builderFactory.attributes().valueContainer().apply {
         setWidthFull()
         maxHeight = "50%"
-        onChange = { doneButton.isEnabled = this.validate() }
     }
 
     private val tagSelector = builderFactory.tags().selector().apply {
@@ -73,9 +72,8 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     var onDone: ((DocContainer) -> Unit)? = null
 
-    private val doneButton = Button(t("done")) { onDone?.invoke(docContainer!!) }.apply {
+    private val doneButton = Button(t("done")) { if (attributeValueContainer.validate()) onDone?.invoke(docContainer!!) }.apply {
         addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        isEnabled = false
         style["margin"] = "auto"
         style["marginRight"] = "4px"
     }
@@ -123,7 +121,6 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         tagSelector.showContainedTags(true)
         attributeValueContainer.fill(docContainer)
         date.value = docContainer.date
-        doneButton.isEnabled = attributeValueContainer.validate(true)
 
         refreshTextTools(docContainer)
     }
