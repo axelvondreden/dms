@@ -70,7 +70,7 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         isSpacing = false
 
         val refreshButton = Button(t("refresh"), VaadinIcon.REFRESH.create()) { refresh() }.apply { width = "250px" }
-        val rerunRules = Button(t("rules.rerun"), VaadinIcon.MAGIC.create()) { rerunRules() }
+        val rerunRules = Button(t("rules.rerun"), VaadinIcon.MAGIC.create()) { rerunRules() }.apply { width = "250px" }
         Tooltips.getCurrent().setTooltip(rerunRules, t("rules.rerun.tooltip"))
 
         val progress = VerticalLayout(progressBar, progressText).apply {
