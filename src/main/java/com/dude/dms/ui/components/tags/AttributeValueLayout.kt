@@ -7,26 +7,15 @@ import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
 
-class AttributeValueContainer(
-        private val builderFactory: BuilderFactory,
-        private val readOnly: Boolean = false,
-        private val imageEditor: DocImageEditor? = null
-) : Div() {
+class AttributeValueLayout(private val builderFactory: BuilderFactory, private val imageEditor: DocImageEditor? = null) : Div() {
 
     private val fields = mutableListOf<AttributeValueField>()
-
-    var onChange: (() -> Unit)? = null
-
-    init {
-        addClassName("attribute-container")
-    }
 
     fun fill(docContainer: DocContainer) {
         clear()
         docContainer.attributeValues.forEach {
-            val field = builderFactory.attributes().valueField(it, readOnly, imageEditor).also { field ->
+            val field = builderFactory.attributes().valueField(it, imageEditor).also { field ->
                 field.setWidthFull()
-                field.onChange = onChange
             }
             add(field)
             fields.add(field)
@@ -49,6 +38,6 @@ class AttributeValueContainer(
     }
 
     companion object {
-        private val LOGGER = DmsLogger.getLogger(AttributeValueContainer::class.java)
+        private val LOGGER = DmsLogger.getLogger(AttributeValueLayout::class.java)
     }
 }

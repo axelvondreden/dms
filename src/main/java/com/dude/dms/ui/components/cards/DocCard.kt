@@ -7,6 +7,7 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.extensions.convert
+import com.dude.dms.ui.components.tags.AttributeValueSmallLayout
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.github.appreciated.card.ClickableCard
 import com.github.appreciated.card.label.SecondaryLabel
@@ -43,7 +44,7 @@ class DocCard(private val builderFactory: BuilderFactory, private val docContain
         content.removeAll()
 
         val tagContainer = builderFactory.tags().container(docContainer.tags.map { it.tag }.toMutableSet(), compact = true).apply { setWidthFull() }
-        val attributeContainer = builderFactory.attributes().valueContainer(true).apply {
+        val attributeContainer = AttributeValueSmallLayout().apply {
             setWidthFull()
             fill(docContainer)
         }

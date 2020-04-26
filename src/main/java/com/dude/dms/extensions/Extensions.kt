@@ -1,10 +1,12 @@
 package com.dude.dms.extensions
 
 import com.dude.dms.brain.options.Options
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.*
 
 private val userDateFormat: DateTimeFormatter
     get() = DateTimeFormatter.ofPattern(Options.get().view.dateFormat)
@@ -12,19 +14,32 @@ private val userDateFormat: DateTimeFormatter
 private val userDateTimeFormat: DateTimeFormatter
     get() = DateTimeFormatter.ofPattern("${Options.get().view.dateFormat} HH:mm:ss")
 
-private val scanFormats: Map<String, DateTimeFormatter>
+private val dateScanFormats: Map<String, DateTimeFormatter>
     get() = Options.get().view.dateScanFormats.map { it to DateTimeFormatter.ofPattern(it) }.toMap()
+
+
+fun Double.convert() = NumberFormat.getNumberInstance(Locale.forLanguageTag(Options.get().view.locale)).format(this)
+
+fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() }.let { txt ->
+    try {
+        txt.toDouble()
+    } catch (e: NumberFormatException) {
+        txt.replace('.', ',').replace(',', '.').toDoubleOrNull()
+    }
+}
 
 fun LocalDate.convert() = format(userDateFormat)
 
 fun LocalDateTime.convert() = format(userDateTimeFormat)
 
-fun String.findDate() = scanFormats.flatMap { entry ->
-    (0..length - entry.key.length).mapNotNull {
-        try {
-            LocalDate.parse(substring(it, it + entry.key.length), entry.value)
-        } catch (e: DateTimeParseException) {
-            null
+fun String.findDate() = filterNot { it.isLetter() || it.isWhitespace() }.let { txt ->
+    dateScanFormats.flatMap { entry ->
+        (0..txt.length - entry.key.length).mapNotNull {
+            try {
+                LocalDate.parse(txt.substring(it, it + entry.key.length), entry.value)
+            } catch (e: DateTimeParseException) {
+                null
+            }
         }
-    }
-}.firstOrNull()
+    }.firstOrNull()
+}

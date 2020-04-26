@@ -13,7 +13,7 @@ import com.dude.dms.ui.components.dialogs.AttributeDeleteDialog
 import com.dude.dms.ui.components.dialogs.AttributeEditDialog
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.tags.AttributeSelector
-import com.dude.dms.ui.components.tags.AttributeValueContainer
+import com.dude.dms.ui.components.tags.AttributeValueLayout
 import com.dude.dms.ui.components.tags.AttributeValueField
 
 class AttributeBuilderFactory(
@@ -29,9 +29,9 @@ class AttributeBuilderFactory(
         it.selectedAttributes = tag?.attributes ?: emptySet()
     }
 
-    fun valueContainer(readOnly: Boolean = false, imageEditor: DocImageEditor? = null) = AttributeValueContainer(builderFactory, readOnly, imageEditor)
+    fun valueContainer(imageEditor: DocImageEditor? = null) = AttributeValueLayout(builderFactory, imageEditor)
 
-    fun valueField(attributeValue: AttributeValue, readOnly: Boolean = false, imageEditor: DocImageEditor? = null) = AttributeValueField(attributeValue, attributeValueService, readOnly, imageEditor)
+    fun valueField(attributeValue: AttributeValue, imageEditor: DocImageEditor? = null) = AttributeValueField(attributeValue, attributeValueService, imageEditor)
 
     fun createDialog() = AttributeCreateDialog(attributeService)
 
