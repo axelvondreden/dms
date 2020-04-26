@@ -2,7 +2,6 @@ package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.rules.RegexRule
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.parsing.RegexRuleValidator
@@ -19,11 +18,10 @@ class RegexRuleCard(
         builderFactory: BuilderFactory,
         rule: RegexRule,
         regexRuleValidator: RegexRuleValidator,
-        private val tagService: TagService,
         eventManager: EventManager
 ) : RippleClickableCard() {
 
-    private val tagContainer = builderFactory.tags().container(tagService.findByRegexRule(rule).toMutableSet())
+    private val tagContainer = builderFactory.tags().container(rule.tags.toMutableSet())
 
     private val label = Label(rule.regex)
 
@@ -45,7 +43,7 @@ class RegexRuleCard(
     }
 
     fun fill(rule: RegexRule) {
-        tagContainer.setTags(tagService.findByRegexRule(rule).toMutableSet())
+        tagContainer.setTags(rule.tags.toMutableSet())
         label.text = rule.regex
     }
 }

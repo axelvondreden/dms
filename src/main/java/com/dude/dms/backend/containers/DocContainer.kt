@@ -12,7 +12,7 @@ class DocContainer(var guid: String, var file: File? = null) {
 
     constructor(doc: Doc) : this(doc.guid) {
         this.doc = doc
-        tags = doc.tags
+        tags = doc.tags.map { TagContainer(it) }.toMutableSet()
         date = doc.documentDate
         pages = doc.pages.map { PageContainer(it) }.toSet()
     }
@@ -21,18 +21,22 @@ class DocContainer(var guid: String, var file: File? = null) {
 
     var doc: Doc? = null
 
-    var tags: MutableSet<Tag> = mutableSetOf()
+    var tags: Set<TagContainer> = mutableSetOf()
         set(value) {
             field = value
             if (doc != null) {
-                doc!!.tags = value
+                doc!!.tags = value.map { it.tag }.toMutableSet()
                 attributeValues = doc!!.attributeValues
             } else {
-                attributeValues = value.flatMap { it.attributes }.map { AttributeValue(doc, it) }.distinct().toMutableSet()
+                attributeValues = value.flatMap { it.tag.attributes }.map { AttributeValue(doc, it) }.distinct().toMutableSet()
             }
         }
 
-    var attributeValues: MutableSet<AttributeValue> = mutableSetOf()
+    var tagEntities: Set<Tag>
+        get() = tags.map { it.tag }.toSet()
+        set(value) { tags = value.map { TagContainer(it) }.toSet() }
+
+    var attributeValues: Set<AttributeValue> = mutableSetOf()
 
     var language: String = Options.get().doc.ocrLanguage
 

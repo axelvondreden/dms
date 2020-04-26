@@ -62,8 +62,12 @@
     border: 3px solid black;
 }
 
-.word-wrapper:hover .word-dropdown {
+.mode-edit .word-wrapper:hover .word-dropdown {
     display: block;
+}
+
+.mode-delete .word-wrapper:hover .word-container {
+    background-color: rgba(255, 0, 0, 0.6);
 }
 
 .word-container {

@@ -24,7 +24,11 @@ class FileManager {
 
     fun getPdf(guid: String) = File("${Options.get().doc.savePath}/pdf/$guid.pdf")
 
+    fun getAllPdfs() = File("${Options.get().doc.savePath}/pdf").listFiles()?.toList() ?: emptyList()
+
     fun getImage(guid: String, page: Int = 1) = File(String.format("%s/img/%s_%04d.png", Options.get().doc.savePath, guid, page))
+
+    fun getAllImages() = File("${Options.get().doc.savePath}/img").listFiles()?.toList() ?: emptyList()
 
     fun getImages(guid: String) = File("${Options.get().doc.savePath}/img/").listFiles { _, name ->
         name.startsWith(guid) }!!.sortedBy { it.name }.withIndex()

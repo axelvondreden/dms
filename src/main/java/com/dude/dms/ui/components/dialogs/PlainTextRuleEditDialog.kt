@@ -54,7 +54,7 @@ class PlainTextRuleEditDialog(
         if (plainText.isEmpty) return
         if (ruleTagSelector.selectedTags.isEmpty()) return
         plainTextRule.text = plainText.value
-        plainTextRule.tags = ruleTagSelector.selectedTags
+        plainTextRule.tags = ruleTagSelector.selectedTags.map { it.tag }.toSet()
         plainTextRule.caseSensitive = caseSensitive.value
         plainTextRuleService.save(plainTextRule)
         close()

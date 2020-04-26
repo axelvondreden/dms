@@ -1,5 +1,6 @@
 package com.dude.dms.backend.service
 
+import com.dude.dms.backend.containers.PageContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
@@ -86,9 +87,15 @@ class DocService(
 
     fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, sort)
 
-    fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString(" ") { page ->
-        page.lines.sortedBy { it.y }.joinToString(" ") { line ->
+    fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
+        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
             line.words.sortedBy { it.x }.joinToString(" ") { it.text }
+        }
+    }
+
+    fun getFullText2(pages: Set<PageContainer>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
+        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
+            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text }
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.dude.dms.ui.builder
 
-import com.dude.dms.brain.parsing.PlainTextRuleValidator
-import com.dude.dms.brain.parsing.RegexRuleValidator
-import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
@@ -10,6 +8,8 @@ import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.*
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.mail.MailManager
+import com.dude.dms.brain.parsing.PlainTextRuleValidator
+import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.ui.components.cards.MailFilterCard
 import com.dude.dms.ui.components.cards.PlainTextRuleCard
 import com.dude.dms.ui.components.cards.RegexRuleCard
@@ -28,11 +28,11 @@ class RuleBuilderFactory(
         private val eventManager: EventManager
 ) : Factory(builderFactory) {
 
-    fun plainTextCard(rule: PlainTextRule)= PlainTextRuleCard(builderFactory, rule, plainTextRuleValidator, tagService, eventManager).also {
+    fun plainTextCard(rule: PlainTextRule)= PlainTextRuleCard(builderFactory, rule, plainTextRuleValidator, eventManager).also {
         it.addClickListener { builderFactory.rules().plainEditDialog(rule).open() }
     }
 
-    fun regexCard(rule: RegexRule) = RegexRuleCard(builderFactory, rule, regexRuleValidator, tagService, eventManager).also {
+    fun regexCard(rule: RegexRule) = RegexRuleCard(builderFactory, rule, regexRuleValidator, eventManager).also {
         it.addClickListener { builderFactory.rules().regexEditDialog(rule).open() }
     }
 
@@ -52,5 +52,5 @@ class RuleBuilderFactory(
 
     fun mailEditDialog(mailFilter: MailFilter) = MailFilterEditDialog(mailFilter, mailFilterService, mailManager)
 
-    fun ruleRunnerDialog(result: Map<Doc, Set<Tag>>) = RuleRunnerDialog(result, docService)
+    fun ruleRunnerDialog(result: Map<Doc, Set<TagContainer>>) = RuleRunnerDialog(result, docService)
 }

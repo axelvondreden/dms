@@ -4,6 +4,7 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.findDate
 import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -31,10 +32,9 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         style["flexGrow"] = "1"
     }
 
-    private val attributeValueContainer = builderFactory.attributes().valueContainer().apply {
+    private val attributeValueContainer = builderFactory.attributes().valueContainer(imageEditor).apply {
         setWidthFull()
         maxHeight = "50%"
-        onChange = { doneButton.isEnabled = this.validate() }
     }
 
     private val tagSelector = builderFactory.tags().selector().apply {
@@ -47,12 +47,16 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }.apply { style["margin"] = "auto 5px" }
 
+    private val datePick = Button(VaadinIcon.CROSSHAIRS.create()) { pickDate() }
+
     private val date = DatePicker().apply {
-        addValueChangeListener { it.value?.let { date -> docContainer?.date = date } }
+        addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
         locale = Locale.forLanguageTag(Options.get().view.locale)
     }
 
     private val pageSelector = PageSelector()
+
+    private val modeSelector = ModeSelector()
 
     private val pdfButton = Button("PDF") {
         docContainer?.let { dc ->
@@ -71,9 +75,8 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     var onDone: ((DocContainer) -> Unit)? = null
 
-    private val doneButton = Button(t("done")) { onDone?.invoke(docContainer!!) }.apply {
+    private val doneButton = Button(t("done")) { if (attributeValueContainer.validate()) onDone?.invoke(docContainer!!) }.apply {
         addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        isEnabled = false
         style["margin"] = "auto"
         style["marginRight"] = "4px"
     }
@@ -90,7 +93,8 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
                         Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
                 ).apply { isSpacing = false; isPadding = false },
                 HorizontalLayout(pdfButton, ocrButton).apply { isSpacing = false; isPadding = false },
-                date,
+                modeSelector,
+                HorizontalLayout(date, datePick).apply { isSpacing = false; isPadding = false },
                 doneButton
         ).apply { setWidthFull() }
         ocrButton.style["marginLeft"] = "5px"
@@ -109,17 +113,25 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         add(split)
     }
 
+    private fun pickDate() {
+        imageEditor.pickEvent = {
+            date.value = it?.word?.text?.findDate() ?: date.value
+            datePick.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+        }
+        datePick.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+    }
+
     fun fill(docContainer: DocContainer) {
         this.docContainer = docContainer
-        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page}!!) }
+        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
         pageSelector.max = docContainer.pages.size
         pageSelector.page = 1
+        modeSelector.setChangeListener { imageEditor.mode = it }
         tagSelector.selectedTags = docContainer.tags
         tagSelector.rawText = docService.getFullText(docContainer.pageEntities)
         tagSelector.showContainedTags(true)
         attributeValueContainer.fill(docContainer)
         date.value = docContainer.date
-        doneButton.isEnabled = attributeValueContainer.validate(true)
 
         refreshTextTools(docContainer)
     }

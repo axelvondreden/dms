@@ -26,6 +26,7 @@ import com.github.appreciated.app.layout.entity.DefaultBadgeHolder
 import com.github.appreciated.app.layout.entity.Section
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.UIDetachedException
 import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.dependency.CssImport
 import com.vaadin.flow.component.dnd.DragSource
@@ -76,8 +77,10 @@ class MainView(
         eventManager.register(this, Attribute::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
         eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
 
-        Timer().schedule(10 * 1000, 10 * 1000){
-            ui.access { importsBadge!!.count = docImportService.count }
+        Timer().schedule(10 * 1000, 10 * 1000) {
+            try {
+                ui.access { importsBadge!!.count = docImportService.count }
+            } catch (e: UIDetachedException) { }
         }
     }
 

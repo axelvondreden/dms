@@ -1,6 +1,7 @@
 package com.dude.dms.ui.views
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -17,12 +19,13 @@ import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.splitlayout.SplitLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
+import dev.mett.vaadin.tooltip.Tooltips
 import kotlin.streams.toList
 
 
 @Route(value = Const.PAGE_DOCIMPORT, layout = MainView::class)
 @PageTitle("Doc Import")
-class DocImportView(builderFactory: BuilderFactory, private val docImportService: DocImportService) : VerticalLayout() {
+class DocImportView(builderFactory: BuilderFactory, private val docImportService: DocImportService, private val docParser: DocParser) : VerticalLayout() {
 
     private val progressBar = ProgressBar().apply { setWidthFull() }
 
@@ -48,8 +51,8 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
             var index = -1
             val cards = itemContainer.children.filter { it is DocImportCard }.map { it as DocImportCard }.toList()
             cards.firstOrNull { it.docContainer == docContainer }?.let {
-                it.style["backgroundColor"] = "rgba(0, 255, 0, 0.3)"
                 index = cards.indexOf(it) + 1
+                it.fill()
             }
             importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
             while (index > 0 && index < cards.size) {
@@ -67,13 +70,15 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         isSpacing = false
 
         val refreshButton = Button(t("refresh"), VaadinIcon.REFRESH.create()) { refresh() }.apply { width = "250px" }
+        val rerunRules = Button(t("rules.rerun"), VaadinIcon.MAGIC.create()) { rerunRules() }.apply { width = "250px" }
+        Tooltips.getCurrent().setTooltip(rerunRules, t("rules.rerun.tooltip"))
 
         val progress = VerticalLayout(progressBar, progressText).apply {
             setWidthFull()
             isSpacing = false
             isPadding = false
         }
-        val header = HorizontalLayout(refreshButton, progress, importButton).apply { setWidthFull() }
+        val header = HorizontalLayout(refreshButton, rerunRules, progress, importButton).apply { setWidthFull() }
         val split = SplitLayout(itemContainer, itemPreview).apply {
             setSizeFull()
             orientation = SplitLayout.Orientation.VERTICAL
@@ -94,8 +99,21 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         docs.addAll(newDocs)
         ui.access {
             importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
-            newDocs.forEach { dc -> itemContainer.add(DocImportCard(dc).apply { addClickListener { select(dc) } }) }
+            newDocs.forEach { dc ->
+                val dic = DocImportCard(dc).apply { addClickListener { select(dc) } }
+                ContextMenu().apply {
+                    target = dic
+                    addItem(t("delete")) { delete(dc) }
+                }
+                itemContainer.add(dic)
+            }
         }
+    }
+
+    private fun rerunRules() {
+        docs.filter { !it.done }.forEach { it.tags = docParser.discoverTags(it.pages) }
+        itemPreview.clear()
+        fill()
     }
 
     private fun select(dc: DocContainer) {
@@ -151,6 +169,13 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         val done = docs.filter { it.done }
         done.forEach { docImportService.create(it) }
         docs.removeAll(done)
+        itemPreview.clear()
+        fill()
+    }
+
+    private fun delete(docContainer: DocContainer) {
+        docs.remove(docContainer)
+        docImportService.delete(docContainer)
         itemPreview.clear()
         fill()
     }

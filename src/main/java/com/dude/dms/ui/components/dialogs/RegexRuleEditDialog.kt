@@ -48,7 +48,7 @@ class RegexRuleEditDialog(
         if (regex.isEmpty) return
         if (ruleTagSelector.selectedTags.isEmpty()) return
         regexRule.regex = regex.value!!
-        regexRule.tags = ruleTagSelector.selectedTags
+        regexRule.tags = ruleTagSelector.selectedTags.map { it.tag }.toSet()
         regexRuleService.save(regexRule)
         close()
     }

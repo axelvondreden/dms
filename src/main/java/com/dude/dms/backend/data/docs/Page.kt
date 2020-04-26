@@ -14,7 +14,7 @@ import javax.persistence.OneToMany
 @Entity
 class Page(
         @ManyToOne var doc: Doc?,
-        @OneToMany(mappedBy = "page", fetch = FetchType.EAGER) var lines: MutableSet<Line> = HashSet(),
+        @OneToMany(mappedBy = "page", fetch = FetchType.EAGER) var lines: Set<Line> = HashSet(),
         var nr: Int
 ) : DataEntity(), LogsEvents {
 

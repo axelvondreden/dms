@@ -1,10 +1,11 @@
 package com.dude.dms.brain.parsing
 
-import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.backend.service.TagService
+import com.dude.dms.brain.t
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,9 +16,9 @@ class PlainTextRuleValidator(
 
     override fun getTagsForRule(rawText: String?, rule: PlainTextRule) = rawText?.let { text ->
         if (text.split("\n").any { rule.validate(it) }) {
-            return tagService.findByPlainTextRule(rule)
+            return rule.tags.map { TagContainer(it, t("rule") + ": " + rule.text) }.toSet()
         }
-        emptySet<Tag>()
+        emptySet<TagContainer>()
     } ?: emptySet()
 
     override fun getTags(rawText: String?) = rawText?.let {

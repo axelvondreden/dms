@@ -22,7 +22,7 @@ class DocEditDialog(builderFactory: BuilderFactory, private val docContainer: Do
 
     private val tagSelector = builderFactory.tags().selector(docContainer).apply {
         height = "25vw"
-        asMultiSelect().addSelectionListener { docContainer.tags = it.value }
+        asMultiSelect().addSelectionListener { event -> docContainer.tags = event.value }
     }
 
     private val attributeValueContainer = builderFactory.attributes().valueContainer().apply {
@@ -57,7 +57,7 @@ class DocEditDialog(builderFactory: BuilderFactory, private val docContainer: Do
     private fun save() {
         if (attributeValueContainer.validate()) {
             docContainer.date = datePicker.value
-            docContainer.tags = tagSelector.selectedTags.toMutableSet()
+            docContainer.tags = tagSelector.selectedTags
             docContainer.doc?.let { docService.save(it) }
             close()
         }

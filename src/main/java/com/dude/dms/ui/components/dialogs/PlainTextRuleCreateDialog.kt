@@ -35,7 +35,7 @@ class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plai
     private fun create() {
         if (plainText.isEmpty) return
         if (ruleTagSelector.selectedTags.isEmpty()) return
-        plainTextRuleService.save(PlainTextRule(plainText.value, caseSensitive.value, ruleTagSelector.selectedTags))
+        plainTextRuleService.save(PlainTextRule(plainText.value, caseSensitive.value, ruleTagSelector.selectedTags.map { it.tag }.toSet()))
         close()
     }
 }

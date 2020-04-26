@@ -29,7 +29,7 @@ class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRul
     private fun create() {
         if (regex.isEmpty) return
         if (ruleTagSelector.selectedTags.isEmpty()) return
-        val regexRule = RegexRule(regex.value!!, ruleTagSelector.selectedTags)
+        val regexRule = RegexRule(regex.value!!, ruleTagSelector.selectedTags.map { it.tag }.toSet())
         regexRuleService.save(regexRule)
         close()
     }

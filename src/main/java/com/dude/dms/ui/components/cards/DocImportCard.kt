@@ -41,10 +41,20 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
         fill()
     }
 
-    private fun fill() {
+    fun clear() {
+        content.removeAll()
+    }
+
+    fun fill() {
+        clear()
         val wrapper = VerticalLayout(
                 HorizontalLayout(
                         label,
+                        Label(docContainer.tags.size.toString()).apply { style["margin"] = "auto 0px auto auto" },
+                        Icon(VaadinIcon.TAGS).apply {
+                            style["maxWidth"] = "15px"
+                            style["margin"] = "auto 0px auto auto"
+                        },
                         Label(docContainer.pages.size.toString()).apply { style["margin"] = "auto 0px auto auto" },
                         Icon(VaadinIcon.FILE_TEXT).apply {
                             style["maxWidth"] = "15px"
@@ -62,6 +72,7 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
             alignItems = FlexComponent.Alignment.CENTER
             isPadding = false
             isSpacing = false
+            if (docContainer.done) style["backgroundColor"] = "rgba(0, 255, 0, 0.3)"
         }
         add(wrapper)
     }
