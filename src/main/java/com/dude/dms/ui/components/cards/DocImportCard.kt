@@ -41,7 +41,12 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
         fill()
     }
 
-    private fun fill() {
+    fun clear() {
+        removeAll()
+    }
+
+    fun fill() {
+        clear()
         val wrapper = VerticalLayout(
                 HorizontalLayout(
                         label,
@@ -67,6 +72,7 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
             alignItems = FlexComponent.Alignment.CENTER
             isPadding = false
             isSpacing = false
+            if (docContainer.done) style["backgroundColor"] = "rgba(0, 255, 0, 0.3)"
         }
         add(wrapper)
     }

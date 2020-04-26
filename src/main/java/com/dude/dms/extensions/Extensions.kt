@@ -20,7 +20,7 @@ private val dateScanFormats: Map<String, DateTimeFormatter>
 
 fun Double.convert() = NumberFormat.getNumberInstance(Locale.forLanguageTag(Options.get().view.locale)).format(this)
 
-fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() }.let { txt ->
+fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() || it == '€' }.let { txt ->
     try {
         txt.toDouble()
     } catch (e: NumberFormatException) {

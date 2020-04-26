@@ -51,8 +51,8 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
             var index = -1
             val cards = itemContainer.children.filter { it is DocImportCard }.map { it as DocImportCard }.toList()
             cards.firstOrNull { it.docContainer == docContainer }?.let {
-                it.style["backgroundColor"] = "rgba(0, 255, 0, 0.3)"
                 index = cards.indexOf(it) + 1
+                it.fill()
             }
             importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
             while (index > 0 && index < cards.size) {
@@ -100,10 +100,7 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         ui.access {
             importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
             newDocs.forEach { dc ->
-                val dic = DocImportCard(dc).apply {
-                    addClickListener { select(dc) }
-                    if (dc.done) style["backgroundColor"] = "rgba(0, 255, 0, 0.3)"
-                }
+                val dic = DocImportCard(dc).apply { addClickListener { select(dc) } }
                 ContextMenu().apply {
                     target = dic
                     addItem(t("delete")) { delete(dc) }
