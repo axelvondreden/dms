@@ -102,6 +102,7 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
             newDocs.forEach { dc ->
                 val dic = DocImportCard(dc).apply {
                     addClickListener { select(dc) }
+                    if (dc.done) style["backgroundColor"] = "rgba(0, 255, 0, 0.3)"
                 }
                 ContextMenu().apply {
                     target = dic

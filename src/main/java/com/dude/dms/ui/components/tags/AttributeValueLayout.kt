@@ -14,9 +14,7 @@ class AttributeValueLayout(private val builderFactory: BuilderFactory, private v
     fun fill(docContainer: DocContainer) {
         clear()
         docContainer.attributeValues.forEach {
-            val field = builderFactory.attributes().valueField(it, imageEditor).also { field ->
-                field.setWidthFull()
-            }
+            val field = builderFactory.attributes().valueField(it, imageEditor).apply { setWidthFull() }
             add(field)
             fields.add(field)
         }
