@@ -174,7 +174,7 @@ class DocImageEditor(
             delBtn.addClickListener { delete(wordContainer, wrapper, ui) }
             ocrBtn.addClickListener {
                 word.text = docParser.getOcrTextRect(pageContainer!!.image!!, word.x, word.y, word.width, word.height)
-                wordService.save(word)
+                if (docContainer?.inDB == true) wordService.save(word)
                 if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, word.text) } else Tooltips.getCurrent().setTooltip(wrapper, word.text)
                 onTextChange?.invoke(docContainer!!)
             }
