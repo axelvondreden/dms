@@ -20,12 +20,12 @@ private val dateScanFormats: Map<String, DateTimeFormatter>
 
 fun Double.convert() = NumberFormat.getNumberInstance(Locale.forLanguageTag(Options.get().view.locale)).format(this)
 
-fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() || it == '€' }.let { txt ->
-    try {
-        txt.toDouble()
-    } catch (e: NumberFormatException) {
-        txt.replace('.', ',').replace(',', '.').toDoubleOrNull()
+fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() || it == '€' }.let { s ->
+    var txt = s.replace(',', '.')
+    while (txt.count { it == '.' } > 1) {
+        txt = txt.replaceFirst(".", "")
     }
+    txt.toDoubleOrNull()
 }
 
 fun LocalDate.convert() = format(userDateFormat)
