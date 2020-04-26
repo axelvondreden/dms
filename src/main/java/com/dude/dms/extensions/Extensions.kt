@@ -32,7 +32,7 @@ fun LocalDate.convert() = format(userDateFormat)
 
 fun LocalDateTime.convert() = format(userDateTimeFormat)
 
-fun String.findDate() = filterNot { it.isLetter() || it.isWhitespace() }.let { txt ->
+fun String.findDate() = filterNot { it.isLetter() || it.isWhitespace() }.replace(',', '.').let { txt ->
     dateScanFormats.flatMap { entry ->
         (0..txt.length - entry.key.length).mapNotNull {
             try {

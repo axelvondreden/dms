@@ -203,6 +203,7 @@ class DocImageEditor(
         pageContainer?.lines?.forEach { it.words = it.words.minus(wordContainer) }
         if (ui != null) ui.access { element.removeChild(wrapper.element) } else element.removeChild(wrapper.element)
         onTextChange?.invoke(docContainer!!)
+        words.removeIf { it.first == wordContainer }
     }
 
     private fun addWrappersToView(wrappers: Set<WordWrapperData>) {
