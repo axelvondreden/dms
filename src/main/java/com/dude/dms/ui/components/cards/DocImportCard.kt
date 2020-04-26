@@ -42,7 +42,7 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
     }
 
     fun clear() {
-        removeAll()
+        content.removeAll()
     }
 
     fun fill() {
