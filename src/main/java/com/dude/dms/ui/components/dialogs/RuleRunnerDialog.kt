@@ -4,6 +4,7 @@ import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
@@ -20,6 +21,7 @@ class RuleRunnerDialog(private val result: Map<Doc, Set<TagContainer>>, private 
     }
 
     init {
+        resizable()
         width = "60vw"
         height = "60vh"
 

@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.components.misc.IconToggle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -31,6 +32,7 @@ class AttributeEditDialog(private val attribute: Attribute, private val attribut
     private val requiredToggle = IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), t("attribute.required"), attribute.isRequired)
 
     init {
+        resizable()
         width = "35vw"
         val fieldWrapper = HorizontalLayout(nameTextField, typeComboBox, requiredToggle).apply {
             setWidthFull()

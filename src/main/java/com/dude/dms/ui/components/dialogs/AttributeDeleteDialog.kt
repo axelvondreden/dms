@@ -5,6 +5,7 @@ import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -26,6 +27,7 @@ class AttributeDeleteDialog(
     private val docCheck = Checkbox("${t("docs")} (${docService.countByAttribute(attribute)})")
 
     init {
+        resizable()
         width = "20vw"
         val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()

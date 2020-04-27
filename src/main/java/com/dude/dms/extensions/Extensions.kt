@@ -1,6 +1,7 @@
 package com.dude.dms.extensions
 
 import com.dude.dms.brain.options.Options
+import com.vaadin.flow.component.dialog.Dialog
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,4 +43,9 @@ fun String.findDate() = filterNot { it.isLetter() || it.isWhitespace() }.replace
             }
         }
     }.firstOrNull()
+}
+
+fun Dialog.resizable() {
+    isDraggable = true
+    isResizable = true
 }

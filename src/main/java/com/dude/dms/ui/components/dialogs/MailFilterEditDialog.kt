@@ -5,6 +5,7 @@ import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.UI
@@ -27,6 +28,7 @@ class MailFilterEditDialog(
     private val folderGrid = TreeGrid<Folder>().apply { setWidthFull() }
 
     init {
+        resizable()
         width = "70vw"
         height = "70vh"
 

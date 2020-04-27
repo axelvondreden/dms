@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.dialog.Dialog
@@ -23,6 +24,7 @@ class WordEditDialog(
     private val text = TextField("Text", originalText, "").apply { setWidthFull() }
 
     init {
+        resizable()
         width = "40vw"
 
         val createButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply {
@@ -59,7 +61,7 @@ class WordEditDialog(
         close()
     }
 
-    fun Float.round(decimals: Int): Float {
+    private fun Float.round(decimals: Int): Float {
         var multiplier = 1.0F
         repeat(decimals) { multiplier *= 10 }
         return round(this * multiplier) / multiplier

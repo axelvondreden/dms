@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.RegexField
 import com.vaadin.flow.component.button.Button
@@ -23,6 +24,7 @@ class RegexRuleEditDialog(
     private val ruleTagSelector = builderFactory.tags().selector(rRule = regexRule).apply { height = "80%" }
 
     init {
+        resizable()
         width = "70vw"
         height = "70vh"
 

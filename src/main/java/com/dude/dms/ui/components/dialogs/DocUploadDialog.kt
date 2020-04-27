@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
+import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.Const
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.upload.Upload
@@ -14,6 +15,7 @@ import java.io.IOException
 class DocUploadDialog : Dialog() {
 
     init {
+        resizable()
         width = "40vw"
         height = "40vh"
 

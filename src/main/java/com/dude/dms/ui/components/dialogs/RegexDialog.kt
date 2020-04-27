@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
@@ -36,6 +37,7 @@ class RegexDialog(private val callBack: TextField, private val matches: ArrayLis
     }
 
     init {
+        resizable()
         width = "60vw"
         height = "60vh"
 

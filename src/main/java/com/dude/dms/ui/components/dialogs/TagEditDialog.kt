@@ -5,6 +5,7 @@ import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
@@ -40,6 +41,7 @@ class TagEditDialog(
     private val attributeSelector = builderFactory.attributes().selector(tag).apply { setSizeFull() }
 
     init {
+        resizable()
         width = "35vw"
 
         val createButton = Button(t("save")) { save() }.apply {

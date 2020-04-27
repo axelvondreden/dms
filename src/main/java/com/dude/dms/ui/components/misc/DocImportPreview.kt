@@ -1,7 +1,6 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.findDate
@@ -18,7 +17,7 @@ import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
 
-class DocImportPreview(builderFactory: BuilderFactory, private val docService: DocService) : VerticalLayout() {
+class DocImportPreview(builderFactory: BuilderFactory) : VerticalLayout() {
 
     private var docContainer: DocContainer? = null
 
@@ -32,18 +31,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         style["flexGrow"] = "1"
     }
 
-    private val attributeValueContainer = builderFactory.attributes().valueContainer(imageEditor).apply {
-        setWidthFull()
-        maxHeight = "50%"
-    }
-
-    private val tagSelector = builderFactory.tags().selector().apply {
-        maxHeight = "50%"
-        asMultiSelect().addSelectionListener { event ->
-            docContainer?.tags = event.value
-            docContainer?.let { attributeValueContainer.fill(it) }
-        }
-    }
+    private val infoLayout = builderFactory.docs().infoLayout(imageEditor)
 
     private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }.apply { style["margin"] = "auto 5px" }
 
@@ -75,7 +63,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
 
     var onDone: ((DocContainer) -> Unit)? = null
 
-    private val doneButton = Button(t("done")) { if (attributeValueContainer.validate()) onDone?.invoke(docContainer!!) }.apply {
+    private val doneButton = Button(t("done")) { if (infoLayout.validate()) onDone?.invoke(docContainer!!) }.apply {
         addThemeVariants(ButtonVariant.LUMO_PRIMARY)
         style["margin"] = "auto"
         style["marginRight"] = "4px"
@@ -104,8 +92,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
             style["display"] = "flex"
             style["flexDirection"] = "column"
         }
-        val infoWrapper = Div(tagSelector, attributeValueContainer).apply { setSizeFull() }
-        val split = SplitLayout(imageWrapper, infoWrapper).apply {
+        val split = SplitLayout(imageWrapper, infoLayout).apply {
             setSizeFull()
             setSecondaryStyle("minWidth", "250px")
             setSecondaryStyle("maxWidth", "400px")
@@ -127,10 +114,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         pageSelector.max = docContainer.pages.size
         pageSelector.page = 1
         modeSelector.setChangeListener { imageEditor.mode = it }
-        tagSelector.selectedTags = docContainer.tags
-        tagSelector.rawText = docService.getFullText(docContainer.pageEntities)
-        tagSelector.showContainedTags(true)
-        attributeValueContainer.fill(docContainer)
+        infoLayout.fill(docContainer)
         date.value = docContainer.date
 
         refreshTextTools(docContainer)
@@ -143,9 +127,7 @@ class DocImportPreview(builderFactory: BuilderFactory, private val docService: D
         pdfButton.text = "PDF"
         ocrButton.text = "OCR"
         imageEditor.clear()
-        tagSelector.selectedTags = emptySet()
-        tagSelector.rawText = null
-        attributeValueContainer.clear()
+        infoLayout.clear()
     }
 
     private fun refreshTextTools(docContainer: DocContainer) {

@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.service.ChangelogService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.dude.dms.updater.UpdateChecker
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -12,6 +13,7 @@ import com.vaadin.flow.component.textfield.TextArea
 class ChangelogDialog(changelogService: ChangelogService, updateChecker: UpdateChecker) : Dialog() {
 
     init {
+        resizable()
         width = "70vw"
         height = "70vh"
 

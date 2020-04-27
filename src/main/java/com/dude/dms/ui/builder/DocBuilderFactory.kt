@@ -15,6 +15,7 @@ import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.misc.DocImportPreview
+import com.dude.dms.ui.components.misc.DocInfoLayout
 
 class DocBuilderFactory(
         builderFactory: BuilderFactory,
@@ -38,5 +39,7 @@ class DocBuilderFactory(
 
     fun imageEditor() = DocImageEditor(builderFactory, lineService, wordService, docParser, fileManager)
 
-    fun importPreview() = DocImportPreview(builderFactory, docService)
+    fun importPreview() = DocImportPreview(builderFactory)
+
+    fun infoLayout(imageEditor: DocImageEditor) = DocInfoLayout(builderFactory, docService, imageEditor)
 }

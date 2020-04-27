@@ -4,6 +4,7 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -18,6 +19,7 @@ class DocDeleteDialog(private val docContainer: DocContainer, private val docSer
     private val mailCheck = Checkbox("${t("mail")} (${docContainer.doc?.let { mailService.countByDoc(it) }})")
 
     init {
+        resizable()
         width = "20vw"
         val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()

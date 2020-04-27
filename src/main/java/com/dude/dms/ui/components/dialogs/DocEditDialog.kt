@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.vaadin.flow.component.button.Button
@@ -32,6 +33,7 @@ class DocEditDialog(builderFactory: BuilderFactory, private val docContainer: Do
     }
 
     init {
+        resizable()
         width = "40vw"
         val saveButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply {
             setWidthFull()

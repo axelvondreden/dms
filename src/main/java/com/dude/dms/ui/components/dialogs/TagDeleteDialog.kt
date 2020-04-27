@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.*
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -36,6 +37,7 @@ class TagDeleteDialog(
     private val mailFilterCheck = Checkbox("Mail Filter (${mailFilterService.countByTag(tag)}")
 
     init {
+        resizable()
         width = "20vw"
         val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
