@@ -3,10 +3,8 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -17,16 +15,13 @@ import kotlin.math.round
 class WordEditDialog(
         private val wordService: WordService,
         private val wordContainer: WordContainer
-) : Dialog() {
+) : DmsDialog(t("word.edit"), "40vw") {
 
     private val originalText = wordContainer.word.text
 
     private val text = TextField("Text", originalText, "").apply { setWidthFull() }
 
     init {
-        resizable()
-        width = "40vw"
-
         val createButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)

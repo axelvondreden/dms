@@ -4,7 +4,6 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.DmsColorPickerSimple
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
@@ -14,13 +13,12 @@ import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: TagService) : Dialog() {
+class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: TagService) : DmsDialog(t("tag.create"), "35vw") {
 
     private val name = TextField(t("name")).apply { setWidthFull() }
 
@@ -32,9 +30,6 @@ class TagCreateDialog(builderFactory: BuilderFactory, private val tagService: Ta
     private val attributeSelector = builderFactory.attributes().selector().apply { setSizeFull() }
 
     init {
-        resizable()
-        width = "35vw"
-
         val createButton = Button(t("create"), VaadinIcon.PLUS.create()) { create() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)

@@ -3,18 +3,20 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class DocEditDialog(builderFactory: BuilderFactory, private val docContainer: DocContainer, private val docService: DocService) : Dialog() {
+class DocEditDialog(
+        builderFactory: BuilderFactory,
+        private val docContainer: DocContainer,
+        private val docService: DocService
+) : DmsDialog(t("doc.edit"), "40vw") {
 
     private val datePicker = DmsDatePicker(t("date")).apply {
         setWidthFull()
@@ -33,8 +35,6 @@ class DocEditDialog(builderFactory: BuilderFactory, private val docContainer: Do
     }
 
     init {
-        resizable()
-        width = "40vw"
         val saveButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)

@@ -44,8 +44,3 @@ fun String.findDate() = filterNot { it.isLetter() || it.isWhitespace() }.replace
         }
     }.firstOrNull()
 }
-
-fun Dialog.resizable() {
-    isDraggable = true
-    isResizable = true
-}

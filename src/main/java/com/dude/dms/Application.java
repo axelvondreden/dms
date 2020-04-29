@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.DataEntity;
 import com.dude.dms.backend.repositories.DocRepository;
 import com.dude.dms.backend.service.DocService;
 import com.dude.dms.brain.SpringContext;
+import com.dude.dms.ui.EditMode;
 import com.dude.dms.ui.views.MainView;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication(scanBasePackageClasses = { MainView.class, Application.class, DocService.class, SpringContext.class }, exclude = ErrorMvcAutoConfiguration.class)
+@SpringBootApplication(scanBasePackageClasses = { MainView.class, Application.class, EditMode.class, DocService.class, SpringContext.class }, exclude = ErrorMvcAutoConfiguration.class)
 @EnableJpaRepositories(basePackageClasses = DocRepository.class)
 @EntityScan(basePackageClasses = DataEntity.class)
 @EnableTransactionManagement

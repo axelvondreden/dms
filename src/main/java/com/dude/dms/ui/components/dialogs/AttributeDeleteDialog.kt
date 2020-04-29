@@ -5,11 +5,9 @@ import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
@@ -18,7 +16,7 @@ class AttributeDeleteDialog(
         private val attributeService: AttributeService,
         private val docService: DocService,
         private val tagService: TagService
-) : Dialog() {
+) : DmsDialog(t("attribute.delete"), "20vw") {
 
     private val attributeCheck = Checkbox(t("attribute"), true).apply { isEnabled = false }
 
@@ -27,8 +25,6 @@ class AttributeDeleteDialog(
     private val docCheck = Checkbox("${t("docs")} (${docService.countByAttribute(attribute)})")
 
     init {
-        resizable()
-        width = "20vw"
         val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)

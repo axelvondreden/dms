@@ -1,9 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
@@ -15,7 +13,7 @@ import com.vaadin.flow.data.value.ValueChangeMode
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
-class RegexDialog(private val callBack: TextField, private val matches: ArrayList<String> = ArrayList()) : Dialog() {
+class RegexDialog(private val callBack: TextField, private val matches: ArrayList<String> = ArrayList()) : DmsDialog("Regex", "60vw", "60vh") {
 
     private val regexField = TextField("Regex", callBack.value, "").apply {
         setWidthFull()
@@ -37,10 +35,6 @@ class RegexDialog(private val callBack: TextField, private val matches: ArrayLis
     }
 
     init {
-        resizable()
-        width = "60vw"
-        height = "60vh"
-
         val horizontalLayout = HorizontalLayout(regexField, Button(VaadinIcon.CHECK.create()) { save() }).apply {
             alignItems = FlexComponent.Alignment.END
         }

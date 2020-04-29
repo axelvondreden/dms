@@ -4,14 +4,15 @@ import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.resizable
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class RuleRunnerDialog(private val result: Map<Doc, Set<TagContainer>>, private val docService: DocService) : Dialog() {
+class RuleRunnerDialog(
+        private val result: Map<Doc, Set<TagContainer>>,
+        private val docService: DocService
+) : DmsDialog("", "60vw", "60vh") {
 
     private val grid = Grid<Pair<Doc, Set<TagContainer>>>().apply {
         setSelectionMode(Grid.SelectionMode.MULTI)
@@ -21,10 +22,6 @@ class RuleRunnerDialog(private val result: Map<Doc, Set<TagContainer>>, private 
     }
 
     init {
-        resizable()
-        width = "60vw"
-        height = "60vh"
-
         add(grid, Text("${result.size} ${t("docs")}"), Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply { setWidthFull() })
     }
 

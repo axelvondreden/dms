@@ -3,14 +3,12 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.resizable
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -20,7 +18,7 @@ class PlainTextRuleEditDialog(
         builderFactory: BuilderFactory,
         private val plainTextRule: PlainTextRule,
         private val plainTextRuleService: PlainTextRuleService
-) : Dialog() {
+) : DmsDialog("", "70vw", "70vh") {
 
     private val plainText = TextField("Text", plainTextRule.text, "").apply { setWidthFull() }
 
@@ -29,10 +27,6 @@ class PlainTextRuleEditDialog(
     private val caseSensitive = Checkbox("Case sensitive", plainTextRule.caseSensitive)
 
     init {
-        resizable()
-        width = "70vw"
-        height = "70vh"
-
         val hLayout = HorizontalLayout(plainText, caseSensitive).apply {
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
