@@ -46,6 +46,13 @@
     -ms-user-select: none;
 }
 
+.tag-label {
+    display: inline;
+    border: 2px solid #CCF;
+    margin: 2px;
+    white-space: nowrap;
+}
+
 .word-wrapper {
     position: absolute;
 }

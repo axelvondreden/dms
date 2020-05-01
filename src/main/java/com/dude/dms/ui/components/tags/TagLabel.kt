@@ -1,19 +1,17 @@
 package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.Tag
-import com.github.appreciated.card.ClickableCard
 import com.vaadin.flow.component.ComponentEvent
+import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.dom.ElementFactory
 
-class TagLabel(val tag: Tag, onClick: ((ComponentEvent<*>) -> Unit)? = null) : ClickableCard() {
+class TagLabel(val tag: Tag, onClick: ((ComponentEvent<*>) -> Unit)? = null) : Div() {
 
     init {
         val label = Label(tag.name)
-        element.style["display"] = "inline"
-        element.style["border"] = "2px solid #CCF"
+        addClassName("tag-label")
         element.style["backgroundColor"] = tag.color
-        element.style["margin"] = "4px 6px"
         // TODO: save colors consistently as hex, then ctx can be removed
         val span = ElementFactory.createSpan(tag.name).apply { style["display"] = "none" }
         element.appendChild(span)
