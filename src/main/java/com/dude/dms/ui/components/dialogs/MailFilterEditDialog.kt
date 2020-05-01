@@ -10,7 +10,6 @@ import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -22,14 +21,11 @@ class MailFilterEditDialog(
         private val mailFilter: MailFilter,
         private val mailFilterService: MailFilterService,
         mailManager: MailManager
-) : Dialog() {
+) : DmsDialog("", "70vw", "70vh") {
 
     private val folderGrid = TreeGrid<Folder>().apply { setWidthFull() }
 
     init {
-        width = "70vw"
-        height = "70vh"
-
         try {
             mailManager.testConnection()
         } catch (e: MessagingException) {

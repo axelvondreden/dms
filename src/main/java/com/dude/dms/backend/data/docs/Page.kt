@@ -1,7 +1,7 @@
 package com.dude.dms.backend.data.docs
 
-import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
+import com.dude.dms.backend.data.RestorableEntity
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
@@ -16,7 +16,7 @@ class Page(
         @ManyToOne var doc: Doc?,
         @OneToMany(mappedBy = "page", fetch = FetchType.EAGER) var lines: Set<Line> = HashSet(),
         var nr: Int
-) : DataEntity(), LogsEvents {
+) : RestorableEntity(), LogsEvents {
 
     override fun toString() = t("page")
 

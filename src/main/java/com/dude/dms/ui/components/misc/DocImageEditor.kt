@@ -8,6 +8,7 @@ import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.backend.service.LineService
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.parsing.DmsOcrTextStripper
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
@@ -173,7 +174,7 @@ class DocImageEditor(
             }
             delBtn.addClickListener { delete(wordContainer, wrapper, ui) }
             ocrBtn.addClickListener {
-                word.text = docParser.getOcrTextRect(pageContainer!!.image!!, word.x, word.y, word.width, word.height)
+                word.text = docParser.getText(pageContainer!!.image!!, DmsOcrTextStripper.Rect(word.x, word.y, word.width, word.height))
                 if (docContainer?.inDB == true) wordService.save(word)
                 if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, word.text) } else Tooltips.getCurrent().setTooltip(wrapper, word.text)
                 onTextChange?.invoke(docContainer!!)
@@ -297,7 +298,7 @@ class DocImageEditor(
                         } else {
                             pageContainer!!.lines.minBy { abs(it.y - mouseY) }!!
                         }
-                        val txt = docParser.getOcrTextRect(fileManager.getImage(docContainer!!.guid, pageContainer!!.nr), mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat())
+                        val txt = docParser.getText(fileManager.getImage(docContainer!!.guid, pageContainer!!.nr), DmsOcrTextStripper.Rect(mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat()))
                         val wordContainer = WordContainer(Word(line.line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat()))
                         line.words = line.words.plus(wordContainer)
                         wordContainer.spelling = Spellchecker(docContainer!!.language).check(txt)

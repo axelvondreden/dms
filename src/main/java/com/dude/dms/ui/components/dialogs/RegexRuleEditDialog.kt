@@ -4,28 +4,24 @@ import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.components.misc.ConfirmDialog
 import com.dude.dms.ui.components.standard.RegexField
+import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.dialog.Dialog
-import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 
 class RegexRuleEditDialog(
         builderFactory: BuilderFactory,
         private val regexRule: RegexRule,
-        private val regexRuleService: RegexRuleService
-) : Dialog() {
+        private val regexRuleService: RegexRuleService) : DmsDialog("", "70vw", "70vh") {
 
     private val regex = RegexField("Regex", regexRule.regex).apply { setWidthFull() }
 
     private val ruleTagSelector = builderFactory.tags().selector(rRule = regexRule).apply { height = "80%" }
 
     init {
-        width = "70vw"
-        height = "70vh"
-
         val saveButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply { setWidthFull() }
         val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
@@ -35,13 +31,10 @@ class RegexRuleEditDialog(
     }
 
     private fun delete() {
-        val dialog = Dialog(Label(t("delete.sure")))
-        val button = Button(t("delete"), VaadinIcon.TRASH.create()) {
+        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
             regexRuleService.delete(regexRule)
             close()
-        }.apply { addThemeVariants(ButtonVariant.LUMO_ERROR) }
-        dialog.add(button)
-        dialog.open()
+        }).open()
     }
 
     private fun save() {

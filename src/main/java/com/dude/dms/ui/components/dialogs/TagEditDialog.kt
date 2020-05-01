@@ -14,7 +14,6 @@ import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.details.Details
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
@@ -24,7 +23,7 @@ class TagEditDialog(
         private val tag: Tag,
         private val tagService: TagService,
         private val docService: DocService
-) : Dialog() {
+) : DmsDialog(t("tag.edit"), "35vw") {
 
     private val name = TextField(t("name"), tag.name, "").apply { setWidthFull() }
 
@@ -40,8 +39,6 @@ class TagEditDialog(
     private val attributeSelector = builderFactory.attributes().selector(tag).apply { setSizeFull() }
 
     init {
-        width = "35vw"
-
         val createButton = Button(t("save")) { save() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)

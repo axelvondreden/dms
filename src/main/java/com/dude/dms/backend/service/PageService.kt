@@ -10,10 +10,20 @@ class PageService(
         pageRepository: PageRepository,
         private val lineService: LineService,
         eventManager: EventManager
-) : EventService<Page>(pageRepository, eventManager) {
+) : RestoreService<Page>(pageRepository, eventManager) {
 
     override fun delete(entity: Page) {
         entity.lines.forEach(lineService::delete)
         load(entity.id)?.let { super.delete(it) }
+    }
+
+    override fun softDelete(entity: Page) {
+        entity.lines.forEach(lineService::softDelete)
+        super.softDelete(entity)
+    }
+
+    override fun restore(entity: Page) {
+        entity.lines.forEach(lineService::restore)
+        super.restore(entity)
     }
 }

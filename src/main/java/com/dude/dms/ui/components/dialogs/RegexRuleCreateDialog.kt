@@ -6,10 +6,12 @@ import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.standard.RegexField
 import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRuleService: RegexRuleService) : Dialog() {
+class RegexRuleCreateDialog(
+        builderFactory: BuilderFactory,
+        private val regexRuleService: RegexRuleService
+) : DmsDialog("", "70vw", "70vh") {
 
     private val regex = RegexField("Regex").apply {
         setWidthFull()
@@ -20,9 +22,6 @@ class RegexRuleCreateDialog(builderFactory: BuilderFactory, private val regexRul
     }
 
     init {
-        width = "70vw"
-        height = "70vh"
-
         add(regex, ruleTagSelector, Button(t("create"), VaadinIcon.PLUS.create()) { create() }.apply { setWidthFull() })
     }
 

@@ -7,14 +7,16 @@ import com.dude.dms.ui.components.misc.IconToggle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.combobox.ComboBox
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class AttributeEditDialog(private val attribute: Attribute, private val attributeService: AttributeService) : Dialog() {
+class AttributeEditDialog(
+        private val attribute: Attribute,
+        private val attributeService: AttributeService
+) : DmsDialog(t("attribute.edit"), "35vw") {
 
     private val nameTextField = TextField(t("name"), attribute.name, "").apply {
         setWidthFull()
@@ -31,7 +33,6 @@ class AttributeEditDialog(private val attribute: Attribute, private val attribut
     private val requiredToggle = IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), t("attribute.required"), attribute.isRequired)
 
     init {
-        width = "35vw"
         val fieldWrapper = HorizontalLayout(nameTextField, typeComboBox, requiredToggle).apply {
             setWidthFull()
             alignItems = FlexComponent.Alignment.END

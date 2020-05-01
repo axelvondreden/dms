@@ -5,7 +5,6 @@ import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.t
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -16,15 +15,13 @@ import kotlin.math.round
 class WordEditDialog(
         private val wordService: WordService,
         private val wordContainer: WordContainer
-) : Dialog() {
+) : DmsDialog(t("word.edit"), "40vw") {
 
     private val originalText = wordContainer.word.text
 
     private val text = TextField("Text", originalText, "").apply { setWidthFull() }
 
     init {
-        width = "40vw"
-
         val createButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
@@ -59,7 +56,7 @@ class WordEditDialog(
         close()
     }
 
-    fun Float.round(decimals: Int): Float {
+    private fun Float.round(decimals: Int): Float {
         var multiplier = 1.0F
         repeat(decimals) { multiplier *= 10 }
         return round(this * multiplier) / multiplier

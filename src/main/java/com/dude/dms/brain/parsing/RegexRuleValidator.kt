@@ -15,14 +15,14 @@ class RegexRuleValidator(
         docService: DocService
 ) : RuleValidator<RegexRule>(tagService, docService) {
 
-    override fun getTagsForRule(rawText: String?, rule: RegexRule) = rawText?.let { text ->
+    override fun getTagsForRule(docText: String?, rule: RegexRule) = docText?.let { text ->
         if (text.split("\n").any { rule.validate(it) }) {
             return rule.tags.map { TagContainer(it, t("rule") + ": " + rule.regex) }.toSet()
         }
         emptySet<TagContainer>()
     } ?: emptySet()
 
-    override fun getTags(rawText: String?) = rawText?.let {
-        regexRuleService.findAll().flatMap { getTagsForRule(rawText, it) }.toSet()
+    override fun getTags(docText: String?) = docText?.let {
+        regexRuleService.findAll().flatMap { getTagsForRule(docText, it) }.toSet()
     } ?: emptySet()
 }

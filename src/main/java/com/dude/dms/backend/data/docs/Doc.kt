@@ -19,10 +19,6 @@ class Doc(
 
         var insertTime: LocalDateTime? = null,
 
-        @Column(columnDefinition = "LONGVARCHAR")
-        @Size(max = 99999)
-        var rawText: String? = null,
-
         @ManyToMany(fetch = FetchType.EAGER)
         var tags: Set<Tag> = HashSet(),
 
@@ -34,7 +30,7 @@ class Doc(
 
         @ManyToOne
         var mail: Mail? = null
-) : DataEntity(), Diffable<Doc>, LogsEvents {
+) : RestorableEntity(), Diffable<Doc>, LogsEvents {
 
     override fun toString() = t("doc")
 }

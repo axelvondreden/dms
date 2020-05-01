@@ -1,7 +1,7 @@
 package com.dude.dms.backend.data.docs
 
-import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
+import com.dude.dms.backend.data.RestorableEntity
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
@@ -23,7 +23,7 @@ class Word(
         var y: Float,
         var width: Float,
         var height: Float
-) : DataEntity(), LogsEvents {
+) : RestorableEntity(), LogsEvents {
 
     override fun toString() = t("word")
 

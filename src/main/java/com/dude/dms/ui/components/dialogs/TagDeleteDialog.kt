@@ -6,7 +6,6 @@ import com.dude.dms.brain.t
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
@@ -19,7 +18,7 @@ class TagDeleteDialog(
         private val plainTextRuleService: PlainTextRuleService,
         private val regexRuleService: RegexRuleService,
         private val mailFilterService: MailFilterService
-) : Dialog() {
+) : DmsDialog(t("tag.delete"), "20vw") {
 
     private val tagCheck = Checkbox(t("tag"), true).apply { isEnabled = false }
 
@@ -36,7 +35,6 @@ class TagDeleteDialog(
     private val mailFilterCheck = Checkbox("Mail Filter (${mailFilterService.countByTag(tag)}")
 
     init {
-        width = "20vw"
         val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
             setWidthFull()
             addThemeVariants(ButtonVariant.LUMO_ERROR)

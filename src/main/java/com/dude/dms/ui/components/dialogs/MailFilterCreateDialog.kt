@@ -7,21 +7,17 @@ import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.t
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.treegrid.TreeGrid
 import javax.mail.Folder
 import javax.mail.MessagingException
 
-class MailFilterCreateDialog(private val mailFilterService: MailFilterService, mailManager: MailManager) : Dialog() {
+class MailFilterCreateDialog(private val mailFilterService: MailFilterService, mailManager: MailManager) : DmsDialog("", "70vw", "70vh") {
 
     private val folderGrid = TreeGrid<Folder>().apply { setWidthFull() }
 
     init {
-        width = "70vw"
-        height = "70vh"
-
         try {
             mailManager.testConnection()
         } catch (e: MessagingException) {

@@ -115,13 +115,7 @@ class DocImportService(
 
     fun create(docContainer: DocContainer) {
         val pages = docContainer.pageEntities
-        val doc = Doc(
-                docContainer.guid,
-                docContainer.date,
-                LocalDateTime.now(),
-                if (pages.isNotEmpty()) docService.getFullText(pages) else null,
-                docContainer.tagEntities.toMutableSet()
-        )
+        val doc = Doc(docContainer.guid, docContainer.date, LocalDateTime.now(), docContainer.tagEntities.toMutableSet())
         docService.create(doc, docContainer.attributeValues)
         pages.forEach { page ->
             page.doc = doc

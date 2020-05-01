@@ -6,13 +6,15 @@ import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.checkbox.Checkbox
-import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plainTextRuleService: PlainTextRuleService) : Dialog() {
+class PlainTextRuleCreateDialog(
+        builderFactory: BuilderFactory,
+        private val plainTextRuleService: PlainTextRuleService
+) : DmsDialog("", "70vw", "70vh") {
 
     private val plainText = TextField("Text").apply { setWidthFull() }
 
@@ -21,9 +23,6 @@ class PlainTextRuleCreateDialog(builderFactory: BuilderFactory, private val plai
     private val caseSensitive = Checkbox("Case sensitive")
 
     init {
-        width = "70vw"
-        height = "70vh"
-
         val hLayout = HorizontalLayout(plainText, caseSensitive).apply {
             setWidthFull()
             alignItems = FlexComponent.Alignment.END

@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.cards
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
@@ -24,7 +25,11 @@ import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 
-class DocCard(private val builderFactory: BuilderFactory, private val docContainer: DocContainer) : ClickableCard() {
+class DocCard(
+        private val builderFactory: BuilderFactory,
+        private val docService: DocService,
+        private val docContainer: DocContainer
+) : ClickableCard() {
 
     private var imgDiv: Div? = null
 
@@ -91,8 +96,14 @@ class DocCard(private val builderFactory: BuilderFactory, private val docContain
     }
 
     private fun ContextMenu.fill() {
-        addItem(t("view")) { builderFactory.docs().imageDialog(docContainer).open() }
-        addItem(t("edit")) { builderFactory.docs().editDialog(docContainer).open() }
-        addItem(t("delete")) { builderFactory.docs().deleteDialog(docContainer).open() }
+        if (docContainer.doc?.deleted == true) {
+            addItem(t("view")) { builderFactory.docs().imageDialog(docContainer).open() }
+            addItem(t("delete.forever")) { docService.delete(docContainer.doc!!) }
+            addItem(t("restore")) { docService.restore(docContainer.doc!!) }
+        } else {
+            addItem(t("view")) { builderFactory.docs().imageDialog(docContainer).open() }
+            addItem(t("edit")) { builderFactory.docs().editDialog(docContainer).open() }
+            addItem(t("delete")) { builderFactory.docs().deleteDialog(docContainer).open() }
+        }
     }
 }

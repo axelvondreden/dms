@@ -20,13 +20,12 @@ class DocService(
         private val attributeValueService: AttributeValueService,
         private val pageService: PageService,
         eventManager: EventManager
-) : EventService<Doc>(docRepository, eventManager) {
+) : RestoreService<Doc>(docRepository, eventManager) {
 
     data class Filter(
             var tag: Tag? = null,
             var attribute: Attribute? = null,
-            var mail: Mail? = null,
-            var text: String? = null
+            var mail: Mail? = null
     ) : Serializable
 
     fun create(entity: Doc, attributeValues: Set<AttributeValue>): Doc {
@@ -46,7 +45,6 @@ class DocService(
 
     override fun save(entity: Doc): Doc {
         createAttributeValues(entity)
-        entity.rawText = getFullText(entity.pages)
         super.save(entity)
         deleteAttributeValues(entity)
         return entity
@@ -56,6 +54,18 @@ class DocService(
         entity.pages.forEach(pageService::delete)
         entity.attributeValues.forEach(attributeValueService::delete)
         load(entity.id)?.let { super.delete(it) }
+    }
+
+    override fun softDelete(entity: Doc) {
+        entity.pages.forEach(pageService::softDelete)
+        entity.attributeValues.forEach(attributeValueService::softDelete)
+        super.softDelete(entity)
+    }
+
+    override fun restore(entity: Doc) {
+        entity.pages.forEach(pageService::restore)
+        entity.attributeValues.forEach(attributeValueService::restore)
+        super.restore(entity)
     }
 
     private fun createAttributeValues(doc: Doc) {
@@ -75,17 +85,17 @@ class DocService(
 
     fun findByGuid(guid: String): Doc? = docRepository.findByGuid(guid)
 
-    fun findByTag(tag: Tag) = docRepository.findByTags(tag)
+    fun findByTag(tag: Tag) = docRepository.findByTagsAndDeletedFalse(tag)
 
-    fun countByTag(tag: Tag) = docRepository.countByTags(tag)
+    fun countByTag(tag: Tag) = docRepository.countByTagsAndDeletedFalse(tag)
 
-    fun findByAttribute(attribute: Attribute) = docRepository.findByAttributeValues_AttributeEquals(attribute)
+    fun findByAttribute(attribute: Attribute) = docRepository.findByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
-    fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEquals(attribute)
+    fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
-    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, pageable)
+    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
 
-    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, filter.text, sort)
+    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
 
     fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->

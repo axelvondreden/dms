@@ -9,4 +9,4 @@ import org.springframework.stereotype.Service
 class WordService(
         wordRepository: WordRepository,
         eventManager: EventManager
-) : EventService<Word>(wordRepository, eventManager)
+) : RestoreService<Word>(wordRepository, eventManager)
