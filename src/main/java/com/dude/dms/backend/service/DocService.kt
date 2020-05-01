@@ -83,7 +83,9 @@ class DocService(
                 .distinct().forEach { attributeValueService.delete(it) }
     }
 
-    fun findByGuid(guid: String): Doc? = docRepository.findByGuid(guid)
+    fun findIncomplete() = docRepository.findByDeletedIsNull()
+
+    fun findByGuid(guid: String) = docRepository.findByGuid(guid)
 
     fun findByTag(tag: Tag) = docRepository.findByTagsAndDeletedFalse(tag)
 

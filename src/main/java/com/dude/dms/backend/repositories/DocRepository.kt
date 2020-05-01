@@ -43,4 +43,6 @@ interface DocRepository : RestoreRepository<Doc> {
             @Param("mail") mail: Mail?,
             sort: Sort
     ): Set<Doc>
+
+    fun findByDeletedIsNull(): Set<Doc>
 }
