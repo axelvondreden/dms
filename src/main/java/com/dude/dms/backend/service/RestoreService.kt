@@ -25,7 +25,7 @@ abstract class RestoreService<T>(
 
     override fun softDelete(entity: T) {
         entity.deleted = true
-        save(entity)
+        silentSave(entity)
         super.softDelete(entity)
     }
 }

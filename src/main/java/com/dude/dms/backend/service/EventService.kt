@@ -23,6 +23,8 @@ abstract class EventService<T>(
         return new
     }
 
+    fun silentSave(entity: T) = super.save(entity)
+
     override fun delete(entity: T) {
         super.delete(entity)
         eventManager.trigger(entity, EventType.DELETE)

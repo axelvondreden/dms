@@ -28,6 +28,7 @@ import com.vaadin.flow.router.*
 import org.springframework.data.domain.Sort
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.streams.toList
 
 
 @Route(value = Const.PAGE_DOCS, layout = MainView::class)
@@ -95,7 +96,9 @@ class DocsView(
     }
 
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
+        eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
+        eventManager.register(this, Doc::class, EventType.UPDATE) { updateDoc(it, viewUI) }
+        eventManager.register(this, Doc::class, EventType.DELETE) { deleteDoc(it, viewUI) }
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
 
@@ -105,6 +108,20 @@ class DocsView(
         val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
         add(header, itemContainer)
         scheduleFill(viewUI)
+    }
+
+    private fun updateDoc(doc: Doc, ui: UI) {
+        ui.access {
+            itemContainer.children.toList().filterIsInstance<DocCard>().firstOrNull { it.docContainer.doc?.guid == doc.guid }?.fill()
+        }
+    }
+
+    private fun deleteDoc(doc: Doc, ui: UI) {
+        ui.access {
+            itemContainer.children.toList().filterIsInstance<DocCard>().firstOrNull { it.docContainer.doc?.guid == doc.guid }?.let {
+                itemContainer.remove(it)
+            }
+        }
     }
 
     private fun softReload(ui: UI) {
