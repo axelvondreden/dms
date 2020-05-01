@@ -29,6 +29,15 @@ class StartUpRunner(
         LOGGER.info("Cleaning up files...")
         fileManager.getAllPdfs().forEach { file -> if (docService.findByGuid(file.name.takeWhile { it != '.' }) == null) file.delete() }
         fileManager.getAllImages().forEach { file -> if (docService.findByGuid(file.name.takeWhile { it != '_' }) == null) file.delete() }
+
+        // Migration 0.0.2 -> 0.0.3
+        docService.findAll().forEach {
+            if (it.deleted == null) {
+                it.deleted = false
+                docService.save(it)
+            }
+        }
+
         Thread { docImportService.import() }.start()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
         LOGGER.info(t("startup.complete"))
