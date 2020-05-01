@@ -6,6 +6,9 @@ import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.docs.Line
 import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.docs.Word
+import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.t
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.apache.pdfbox.text.TextPosition
@@ -14,13 +17,14 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Component
-class DmsPdfTextStripper : PDFTextStripper() {
+class DmsPdfTextStripper(private val fileManager: FileManager) : PDFTextStripper(), TextStripper {
 
     private var pages = mutableSetOf<PageContainer>()
 
-    fun getPages(doc: PDDocument): Set<PageContainer> {
+    override fun getPages(guid: String, language: String): Set<PageContainer> {
+        LOGGER.info(t("pdf.parse"))
         pages = mutableSetOf()
-        getText(doc)
+        getText(PDDocument.load(fileManager.getPdf(guid)))
         return pages
     }
 
@@ -47,7 +51,8 @@ class DmsPdfTextStripper : PDFTextStripper() {
             positions = positions.dropWhile { it.unicode == " " }
             val word = positions.takeWhile { it.unicode != " " }
             positions = positions.drop(word.size)
-            if (word.isEmpty()) continue
+
+            if (word.isEmpty() || !word.joinToString("").isValidWord()) continue
 
             var xMin = Float.MAX_VALUE
             var xMax = Float.MIN_VALUE
@@ -66,5 +71,9 @@ class DmsPdfTextStripper : PDFTextStripper() {
             words.add(WordContainer(Word(null, word.joinToString("") { it.unicode }, x, y, width, height)))
         }
         return words
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(DmsPdfTextStripper::class.java)
     }
 }
