@@ -1,9 +1,6 @@
 package com.dude.dms.backend.data.mails
 
-import com.dude.dms.backend.data.DataEntity
-import com.dude.dms.backend.data.Diffable
-import com.dude.dms.backend.data.LogsEvents
-import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.*
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
@@ -30,7 +27,7 @@ class Mail(
 
         @OneToMany
         var docs: MutableSet<Doc> = HashSet()
-) : DataEntity(), Diffable<Mail>, LogsEvents {
+) : RestorableEntity(), Diffable<Mail>, LogsEvents {
 
     override fun toString() = t("mail")
 

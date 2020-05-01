@@ -58,6 +58,7 @@ class MainView(
 
     private var docsBadge: DefaultBadgeHolder? = null
     private var mailsBadge: DefaultBadgeHolder? = null
+    private var recycleBadge: DefaultBadgeHolder? = null
     private var importsBadge: DefaultBadgeHolder? = null
     private val tagBadges = HashMap<Long, DefaultBadgeHolder>()
 
@@ -92,6 +93,8 @@ class MainView(
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
         val mailsEntry = LeftNavigationItem(t("mails"), VaadinIcon.MAILBOX.create(), MailsView::class.java)
         mailsBadge = DefaultBadgeHolder(mailService.count().toInt()).apply { bind(mailsEntry.badge) }
+        val recycleEntry = LeftNavigationItem(t("recyclebin"), VaadinIcon.TRASH.create(), RecycleView::class.java)
+        recycleBadge = DefaultBadgeHolder(docService.countDeleted().toInt()).apply { bind(recycleEntry.badge) }
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
         val rulesEntry = LeftNavigationItem(t("rules"), VaadinIcon.MAGIC.create(), RulesView::class.java)
@@ -103,7 +106,8 @@ class MainView(
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
                         LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().open() },
                         LeftNavigationItem(t("administration"), VaadinIcon.DASHBOARD.create(), AdminView::class.java),
-                        LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java))
+                        LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java),
+                        recycleEntry)
                 .build()
     }
 
@@ -161,6 +165,7 @@ class MainView(
 
     private fun fillBadgeCount(doc: Doc) {
         doc.tags.forEach { fillBadgeCount(it) }
+        recycleBadge?.count = docService.countDeleted().toInt()
     }
 
     private fun fillBadgeCount(mail: Mail) {

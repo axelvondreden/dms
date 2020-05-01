@@ -35,11 +35,11 @@ class DocBuilderFactory(
 
     fun wordEditDialog(wordContainer: WordContainer) = WordEditDialog(wordService, wordContainer)
 
-    fun card(docContainer: DocContainer) = DocCard(builderFactory, docContainer)
+    fun card(docContainer: DocContainer) = DocCard(builderFactory, docService, docContainer)
 
     fun imageEditor() = DocImageEditor(builderFactory, lineService, wordService, docParser, fileManager)
 
     fun importPreview() = DocImportPreview(builderFactory)
 
-    fun infoLayout(imageEditor: DocImageEditor) = DocInfoLayout(builderFactory, docService, imageEditor)
+    fun infoLayout(imageEditor: DocImageEditor) = DocInfoLayout(builderFactory, imageEditor)
 }

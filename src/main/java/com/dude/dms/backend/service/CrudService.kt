@@ -12,11 +12,11 @@ abstract class CrudService<T : DataEntity>(protected val repository: JpaReposito
 
     open fun delete(entity: T) = repository.delete(entity)
 
-    fun count() = repository.count()
+    open fun count() = repository.count()
 
     fun load(id: Long): T? = repository.findById(id).orElse(null)
 
-    fun findAll() = repository.findAll()
+    open fun findAll() = repository.findAll()
 
-    fun findAll(pageable: Pageable) = repository.findAll(pageable)
+    open fun findAll(pageable: Pageable) = repository.findAll(pageable)
 }

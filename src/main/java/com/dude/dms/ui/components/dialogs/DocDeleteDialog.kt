@@ -38,7 +38,7 @@ class DocDeleteDialog(
             if (mailCheck.value) {
                 mailService.findByDoc(it).forEach(mailService::delete)
             }
-            docService.findByGuid(it.guid)?.let { doc -> docService.delete(doc) }
+            docService.findByGuid(it.guid)?.let { doc -> docService.softDelete(doc) }
         }
         close()
     }

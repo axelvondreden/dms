@@ -32,10 +32,6 @@ class TagBuilderFactory(
 
     fun selector(doc: DocContainer? = null, pRule: PlainTextRule? = null, rRule: RegexRule? = null) = TagSelector(tagService).apply {
         selectedTags = doc?.tags ?: pRule?.tags?.map { TagContainer(it) }?.toSet() ?: rRule?.tags?.map { TagContainer(it) }?.toSet() ?: emptySet()
-        doc?.let {
-            rawText = docService.getFullText(doc.pageEntities)
-            showContainedTags(true)
-        }
     }
 
     fun container(

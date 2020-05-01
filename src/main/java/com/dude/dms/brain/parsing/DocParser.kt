@@ -123,12 +123,12 @@ class DocParser(
     }
 
     fun discoverTags(pages: Set<PageContainer>): Set<TagContainer> {
-        val rawText = docService.getFullText2(pages)
+        val docText = docService.getFullText2(pages)
         val tags = mutableSetOf<TagContainer>()
         tags.addAll(Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.map { TagContainer(it, t("automatic")) })
-        if (rawText.isNotEmpty()) {
-            tags.addAll(plainTextRuleValidator.getTags(rawText))
-            tags.addAll(regexRuleValidator.getTags(rawText))
+        if (docText.isNotEmpty()) {
+            tags.addAll(plainTextRuleValidator.getTags(docText))
+            tags.addAll(regexRuleValidator.getTags(docText))
         }
         LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.tag.name }))
         return tags

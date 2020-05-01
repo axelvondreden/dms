@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service
 class AttributeValueService(
         private val attributeValueRepository: AttributeValueRepository,
         eventManager: EventManager
-) : EventService<AttributeValue>(attributeValueRepository, eventManager) {
+) : RestoreService<AttributeValue>(attributeValueRepository, eventManager) {
 
     fun findByDocAndAttribute(doc: Doc, attribute: Attribute) = attributeValueRepository.findByDocAndAttribute(doc, attribute)
 
-    fun findByAttribute(attribute: Attribute) = attributeValueRepository.findByAttribute(attribute)
+    fun findByAttribute(attribute: Attribute) = attributeValueRepository.findByAttributeAndDeletedFalse(attribute)
 
     fun findAutocomplete(attribute: Attribute)
-            = attributeValueRepository.findByAttribute(attribute)
+            = attributeValueRepository.findByAttributeAndDeletedFalse(attribute)
             .groupBy { it.stringValue }.entries.sortedByDescending { it.value.size }.map { it.key }
 }

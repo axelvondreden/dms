@@ -13,14 +13,10 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(scanBasePackageClasses = { MainView.class, Application.class, EditMode.class, DocService.class, SpringContext.class }, exclude = ErrorMvcAutoConfiguration.class)
 @EnableJpaRepositories(basePackageClasses = DocRepository.class)
 @EntityScan(basePackageClasses = DataEntity.class)
-@EnableTransactionManagement
-@EnableScheduling
 public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) {

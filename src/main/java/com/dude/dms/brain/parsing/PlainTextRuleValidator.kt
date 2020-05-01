@@ -14,14 +14,14 @@ class PlainTextRuleValidator(
         tagService: TagService, docService: DocService
 ) : RuleValidator<PlainTextRule>(tagService, docService) {
 
-    override fun getTagsForRule(rawText: String?, rule: PlainTextRule) = rawText?.let { text ->
+    override fun getTagsForRule(docText: String?, rule: PlainTextRule) = docText?.let { text ->
         if (text.split("\n").any { rule.validate(it) }) {
             return rule.tags.map { TagContainer(it, t("rule") + ": " + rule.text) }.toSet()
         }
         emptySet<TagContainer>()
     } ?: emptySet()
 
-    override fun getTags(rawText: String?) = rawText?.let {
-        plainTextRuleService.findAll().flatMap { getTagsForRule(rawText, it) }.toSet()
+    override fun getTags(docText: String?) = docText?.let {
+        plainTextRuleService.findAll().flatMap { getTagsForRule(docText, it) }.toSet()
     } ?: emptySet()
 }

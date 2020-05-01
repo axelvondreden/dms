@@ -27,4 +27,8 @@ abstract class EventService<T>(
         super.delete(entity)
         eventManager.trigger(entity, EventType.DELETE)
     }
+
+    open fun softDelete(entity: T) {
+        eventManager.trigger(entity, EventType.DELETE)
+    }
 }

@@ -155,8 +155,7 @@ class DocsView(
     private fun refreshFilter() {
         filter = DocService.Filter(
                 tag = tagFilter.optionalValue.orElse(null),
-                attribute = attributeFilter.optionalValue.orElse(null),
-                text = textFilter.optionalValue.orElse(null)
+                attribute = attributeFilter.optionalValue.orElse(null)
         )
         fill(viewUI)
     }
