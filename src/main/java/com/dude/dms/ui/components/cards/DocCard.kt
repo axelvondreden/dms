@@ -102,7 +102,6 @@ class DocCard(
             addItem(t("restore")) { docService.restore(docContainer.doc!!) }
         } else {
             addItem(t("view")) { builderFactory.docs().imageDialog(docContainer).open() }
-            addItem(t("edit")) { builderFactory.docs().editDialog(docContainer).open() }
             addItem(t("delete")) { builderFactory.docs().deleteDialog(docContainer).open() }
         }
     }
