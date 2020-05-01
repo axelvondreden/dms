@@ -31,7 +31,7 @@ class StartUpRunner(
         fileManager.getAllImages().forEach { file -> if (docService.findByGuid(file.name.takeWhile { it != '_' }) == null) file.delete() }
 
         // Migration 0.0.2 -> 0.0.3
-        docService.findAll().forEach {
+        docService.findIncomplete().forEach {
             if (it.deleted == null) {
                 it.deleted = false
                 docService.save(it)
