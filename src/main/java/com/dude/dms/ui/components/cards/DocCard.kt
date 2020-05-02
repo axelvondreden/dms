@@ -56,7 +56,10 @@ class DocCard(
         val img = docContainer.pages.first { it.nr == 1 }.image!!
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")
-            style["maxWidth"] = "100%"
+            style["width"] = "100%"
+            style["height"] = "100%"
+            style["objectFit"] = "cover"
+            style["objectPosition"] = "top left"
             setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
         }
         imgDiv = Div().apply {

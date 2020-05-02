@@ -28,7 +28,7 @@ class ModeSelector : HorizontalLayout() {
 
         setRenderer(ComponentRenderer(SerializableFunction {
             FlexLayout(it.icon.create().apply { style["maxHeight"] = "18px" }, Div().apply {
-                text = it.uiName + "(" + it.shortcut.keys.first() + ")"
+                text = it.uiName
                 style["margin-left"] = "0.5em"
             })
         }))
