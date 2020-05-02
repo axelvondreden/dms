@@ -3,6 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.round
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.grid.Grid
@@ -10,7 +11,6 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 import org.languagetool.rules.SuggestedReplacement
-import kotlin.math.round
 
 class WordEditDialog(
         private val wordService: WordService,
@@ -54,11 +54,5 @@ class WordEditDialog(
         wordContainer.word.text = newText
         if (wordContainer.word.id > 0) wordService.save(wordContainer.word)
         close()
-    }
-
-    private fun Float.round(decimals: Int): Float {
-        var multiplier = 1.0F
-        repeat(decimals) { multiplier *= 10 }
-        return round(this * multiplier) / multiplier
     }
 }

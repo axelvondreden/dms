@@ -5,6 +5,7 @@ import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.extensions.findDate
 import com.dude.dms.extensions.findDecimal
+import com.dude.dms.extensions.round
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -57,7 +58,7 @@ class AttributeValueField(
     private val floatField
         get() = NumberField(label).apply {
             step = 0.01
-            value = attributeValue.floatValue?.toDouble()
+            value = attributeValue.floatValue?.toDouble()?.round(2)
             addValueChangeListener { event ->
                 if (!event.hasValue.isEmpty() || !isRequired) {
                     attributeValue.floatValue = event.value.toFloat()
