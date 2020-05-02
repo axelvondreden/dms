@@ -9,6 +9,7 @@ import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocImportCard
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.UIDetachedException
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.contextmenu.ContextMenu
@@ -132,36 +133,46 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         }
         val ui = UI.getCurrent()
         Thread {
-            var process = docImportService.progress
-            while (process < 1.0) {
-                ui.access {
-                    progressBar.value = process
-                    progressText.text = docImportService.progressText
+            try {
+                var process = docImportService.progress
+                while (process < 1.0) {
+                    ui.access {
+                        progressBar.value = process
+                        progressText.text = docImportService.progressText
+                    }
+                    process = docImportService.progress
+                    Thread.sleep(100)
                 }
-                process = docImportService.progress
-                Thread.sleep(100)
+                Thread.sleep(50)
+                ui.access {
+                    progressBar.value = 1.0
+                    progressText.text = t("done")
+                }
+            } catch (e: UIDetachedException) {
+            } catch (e: NullPointerException) {
+            } finally {
+                loading = false
             }
-            Thread.sleep(50)
-            ui.access {
-                progressBar.value = 1.0
-                progressText.text = t("done")
-            }
-            loading = false
         }.start()
 
         Thread {
-            var process = docImportService.progress
-            while (process < 1.0) {
-                fill(ui, true)
-                process = docImportService.progress
-                Thread.sleep(1000)
+            try {
+                var process = docImportService.progress
+                while (process < 1.0) {
+                    fill(ui, true)
+                    process = docImportService.progress
+                    Thread.sleep(1000)
+                }
+                Thread.sleep(50)
+                ui.access {
+                    progressBar.value = 1.0
+                    progressText.text = t("done")
+                }
+            } catch (e: UIDetachedException) {
+            } catch (e: NullPointerException) {
+            } finally {
+                loading = false
             }
-            Thread.sleep(50)
-            ui.access {
-                progressBar.value = 1.0
-                progressText.text = t("done")
-            }
-            loading = false
         }.start()
     }
 
