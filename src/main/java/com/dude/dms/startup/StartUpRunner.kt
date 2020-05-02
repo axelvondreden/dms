@@ -1,6 +1,6 @@
 package com.dude.dms.startup
 
-import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
@@ -15,6 +15,10 @@ import java.util.*
 @Component
 class StartUpRunner(
         private val docService: DocService,
+        private val attributeValueService: AttributeValueService,
+        private val pageService: PageService,
+        private val lineService: LineService,
+        private val wordService: WordService,
         private val fileManager: FileManager,
         private val docImportService: DocImportService,
         private val updateChecker: UpdateChecker,
@@ -35,6 +39,30 @@ class StartUpRunner(
             if (it.deleted == null) {
                 it.deleted = false
                 docService.save(it)
+            }
+        }
+        pageService.findIncomplete().forEach {
+            if (it.deleted == null) {
+                it.deleted = false
+                pageService.save(it)
+            }
+        }
+        lineService.findIncomplete().forEach {
+            if (it.deleted == null) {
+                it.deleted = false
+                lineService.save(it)
+            }
+        }
+        wordService.findIncomplete().forEach {
+            if (it.deleted == null) {
+                it.deleted = false
+                wordService.save(it)
+            }
+        }
+        attributeValueService.findIncomplete().forEach {
+            if (it.deleted == null) {
+                it.deleted = false
+                attributeValueService.save(it)
             }
         }
 

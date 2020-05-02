@@ -20,4 +20,6 @@ class AttributeValueService(
     fun findAutocomplete(attribute: Attribute)
             = attributeValueRepository.findByAttributeAndDeletedFalse(attribute)
             .groupBy { it.stringValue }.entries.sortedByDescending { it.value.size }.map { it.key }
+
+    fun findIncomplete() = attributeValueRepository.findByDeletedIsNull()
 }

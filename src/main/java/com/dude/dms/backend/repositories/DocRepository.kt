@@ -49,6 +49,4 @@ interface DocRepository : RestoreRepository<Doc> {
             " AND (:attribute is null or :attribute IN (SELECT av.attribute FROM AttributeValue av WHERE av.doc = doc))" +
             " AND (:mail is null or :mail = doc.mail)")
     fun countByFilter(@Param("tag") tag: Tag?, @Param("attribute") attribute: Attribute?, @Param("mail") mail: Mail?): Long
-
-    fun findByDeletedIsNull(): Set<Doc>
 }
