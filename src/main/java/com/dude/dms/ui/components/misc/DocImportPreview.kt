@@ -42,7 +42,7 @@ class DocImportPreview(builderFactory: BuilderFactory) : VerticalLayout() {
         locale = Locale.forLanguageTag(Options.get().view.locale)
     }
 
-    private val pageSelector = PageSelector()
+    private val pageSelector = DocPageSelector()
 
     private val modeSelector = ModeSelector()
 

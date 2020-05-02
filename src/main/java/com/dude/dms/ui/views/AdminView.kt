@@ -4,6 +4,7 @@ import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.round
 import com.dude.dms.ui.Const
 import com.github.appreciated.apexcharts.ApexChartsBuilder
 import com.github.appreciated.apexcharts.config.builder.ChartBuilder
@@ -25,7 +26,6 @@ import java.io.File
 import java.math.BigInteger
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
-import kotlin.math.round
 
 
 @Route(value = Const.PAGE_ADMIN, layout = MainView::class)
@@ -79,12 +79,6 @@ class AdminView(private val docService: DocService, private val tagService: TagS
             element.style.set("padding", "5px")["width"] = "100%"
         }
         return Card(details).apply { setWidthFull() }
-    }
-
-    fun Double.round(decimals: Int): Double {
-        var multiplier = 1.0
-        repeat(decimals) { multiplier *= 10 }
-        return round(this * multiplier) / multiplier
     }
 
     @Service

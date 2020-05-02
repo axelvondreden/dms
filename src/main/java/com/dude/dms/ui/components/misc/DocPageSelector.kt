@@ -5,7 +5,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.select.Select
 
-class PageSelector(max: Int = 1) : HorizontalLayout() {
+class DocPageSelector(max: Int = 1) : HorizontalLayout() {
 
     private val prev = Button(VaadinIcon.ARROW_CIRCLE_LEFT.create()) { prev() }
 

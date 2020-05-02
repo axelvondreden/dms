@@ -99,6 +99,8 @@ class DocService(
 
     fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
 
+    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail)
+
     fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
             line.words.sortedBy { it.x }.joinToString(" ") { it.text }

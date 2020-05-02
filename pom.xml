@@ -279,6 +279,11 @@
             <artifactId>hunspell-bridj</artifactId>
             <version>1.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.miki</groupId>
+            <artifactId>superfields</artifactId>
+            <version>0.5.1.java8</version>
+        </dependency>
     </dependencies>
 
     <build>

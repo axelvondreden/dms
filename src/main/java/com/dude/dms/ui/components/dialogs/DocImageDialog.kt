@@ -7,7 +7,7 @@ import com.dude.dms.brain.t
 import com.dude.dms.extensions.findDate
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.misc.ModeSelector
-import com.dude.dms.ui.components.misc.PageSelector
+import com.dude.dms.ui.components.misc.DocPageSelector
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.datepicker.DatePicker
@@ -36,7 +36,7 @@ class DocImageDialog(
 
     private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }
 
-    private val pageSelector = PageSelector(docContainer.pages.size).apply {
+    private val pageSelector = DocPageSelector(docContainer.pages.size).apply {
         setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
     }
 
