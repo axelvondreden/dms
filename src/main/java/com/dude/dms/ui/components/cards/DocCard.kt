@@ -94,7 +94,7 @@ class DocCard(
             }
         }
 
-        add(titleWrapper, imgDiv, Div(tagContainer, attributeContainer).apply { addClassName("doc-info-wrapper") })
+        add(titleWrapper, imgDiv, Div(attributeContainer, tagContainer).apply { addClassName("doc-info-wrapper") })
         resize()
     }
 
