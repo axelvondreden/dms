@@ -37,6 +37,7 @@ class DocImageDialog(
     private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }
 
     private val pageSelector = DocPageSelector(docContainer.pages.size).apply {
+        page = 1
         setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
     }
 
