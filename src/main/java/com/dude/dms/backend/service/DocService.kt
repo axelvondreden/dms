@@ -25,7 +25,8 @@ class DocService(
     data class Filter(
             var tag: Tag? = null,
             var attribute: Attribute? = null,
-            var mail: Mail? = null
+            var mail: Mail? = null,
+            var text: String? = null
     ) : Serializable
 
     fun create(entity: Doc, attributeValues: Set<AttributeValue>): Doc {
@@ -95,9 +96,21 @@ class DocService(
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
-    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
+    fun findByFilter(filter: Filter, pageable: Pageable): Set<Doc> {
+        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
+        if (!filter.text.isNullOrBlank()) {
+            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
+        }
+        return docs.toSet()
+    }
 
-    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
+    fun findByFilter(filter: Filter, sort: Sort): Set<Doc> {
+        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
+        if (!filter.text.isNullOrBlank()) {
+            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
+        }
+        return docs
+    }
 
     fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail)
 

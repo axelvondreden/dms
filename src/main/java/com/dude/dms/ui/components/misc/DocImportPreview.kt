@@ -141,7 +141,7 @@ class DocImportPreview(builderFactory: BuilderFactory) : VerticalLayout() {
         Tooltips.getCurrent().setTooltip(pdfButton, "$pdfCount ${t("words")}\n $pdfSpelling % ${t("spelling")}")
         ocrButton.text = "OCR $ocrCount / $ocrSpelling %"
         Tooltips.getCurrent().removeTooltip(ocrButton)
-        Tooltips.getCurrent().setTooltip(ocrButton, "$ocrCount ${t("words")}\n $ocrSpelling % ${t("spelling")}")
+        Tooltips.getCurrent().setTooltip(ocrButton, "${t("language")}: ${docContainer.language}\n$ocrCount ${t("words")}\n $ocrSpelling % ${t("spelling")}")
 
         if (docContainer.useOcrTxt) {
             ocrButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY)

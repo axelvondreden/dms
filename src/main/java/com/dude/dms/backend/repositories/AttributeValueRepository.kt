@@ -8,5 +8,5 @@ interface AttributeValueRepository : RestoreRepository<AttributeValue> {
 
     fun findByDocAndAttribute(doc: Doc, attribute: Attribute): AttributeValue?
 
-    fun findByAttributeAndDeletedFalse(attribute: Attribute): Set<AttributeValue>
+    fun findByAttribute(attribute: Attribute): Set<AttributeValue>
 }
