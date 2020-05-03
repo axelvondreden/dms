@@ -157,7 +157,7 @@ class DocImageEditor(
                 if (wordContainer.spelling != null) {
                     addClassName("word-wrapper-error")
                 }
-                element.style["top"] = "${word.y}%"
+                element.style["top"] = "${word.y - ((word.y / 100.0F) * 0.5F)}%"
                 element.style["left"] = "${word.x}%"
                 element.style["width"] = "${word.width}%"
                 element.style["height"] = "${word.height}%"
