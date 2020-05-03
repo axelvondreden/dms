@@ -17,7 +17,7 @@ class Word(
 
         @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 1000)
-        var text: String,
+        var text: String?,
 
         var x: Float,
         var y: Float,
@@ -45,7 +45,7 @@ class Word(
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + text.hashCode()
+        if (text != null) result = 31 * result + text.hashCode()
         result = 31 * result + x.hashCode()
         result = 31 * result + y.hashCode()
         result = 31 * result + width.hashCode()

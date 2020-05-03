@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class PageService(
-        pageRepository: PageRepository,
+        private val pageRepository: PageRepository,
         private val lineService: LineService,
         eventManager: EventManager
 ) : RestoreService<Page>(pageRepository, eventManager) {
@@ -26,4 +26,6 @@ class PageService(
         entity.lines.forEach(lineService::restore)
         super.restore(entity)
     }
+
+    fun findIncomplete() = pageRepository.findByDeletedIsNull()
 }

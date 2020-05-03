@@ -14,7 +14,6 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.dialogs.DocUploadDialog
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu
@@ -86,7 +85,6 @@ class MainView(
     }
 
     private fun buildAppMenu(): Component {
-        val uploadDocEntry = LeftClickableItem(t("doc.upload"), VaadinIcon.UPLOAD.create()) { DocUploadDialog().open() }
         val importDocEntry = LeftNavigationItem(t("doc.import"), VaadinIcon.PLUS_CIRCLE.create(), DocImportView::class.java)
         importsBadge = DefaultBadgeHolder(docImportService.count).apply { bind(importDocEntry.badge) }
         val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
@@ -99,8 +97,7 @@ class MainView(
         val attributesEntry = createAttributesEntry()
         val rulesEntry = LeftNavigationItem(t("rules"), VaadinIcon.MAGIC.create(), RulesView::class.java)
         return LeftAppMenuBuilder.get()
-                .addToSection(Section.HEADER, uploadDocEntry, importDocEntry)
-                .add(docsEntry, mailsEntry, tagsEntry, attributesEntry, rulesEntry)
+                .add(importDocEntry, docsEntry, mailsEntry, tagsEntry, attributesEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),

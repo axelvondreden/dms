@@ -29,7 +29,7 @@ class AttributeService(
             tagService.save(it)
         }
         attributeValueService.findByAttribute(entity).forEach(attributeValueService::delete)
-        super.delete(entity)
+        load(entity.id)?.let { super.delete(it) }
     }
 
     fun findByName(name: String) = attributeRepository.findByName(name)

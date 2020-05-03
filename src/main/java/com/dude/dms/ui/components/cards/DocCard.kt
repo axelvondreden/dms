@@ -28,7 +28,7 @@ import dev.mett.vaadin.tooltip.Tooltips
 class DocCard(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
-        private val docContainer: DocContainer
+        val docContainer: DocContainer
 ) : ClickableCard() {
 
     private var imgDiv: Div? = null
@@ -56,7 +56,10 @@ class DocCard(
         val img = docContainer.pages.first { it.nr == 1 }.image!!
         val image = Element("object").apply {
             setAttribute("attribute.type", "image/png")
-            style["maxWidth"] = "100%"
+            style["width"] = "100%"
+            style["height"] = "100%"
+            style["objectFit"] = "cover"
+            style["objectPosition"] = "top left"
             setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
         }
         imgDiv = Div().apply {
@@ -91,7 +94,7 @@ class DocCard(
             }
         }
 
-        add(titleWrapper, imgDiv, Div(tagContainer, attributeContainer).apply { addClassName("doc-info-wrapper") })
+        add(titleWrapper, imgDiv, Div(attributeContainer, tagContainer).apply { addClassName("doc-info-wrapper") })
         resize()
     }
 
@@ -102,7 +105,6 @@ class DocCard(
             addItem(t("restore")) { docService.restore(docContainer.doc!!) }
         } else {
             addItem(t("view")) { builderFactory.docs().imageDialog(docContainer).open() }
-            addItem(t("edit")) { builderFactory.docs().editDialog(docContainer).open() }
             addItem(t("delete")) { builderFactory.docs().deleteDialog(docContainer).open() }
         }
     }

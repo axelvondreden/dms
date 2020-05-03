@@ -15,6 +15,7 @@ import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocCard
+import com.dude.dms.ui.components.misc.ViewPageSelector
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.combobox.ComboBox
@@ -25,9 +26,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.*
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.streams.toList
 
 
 @Route(value = Const.PAGE_DOCS, layout = MainView::class)
@@ -94,17 +97,37 @@ class DocsView(
         addValueChangeListener { refreshFilter() }
     }
 
+    private val pageSelector = ViewPageSelector()
+
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
+        eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
+        eventManager.register(this, Doc::class, EventType.UPDATE) { updateDoc(it, viewUI) }
+        eventManager.register(this, Doc::class, EventType.DELETE) { deleteDoc(it, viewUI) }
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
+
+        pageSelector.setChangeListener { scheduleFill(viewUI) }
 
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
 
-        val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton).apply { setWidthFull() }
+        val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton, pageSelector).apply { setWidthFull() }
         add(header, itemContainer)
         scheduleFill(viewUI)
+    }
+
+    private fun updateDoc(doc: Doc, ui: UI) {
+        ui.access {
+            itemContainer.children.toList().filterIsInstance<DocCard>().firstOrNull { it.docContainer.doc?.guid == doc.guid }?.fill()
+        }
+    }
+
+    private fun deleteDoc(doc: Doc, ui: UI) {
+        ui.access {
+            itemContainer.children.toList().filterIsInstance<DocCard>().firstOrNull { it.docContainer.doc?.guid == doc.guid }?.let {
+                itemContainer.remove(it)
+            }
+        }
     }
 
     private fun softReload(ui: UI) {
@@ -144,8 +167,11 @@ class DocsView(
     }
 
     private fun fill(ui: UI) {
-        ui.access { itemContainer.removeAll() }
-        docService.findByFilter(filter, sortFilter.value.second).forEach { doc ->
+        ui.access {
+            itemContainer.removeAll()
+            pageSelector.items = docService.countByFilter(filter).toInt()
+        }
+        docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
             val dc = DocContainer(doc)
             dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
             ui.access { itemContainer.add(builderFactory.docs().card(dc)) }
@@ -155,7 +181,8 @@ class DocsView(
     private fun refreshFilter() {
         filter = DocService.Filter(
                 tag = tagFilter.optionalValue.orElse(null),
-                attribute = attributeFilter.optionalValue.orElse(null)
+                attribute = attributeFilter.optionalValue.orElse(null),
+                text = textFilter.optionalValue.orElse(null)
         )
         fill(viewUI)
     }

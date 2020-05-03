@@ -1,12 +1,15 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.ui.EditMode
+import com.vaadin.flow.component.KeyModifier
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.orderedlayout.FlexLayout
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.select.Select
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.function.SerializableFunction
+import com.vaadin.flow.server.Command
 
 class ModeSelector : HorizontalLayout() {
 
@@ -19,7 +22,7 @@ class ModeSelector : HorizontalLayout() {
 
     private val current = Select(*EditMode.values()).apply {
         value = mode
-        width = "80px"
+        width = "120px"
         isEmptySelectionAllowed = false
         style["padding"] = "0px 5px"
         addValueChangeListener { if (it.isFromClient) mode = it.value }
@@ -39,6 +42,7 @@ class ModeSelector : HorizontalLayout() {
         isSpacing = false
         add(current)
         mode = EditMode.EDIT
+        EditMode.values().forEach { UI.getCurrent().addShortcutListener(Command { mode = it }, it.shortcut, KeyModifier.CONTROL.apply {  }) }
     }
 
     fun setChangeListener(onChange: ((EditMode) -> Unit)?) {

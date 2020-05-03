@@ -1,3 +1,7 @@
+.doc-card {
+    padding: 0px 5px 5px 0px;
+}
+
 .doc-card:hover .tag-container-compact {
     flex-wrap: wrap;
 }
@@ -18,7 +22,7 @@
 
 .doc-info-wrapper {
     width: 100%;
-    background-color: lightGray;
+    background-color: #998787;
 }
 
 .inline-image {
@@ -44,6 +48,13 @@
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+}
+
+.tag-label {
+    display: inline;
+    border: 2px solid #CCF;
+    margin: 2px;
+    white-space: nowrap;
 }
 
 .word-wrapper {

@@ -56,6 +56,7 @@ class TagDeleteDialog(
         }
         if (attributeCheck.value) {
             tag.attributes.forEach(attributeService::delete)
+            tag.attributes = emptySet()
         }
         if (plainTextRuleCheck.value) {
             plainTextRuleService.findByTag(tag).forEach(plainTextRuleService::delete)
@@ -66,7 +67,7 @@ class TagDeleteDialog(
         if (mailFilterCheck.value) {
             mailFilterService.findByTag(tag).forEach(mailFilterService::delete)
         }
-        tagService.delete(tag)
+        tagService.delete(tagService.save(tag))
         close()
     }
 }

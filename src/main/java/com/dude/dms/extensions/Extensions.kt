@@ -1,7 +1,6 @@
 package com.dude.dms.extensions
 
 import com.dude.dms.brain.options.Options
-import com.vaadin.flow.component.dialog.Dialog
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -43,4 +42,16 @@ fun String.findDate() = filterNot { it.isLetter() || it.isWhitespace() }.replace
             }
         }
     }.firstOrNull()
+}
+
+fun Float.round(decimals: Int): Float {
+    var multiplier = 1.0F
+    repeat(decimals) { multiplier *= 10 }
+    return kotlin.math.round(this * multiplier) / multiplier
+}
+
+fun Double.round(decimals: Int): Double {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return kotlin.math.round(this * multiplier) / multiplier
 }

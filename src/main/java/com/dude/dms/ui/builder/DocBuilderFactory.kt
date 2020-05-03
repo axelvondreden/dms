@@ -10,7 +10,6 @@ import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.dialogs.DocDeleteDialog
-import com.dude.dms.ui.components.dialogs.DocEditDialog
 import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.dude.dms.ui.components.misc.DocImageEditor
@@ -26,8 +25,6 @@ class DocBuilderFactory(
         private val lineService: LineService,
         private val wordService: WordService
 ) : Factory(builderFactory) {
-
-    fun editDialog(docContainer: DocContainer) = DocEditDialog(builderFactory, docContainer, docService)
 
     fun deleteDialog(docContainer: DocContainer) = DocDeleteDialog(docContainer, docService, mailService)
 

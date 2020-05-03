@@ -157,7 +157,7 @@ class DocImageEditor(
                 if (wordContainer.spelling != null) {
                     addClassName("word-wrapper-error")
                 }
-                element.style["top"] = "${word.y}%"
+                element.style["top"] = "${word.y - ((word.y / 100.0F) * 0.5F)}%"
                 element.style["left"] = "${word.x}%"
                 element.style["width"] = "${word.width}%"
                 element.style["height"] = "${word.height}%"
@@ -179,11 +179,11 @@ class DocImageEditor(
                 if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, word.text) } else Tooltips.getCurrent().setTooltip(wrapper, word.text)
                 onTextChange?.invoke(docContainer!!)
             }
-            dlg.addOpenedChangeListener {
-                if (!it.isOpened) {
+            dlg.addOpenedChangeListener { event ->
+                if (!event.isOpened) {
                     if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text) }
                     else Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text)
-                    wordContainer.spelling = Spellchecker(docContainer!!.language).check(wordContainer.word.text)
+                    wordContainer.spelling = wordContainer.word.text?.let { Spellchecker(docContainer!!.language).check(it) }
                     if (wordContainer.spelling != null) {
                         wrapper.addClassName("word-wrapper-error")
                     } else {

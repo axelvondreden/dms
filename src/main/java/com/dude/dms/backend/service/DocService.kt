@@ -25,7 +25,8 @@ class DocService(
     data class Filter(
             var tag: Tag? = null,
             var attribute: Attribute? = null,
-            var mail: Mail? = null
+            var mail: Mail? = null,
+            var text: String? = null
     ) : Serializable
 
     fun create(entity: Doc, attributeValues: Set<AttributeValue>): Doc {
@@ -83,7 +84,9 @@ class DocService(
                 .distinct().forEach { attributeValueService.delete(it) }
     }
 
-    fun findByGuid(guid: String): Doc? = docRepository.findByGuid(guid)
+    fun findIncomplete() = docRepository.findByDeletedIsNull()
+
+    fun findByGuid(guid: String) = docRepository.findByGuid(guid)
 
     fun findByTag(tag: Tag) = docRepository.findByTagsAndDeletedFalse(tag)
 
@@ -93,19 +96,33 @@ class DocService(
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
-    fun findByFilter(filter: Filter, pageable: Pageable) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
+    fun findByFilter(filter: Filter, pageable: Pageable): Set<Doc> {
+        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
+        if (!filter.text.isNullOrBlank()) {
+            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
+        }
+        return docs.toSet()
+    }
 
-    fun findByFilter(filter: Filter, sort: Sort) = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
+    fun findByFilter(filter: Filter, sort: Sort): Set<Doc> {
+        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
+        if (!filter.text.isNullOrBlank()) {
+            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
+        }
+        return docs
+    }
+
+    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail)
 
     fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.x }.joinToString(" ") { it.text }
+            line.words.sortedBy { it.x }.joinToString(" ") { it.text.toString() }
         }
     }
 
     fun getFullText2(pages: Set<PageContainer>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text }
+            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
         }
     }
 }

@@ -15,9 +15,11 @@ class AttributeValueService(
 
     fun findByDocAndAttribute(doc: Doc, attribute: Attribute) = attributeValueRepository.findByDocAndAttribute(doc, attribute)
 
-    fun findByAttribute(attribute: Attribute) = attributeValueRepository.findByAttributeAndDeletedFalse(attribute)
+    fun findByAttribute(attribute: Attribute) = attributeValueRepository.findByAttribute(attribute)
 
     fun findAutocomplete(attribute: Attribute)
-            = attributeValueRepository.findByAttributeAndDeletedFalse(attribute)
+            = attributeValueRepository.findByAttribute(attribute)
             .groupBy { it.stringValue }.entries.sortedByDescending { it.value.size }.map { it.key }
+
+    fun findIncomplete() = attributeValueRepository.findByDeletedIsNull()
 }

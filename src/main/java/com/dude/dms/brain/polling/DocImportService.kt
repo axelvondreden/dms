@@ -84,7 +84,7 @@ class DocImportService(
                 _progressText = "${index + 1} / $size    " + t("pdf.parse")
                 dc.pdfPages = docParser.getPdfText(dc.guid)
                 if (dc.pdfPages.isNotEmpty()) {
-                    dc.language = spellcheckers.minBy { entry -> dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { entry.value.check(it.word.text) != null } }!!.key
+                    dc.language = spellcheckers.minBy { entry -> dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { container -> container.word.text?.let { entry.value.check(it) } != null } }!!.key
                 }
                 _progressText += " > ${t("recognized.language")}: ${dc.language}"
                 _progress = (index * 4 + 1) / progressMax
@@ -94,8 +94,8 @@ class DocImportService(
                 dc.ocrPages = docParser.getOcrText(dc.guid, dc.language)
                 dc.ocrPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
                 _progress = (index * 4 + 2) / progressMax
-                dc.pdfPages.words().forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
-                dc.ocrPages.words().forEach { it.spelling = spellcheckers.getValue(dc.language).check(it.word.text) }
+                dc.pdfPages.words().forEach { container -> container.spelling = container.word.text?.let { spellcheckers.getValue(dc.language).check(it) } }
+                dc.ocrPages.words().forEach { container -> container.spelling = container.word.text?.let { spellcheckers.getValue(dc.language).check(it) } }
                 _progress = (index * 4 + 3) / progressMax
 
                 dc.useOcrTxt = dc.ocrPages.wordCount() > dc.pdfPages.wordCount()
@@ -114,16 +114,19 @@ class DocImportService(
     }
 
     fun create(docContainer: DocContainer) {
-        val pages = docContainer.pageEntities
+        val pages = docContainer.pages
         val doc = Doc(docContainer.guid, docContainer.date, LocalDateTime.now(), docContainer.tagEntities.toMutableSet())
         docService.create(doc, docContainer.attributeValues)
-        pages.forEach { page ->
+        pages.forEach { pageContainer ->
+            val page = pageContainer.page
             page.doc = doc
             pageService.create(page)
-            page.lines.forEach { line ->
+            pageContainer.lines.forEach { lineContainer ->
+                val line = lineContainer.line
                 line.page = page
                 lineService.create(line)
-                line.words.forEach { word ->
+                lineContainer.words.forEach { wordContainer ->
+                    val word = wordContainer.word
                     word.line = line
                     wordService.create(word)
                 }
