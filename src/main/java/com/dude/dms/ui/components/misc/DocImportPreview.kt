@@ -44,7 +44,7 @@ class DocImportPreview(builderFactory: BuilderFactory) : VerticalLayout() {
 
     private val pageSelector = DocPageSelector()
 
-    private val modeSelector = ModeSelector()
+    private val modeSelector = ModeSelector(imageEditor)
 
     private val pdfButton = Button("PDF") {
         docContainer?.let { dc ->

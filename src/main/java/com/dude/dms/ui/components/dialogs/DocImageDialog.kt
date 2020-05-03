@@ -41,7 +41,7 @@ class DocImageDialog(
         setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
     }
 
-    private val modeSelector = ModeSelector().apply {
+    private val modeSelector = ModeSelector(imageEditor).apply {
         setChangeListener { imageEditor.mode = it }
     }
 

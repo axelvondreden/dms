@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.ui.EditMode
+import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.orderedlayout.FlexLayout
@@ -10,7 +11,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.function.SerializableFunction
 import com.vaadin.flow.server.Command
 
-class ModeSelector : HorizontalLayout() {
+class ModeSelector(private val shortcutScope: Component) : HorizontalLayout() {
 
     var mode: EditMode = EditMode.EDIT
         set(value) {
@@ -41,7 +42,7 @@ class ModeSelector : HorizontalLayout() {
         isSpacing = false
         add(current)
         mode = EditMode.EDIT
-        EditMode.values().forEach { UI.getCurrent().addShortcutListener(Command { mode = it }, it.shortcut) }
+        EditMode.values().forEach { UI.getCurrent().addShortcutListener(Command { mode = it }, it.shortcut).listenOn(shortcutScope) }
     }
 
     fun setChangeListener(onChange: ((EditMode) -> Unit)?) {
