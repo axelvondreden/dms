@@ -7,6 +7,7 @@ import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocImportCard
+import com.dude.dms.ui.components.dialogs.DocUploadDialog
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.UIDetachedException
@@ -70,6 +71,10 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         setSizeFull()
         isSpacing = false
 
+        val uploadButton = Button("Upload", VaadinIcon.UPLOAD.create()) { DocUploadDialog().open() }.apply {
+            width = "200px"
+            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+        }
         val refreshButton = Button(t("refresh"), VaadinIcon.REFRESH.create()) { refresh() }.apply { width = "250px" }
         val rerunRules = Button(t("rules.rerun"), VaadinIcon.MAGIC.create()) { rerunRules() }.apply { width = "250px" }
         Tooltips.getCurrent().setTooltip(rerunRules, t("rules.rerun.tooltip"))
@@ -79,7 +84,7 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
             isSpacing = false
             isPadding = false
         }
-        val header = HorizontalLayout(refreshButton, rerunRules, progress, importButton).apply { setWidthFull() }
+        val header = HorizontalLayout(uploadButton, refreshButton, rerunRules, progress, importButton).apply { setWidthFull() }
         val split = SplitLayout(itemContainer, itemPreview).apply {
             setSizeFull()
             orientation = SplitLayout.Orientation.VERTICAL
@@ -122,7 +127,7 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         itemContainer.children.filter { it is DocImportCard }.forEach { (it as DocImportCard).select(it.docContainer == dc) }
     }
 
-    fun refresh() {
+    private fun refresh() {
         if (loading) return
         loading = true
         fill()
