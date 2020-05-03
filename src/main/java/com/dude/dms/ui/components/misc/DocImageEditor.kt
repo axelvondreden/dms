@@ -179,11 +179,11 @@ class DocImageEditor(
                 if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, word.text) } else Tooltips.getCurrent().setTooltip(wrapper, word.text)
                 onTextChange?.invoke(docContainer!!)
             }
-            dlg.addOpenedChangeListener {
-                if (!it.isOpened) {
+            dlg.addOpenedChangeListener { event ->
+                if (!event.isOpened) {
                     if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text) }
                     else Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text)
-                    wordContainer.spelling = Spellchecker(docContainer!!.language).check(wordContainer.word.text)
+                    wordContainer.spelling = wordContainer.word.text?.let { Spellchecker(docContainer!!.language).check(it) }
                     if (wordContainer.spelling != null) {
                         wrapper.addClassName("word-wrapper-error")
                     } else {

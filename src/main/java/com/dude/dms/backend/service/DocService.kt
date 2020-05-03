@@ -103,13 +103,13 @@ class DocService(
 
     fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.x }.joinToString(" ") { it.text }
+            line.words.sortedBy { it.x }.joinToString(" ") { it.text.toString() }
         }
     }
 
     fun getFullText2(pages: Set<PageContainer>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text }
+            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
         }
     }
 }
