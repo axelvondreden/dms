@@ -8,6 +8,7 @@ import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.backend.service.LineService
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DmsOcrTextStripper
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
@@ -119,20 +120,22 @@ class DocImageEditor(
     fun fillWords(pageContainer: PageContainer) {
         val old = element.children.filter { it.tag == "div" }.toList()
         old.forEach { element.removeChild(it) }
-        val words = pageContainer.lines.flatMap { it.words }
-        progress.isVisible = true
-        progress.max = words.size.toDouble()
-        val ui = UI.getCurrent()
-        Thread {
-            words.chunked(10).withIndex().forEach {
-                addWordWrappers(it.value.toSet(), ui)
-                ui.access { progress.value = it.index.toDouble() * 10 }
-            }
-            ui.access {
-                element.appendChild(drawDiv.element)
-                progress.isVisible = false
-            }
-        }.start()
+        if (Options.get().view.loadWordsInPreview) {
+            val words = pageContainer.lines.flatMap { it.words }
+            progress.isVisible = true
+            progress.max = words.size.toDouble()
+            val ui = UI.getCurrent()
+            Thread {
+                words.chunked(10).withIndex().forEach {
+                    addWordWrappers(it.value.toSet(), ui)
+                    ui.access { progress.value = it.index.toDouble() * 10 }
+                }
+                ui.access {
+                    element.appendChild(drawDiv.element)
+                    progress.isVisible = false
+                }
+            }.start()
+        }
     }
 
     private fun addWordWrappers(wordContainers: Set<WordContainer>, ui: UI? = null) {

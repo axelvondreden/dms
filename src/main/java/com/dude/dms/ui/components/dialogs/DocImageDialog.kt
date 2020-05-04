@@ -6,8 +6,8 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.findDate
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.misc.ModeSelector
 import com.dude.dms.ui.components.misc.DocPageSelector
+import com.dude.dms.ui.components.misc.ModeSelector
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.datepicker.DatePicker
@@ -16,6 +16,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.splitlayout.SplitLayout
+import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
 class DocImageDialog(
@@ -55,13 +56,25 @@ class DocImageDialog(
     init {
         val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { imageEditor.shrink(zoomButton) }
         val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
+        val wordsButton = Button(VaadinIcon.AREA_SELECT.create()) {
+            val options = Options.get()
+            options.view.loadWordsInPreview = !Options.get().view.loadWordsInPreview
+            options.save()
+            it.source.removeThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_SUCCESS)
+            it.source.addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
+            pageSelector.page = pageSelector.page
+        }.apply {
+            Tooltips.getCurrent().setTooltip(this, t("words.preview.show"))
+            addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
+        }
         val horizontalLayout = HorizontalLayout(
                 pageSelector,
                 modeSelector,
                 HorizontalLayout(date, datePick).apply { isSpacing = false; isPadding = false },
                 shrinkButton,
                 zoomButton,
-                growButton
+                growButton,
+                wordsButton
         ).apply {
             setWidthFull()
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER

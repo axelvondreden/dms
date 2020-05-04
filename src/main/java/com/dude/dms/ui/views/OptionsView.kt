@@ -80,8 +80,14 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
                 save()
             }
         }
+        val loadWordsInPreview = Checkbox(t("words.preview.show"), options.view.loadWordsInPreview).apply {
+            addValueChangeListener {
+                options.view.loadWordsInPreview = value
+                save()
+            }
+        }
 
-        add(createSection(t("view"), locale, dateFormat, simpleColors, darkMode))
+        add(createSection(t("view"), locale, dateFormat, simpleColors, darkMode, loadWordsInPreview))
     }
 
     private fun createNotificationSection() {

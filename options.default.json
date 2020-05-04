@@ -9,7 +9,8 @@
     "locale": "en-Us",
     "darkMode": false,
     "notificationPosition": "BOTTOM_END",
-    "docCardSize": 200
+    "docCardSize": 200,
+    "loadWordsInPreview": true
   },
   "doc": {
     "pollingPath": "docs_in/",
