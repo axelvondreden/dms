@@ -16,7 +16,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.NumberField
 
 class AttributeValueField(
-        private val attributeValue: AttributeValue,
+        val attributeValue: AttributeValue,
         private val attributeValueService: AttributeValueService,
         imageEditor: DocImageEditor? = null
 ) : HorizontalLayout() {
@@ -147,4 +147,15 @@ class AttributeValueField(
     }
 
     fun validate() = validation.invoke()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AttributeValueField
+        if (attributeValue != other.attributeValue) return false
+        return true
+    }
+
+    override fun hashCode() = attributeValue.hashCode()
 }

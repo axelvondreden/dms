@@ -9,11 +9,12 @@ import com.vaadin.flow.component.html.Div
 
 class AttributeValueLayout(private val builderFactory: BuilderFactory, private val imageEditor: DocImageEditor? = null) : Div() {
 
-    private val fields = mutableListOf<AttributeValueField>()
+    private val fields = mutableSetOf<AttributeValueField>()
 
     fun fill(docContainer: DocContainer) {
-        clear()
-        docContainer.attributeValues.forEach {
+        val avs = docContainer.attributeValues
+        fields.removeAll { it.attributeValue !in avs }
+        avs.filter { av -> fields.none { it.attributeValue == av } }.forEach {
             val field = builderFactory.attributes().valueField(it, imageEditor).apply { setWidthFull() }
             add(field)
             fields.add(field)

@@ -5,6 +5,7 @@ import com.dude.dms.ui.builder.BuilderFactory
 import com.vaadin.flow.component.html.Div
 
 class DocInfoLayout(builderFactory: BuilderFactory, imageEditor: DocImageEditor) : Div() {
+
     private var docContainer: DocContainer? = null
 
     private val attributeValueContainer = builderFactory.attributes().valueContainer(imageEditor).apply {
