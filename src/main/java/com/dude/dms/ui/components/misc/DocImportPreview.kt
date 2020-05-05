@@ -49,14 +49,14 @@ class DocImportPreview(builderFactory: BuilderFactory) : VerticalLayout() {
     private val pdfButton = Button("PDF") {
         docContainer?.let { dc ->
             dc.useOcrTxt = false
-            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!)
+            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
             refreshTextTools(dc)
         }
     }
     private val ocrButton = Button("OCR") {
         docContainer?.let { dc ->
             dc.useOcrTxt = true
-            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!)
+            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
             refreshTextTools(dc)
         }
     }
@@ -110,7 +110,7 @@ class DocImportPreview(builderFactory: BuilderFactory) : VerticalLayout() {
 
     fun fill(docContainer: DocContainer) {
         this.docContainer = docContainer
-        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
+        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!, true) }
         pageSelector.max = docContainer.pages.size
         pageSelector.page = 1
         modeSelector.setChangeListener { imageEditor.mode = it }
