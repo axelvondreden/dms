@@ -33,8 +33,10 @@ class DocCard(
 
     private var imgDiv: Div? = null
 
+    private val imageDialog = builderFactory.docs().imageDialog()
+
     init {
-        addClickListener { builderFactory.docs().imageDialog(docContainer).open() }
+        addClickListener { imageDialog.open() }
         fill()
         addClassName("doc-card")
     }
@@ -47,6 +49,8 @@ class DocCard(
 
     fun fill() {
         content.removeAll()
+
+        imageDialog.fill(docContainer)
 
         val tagContainer = builderFactory.tags().container(docContainer.tags.map { it.tag }.toMutableSet(), compact = true).apply { setWidthFull() }
         val attributeContainer = AttributeValueSmallLayout().apply {
@@ -100,11 +104,11 @@ class DocCard(
 
     private fun ContextMenu.fill() {
         if (docContainer.doc?.deleted == true) {
-            addItem(t("view")) { builderFactory.docs().imageDialog(docContainer).open() }
+            addItem(t("view")) { imageDialog.open() }
             addItem(t("delete.forever")) { docService.delete(docContainer.doc!!) }
             addItem(t("restore")) { docService.restore(docContainer.doc!!) }
         } else {
-            addItem(t("view")) { builderFactory.docs().imageDialog(docContainer).open() }
+            addItem(t("view")) { imageDialog.open() }
             addItem(t("delete")) { builderFactory.docs().deleteDialog(docContainer).open() }
         }
     }

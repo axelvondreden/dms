@@ -132,9 +132,9 @@ class DocImageEditor(
                 val ui = UI.getCurrent()
                 Thread {
                     measureTimeMillis {
-                        words.chunked(10).withIndex().forEach {
+                        words.chunked(50).withIndex().forEach {
                             addWordWrappers(it.value.toSet(), ui)
-                            ui.access { progress.value = it.index.toDouble() * 10 }
+                            ui.access { progress.value = it.index.toDouble() * 50 }
                         }
                         ui.access {
                             element.appendChild(drawDiv.element)

@@ -19,15 +19,13 @@ import com.vaadin.flow.component.splitlayout.SplitLayout
 import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
-class DocImageDialog(
-        builderFactory: BuilderFactory,
-        private val docContainer: DocContainer,
-        private val docService: DocService
-) : DmsDialog(t("doc.details")) {
+class DocImageDialog(builderFactory: BuilderFactory, private val docService: DocService) : DmsDialog(t("doc.details")) {
 
-    private val imageEditor = builderFactory.docs().imageEditor().apply { fill(docContainer, docContainer.pages.find { it.nr == 1 }!!) }
+    private var docContainer: DocContainer? = null
 
-    private val infoLayout = builderFactory.docs().infoLayout(imageEditor).apply { fill(docContainer) }
+    private val imageEditor = builderFactory.docs().imageEditor()
+
+    private val infoLayout = builderFactory.docs().infoLayout(imageEditor)
 
     private val editContainer = Div(imageEditor).apply {
         maxWidth = "80vw"
@@ -37,10 +35,7 @@ class DocImageDialog(
 
     private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }
 
-    private val pageSelector = DocPageSelector(docContainer.pages.size).apply {
-        page = 1
-        setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
-    }
+    private val pageSelector = DocPageSelector()
 
     private val modeSelector = ModeSelector().apply {
         setChangeListener { imageEditor.mode = it }
@@ -48,8 +43,8 @@ class DocImageDialog(
 
     private val datePick = Button(VaadinIcon.CROSSHAIRS.create()) { pickDate() }
 
-    private val date = DatePicker(docContainer.date).apply {
-        addValueChangeListener { event -> event.value?.let { docContainer.date = it } }
+    private val date = DatePicker().apply {
+        addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
         locale = Locale.forLanguageTag(Options.get().view.locale)
     }
 
@@ -87,9 +82,16 @@ class DocImageDialog(
         add(horizontalLayout, split)
         addOpenedChangeListener {
             if (!it.isOpened) {
-                docContainer.doc?.let(docService::save)
+                docContainer?.doc?.let(docService::save)
             }
         }
+    }
+
+    fun fill(docContainer: DocContainer) {
+        infoLayout.fill(docContainer)
+        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
+        pageSelector.page = 1
+        date.value = docContainer.date
     }
 
     private fun pickDate() {

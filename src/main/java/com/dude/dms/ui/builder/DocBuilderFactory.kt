@@ -28,7 +28,7 @@ class DocBuilderFactory(
 
     fun deleteDialog(docContainer: DocContainer) = DocDeleteDialog(docContainer, docService, mailService)
 
-    fun imageDialog(docContainer: DocContainer) = DocImageDialog(builderFactory, docContainer, docService)
+    fun imageDialog() = DocImageDialog(builderFactory, docService)
 
     fun wordEditDialog(wordContainer: WordContainer) = WordEditDialog(wordService, wordContainer)
 
