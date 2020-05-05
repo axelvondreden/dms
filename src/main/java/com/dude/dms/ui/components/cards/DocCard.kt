@@ -36,7 +36,7 @@ class DocCard(
     private val imageDialog = builderFactory.docs().imageDialog()
 
     init {
-        addClickListener { imageDialog.open() }
+        addClickListener { imageDialog.apply { fill(docContainer) }.open() }
         fill()
         addClassName("doc-card")
     }
@@ -49,8 +49,6 @@ class DocCard(
 
     fun fill() {
         content.removeAll()
-
-        imageDialog.fill(docContainer)
 
         val tagContainer = builderFactory.tags().container(docContainer.tags.map { it.tag }.toMutableSet(), compact = true).apply { setWidthFull() }
         val attributeContainer = AttributeValueSmallLayout().apply {
