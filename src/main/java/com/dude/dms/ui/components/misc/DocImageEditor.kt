@@ -89,7 +89,7 @@ class DocImageEditor(
         mode = EditMode.EDIT
     }
 
-    fun fill(docContainer: DocContainer, pageContainer: PageContainer) {
+    fun fill(docContainer: DocContainer, pageContainer: PageContainer, force: Boolean = false) {
         this.docContainer = docContainer
         this.pageContainer = pageContainer
         element.removeAllChildren()
@@ -107,7 +107,7 @@ class DocImageEditor(
             addEventListener("mouseup") { mouseUp() }
         }
         element.appendChild(progress.element, image)
-        fillWords(pageContainer)
+        fillWords(pageContainer, force)
     }
 
     fun clear() {
