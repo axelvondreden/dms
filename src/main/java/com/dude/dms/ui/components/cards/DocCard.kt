@@ -8,6 +8,7 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.extensions.convert
+import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.tags.AttributeValueSmallLayout
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.github.appreciated.card.ClickableCard
@@ -28,12 +29,11 @@ import dev.mett.vaadin.tooltip.Tooltips
 class DocCard(
         private val builderFactory: BuilderFactory,
         private val docService: DocService,
-        val docContainer: DocContainer
+        val docContainer: DocContainer,
+        private val imageDialog: DocImageDialog
 ) : ClickableCard() {
 
     private var imgDiv: Div? = null
-
-    private val imageDialog = builderFactory.docs().imageDialog()
 
     init {
         addClickListener { imageDialog.apply { fill(docContainer) }.open() }

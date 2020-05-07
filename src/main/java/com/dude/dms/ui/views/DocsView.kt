@@ -99,6 +99,8 @@ class DocsView(
 
     private val pageSelector = ViewPageSelector()
 
+    private val imageDialog = builderFactory.docs().imageDialog()
+
     init {
         eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
         eventManager.register(this, Doc::class, EventType.UPDATE) { updateDoc(it, viewUI) }
@@ -174,7 +176,7 @@ class DocsView(
         docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
             val dc = DocContainer(doc)
             dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
-            ui.access { itemContainer.add(builderFactory.docs().card(dc)) }
+            ui.access { itemContainer.add(builderFactory.docs().card(dc, imageDialog)) }
         }
     }
 

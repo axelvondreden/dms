@@ -38,6 +38,8 @@ class RecycleView(
 
     private val empty = Button(t("recyclebin.empty"), VaadinIcon.RECYCLE.create()) { empty() }
 
+    private val imageDialog = builderFactory.docs().imageDialog()
+
     init {
         val ui = UI.getCurrent()
         eventManager.register(this, Doc::class, EventType.UPDATE, EventType.DELETE) { ui.access { fill() } }
@@ -73,7 +75,7 @@ class RecycleView(
         docService.findDeleted().forEach { doc ->
             val dc = DocContainer(doc)
             dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
-            itemContainer.add(builderFactory.docs().card(dc))
+            itemContainer.add(builderFactory.docs().card(dc, imageDialog))
         }
     }
 
