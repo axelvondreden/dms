@@ -29,7 +29,6 @@ import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 import kotlin.math.abs
 import kotlin.streams.toList
-import kotlin.system.measureTimeMillis
 
 
 class DocImageEditor(
@@ -90,28 +89,25 @@ class DocImageEditor(
         mode = EditMode.EDIT
     }
 
-    fun fill(docContainer: DocContainer, pageContainer: PageContainer, forceWords: Boolean = false) {
-        measureTimeMillis {
-            this.docContainer = docContainer
-            this.pageContainer = pageContainer
-            element.removeAllChildren()
-            words.clear()
-            val img = fileManager.getImage(docContainer.guid, pageContainer.nr)
-            val image = Element("img").apply {
-                classList.add("inline-image")
-                setAttribute("src", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
-                setAttribute("ondragstart", "return false;")
-                setAttribute("oncontextmenu", "return false;")
-                addEventListener("mousedown") { mouseDown(it, this) }
-                        .addEventData("event.offsetX").addEventData("event.offsetY").addEventData("event.button")
-                addEventListener("mousemove") { mouseMove(it, this) }
-                        .addEventData("event.offsetX").addEventData("event.offsetY")
-                addEventListener("mouseup") { mouseUp() }
-            }
-            element.appendChild(progress.element, image)
-        }.let { println("fill: $it") }
-
-        fillWords(pageContainer, forceWords)
+    fun fill(docContainer: DocContainer, pageContainer: PageContainer) {
+        this.docContainer = docContainer
+        this.pageContainer = pageContainer
+        element.removeAllChildren()
+        words.clear()
+        val img = fileManager.getImage(docContainer.guid, pageContainer.nr)
+        val image = Element("img").apply {
+            classList.add("inline-image")
+            setAttribute("src", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
+            setAttribute("ondragstart", "return false;")
+            setAttribute("oncontextmenu", "return false;")
+            addEventListener("mousedown") { mouseDown(it, this) }
+                    .addEventData("event.offsetX").addEventData("event.offsetY").addEventData("event.button")
+            addEventListener("mousemove") { mouseMove(it, this) }
+                    .addEventData("event.offsetX").addEventData("event.offsetY")
+            addEventListener("mouseup") { mouseUp() }
+        }
+        element.appendChild(progress.element, image)
+        fillWords(pageContainer)
     }
 
     fun clear() {
@@ -122,28 +118,24 @@ class DocImageEditor(
     }
 
     fun fillWords(pageContainer: PageContainer, force: Boolean = false) {
-        measureTimeMillis {
-            val old = element.children.filter { it.tag == "div" }.toList()
-            old.forEach { element.removeChild(it) }
-            if (force || Options.get().view.loadWordsInPreview) {
-                val words = pageContainer.lines.flatMap { it.words }
-                progress.isVisible = true
-                progress.max = words.size.toDouble()
-                val ui = UI.getCurrent()
-                Thread {
-                    measureTimeMillis {
-                        words.chunked(50).withIndex().forEach {
-                            addWordWrappers(it.value.toSet(), ui)
-                            ui.access { progress.value = it.index.toDouble() * 50 }
-                        }
-                        ui.access {
-                            element.appendChild(drawDiv.element)
-                            progress.isVisible = false
-                        }
-                    }.let { println("addWords: $it") }
-                }.start()
-            }
-        }.let { println("fillWords: $it") }
+        val old = element.children.filter { it.tag == "div" }.toList()
+        old.forEach { element.removeChild(it) }
+        if (force || Options.get().view.loadWordsInPreview) {
+            val words = pageContainer.lines.flatMap { it.words }
+            progress.isVisible = true
+            progress.max = words.size.toDouble()
+            val ui = UI.getCurrent()
+            Thread {
+                words.chunked(10).withIndex().forEach {
+                    addWordWrappers(it.value.toSet(), ui)
+                    ui.access { progress.value = it.index.toDouble() * 10 }
+                }
+                ui.access {
+                    element.appendChild(drawDiv.element)
+                    progress.isVisible = false
+                }
+            }.start()
+        }
     }
 
     private fun addWordWrappers(wordContainers: Set<WordContainer>, ui: UI? = null) {
