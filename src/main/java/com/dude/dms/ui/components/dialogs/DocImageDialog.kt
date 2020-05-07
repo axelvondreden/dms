@@ -18,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.splitlayout.SplitLayout
 import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
+import kotlin.system.measureTimeMillis
 
 class DocImageDialog(builderFactory: BuilderFactory, private val docService: DocService) : DmsDialog(t("doc.details")) {
 
@@ -88,9 +89,13 @@ class DocImageDialog(builderFactory: BuilderFactory, private val docService: Doc
     }
 
     fun fill(docContainer: DocContainer) {
-        infoLayout.fill(docContainer)
+        measureTimeMillis {
+            infoLayout.fill(docContainer)
+        }.let { println("d1: $it") }
         pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
-        pageSelector.page = 1
+        measureTimeMillis {
+            pageSelector.page = 1
+        }.let { println("d2: $it") }
         date.value = docContainer.date
     }
 
