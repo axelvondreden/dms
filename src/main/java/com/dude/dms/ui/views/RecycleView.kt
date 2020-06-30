@@ -74,7 +74,7 @@ class RecycleView(
         itemContainer.removeAll()
         docService.findDeleted().forEach { doc ->
             val dc = DocContainer(doc)
-            dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
+            dc.thumbnail = fileManager.getImage(dc.guid)
             itemContainer.add(builderFactory.docs().card(dc, imageDialog))
         }
     }

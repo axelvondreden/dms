@@ -10,7 +10,6 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.ui.components.dialogs.AttributeCreateDialog
 import com.dude.dms.ui.components.dialogs.AttributeDeleteDialog
-import com.dude.dms.ui.components.dialogs.AttributeEditDialog
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.tags.AttributeSelector
 import com.dude.dms.ui.components.tags.AttributeValueLayout
@@ -34,8 +33,6 @@ class AttributeBuilderFactory(
     fun valueField(attributeValue: AttributeValue, imageEditor: DocImageEditor? = null) = AttributeValueField(attributeValue, attributeValueService, imageEditor)
 
     fun createDialog() = AttributeCreateDialog(attributeService)
-
-    fun editDialog(attribute: Attribute) = AttributeEditDialog(attribute, attributeService)
 
     fun deleteDialog(attribute: Attribute) = AttributeDeleteDialog(attribute, attributeService, docService, tagService)
 }

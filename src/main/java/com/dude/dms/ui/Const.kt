@@ -4,6 +4,7 @@ import java.util.*
 
 object Const {
     const val PAGE_ADMIN = "admin"
+    const val PAGE_ATTRIBUTE = "attribute"
     const val PAGE_DOCIMPORT = "import"
     const val PAGE_DOCS = "docs"
     const val PAGE_LOG = "log"

@@ -12,6 +12,6 @@ abstract class RuleValidator<T : Rule>(protected val tagService: TagService, pro
     abstract fun getTags(docText: String?): Set<TagContainer>
 
     fun runRuleForAll(rule: T) = docService.findAll().map { doc ->
-        doc to getTagsForRule(docService.getFullText(doc.pages), rule).filter { it.tag !in doc.tags }.toSet()
+        doc to getTagsForRule(doc.getFullText(), rule).filter { it.tag !in doc.tags }.toSet()
     }.filter { it.second.isNotEmpty() }.toMap()
 }

@@ -18,6 +18,8 @@ class Line(
         var y: Float
 ) : RestorableEntity(), LogsEvents {
 
+    fun getFullText() = words.sortedBy { it.x }.joinToString(" ") { it.text.toString() }
+
     override fun toString() = t("line")
 
     override fun equals(other: Any?): Boolean {

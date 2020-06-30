@@ -124,7 +124,7 @@ class MainView(
             ContextMenu().apply {
                 target = entry
                 isOpenOnClick = true
-                addItem(t("edit")) { builderFactory.attributes().editDialog(attribute).open() }
+                addItem(t("edit")) { UI.getCurrent().navigate(AttributeView::class.java, attribute.name) }
                 addItem(t("delete")) { builderFactory.attributes().deleteDialog(attribute).open() }
             }
         }

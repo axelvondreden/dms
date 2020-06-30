@@ -12,9 +12,8 @@ class AttributeValueLayout(private val builderFactory: BuilderFactory, private v
     private val fields = mutableSetOf<AttributeValueField>()
 
     fun fill(docContainer: DocContainer) {
-        val avs = docContainer.attributeValues
-        fields.removeAll { it.attributeValue !in avs }
-        avs.filter { av -> fields.none { it.attributeValue == av } }.forEach {
+        clear()
+        docContainer.attributeValues.forEach {
             val field = builderFactory.attributes().valueField(it, imageEditor).apply { setWidthFull() }
             add(field)
             fields.add(field)

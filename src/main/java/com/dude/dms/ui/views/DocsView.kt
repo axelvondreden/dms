@@ -175,7 +175,7 @@ class DocsView(
         }
         docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
             val dc = DocContainer(doc)
-            dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
+            dc.thumbnail = fileManager.getImage(dc.guid)
             ui.access { itemContainer.add(builderFactory.docs().card(dc, imageDialog)) }
         }
     }

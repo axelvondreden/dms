@@ -1,0 +1,9 @@
+package com.dude.dms.backend.data.rules
+
+enum class ConditionType {
+    AND, OR, EQUALS, CONTAINS,
+    PREVIOUS_EQUALS, PREVIOUS_CONTAINS,
+    NEXT_EQUALS, NEXT_CONTAINS,
+    LINE_CONTAINS_WORD, LINE_CONTAINS_TEXT,
+    DOC_CONTAINS_WORD, DOC_CONTAINS_TEXT
+}

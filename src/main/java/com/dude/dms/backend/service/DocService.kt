@@ -1,11 +1,9 @@
 package com.dude.dms.backend.service
 
-import com.dude.dms.backend.containers.PageContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
@@ -99,7 +97,7 @@ class DocService(
     fun findByFilter(filter: Filter, pageable: Pageable): Set<Doc> {
         val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
         if (!filter.text.isNullOrBlank()) {
-            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
+            return docs.filter { it.getFullText().contains(filter.text!!, true) }.toSet()
         }
         return docs.toSet()
     }
@@ -107,22 +105,10 @@ class DocService(
     fun findByFilter(filter: Filter, sort: Sort): Set<Doc> {
         val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
         if (!filter.text.isNullOrBlank()) {
-            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
+            return docs.filter { it.getFullText().contains(filter.text!!, true) }.toSet()
         }
         return docs
     }
 
     fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail)
-
-    fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
-        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.x }.joinToString(" ") { it.text.toString() }
-        }
-    }
-
-    fun getFullText2(pages: Set<PageContainer>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
-        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
-        }
-    }
 }

@@ -28,6 +28,8 @@ fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() || it 
     txt.toDoubleOrNull()
 }
 
+fun String.findInt() = filterNot { it.isLetter() || it.isWhitespace() || it == '€' || it == ',' || it == '.' }.trim().toIntOrNull()
+
 fun LocalDate.convert() = format(userDateFormat)
 
 fun LocalDateTime.convert() = format(userDateTimeFormat)

@@ -117,7 +117,10 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
     }
 
     private fun rerunRules() {
-        docs.filter { !it.done }.forEach { it.tags = docParser.discoverTags(it.pages) }
+        docs.filter { !it.done }.forEach {
+            it.tags = docParser.discoverTags(it)
+            it.attributeValues = docParser.discoverAttributeValues(it).toMutableSet()
+        }
         itemPreview.clear()
         fill()
     }
