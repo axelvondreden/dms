@@ -89,13 +89,9 @@ class DocImageDialog(builderFactory: BuilderFactory, private val docService: Doc
     }
 
     fun fill(docContainer: DocContainer) {
-        measureTimeMillis {
-            infoLayout.fill(docContainer)
-        }.let { println("d1: $it") }
+        infoLayout.fill(docContainer)
         pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
-        measureTimeMillis {
-            pageSelector.page = 1
-        }.let { println("d2: $it") }
+        pageSelector.page = 1
         date.value = docContainer.date
     }
 

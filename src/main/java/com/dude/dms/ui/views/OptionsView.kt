@@ -65,12 +65,6 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
                 }
             }
         }
-        val simpleColors = Checkbox(t("tag.colors.simple"), options.tag.simpleColors).apply {
-            addValueChangeListener {
-                options.tag.simpleColors = value
-                save()
-            }
-        }
         val darkMode = Checkbox(t("darkmode"), options.view.darkMode).apply {
             addValueChangeListener { event ->
                 val themeList = UI.getCurrent().element.themeList
@@ -87,7 +81,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
 
-        add(createSection(t("view"), locale, dateFormat, simpleColors, darkMode, loadWordsInPreview))
+        add(createSection(t("view"), locale, dateFormat, darkMode, loadWordsInPreview))
     }
 
     private fun createNotificationSection() {

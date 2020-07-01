@@ -3,13 +3,10 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.standard.DmsColorPickerSimple
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.vaadin.flow.component.Component
-import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -28,12 +25,9 @@ class TagEditDialog(
     private val name = TextField(t("name"), tag.name, "").apply { setWidthFull() }
 
     @Suppress("UNCHECKED_CAST")
-    private val colorPicker = when {
-        Options.get().tag.simpleColors -> DmsColorPickerSimple(t("color"))
-        else -> ColorPickerFieldRaw(t("color"))
-    }.also {
-        (it as HasSize).setWidthFull()
-        (it as HasValue<*, String>).setValue(tag.color)
+    private val colorPicker = ColorPickerFieldRaw(t("color")).apply {
+        setWidthFull()
+        value = tag.color
     }
 
     private val attributeSelector = builderFactory.attributes().selector(tag).apply { setSizeFull() }
@@ -62,7 +56,7 @@ class TagEditDialog(
         if (name.isEmpty) return
         if ((colorPicker as HasValue<*, *>).isEmpty()) return
         tag.name = name.value
-        tag.color = colorPicker.getValue() as String
+        tag.color = colorPicker.value as String
         tag.attributes = attributeSelector.selectedAttributes
         tagService.save(tag)
         docService.findByTag(tag).forEach { docService.save(it) }
