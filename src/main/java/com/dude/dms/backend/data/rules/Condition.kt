@@ -48,8 +48,6 @@ class Condition(
             }
             ConditionType.LINE_CONTAINS_WORD -> doc.getLine(word).words.any { it.text == text }
             ConditionType.LINE_CONTAINS_TEXT -> doc.getLine(word).getFullText().contains(text!!)
-            ConditionType.DOC_CONTAINS_WORD -> doc.getFullText().contains(Regex("\b${word}\b"))
-            ConditionType.DOC_CONTAINS_TEXT -> doc.getFullText().contains(text!!)
         }
     }
 

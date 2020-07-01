@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.data.rules.Condition
 import com.dude.dms.backend.data.rules.ConditionType
+import com.dude.dms.brain.t
 import com.github.appreciated.card.Card
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.combobox.ComboBox
@@ -17,6 +18,7 @@ class ConditionCard(private val condition: Condition, private val parent: Condit
         isAllowCustomValue = false
         isPreventInvalidInput = true
         value = condition.type
+        setItemLabelGenerator { t(it.translationKey) }
         addValueChangeListener {
             condition.type = it.value
             fill()

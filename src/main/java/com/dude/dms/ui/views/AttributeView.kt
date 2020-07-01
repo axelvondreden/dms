@@ -14,6 +14,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -57,6 +58,7 @@ class AttributeView(
         requiredToggle.value = attribute?.isRequired
         conditionLayout.removeAll()
         if (attribute?.condition != null) {
+            conditionLayout.add(Label(t("attribute.rule.description")))
             conditionLayout.add(ConditionCard(attribute!!.condition!!))
         } else {
             conditionLayout.add(Button(t("condition.new"), VaadinIcon.PLUS.create()) {
