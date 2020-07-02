@@ -16,6 +16,7 @@ import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
@@ -49,7 +50,13 @@ class AttributeView(
     private val conditionLayout = VerticalLayout().apply { setSizeFull() }
 
     init {
-        add(HorizontalLayout(nameTextField, typeComboBox, requiredToggle, saveButton).apply { setWidthFull() }, conditionLayout)
+        add(
+                HorizontalLayout(nameTextField, typeComboBox, requiredToggle, saveButton).apply {
+                    setWidthFull()
+                    alignItems = FlexComponent.Alignment.END
+                },
+                conditionLayout
+        )
     }
 
     private fun fill() {
