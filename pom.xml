@@ -279,6 +279,11 @@
             <artifactId>hunspell-bridj</artifactId>
             <version>1.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.mvysny.karibudsl</groupId>
+            <artifactId>karibu-dsl</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

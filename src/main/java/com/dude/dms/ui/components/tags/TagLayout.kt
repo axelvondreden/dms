@@ -2,23 +2,27 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.tagLabel
+import com.dude.dms.ui.tagLayout
+import com.github.mvysny.karibudsl.v10.iconButton
+import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.ComponentEvent
-import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 
 class TagLayout(
-        private val builderFactory: BuilderFactory,
-        private var tags: MutableSet<Tag>,
         private val tagService: TagService,
+        var tags: MutableSet<Tag>,
         private val edit: Boolean = false,
-        compact: Boolean = false,
-        private val onClick: ((ComponentEvent<*>) -> Unit)? = null
+        compact: Boolean = false
 ) : Div() {
 
+    var onClick: ((ComponentEvent<*>) -> Unit)? = null
+
+    private lateinit var pickList: TagLayout
+
     init {
-        element.style["display"] = "flex"
+        style["display"] = "flex"
 
         if (compact) {
             addClassName("tag-container-compact")
@@ -28,23 +32,25 @@ class TagLayout(
         fill()
     }
 
-    fun setTags(tags: MutableSet<Tag>) {
-        this.tags = tags
-        fill()
-    }
-
     fun fill() {
         removeAll()
         if (edit) {
-            val pickList = builderFactory.tags().container(tagService.findAll().filter { tag -> tag.name !in tags.map { it.name } }.toMutableSet(), false) { event ->
-                event.source.children.findFirst().ifPresent { elem -> tagService.findByName(elem.element.text!!)?.let { tags.add(it) } }
-                fill()
-            }.apply { isVisible = false; element.style["border"] = "2px solid black" }
-            val plus = Button(VaadinIcon.PLUS.create()) {
-                pickList.isVisible = true
+            iconButton(VaadinIcon.PLUS.create()) {
+                onLeftClick { pickList.isVisible = true }
             }
-            add(plus, pickList)
+            pickList = tagLayout(tagService, tagService.findAll().filter { tag -> tag.name !in tags.map { it.name } }.toMutableSet(), edit = false) {
+                isVisible = false
+                style["border"] = "2px solid black"
+                onClick = {
+                    it.source.children.findFirst().ifPresent { elem -> tagService.findByName(elem.element.text!!)?.let { tags.add(it) } }
+                    fill()
+                }
+            }
         }
-        tags.forEach { add(TagLabel(it, onClick)) }
+        tags.forEach {
+            tagLabel(it) {
+                onClick = this@TagLayout.onClick
+            }
+        }
     }
 }

@@ -4,33 +4,39 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.MailService
 import com.dude.dms.brain.t
-import com.vaadin.flow.component.button.Button
+import com.github.mvysny.karibudsl.v10.button
+import com.github.mvysny.karibudsl.v10.checkBox
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.verticalLayout
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
 class DocDeleteDialog(
         private val docContainer: DocContainer,
         private val docService: DocService,
         private val mailService: MailService
-) : DmsDialog(t("doc.delete"), "20vw") {
+) : DmsDialog(t("doc.delete"), 20) {
 
-    private val docCheck = Checkbox(t("doc"), true).apply { isEnabled = false }
+    private lateinit var docCheck: Checkbox
 
-    private val mailCheck = Checkbox("${t("mail")} (${docContainer.doc?.let { mailService.countByDoc(it) }})")
+    private lateinit var mailCheck: Checkbox
 
     init {
-        val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
-            setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_ERROR)
-        }
-        val wrapper = VerticalLayout(docCheck, mailCheck, deleteButton).apply {
+        verticalLayout(isPadding = false, isSpacing = false) {
             setSizeFull()
-            isPadding = false
-            isSpacing = false
+
+            docCheck = checkBox(t("doc")) {
+                value = true
+                isEnabled = false
+            }
+            mailCheck = checkBox("${t("mail")} (${docContainer.doc?.let { mailService.countByDoc(it) }})")
+            button(t("delete"), VaadinIcon.TRASH.create()) {
+                onLeftClick { delete() }
+                setWidthFull()
+                addThemeVariants(ButtonVariant.LUMO_ERROR)
+            }
         }
-        add(wrapper)
     }
 
     private fun delete() {

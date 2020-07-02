@@ -3,55 +3,56 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.brain.t
-import com.dude.dms.ui.components.misc.IconToggle
-import com.vaadin.flow.component.button.Button
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 
 
-class AttributeCreateDialog(private val attributeService: AttributeService) : DmsDialog(t("attribute.create"), "35vw") {
+class AttributeCreateDialog(private val attributeService: AttributeService) : DmsDialog(t("attribute.create"), 35) {
 
-    private val nameTextField = TextField(t("name")).apply {
-        setWidthFull()
-    }
+    private lateinit var nameTextField: TextField
 
-    private val typeComboBox = ComboBox<Attribute.Type>(t("attribute.type")).apply {
-        setWidthFull()
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        setItems(*Attribute.Type.values())
-        value = Attribute.Type.STRING
-    }
+    private lateinit var typeComboBox: ComboBox<Attribute.Type>
 
-    private val requiredToggle = IconToggle(VaadinIcon.LOCK.create(), VaadinIcon.UNLOCK.create(), t("attribute.required"))
+    private lateinit var requiredToggle: Checkbox
 
     init {
-        val fieldWrapper = HorizontalLayout(nameTextField, typeComboBox, requiredToggle).apply {
-            setWidthFull()
-            alignItems = FlexComponent.Alignment.END
-        }
-        val createButton = Button(t("create"), VaadinIcon.PLUS.create()) { create() }.apply {
-            setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        }
-        val cancelButton = Button(t("close"), VaadinIcon.CLOSE.create()) { close() }.apply {
-            setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_ERROR)
-        }
-        val buttonWrapper = HorizontalLayout(createButton, cancelButton).apply {
-            setWidthFull()
-        }
-        val wrapper = VerticalLayout(fieldWrapper, buttonWrapper).apply {
+        verticalLayout(isPadding = false, isSpacing = false) {
             setSizeFull()
-            isPadding = false
-            isSpacing = false
+
+            horizontalLayout {
+                setWidthFull()
+                alignItems = FlexComponent.Alignment.END
+
+                nameTextField = textField(t("name")) { setWidthFull() }
+                typeComboBox = comboBox(t("attribute.type")) {
+                    setWidthFull()
+                    isPreventInvalidInput = true
+                    isAllowCustomValue = false
+                    setItems(*Attribute.Type.values())
+                    value = Attribute.Type.STRING
+                }
+                requiredToggle = checkBox(t("attribute.required"))
+            }
+            horizontalLayout {
+                setWidthFull()
+
+                button(t("create"), VaadinIcon.PLUS.create()) {
+                    onLeftClick { create() }
+                    setWidthFull()
+                    addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                }
+                button(t("close"), VaadinIcon.CLOSE.create()) {
+                    onLeftClick { close() }
+                    setWidthFull()
+                    addThemeVariants(ButtonVariant.LUMO_ERROR)
+                }
+            }
         }
-        add(wrapper)
     }
 
     private fun create() {

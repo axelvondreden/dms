@@ -6,7 +6,6 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.extensions.convert
 import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.tags.AttributeValueSmallLayout
@@ -27,7 +26,6 @@ import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 
 class DocCard(
-        private val builderFactory: BuilderFactory,
         private val docService: DocService,
         val docContainer: DocContainer,
         private val imageDialog: DocImageDialog

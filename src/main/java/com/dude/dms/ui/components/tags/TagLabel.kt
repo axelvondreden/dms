@@ -6,7 +6,9 @@ import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.dom.ElementFactory
 
-class TagLabel(val tag: Tag, onClick: ((ComponentEvent<*>) -> Unit)? = null) : Div() {
+class TagLabel(val tag: Tag) : Div() {
+
+    var onClick: ((ComponentEvent<*>) -> Unit)? = null
 
     init {
         val label = Label(tag.name)
