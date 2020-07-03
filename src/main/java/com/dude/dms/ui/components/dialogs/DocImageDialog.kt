@@ -2,85 +2,110 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.LineService
+import com.dude.dms.backend.service.WordService
+import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.findDate
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.components.misc.DocImageEditor
+import com.dude.dms.ui.components.misc.DocInfoLayout
 import com.dude.dms.ui.components.misc.DocPageSelector
 import com.dude.dms.ui.components.misc.ModeSelector
+import com.dude.dms.ui.docImageEditor
+import com.dude.dms.ui.docInfoLayout
+import com.dude.dms.ui.modeSelector
+import com.dude.dms.ui.pageSelector
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.component.splitlayout.SplitLayout
 import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
-import kotlin.system.measureTimeMillis
 
-class DocImageDialog(builderFactory: BuilderFactory, private val docService: DocService) : DmsDialog(t("doc.details")) {
+class DocImageDialog(
+        private val docService: DocService,
+        lineService: LineService,
+        wordService: WordService,
+        docParser: DocParser,
+        fileManager: FileManager
+) : DmsDialog(t("doc.details")) {
 
     private var docContainer: DocContainer? = null
 
-    private val imageEditor = builderFactory.docs().imageEditor()
+    private lateinit var imageEditor: DocImageEditor
 
-    private val infoLayout = builderFactory.docs().infoLayout(imageEditor)
+    private lateinit var infoLayout: DocInfoLayout
 
-    private val editContainer = Div(imageEditor).apply {
-        maxWidth = "80vw"
-        maxHeight = "80vh"
-        style["overflowY"] = "auto"
-    }
+    private lateinit var editContainer: Div
 
-    private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }
+    private lateinit var zoomButton: Button
 
-    private val pageSelector = DocPageSelector()
+    private lateinit var pageSelector: DocPageSelector
 
-    private val modeSelector = ModeSelector().apply {
-        setChangeListener { imageEditor.mode = it }
-    }
+    private lateinit var modeSelector: ModeSelector
 
-    private val datePick = Button(VaadinIcon.CROSSHAIRS.create()) { pickDate() }
+    private lateinit var datePick: Button
 
-    private val date = DatePicker().apply {
-        addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
-        locale = Locale.forLanguageTag(Options.get().view.locale)
-    }
+    private lateinit var date: DatePicker
 
     init {
-        val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { imageEditor.shrink(zoomButton) }
-        val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
-        val wordsButton = Button(VaadinIcon.AREA_SELECT.create()) {
-            val options = Options.get()
-            options.view.loadWordsInPreview = !Options.get().view.loadWordsInPreview
-            options.save()
-            it.source.removeThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_SUCCESS)
-            it.source.addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
-            pageSelector.page = pageSelector.page
-        }.apply {
-            Tooltips.getCurrent().setTooltip(this, t("words.preview.show"))
-            addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
-        }
-        val horizontalLayout = HorizontalLayout(
-                pageSelector,
-                modeSelector,
-                HorizontalLayout(date, datePick).apply { isSpacing = false; isPadding = false },
-                shrinkButton,
-                zoomButton,
-                growButton,
-                wordsButton
-        ).apply {
+        horizontalLayout {
             setWidthFull()
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER
+
+            pageSelector = pageSelector {  }
+            modeSelector = modeSelector { setChangeListener { imageEditor.mode = it } }
+            horizontalLayout(isPadding = false, isSpacing = false) {
+                date = datePicker {
+                    addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
+                    locale = Locale.forLanguageTag(Options.get().view.locale)
+                }
+                datePick = iconButton(VaadinIcon.CROSSHAIRS.create()) {
+                    onLeftClick { pickDate() }
+                }
+            }
+            iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                onLeftClick { imageEditor.shrink(zoomButton) }
+            }
+            zoomButton = button("100%") {
+                onLeftClick { imageEditor.resetZoom(it.source) }
+            }
+            iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                onLeftClick { imageEditor.grow(zoomButton) }
+            }
+            iconButton(VaadinIcon.AREA_SELECT.create()) {
+                Tooltips.getCurrent().setTooltip(this, t("words.preview.show"))
+                addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
+                onLeftClick {
+                    val options = Options.get()
+                    options.view.loadWordsInPreview = !Options.get().view.loadWordsInPreview
+                    options.save()
+                    it.source.removeThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_SUCCESS)
+                    it.source.addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
+                    pageSelector.page = pageSelector.page
+                }
+            }
         }
-        val split = SplitLayout(editContainer, infoLayout).apply {
+        splitLayout {
             setSizeFull()
             setSecondaryStyle("minWidth", "200px")
             setSecondaryStyle("maxWidth", "300px")
+
+            editContainer = div {
+                maxWidth = "80vw"
+                maxHeight = "80vh"
+                style["overflowY"] = "auto"
+
+                imageEditor = docImageEditor(lineService, wordService, docParser, fileManager)
+            }
+            infoLayout = docInfoLayout(imageEditor)
         }
-        add(horizontalLayout, split)
+
         addOpenedChangeListener {
             if (!it.isOpened) {
                 docContainer?.doc?.let(docService::save)

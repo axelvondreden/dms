@@ -1,5 +1,9 @@
 package com.dude.dms.ui.components.misc
 
+import com.github.mvysny.karibudsl.v10.div
+import com.github.mvysny.karibudsl.v10.iconButton
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.select
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -8,23 +12,13 @@ import com.vaadin.flow.component.select.Select
 
 class ViewPageSelector : HorizontalLayout() {
 
-    private val prev = Button(VaadinIcon.ARROW_CIRCLE_LEFT.create()) { prev() }
+    private var prev: Button
 
-    private val next = Button(VaadinIcon.ARROW_CIRCLE_RIGHT.create()) { next() }
+    private var next: Button
 
-    val pageSize = Select(10, 20, 30, 50, 100, 200).apply {
-        value = 30
-        width = "100px"
-        isEmptySelectionAllowed = false
-        style["padding"] = "0px 5px"
-        addValueChangeListener {
-            if (it.isFromClient) {
-                page = 0
-            }
-        }
-    }
+    var pageSize: Select<Int>
 
-    private val div = Div()
+    private var div: Div
 
     private var silent = false
 
@@ -52,18 +46,37 @@ class ViewPageSelector : HorizontalLayout() {
     init {
         isPadding = false
         isSpacing = false
-        add(prev, div, next, pageSize)
+
+        prev = iconButton(VaadinIcon.ARROW_CIRCLE_LEFT.create()) {
+            onLeftClick { prev() }
+        }
+        div = div {  }
+        next = iconButton(VaadinIcon.ARROW_CIRCLE_RIGHT.create()) {
+            onLeftClick { next() }
+        }
+        pageSize = select {
+            setItems(10, 20, 30, 50, 100, 200)
+            value = 30
+            width = "100px"
+            isEmptySelectionAllowed = false
+            style["padding"] = "0px 5px"
+            addValueChangeListener {
+                if (it.isFromClient) {
+                    page = 0
+                }
+            }
+        }
     }
 
     fun setChangeListener(onChange: ((Int) -> Unit)?) {
         this.onChange = onChange
     }
 
-    fun prev() {
+    private fun prev() {
         if (page > 0) page--
     }
 
-    fun next() {
+    private fun next() {
         if (page < max) page++
     }
 

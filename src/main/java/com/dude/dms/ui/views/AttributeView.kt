@@ -9,6 +9,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.ConditionCard
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -17,7 +18,6 @@ import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.BeforeEvent
@@ -35,28 +35,34 @@ class AttributeView(
 
     private var attribute: Attribute? = null
 
-    private val nameTextField = TextField(t("name"))
+    private lateinit var nameTextField: TextField
 
-    private val typeComboBox = ComboBox<Attribute.Type>(t("attribute.type")).apply {
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        setItems(*Attribute.Type.values())
-    }
+    private lateinit var typeComboBox: ComboBox<Attribute.Type>
 
-    private val requiredToggle = Checkbox(t("attribute.required"))
+    private lateinit var requiredToggle: Checkbox
 
-    private val saveButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply { addThemeVariants(ButtonVariant.LUMO_PRIMARY) }
+    private lateinit var saveButton: Button
 
-    private val conditionLayout = VerticalLayout().apply { setSizeFull() }
+    private var conditionLayout: VerticalLayout
 
     init {
-        add(
-                HorizontalLayout(nameTextField, typeComboBox, requiredToggle, saveButton).apply {
-                    setWidthFull()
-                    alignItems = FlexComponent.Alignment.END
-                },
-                conditionLayout
-        )
+        horizontalLayout {
+            setWidthFull()
+            alignItems = FlexComponent.Alignment.END
+
+            nameTextField = textField(t("name"))
+            typeComboBox = comboBox(t("attribute.type")) {
+                setItems(*Attribute.Type.values())
+                isPreventInvalidInput = true
+                isAllowCustomValue = false
+            }
+            requiredToggle = checkBox(t("attribute.required"))
+            saveButton = button(t("save"), VaadinIcon.DISC.create()) {
+                onLeftClick { save() }
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+            }
+        }
+        conditionLayout = verticalLayout { setSizeFull() }
     }
 
     private fun fill() {

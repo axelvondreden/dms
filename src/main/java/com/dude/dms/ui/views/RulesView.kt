@@ -3,21 +3,19 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
-import com.dude.dms.backend.service.MailFilterService
-import com.dude.dms.backend.service.PlainTextRuleService
-import com.dude.dms.backend.service.RegexRuleService
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
+import com.dude.dms.brain.mail.MailManager
+import com.dude.dms.brain.parsing.PlainTextRuleValidator
+import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.brain.t
+import com.dude.dms.ui.*
 import com.dude.dms.ui.Const.PAGE_RULES
-import com.dude.dms.ui.builder.BuilderFactory
-import com.github.appreciated.card.Card
-import com.vaadin.flow.component.button.Button
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.details.Details
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -25,12 +23,16 @@ import com.vaadin.flow.router.Route
 @Route(value = PAGE_RULES, layout = MainView::class)
 @PageTitle("Rules")
 class RulesView(
-        private val builderFactory: BuilderFactory,
+        private val docService: DocService,
         private val plainTextRuleService: PlainTextRuleService,
         private val regexRuleService: RegexRuleService,
         private val mailFilterService: MailFilterService,
         private val mailPollingService: MailPollingService,
-        eventManager: EventManager
+        private val tagService: TagService,
+        private val plainTextRuleValidator: PlainTextRuleValidator,
+        private val regexRuleValidator: RegexRuleValidator,
+        private val mailManager: MailManager,
+        private val eventManager: EventManager
 ) : VerticalLayout() {
 
     init {
@@ -50,61 +52,91 @@ class RulesView(
     }
 
     private fun addPlaintext() {
-        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().plainCreateDialog().open() }.apply {
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        }
-        val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
-        plainTextRuleService.findAll().map { builderFactory.rules().plainTextCard(it) }.forEach { verticalLayout.add(it) }
-        val details = Details(t("rules.plain"), verticalLayout).apply {
-            isOpened = true
-            element.style["padding"] = "5px"
-            element.style["width"] = "100%"
-        }
-        val card = Card(details).apply {
+        card {
             setSizeFull()
             element.style["height"] = "100%"
+
+            details(t("rules.plain")) {
+                isOpened = true
+                element.style["padding"] = "5px"
+                element.style["width"] = "100%"
+
+                content {
+                    verticalLayout {
+                        setSizeFull()
+
+                        button(t("create"), VaadinIcon.PLUS.create()) {
+                            onLeftClick { this@verticalLayout.plaintextRuleCreateDialog(plainTextRuleService, tagService).open() }
+                            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                        }
+                        plainTextRuleService.findAll().forEach {
+                            plaintextRuleCard(docService, tagService, plainTextRuleService, it, plainTextRuleValidator, eventManager)
+                        }
+                    }
+                }
+            }
         }
-        add(card)
     }
 
     private fun addRegex() {
-        val create = Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().regexCreateDialog().open() }.apply {
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        }
-        val verticalLayout = VerticalLayout(create).apply { setSizeFull() }
-        regexRuleService.findAll().map { builderFactory.rules().regexCard(it) }.forEach { verticalLayout.add(it) }
-        val details = Details(t("rules.regex"), verticalLayout).apply {
-            isOpened = true
-            element.style["padding"] = "5px"
-            element.style["width"] = "100%"
-        }
-        val card = Card(details).apply {
+        card {
             setSizeFull()
             element.style["height"] = "100%"
+
+            details(t("rules.regex")) {
+                isOpened = true
+                element.style["padding"] = "5px"
+                element.style["width"] = "100%"
+
+                content {
+                    verticalLayout {
+                        setSizeFull()
+
+                        button(t("create"), VaadinIcon.PLUS.create()) {
+                            onLeftClick { this@verticalLayout.regexRuleCreateDialog(regexRuleService, tagService).open() }
+                            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                        }
+                        regexRuleService.findAll().forEach {
+                            regexRuleCard(docService, tagService, regexRuleService, it, regexRuleValidator, eventManager)
+                        }
+                    }
+                }
+            }
         }
-        add(card)
     }
 
     private fun addMailFilter() {
-        val header = HorizontalLayout(
-                Button(t("create"), VaadinIcon.PLUS.create()) { builderFactory.rules().mailCreateDialog().open() }.apply {
-                    addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-                },
-                Button(t("check"), VaadinIcon.CLOUD_DOWNLOAD.create()) { mailPollingService.poll() }.apply {
-                    addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-                }
-        ).apply { setSizeFull() }
-        val verticalLayout = VerticalLayout(header).apply { setSizeFull() }
-        mailFilterService.findAll().map { builderFactory.rules().mailCard(it) }.forEach { verticalLayout.add(it) }
-        val details = Details("Mail Filter", verticalLayout).apply {
-            isOpened = true
-            element.style["padding"] = "5px"
-            element.style["width"] = "100%"
-        }
-        val card = Card(details).apply {
+        card {
             setSizeFull()
             element.style["height"] = "100%"
+
+            details("Mail Filter") {
+                isOpened = true
+                element.style["padding"] = "5px"
+                element.style["width"] = "100%"
+
+                content {
+                    verticalLayout {
+                        setSizeFull()
+
+                        horizontalLayout {
+                            setSizeFull()
+
+                            button(t("create"), VaadinIcon.PLUS.create()) {
+                                onLeftClick { this@verticalLayout.mailFilterCreateDialog(mailFilterService, mailManager).open() }
+                                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                            }
+                            button(t("check"), VaadinIcon.CLOUD_DOWNLOAD.create()) {
+                                onLeftClick { mailPollingService.poll() }
+                                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                            }
+                        }
+                        mailFilterService.findAll().forEach {
+                            mailFilterCard(mailFilterService, it, mailManager)
+                        }
+                    }
+                }
+            }
         }
-        add(card)
     }
 }

@@ -20,8 +20,8 @@ import javax.mail.Folder
 import javax.mail.MessagingException
 
 class MailFilterEditDialog(
-        private val mailFilter: MailFilter,
         private val mailFilterService: MailFilterService,
+        private val mailFilter: MailFilter,
         mailManager: MailManager
 ) : DmsDialog("", 70, 70) {
 

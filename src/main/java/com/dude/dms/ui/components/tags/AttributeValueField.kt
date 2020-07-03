@@ -16,8 +16,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.NumberField
 
 class AttributeValueField(
-        val attributeValue: AttributeValue,
         private val attributeValueService: AttributeValueService,
+        val attributeValue: AttributeValue,
         imageEditor: DocImageEditor? = null
 ) : HorizontalLayout() {
 

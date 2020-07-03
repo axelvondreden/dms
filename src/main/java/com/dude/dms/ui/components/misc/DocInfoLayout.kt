@@ -1,41 +1,47 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.backend.service.TagService
+import com.dude.dms.ui.attributeValueLayout
+import com.dude.dms.ui.components.tags.AttributeValueLayout
+import com.dude.dms.ui.components.tags.TagSelector
+import com.dude.dms.ui.tagSelector
 import com.vaadin.flow.component.html.Div
 
-class DocInfoLayout(builderFactory: BuilderFactory, imageEditor: DocImageEditor) : Div() {
+class DocInfoLayout(tagService: TagService, imageEditor: DocImageEditor) : Div() {
 
     private var docContainer: DocContainer? = null
 
-    private val attributeValueContainer = builderFactory.attributes().valueContainer(imageEditor).apply {
-        setWidthFull()
-        maxHeight = "50%"
-    }
+    private lateinit var attributeValueLayout: AttributeValueLayout
 
-    private val tagSelector = builderFactory.tags().selector().apply {
-        maxHeight = "50%"
-        asMultiSelect().addSelectionListener { event ->
-            docContainer?.tags = event.value
-            docContainer?.let { attributeValueContainer.fill(it) }
-        }
-    }
+    private var tagSelector: TagSelector
 
     init {
         setSizeFull()
-        add(tagSelector, attributeValueContainer)
+
+        tagSelector = tagSelector(tagService) {
+            maxHeight = "50%"
+            asMultiSelect().addSelectionListener { event ->
+                docContainer?.tags = event.value
+                docContainer?.let { attributeValueLayout.fill(it) }
+            }
+        }
+        attributeValueLayout = attributeValueLayout(imageEditor) {
+            setWidthFull()
+            maxHeight = "50%"
+        }
     }
 
-    fun validate() = attributeValueContainer.validate()
+    fun validate() = attributeValueLayout.validate()
 
     fun fill(docContainer: DocContainer) {
         this.docContainer = docContainer
         tagSelector.selectedTags = docContainer.tags
-        attributeValueContainer.fill(docContainer)
+        attributeValueLayout.fill(docContainer)
     }
 
     fun clear() {
         tagSelector.selectedTags = emptySet()
-        attributeValueContainer.clear()
+        attributeValueLayout.clear()
     }
 }

@@ -48,6 +48,7 @@ class DocCard(
     fun fill() {
         content.removeAll()
 
+
         val tagContainer = builderFactory.tags().container(docContainer.tags.map { it.tag }.toMutableSet(), compact = true).apply { setWidthFull() }
         val attributeContainer = AttributeValueSmallLayout().apply {
             setWidthFull()

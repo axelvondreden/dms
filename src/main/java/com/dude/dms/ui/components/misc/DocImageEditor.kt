@@ -14,7 +14,7 @@ import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
 import com.dude.dms.ui.EditMode
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.wordEditDialog
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
@@ -32,7 +32,6 @@ import kotlin.streams.toList
 
 
 class DocImageEditor(
-        private val builderFactory: BuilderFactory,
         private val lineService: LineService,
         private val wordService: WordService,
         private val docParser: DocParser,
@@ -141,7 +140,7 @@ class DocImageEditor(
     private fun addWordWrappers(wordContainers: Set<WordContainer>, ui: UI? = null) {
         val data = mutableSetOf<WordWrapperData>()
         wordContainers.forEach { wordContainer ->
-            val dlg = builderFactory.docs().wordEditDialog(wordContainer)
+            val dlg = wordEditDialog(wordService, wordContainer)
             val word = wordContainer.word
             val div = Div().apply {
                 addClassName("word-container")

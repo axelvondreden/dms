@@ -1,8 +1,9 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.ui.components.dialogs.DmsDialog
+import com.github.mvysny.karibudsl.v10.button
+import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.ClickEvent
-import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -12,13 +13,14 @@ class ConfirmDialog(
         confirmText: String,
         icon: VaadinIcon,
         theme: ButtonVariant,
-        event: ComponentEventListener<ClickEvent<Button>>
+        event: (ClickEvent<Button>) -> Unit
 ) : DmsDialog(message) {
 
     init {
-        add(Button(confirmText, icon.create(), event).apply {
+        button(confirmText, icon.create()) {
+            onLeftClick { event.invoke(it) }
             addThemeVariants(theme)
             addClickListener { close() }
-        })
+        }
     }
 }

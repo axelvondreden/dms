@@ -2,11 +2,16 @@ package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.rules.RegexRule
+import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.RegexRuleService
+import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.parsing.RegexRuleValidator
-import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.tags.TagLayout
+import com.dude.dms.ui.regexRuleEditDialog
+import com.dude.dms.ui.ruleRunnerDialog
+import com.dude.dms.ui.tagLayout
 import com.github.appreciated.card.RippleClickableCard
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.horizontalLayout
@@ -18,7 +23,9 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 
 class RegexRuleCard(
-        builderFactory: BuilderFactory,
+        docService: DocService,
+        tagService: TagService,
+        regexRuleService: RegexRuleService,
         rule: RegexRule,
         regexRuleValidator: RegexRuleValidator,
         eventManager: EventManager
@@ -31,7 +38,7 @@ class RegexRuleCard(
     init {
         eventManager.register(this, Tag::class, EventType.UPDATE, EventType.DELETE) { fill(rule) }
         setWidthFull()
-        onLeftClick { builderFactory.rules().regexEditDialog(rule).open() }
+        onLeftClick { regexRuleEditDialog(regexRuleService, rule).open() }
 
         horizontalLayout(isPadding = true) {
             setWidthFull()
@@ -39,16 +46,16 @@ class RegexRuleCard(
             alignItems = FlexComponent.Alignment.CENTER
 
             button("Run", VaadinIcon.PLAY.create()) {
-                onLeftClick { builderFactory.rules().ruleRunnerDialog(regexRuleValidator.runRuleForAll(rule)).open() }
+                onLeftClick { this@horizontalLayout.ruleRunnerDialog(docService, regexRuleValidator.runRuleForAll(rule)).open() }
                 addThemeVariants(ButtonVariant.LUMO_SUCCESS)
             }
             label = label(rule.regex)
-            tagContainer = builderFactory.tags().container(rule.tags.toMutableSet())
+            tagContainer = tagLayout(tagService, rule.tags.toMutableSet())
         }
     }
 
     fun fill(rule: RegexRule) {
-        tagContainer.setTags(rule.tags.toMutableSet())
+        tagContainer.tags = rule.tags.toMutableSet()
         label.text = rule.regex
     }
 }

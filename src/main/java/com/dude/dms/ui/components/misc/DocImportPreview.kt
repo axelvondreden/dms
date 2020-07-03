@@ -1,103 +1,141 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.backend.service.LineService
+import com.dude.dms.backend.service.WordService
+import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.findDate
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.docImageEditor
+import com.dude.dms.ui.docInfoLayout
+import com.dude.dms.ui.modeSelector
+import com.dude.dms.ui.pageSelector
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.splitlayout.SplitLayout
 import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
 
-class DocImportPreview(builderFactory: BuilderFactory) : VerticalLayout() {
+class DocImportPreview(
+        lineService: LineService,
+        wordService: WordService,
+        docParser: DocParser,
+        fileManager: FileManager
+) : VerticalLayout() {
 
     private var docContainer: DocContainer? = null
 
-    private val imageEditor = builderFactory.docs().imageEditor().apply {
-        onTextChange = { refreshTextTools(it) }
-    }
+    private lateinit var imageEditor: DocImageEditor
 
-    private val editContainer = Div(imageEditor).apply {
-        setSizeFull()
-        style["overflowY"] = "auto"
-        style["flexGrow"] = "1"
-    }
+    private lateinit var editContainer: Div
 
-    private val infoLayout = builderFactory.docs().infoLayout(imageEditor)
+    private lateinit var infoLayout: DocInfoLayout
 
-    private val zoomButton = Button("100%") { imageEditor.resetZoom(it.source) }.apply { style["margin"] = "auto 5px" }
+    private lateinit var zoomButton: Button
 
-    private val datePick = Button(VaadinIcon.CROSSHAIRS.create()) { pickDate() }
+    private lateinit var datePick: Button
 
-    private val date = DatePicker().apply {
-        addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
-        locale = Locale.forLanguageTag(Options.get().view.locale)
-    }
+    private lateinit var date: DatePicker
 
-    private val pageSelector = DocPageSelector()
+    private lateinit var pageSelector: DocPageSelector
 
-    private val modeSelector = ModeSelector()
+    private lateinit var modeSelector: ModeSelector
 
-    private val pdfButton = Button("PDF") {
-        docContainer?.let { dc ->
-            dc.useOcrTxt = false
-            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
-            refreshTextTools(dc)
-        }
-    }
-    private val ocrButton = Button("OCR") {
-        docContainer?.let { dc ->
-            dc.useOcrTxt = true
-            imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
-            refreshTextTools(dc)
-        }
-    }
+    private lateinit var pdfButton: Button
+    private lateinit var ocrButton: Button
 
     var onDone: ((DocContainer) -> Unit)? = null
 
-    private val doneButton = Button(t("done")) { if (infoLayout.validate()) onDone?.invoke(docContainer!!) }.apply {
-        addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        style["margin"] = "auto"
-        style["marginRight"] = "4px"
-    }
+    private lateinit var doneButton: Button
 
     init {
         setSizeFull()
         isPadding = false
 
-        val header = HorizontalLayout(
-                pageSelector,
-                HorizontalLayout(
-                        Button(VaadinIcon.MINUS_CIRCLE.create()) { imageEditor.shrink(zoomButton) },
-                        zoomButton,
-                        Button(VaadinIcon.PLUS_CIRCLE.create()) { imageEditor.grow(zoomButton) }
-                ).apply { isSpacing = false; isPadding = false },
-                HorizontalLayout(pdfButton, ocrButton).apply { isSpacing = false; isPadding = false },
-                modeSelector,
-                HorizontalLayout(date, datePick).apply { isSpacing = false; isPadding = false },
-                doneButton
-        ).apply { setWidthFull() }
-        ocrButton.style["marginLeft"] = "5px"
-        val imageWrapper = Div(header, editContainer).apply {
-            setSizeFull()
-            style["overflowY"] = "hidden"
-            style["display"] = "flex"
-            style["flexDirection"] = "column"
-        }
-        val split = SplitLayout(imageWrapper, infoLayout).apply {
+        splitLayout {
             setSizeFull()
             setSecondaryStyle("minWidth", "250px")
             setSecondaryStyle("maxWidth", "400px")
+
+            div {
+                setSizeFull()
+                style["overflowY"] = "hidden"
+                style["display"] = "flex"
+                style["flexDirection"] = "column"
+
+                horizontalLayout {
+                    setWidthFull()
+
+                    pageSelector = pageSelector {  }
+                    horizontalLayout(isPadding = false, isSpacing = false) {
+                        iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                            onLeftClick { imageEditor.shrink(zoomButton) }
+                        }
+                        zoomButton = button("100%") {
+                            onLeftClick { imageEditor.resetZoom(it.source) }
+                            style["margin"] = "auto 5px"
+                        }
+                        iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                            onLeftClick { imageEditor.grow(zoomButton) }
+                        }
+                    }
+                    horizontalLayout(isPadding = false, isSpacing = false) {
+                        pdfButton = button("PDF") {
+                            onLeftClick {
+                                docContainer?.let { dc ->
+                                    dc.useOcrTxt = false
+                                    imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
+                                    refreshTextTools(dc)
+                                }
+                            }
+                        }
+                        ocrButton = button("OCR") {
+                            onLeftClick {
+                                docContainer?.let { dc ->
+                                    dc.useOcrTxt = true
+                                    imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
+                                    refreshTextTools(dc)
+                                }
+                            }
+                            style["marginLeft"] = "5px"
+                        }
+                    }
+                    modeSelector = modeSelector {  }
+                    horizontalLayout(isPadding = false, isSpacing = false) {
+                        date = datePicker {
+                            addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
+                            locale = Locale.forLanguageTag(Options.get().view.locale)
+                        }
+                        datePick = iconButton(VaadinIcon.CROSSHAIRS.create()) {
+                            onLeftClick { pickDate() }
+                        }
+                    }
+                    doneButton = button(t("done")) {
+                        onLeftClick { if (infoLayout.validate()) onDone?.invoke(docContainer!!) }
+                        addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                        style["margin"] = "auto"
+                        style["marginRight"] = "4px"
+                    }
+                }
+                editContainer = div {
+                    setSizeFull()
+                    style["overflowY"] = "auto"
+                    style["flexGrow"] = "1"
+
+                    imageEditor = docImageEditor(lineService, wordService, docParser, fileManager) {
+                        onTextChange = { refreshTextTools(it) }
+                    }
+                }
+            }
+            infoLayout = docInfoLayout(imageEditor)
         }
-        add(split)
     }
 
     private fun pickDate() {

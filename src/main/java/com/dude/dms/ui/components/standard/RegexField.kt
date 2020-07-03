@@ -1,14 +1,18 @@
 package com.dude.dms.ui.components.standard
 
 import com.dude.dms.ui.components.dialogs.RegexDialog
+import com.dude.dms.ui.regexDialog
+import com.github.mvysny.karibudsl.v10.icon
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.textField
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class RegexField(label: String = "", initialValue: String = "") : HorizontalLayout() {
+class RegexField(label: String = "") : HorizontalLayout() {
 
-    private val regex = TextField(label, initialValue, "").apply { setSizeFull() }
+    private lateinit var regex: TextField
 
     var value: String?
         get() = regex.value
@@ -24,10 +28,10 @@ class RegexField(label: String = "", initialValue: String = "") : HorizontalLayo
         isMargin = false
         alignItems = FlexComponent.Alignment.END
 
-        val icon = VaadinIcon.EXPAND.create().apply {
-            element.style["paddingBottom"] = "8px"
-            addClickListener { RegexDialog(regex).open() }
+        icon(VaadinIcon.EXPAND) {
+            style["paddingBottom"] = "8px"
+            onLeftClick { regexDialog(regex).open() }
         }
-        add(icon, regex)
+        regex = textField(label) { setSizeFull() }
     }
 }

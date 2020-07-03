@@ -11,7 +11,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 
-class DocUploadDialog : DmsDialog(t("doc.upload"), "40vw", "70vh") {
+class DocUploadDialog : DmsDialog(t("doc.upload"), 40, 70) {
 
     init {
         val buffer = MultiFileMemoryBuffer()
