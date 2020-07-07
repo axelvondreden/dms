@@ -2,8 +2,8 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.service.TagService
-import com.dude.dms.ui.tagLabel
-import com.dude.dms.ui.tagLayout
+import com.dude.dms.extensions.tagLabel
+import com.dude.dms.extensions.tagLayout
 import com.github.mvysny.karibudsl.v10.iconButton
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.ComponentEvent

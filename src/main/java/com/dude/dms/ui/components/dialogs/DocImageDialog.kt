@@ -1,9 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.LineService
-import com.dude.dms.backend.service.WordService
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DocParser
@@ -13,10 +11,10 @@ import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.misc.DocInfoLayout
 import com.dude.dms.ui.components.misc.DocPageSelector
 import com.dude.dms.ui.components.misc.ModeSelector
-import com.dude.dms.ui.docImageEditor
-import com.dude.dms.ui.docInfoLayout
-import com.dude.dms.ui.modeSelector
-import com.dude.dms.ui.pageSelector
+import com.dude.dms.extensions.docImageEditor
+import com.dude.dms.extensions.docInfoLayout
+import com.dude.dms.extensions.modeSelector
+import com.dude.dms.extensions.docPageSelector
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -29,6 +27,8 @@ import java.util.*
 
 class DocImageDialog(
         private val docService: DocService,
+        tagService: TagService,
+        attributeValueService: AttributeValueService,
         lineService: LineService,
         wordService: WordService,
         docParser: DocParser,
@@ -58,7 +58,7 @@ class DocImageDialog(
             setWidthFull()
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER
 
-            pageSelector = pageSelector {  }
+            pageSelector = docPageSelector {  }
             modeSelector = modeSelector { setChangeListener { imageEditor.mode = it } }
             horizontalLayout(isPadding = false, isSpacing = false) {
                 date = datePicker {
@@ -96,14 +96,16 @@ class DocImageDialog(
             setSecondaryStyle("minWidth", "200px")
             setSecondaryStyle("maxWidth", "300px")
 
-            editContainer = div {
+            editContainer = Div().apply {
                 maxWidth = "80vw"
                 maxHeight = "80vh"
                 style["overflowY"] = "auto"
 
                 imageEditor = docImageEditor(lineService, wordService, docParser, fileManager)
             }
-            infoLayout = docInfoLayout(imageEditor)
+            infoLayout = DocInfoLayout(tagService, attributeValueService, imageEditor)
+            addToPrimary(editContainer)
+            addToSecondary(infoLayout)
         }
 
         addOpenedChangeListener {

@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.tags
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.ui.attributeValueField
+import com.dude.dms.extensions.attributeValueField
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div

@@ -5,12 +5,11 @@ import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.t
-import com.dude.dms.ui.components.misc.ConfirmDialog
+import com.dude.dms.extensions.confirmDialog
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.horizontalLayout
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.github.mvysny.karibudsl.v10.treeGrid
-import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.grid.Grid
@@ -61,7 +60,7 @@ class MailFilterEditDialog(
     }
 
     private fun delete() {
-        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
+        confirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, {
             mailFilterService.delete(mailFilter)
             close()
         }).open()

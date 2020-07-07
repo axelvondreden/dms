@@ -2,20 +2,21 @@ package com.dude.dms.ui.views
 
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docCard
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocCard
+import com.dude.dms.ui.components.dialogs.DocImageDialog
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -24,31 +25,44 @@ import com.vaadin.flow.router.Route
 @Route(value = Const.PAGE_RECYCLE, layout = MainView::class)
 @PageTitle("Recycle Bin")
 class RecycleView(
-        private val builderFactory: BuilderFactory,
         private val docService: DocService,
+        private val tagService: TagService,
+        private val mailService: MailService,
+        attributeValueService: AttributeValueService,
+        lineService: LineService,
+        wordService: WordService,
+        docParser: DocParser,
         private val fileManager: FileManager,
         eventManager: EventManager
 ) : VerticalLayout() {
 
-    private val itemContainer = Div().apply {
-        setSizeFull()
-        element.style["display"] = "flex"
-        element.style["flexWrap"] = "wrap"
-    }
+    private var itemContainer: Div
 
-    private val empty = Button(t("recyclebin.empty"), VaadinIcon.RECYCLE.create()) { empty() }
-
-    private val imageDialog = builderFactory.docs().imageDialog()
+    private val imageDialog = DocImageDialog(docService, tagService, attributeValueService, lineService, wordService, docParser, fileManager)
 
     init {
         val ui = UI.getCurrent()
         eventManager.register(this, Doc::class, EventType.UPDATE, EventType.DELETE) { ui.access { fill() } }
 
-        val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
-        val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
+        horizontalLayout {
+            setWidthFull()
 
-        val header = HorizontalLayout(empty, shrinkButton, growButton).apply { setWidthFull() }
-        add(header, itemContainer)
+            button(t("recyclebin.empty"), VaadinIcon.RECYCLE.create()) {
+                onLeftClick { empty() }
+            }
+            iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                onLeftClick { shrink() }
+            }
+            iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                onLeftClick { grow() }
+            }
+        }
+        itemContainer = div {
+            setSizeFull()
+            style["display"] = "flex"
+            style["flexWrap"] = "wrap"
+        }
+
         fill()
     }
 
@@ -75,7 +89,7 @@ class RecycleView(
         docService.findDeleted().forEach { doc ->
             val dc = DocContainer(doc)
             dc.thumbnail = fileManager.getImage(dc.guid)
-            itemContainer.add(builderFactory.docs().card(dc, imageDialog))
+            itemContainer.docCard(docService, tagService, mailService, dc, imageDialog)
         }
     }
 

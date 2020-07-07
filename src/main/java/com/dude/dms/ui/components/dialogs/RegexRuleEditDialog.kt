@@ -5,15 +5,14 @@ import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
-import com.dude.dms.ui.components.misc.ConfirmDialog
+import com.dude.dms.extensions.confirmDialog
+import com.dude.dms.extensions.regexField
+import com.dude.dms.extensions.tagSelector
 import com.dude.dms.ui.components.standard.RegexField
 import com.dude.dms.ui.components.tags.TagSelector
-import com.dude.dms.ui.regexField
-import com.dude.dms.ui.tagSelector
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.horizontalLayout
 import com.github.mvysny.karibudsl.v10.onLeftClick
-import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 
@@ -52,7 +51,7 @@ class RegexRuleEditDialog(
     }
 
     private fun delete() {
-        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
+        confirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, {
             regexRuleService.delete(regexRule)
             close()
         }).open()

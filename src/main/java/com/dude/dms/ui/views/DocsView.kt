@@ -4,24 +4,24 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.TagService
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docCard
+import com.dude.dms.extensions.viewPageSelector
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocCard
+import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.misc.ViewPageSelector
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
@@ -37,11 +37,15 @@ import kotlin.streams.toList
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView::class)
 @PageTitle("Docs")
 class DocsView(
-        private val builderFactory: BuilderFactory,
         private val docService: DocService,
+        lineService: LineService,
+        wordService: WordService,
         private val tagService: TagService,
+        private val mailService: MailService,
         private val attributeService: AttributeService,
+        attributeValueService: AttributeValueService,
         private val fileManager: FileManager,
+        docParser: DocParser,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -58,48 +62,19 @@ class DocsView(
 
     private var filter = DocService.Filter()
 
-    private val itemContainer = Div().apply {
-        setSizeFull()
-        element.style["display"] = "flex"
-        element.style["flexWrap"] = "wrap"
-    }
+    private var itemContainer: Div
 
-    private val tagFilter = ComboBox("", tagService.findAll()).apply {
-        placeholder = t("tag")
-        isClearButtonVisible = true
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        setItemLabelGenerator { it.name }
-        addValueChangeListener { refreshFilter() }
-    }
+    private lateinit var tagFilter: ComboBox<Tag>
 
-    private val attributeFilter = ComboBox("", attributeService.findAll()).apply {
-        placeholder = t("attribute")
-        isClearButtonVisible = true
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        setItemLabelGenerator { it.name }
-        addValueChangeListener { refreshFilter() }
-    }
+    private lateinit var attributeFilter: ComboBox<Attribute>
 
-    private val textFilter = TextField("", "Text").apply {
-        isClearButtonVisible = true
-        addValueChangeListener { refreshFilter() }
-        valueChangeMode = ValueChangeMode.LAZY
-        width = "25vw"
-    }
+    private lateinit var textFilter: TextField
 
-    private val sortFilter = ComboBox("", sorts).apply {
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        value = sorts[0]
-        setItemLabelGenerator { it.first }
-        addValueChangeListener { refreshFilter() }
-    }
+    private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
 
-    private val pageSelector = ViewPageSelector()
+    private lateinit var pageSelector: ViewPageSelector
 
-    private val imageDialog = builderFactory.docs().imageDialog()
+    private val imageDialog = DocImageDialog(docService, tagService, attributeValueService, lineService, wordService, docParser, fileManager)
 
     init {
         eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
@@ -108,13 +83,57 @@ class DocsView(
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
 
+        horizontalLayout {
+            setWidthFull()
+
+            tagFilter = comboBox {
+                setItems(tagService.findAll())
+                placeholder = t("tag")
+                isClearButtonVisible = true
+                isPreventInvalidInput = true
+                isAllowCustomValue = false
+                setItemLabelGenerator { it.name }
+                addValueChangeListener { refreshFilter() }
+            }
+            attributeFilter = comboBox {
+                setItems(attributeService.findAll())
+                placeholder = t("attribute")
+                isClearButtonVisible = true
+                isPreventInvalidInput = true
+                isAllowCustomValue = false
+                setItemLabelGenerator { it.name }
+                addValueChangeListener { refreshFilter() }
+            }
+            textFilter = textField {
+                width = "25vw"
+                placeholder = "Text"
+                isClearButtonVisible = true
+                addValueChangeListener { refreshFilter() }
+                valueChangeMode = ValueChangeMode.LAZY
+            }
+            sortFilter = comboBox {
+                setItems(sorts)
+                isPreventInvalidInput = true
+                isAllowCustomValue = false
+                value = sorts[0]
+                setItemLabelGenerator { it.first }
+                addValueChangeListener { refreshFilter() }
+            }
+            iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                onLeftClick { shrink() }
+            }
+            iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                onLeftClick { grow() }
+            }
+            pageSelector = viewPageSelector()
+        }
+        itemContainer = div {
+            setSizeFull()
+            style["display"] = "flex"
+            style["flexWrap"] = "wrap"
+        }
+
         pageSelector.setChangeListener { scheduleFill(viewUI) }
-
-        val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
-        val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
-
-        val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton, pageSelector).apply { setWidthFull() }
-        add(header, itemContainer)
         scheduleFill(viewUI)
     }
 
@@ -174,9 +193,10 @@ class DocsView(
             pageSelector.items = docService.countByFilter(filter).toInt()
         }
         docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
-            val dc = DocContainer(doc)
-            dc.thumbnail = fileManager.getImage(dc.guid)
-            ui.access { itemContainer.add(builderFactory.docs().card(dc, imageDialog)) }
+            val dc = DocContainer(doc).apply { thumbnail = fileManager.getImage(guid) }
+            ui.access {
+                itemContainer.docCard(docService, tagService, mailService, dc, imageDialog)
+            }
         }
     }
 

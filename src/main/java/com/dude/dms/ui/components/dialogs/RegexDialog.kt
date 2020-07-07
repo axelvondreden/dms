@@ -42,17 +42,19 @@ class RegexDialog(
             height = "80%"
             orientation = SplitLayout.Orientation.VERTICAL
 
-            textArea = textArea(t("testarea")) {
+            textArea = TextArea(t("testarea")).apply {
                 setWidthFull()
                 height = "50%"
                 addValueChangeListener { refreshResults() }
                 valueChangeMode = ValueChangeMode.EAGER
             }
-            grid = grid {
+            grid = Grid<String>().apply {
                 addColumn { it }.setHeader(t("matches"))
                 setItems(matches)
                 height = "30%"
             }
+            addToPrimary(textArea)
+            addToSecondary(grid)
         }
     }
 

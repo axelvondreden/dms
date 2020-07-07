@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.ui.attributeValueLabel
+import com.dude.dms.extensions.attributeValueLabel
 import com.vaadin.flow.component.html.Div
 
 class AttributeValueSmallLayout : Div() {

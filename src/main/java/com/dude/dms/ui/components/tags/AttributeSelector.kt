@@ -5,7 +5,7 @@ import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.t
-import com.dude.dms.ui.attributeCreateDialog
+import com.dude.dms.extensions.attributeCreateDialog
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.grid
 import com.github.mvysny.karibudsl.v10.horizontalLayout

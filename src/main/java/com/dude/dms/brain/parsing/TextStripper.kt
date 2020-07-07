@@ -9,5 +9,5 @@ interface TextStripper {
     fun String.isValidWord() = !isNullOrBlank() &&
             any { it.isLetter() || it.isDigit() } &&
             (length < 10 || groupBy { it }.size > 2) &&
-            (length > 1 || get(0).isDigit())
+            (length > 1 || get(0).isDigit()) || this in listOf("€", "$", "%")
 }

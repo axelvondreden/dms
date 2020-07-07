@@ -11,7 +11,7 @@ import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.brain.t
-import com.dude.dms.ui.*
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.Const.PAGE_RULES
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant

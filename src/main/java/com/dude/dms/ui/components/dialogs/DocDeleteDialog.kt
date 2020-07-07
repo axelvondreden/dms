@@ -13,9 +13,9 @@ import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
 
 class DocDeleteDialog(
-        private val docContainer: DocContainer,
         private val docService: DocService,
-        private val mailService: MailService
+        private val mailService: MailService,
+        private val docContainer: DocContainer
 ) : DmsDialog(t("doc.delete"), 20) {
 
     private lateinit var docCheck: Checkbox

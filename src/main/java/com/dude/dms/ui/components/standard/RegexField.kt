@@ -1,7 +1,6 @@
 package com.dude.dms.ui.components.standard
 
-import com.dude.dms.ui.components.dialogs.RegexDialog
-import com.dude.dms.ui.regexDialog
+import com.dude.dms.extensions.regexDialog
 import com.github.mvysny.karibudsl.v10.icon
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.github.mvysny.karibudsl.v10.textField

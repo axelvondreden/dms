@@ -9,9 +9,9 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.ui.components.tags.TagLayout
-import com.dude.dms.ui.regexRuleEditDialog
-import com.dude.dms.ui.ruleRunnerDialog
-import com.dude.dms.ui.tagLayout
+import com.dude.dms.extensions.regexRuleEditDialog
+import com.dude.dms.extensions.ruleRunnerDialog
+import com.dude.dms.extensions.tagLayout
 import com.github.appreciated.card.RippleClickableCard
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.horizontalLayout
@@ -38,7 +38,7 @@ class RegexRuleCard(
     init {
         eventManager.register(this, Tag::class, EventType.UPDATE, EventType.DELETE) { fill(rule) }
         setWidthFull()
-        onLeftClick { regexRuleEditDialog(regexRuleService, rule).open() }
+        addClickListener { regexRuleEditDialog(regexRuleService, tagService, rule).open() }
 
         horizontalLayout(isPadding = true) {
             setWidthFull()

@@ -5,8 +5,8 @@ import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.t
-import com.dude.dms.ui.attributeSelector
-import com.dude.dms.ui.colorPicker
+import com.dude.dms.extensions.attributeSelector
+import com.dude.dms.extensions.colorPicker
 import com.dude.dms.ui.components.tags.AttributeSelector
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.*

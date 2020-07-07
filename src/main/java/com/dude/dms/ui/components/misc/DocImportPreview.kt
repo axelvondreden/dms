@@ -1,17 +1,15 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.backend.service.LineService
+import com.dude.dms.backend.service.TagService
 import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.findDate
-import com.dude.dms.ui.docImageEditor
-import com.dude.dms.ui.docInfoLayout
-import com.dude.dms.ui.modeSelector
-import com.dude.dms.ui.pageSelector
+import com.dude.dms.extensions.*
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -24,6 +22,8 @@ import java.util.*
 
 
 class DocImportPreview(
+        tagService: TagService,
+        attributeValueService: AttributeValueService,
         lineService: LineService,
         wordService: WordService,
         docParser: DocParser,
@@ -64,7 +64,7 @@ class DocImportPreview(
             setSecondaryStyle("minWidth", "250px")
             setSecondaryStyle("maxWidth", "400px")
 
-            div {
+            addToPrimary(Div().apply {
                 setSizeFull()
                 style["overflowY"] = "hidden"
                 style["display"] = "flex"
@@ -73,7 +73,7 @@ class DocImportPreview(
                 horizontalLayout {
                     setWidthFull()
 
-                    pageSelector = pageSelector {  }
+                    pageSelector = docPageSelector { }
                     horizontalLayout(isPadding = false, isSpacing = false) {
                         iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
                             onLeftClick { imageEditor.shrink(zoomButton) }
@@ -107,7 +107,7 @@ class DocImportPreview(
                             style["marginLeft"] = "5px"
                         }
                     }
-                    modeSelector = modeSelector {  }
+                    modeSelector = modeSelector { }
                     horizontalLayout(isPadding = false, isSpacing = false) {
                         date = datePicker {
                             addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
@@ -133,8 +133,9 @@ class DocImportPreview(
                         onTextChange = { refreshTextTools(it) }
                     }
                 }
-            }
-            infoLayout = docInfoLayout(imageEditor)
+            })
+            infoLayout = DocInfoLayout(tagService, attributeValueService, imageEditor)
+            addToSecondary(infoLayout)
         }
     }
 

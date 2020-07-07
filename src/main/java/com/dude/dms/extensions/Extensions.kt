@@ -1,8 +1,6 @@
 package com.dude.dms.extensions
 
 import com.dude.dms.brain.options.Options
-import com.vaadin.flow.component.icon.Icon
-import com.vaadin.flow.component.icon.VaadinIcon
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -1,5 +1,6 @@
-package com.dude.dms.ui
+package com.dude.dms.extensions
 
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.Tag
@@ -15,21 +16,22 @@ import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.brain.parsing.RegexRuleValidator
-import com.dude.dms.ui.components.cards.MailFilterCard
-import com.dude.dms.ui.components.cards.PlainTextRuleCard
-import com.dude.dms.ui.components.cards.RegexRuleCard
+import com.dude.dms.ui.components.cards.*
 import com.dude.dms.ui.components.dialogs.*
-import com.dude.dms.ui.components.misc.DocImageEditor
-import com.dude.dms.ui.components.misc.DocInfoLayout
-import com.dude.dms.ui.components.misc.DocPageSelector
-import com.dude.dms.ui.components.misc.ModeSelector
+import com.dude.dms.ui.components.misc.*
 import com.dude.dms.ui.components.standard.RegexField
 import com.dude.dms.ui.components.tags.*
+import com.dude.dms.updater.UpdateChecker
 import com.github.appreciated.card.Card
+import com.github.appreciated.card.label.SecondaryLabel
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.init
-import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.ClickEvent
 import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.textfield.TextField
 
 fun HasComponents.tagLayout(
@@ -128,7 +130,9 @@ fun HasComponents.regexField(label: String = "", block: RegexField.() -> Unit = 
 
 fun HasComponents.colorPicker(label: String = "", block: ColorPickerFieldRaw.() -> Unit = {}): ColorPickerFieldRaw = init(ColorPickerFieldRaw(label), block)
 
-fun HasComponents.pageSelector(max: Int = 1, block: DocPageSelector.() -> Unit = {}): DocPageSelector = init(DocPageSelector(max), block)
+fun HasComponents.docPageSelector(max: Int = 1, block: DocPageSelector.() -> Unit = {}): DocPageSelector = init(DocPageSelector(max), block)
+
+fun HasComponents.viewPageSelector(block: ViewPageSelector.() -> Unit = {}): ViewPageSelector = init(ViewPageSelector(), block)
 
 fun HasComponents.modeSelector(block: ModeSelector.() -> Unit = {}): ModeSelector = init(ModeSelector(), block)
 
@@ -142,9 +146,24 @@ fun HasComponents.docImageEditor(
 
 fun HasComponents.docInfoLayout(
         tagService: TagService,
+        attributeValueService: AttributeValueService,
         docImageEditor: DocImageEditor,
         block: DocInfoLayout.() -> Unit = {}
-): DocInfoLayout = init(DocInfoLayout(tagService, docImageEditor), block)
+): DocInfoLayout = init(DocInfoLayout(tagService, attributeValueService, docImageEditor), block)
+
+fun HasComponents.docCard(
+        docService: DocService,
+        tagService: TagService,
+        mailService: MailService,
+        docContainer: DocContainer,
+        imageDialog: DocImageDialog,
+        block: DocCard.() -> Unit = {}
+): DocCard = init(DocCard(docService, tagService, mailService, docContainer, imageDialog), block)
+
+fun HasComponents.docImportCard(
+        docContainer: DocContainer,
+        block: DocImportCard.() -> Unit = {}
+): DocImportCard = init(DocImportCard(docContainer), block)
 
 fun HasComponents.wordEditDialog(
         wordService: WordService,
@@ -157,6 +176,10 @@ fun HasComponents.attributeValueLayout(
         imageEditor: DocImageEditor? = null,
         block: AttributeValueLayout.() -> Unit = {}
 ): AttributeValueLayout = init(AttributeValueLayout(attributeValueService, imageEditor), block)
+
+fun HasComponents.attributeValueSmallLayout(
+        block: AttributeValueSmallLayout.() -> Unit = {}
+): AttributeValueSmallLayout = init(AttributeValueSmallLayout(), block)
 
 fun HasComponents.attributeCreateDialog(
         attributeService: AttributeService,
@@ -175,4 +198,34 @@ fun HasComponents.attributeValueLabel(
         block: AttributeValueLabel.() -> Unit = {}
 ): AttributeValueLabel = init(AttributeValueLabel(attributeValue), block)
 
+fun HasComponents.docDeleteDialog(
+        docService: DocService,
+        mailService: MailService,
+        docContainer: DocContainer,
+        block: DocDeleteDialog.() -> Unit = {}
+): DocDeleteDialog = init(DocDeleteDialog(docService, mailService, docContainer), block)
+
+fun HasComponents.docImportPreview(
+        tagService: TagService,
+        attributeValueService: AttributeValueService,
+        lineService: LineService,
+        wordService: WordService,
+        docParser: DocParser,
+        fileManager: FileManager,
+        block: DocImportPreview.() -> Unit = {}
+): DocImportPreview = init(DocImportPreview(tagService, attributeValueService, lineService, wordService, docParser, fileManager), block)
+
+fun HasComponents.confirmDialog(
+        message: String,
+        confirmText: String,
+        icon: VaadinIcon,
+        theme: ButtonVariant,
+        event: (ClickEvent<Button>) -> Unit,
+        block: ConfirmDialog.() -> Unit = {}
+): ConfirmDialog = init(ConfirmDialog(message, confirmText, icon, theme, event), block)
+
 fun HasComponents.card(block: Card.() -> Unit = {}): Card = init(Card(), block)
+
+fun HasComponents.secondaryLabel(text: String?, block: SecondaryLabel.() -> Unit = {}): SecondaryLabel = init(SecondaryLabel(text), block)
+
+fun HasComponents.progressBar(block: ProgressBar.() -> Unit = {}): ProgressBar = init(ProgressBar(), block)

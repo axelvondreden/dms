@@ -3,17 +3,14 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.mails.Mail
-import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.MailService
-import com.dude.dms.backend.service.TagService
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.components.dialogs.*
+import com.dude.dms.updater.UpdateChecker
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu
@@ -49,14 +46,14 @@ class MainView(
         private val mailService: MailService,
         private val tagService: TagService,
         private val attributeService: AttributeService,
-        private val builderFactory: BuilderFactory,
         private val docImportService: DocImportService,
+        private val changelogService: ChangelogService,
+        private val updateChecker: UpdateChecker,
         @param:Value("\${build.version}") private val buildVersion: String,
-        eventManager: EventManager
+        private val eventManager: EventManager
 ) : AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybridNoAppBar>(), AfterNavigationObserver, PageConfigurator {
 
     private var docsBadge: DefaultBadgeHolder? = null
-    private var mailsBadge: DefaultBadgeHolder? = null
     private var recycleBadge: DefaultBadgeHolder? = null
     private var importsBadge: DefaultBadgeHolder? = null
     private val tagBadges = HashMap<Long, DefaultBadgeHolder>()
@@ -71,9 +68,6 @@ class MainView(
         eventManager.register(this, Doc::class, CREATE) { ui.access { docsBadge!!.increase(); fillBadgeCount(it) } }
         eventManager.register(this, Doc::class, UPDATE) { ui.access { fillBadgeCount(it) } }
         eventManager.register(this, Doc::class, DELETE) { ui.access { docsBadge!!.decrease(); fillBadgeCount(it) } }
-        eventManager.register(this, Mail::class, CREATE) { ui.access { mailsBadge!!.increase(); fillBadgeCount(it) } }
-        eventManager.register(this, Mail::class, UPDATE) { ui.access { fillBadgeCount(it) } }
-        eventManager.register(this, Mail::class, DELETE) { ui.access { mailsBadge!!.decrease(); fillBadgeCount(it) } }
         eventManager.register(this, Attribute::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
         eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
 
@@ -89,19 +83,17 @@ class MainView(
         importsBadge = DefaultBadgeHolder(docImportService.count).apply { bind(importDocEntry.badge) }
         val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
-        val mailsEntry = LeftNavigationItem(t("mails"), VaadinIcon.MAILBOX.create(), MailsView::class.java)
-        mailsBadge = DefaultBadgeHolder(mailService.count().toInt()).apply { bind(mailsEntry.badge) }
         val recycleEntry = LeftNavigationItem(t("recyclebin"), VaadinIcon.TRASH.create(), RecycleView::class.java)
         recycleBadge = DefaultBadgeHolder(docService.countDeleted().toInt()).apply { bind(recycleEntry.badge) }
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
         val rulesEntry = LeftNavigationItem(t("rules"), VaadinIcon.MAGIC.create(), RulesView::class.java)
         return LeftAppMenuBuilder.get()
-                .add(importDocEntry, docsEntry, mailsEntry, tagsEntry, attributesEntry, rulesEntry)
+                .add(importDocEntry, docsEntry, tagsEntry, attributesEntry, rulesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
-                        LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { builderFactory.misc().changelog().open() },
+                        LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { ChangelogDialog(changelogService, updateChecker).open() },
                         LeftNavigationItem(t("administration"), VaadinIcon.DASHBOARD.create(), AdminView::class.java),
                         LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java),
                         recycleEntry)
@@ -111,7 +103,7 @@ class MainView(
     private fun createAttributesEntry(): LeftSubmenu {
         val attributeEntries = mutableListOf<Component>(
                 LeftClickableItem(t("attribute.new"), VaadinIcon.PLUS_CIRCLE.create()) {
-                    builderFactory.attributes().createDialog().open()
+                    AttributeCreateDialog(attributeService).open()
                 }
         )
         for (attribute in attributeService.findAll()) {
@@ -125,7 +117,7 @@ class MainView(
                 target = entry
                 isOpenOnClick = true
                 addItem(t("edit")) { UI.getCurrent().navigate(AttributeView::class.java, attribute.name) }
-                addItem(t("delete")) { builderFactory.attributes().deleteDialog(attribute).open() }
+                addItem(t("delete")) { AttributeDeleteDialog(attribute, attributeService, docService, tagService).open() }
             }
         }
         return LeftSubmenu(t("attributes"), VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
@@ -135,7 +127,7 @@ class MainView(
         tagBadges.clear()
         val tagEntries = mutableListOf<Component>(
                 LeftClickableItem(t("tag.add"), VaadinIcon.PLUS_CIRCLE.create()) {
-                    builderFactory.tags().createDialog().open()
+                    TagCreateDialog(tagService, attributeService, eventManager).open()
                 }
         )
         for (tag in tagService.findAll()) {
@@ -152,9 +144,8 @@ class MainView(
                 target = entry
                 isOpenOnClick = true
                 addItem(t("docs")) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
-                addItem(t("mails")) { UI.getCurrent().navigate<String, MailsView>(MailsView::class.java, "tag:${tag.name}") }
-                addItem(t("edit")) { builderFactory.tags().editDialog(tag).open() }
-                addItem(t("delete")) { builderFactory.tags().deleteDialog(tag).open() }
+                addItem(t("edit")) { TagEditDialog(tagService, docService, attributeService, eventManager, tag).open() }
+                addItem(t("delete")) { TagDeleteDialog(tag, tagService, docService, mailService, attributeService).open() }
             }
         }
         return LeftSubmenu(t("tags"), VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
@@ -163,10 +154,6 @@ class MainView(
     private fun fillBadgeCount(doc: Doc) {
         doc.tags.forEach { fillBadgeCount(it) }
         recycleBadge?.count = docService.countDeleted().toInt()
-    }
-
-    private fun fillBadgeCount(mail: Mail) {
-        tagService.findByMail(mail).forEach { fillBadgeCount(it) }
     }
 
     private fun fillBadgeCount(tag: Tag) {
