@@ -17,9 +17,11 @@ class AttributeValueLayout(
 
     fun fill(docContainer: DocContainer) {
         clear()
-        docContainer.attributeValues.forEach {
-            val field = attributeValueField(attributeValueService, it, imageEditor)
-            fields.add(field)
+        if (!docContainer.tags.isNullOrEmpty()) {
+            docContainer.attributeValues.forEach {
+                val field = attributeValueField(attributeValueService, it, imageEditor)
+                fields.add(field)
+            }
         }
     }
 
