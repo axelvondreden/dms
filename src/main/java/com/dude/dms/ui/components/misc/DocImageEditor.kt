@@ -14,7 +14,6 @@ import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
 import com.dude.dms.ui.EditMode
-import com.dude.dms.extensions.wordEditDialog
 import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI

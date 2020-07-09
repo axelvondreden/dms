@@ -3,10 +3,10 @@ package com.dude.dms.ui.components.cards
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.MailService
-import com.dude.dms.backend.service.TagService
+import com.dude.dms.backend.service.*
+import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.*
 import com.dude.dms.ui.components.dialogs.DocImageDialog
@@ -30,14 +30,18 @@ class DocCard(
         private val docService: DocService,
         private val tagService: TagService,
         private val mailService: MailService,
-        val docContainer: DocContainer,
-        private val imageDialog: DocImageDialog
+        attributeValueService: AttributeValueService,
+        lineService: LineService,
+        wordService: WordService,
+        docParser: DocParser,
+        fileManager: FileManager,
+        val docContainer: DocContainer
 ) : ClickableCard() {
 
     private var imgDiv: Div? = null
 
     init {
-        addClickListener { imageDialog.apply { fill(docContainer) }.open() }
+        addClickListener { DocImageDialog(docService, tagService, attributeValueService, lineService, wordService, docParser, fileManager, docContainer).open() }
         fill()
         addClassName("doc-card")
     }
@@ -105,11 +109,9 @@ class DocCard(
 
     private fun ContextMenu.fill() {
         if (docContainer.doc?.deleted == true) {
-            addItem(t("view")) { imageDialog.open() }
             addItem(t("delete.forever")) { docService.delete(docContainer.doc!!) }
             addItem(t("restore")) { docService.restore(docContainer.doc!!) }
         } else {
-            addItem(t("view")) { imageDialog.open() }
             addItem(t("delete")) { docDeleteDialog(docService, mailService, docContainer).open() }
         }
     }

@@ -37,7 +37,7 @@ class TagDeleteDialog(
             }
             docCheck = checkBox("${t("docs")} (${docService.countByTag(tag)})")
             mailCheck = checkBox("${t("mails")} (${mailService.countByTag(tag)})")
-            attributeCheck = checkBox("${t("attributes")} (${tag.attributes.size}")
+            attributeCheck = checkBox("${t("attributes")} (${tag.attributes.size})")
             button(t("delete"), VaadinIcon.TRASH.create()) {
                 onLeftClick { delete() }
                 setWidthFull()

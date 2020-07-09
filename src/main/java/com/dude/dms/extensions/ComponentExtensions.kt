@@ -21,7 +21,6 @@ import com.dude.dms.ui.components.dialogs.*
 import com.dude.dms.ui.components.misc.*
 import com.dude.dms.ui.components.standard.RegexField
 import com.dude.dms.ui.components.tags.*
-import com.dude.dms.updater.UpdateChecker
 import com.github.appreciated.card.Card
 import com.github.appreciated.card.label.SecondaryLabel
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
@@ -155,10 +154,14 @@ fun HasComponents.docCard(
         docService: DocService,
         tagService: TagService,
         mailService: MailService,
+        attributeValueService: AttributeValueService,
+        lineService: LineService,
+        wordService: WordService,
+        docParser: DocParser,
+        fileManager: FileManager,
         docContainer: DocContainer,
-        imageDialog: DocImageDialog,
         block: DocCard.() -> Unit = {}
-): DocCard = init(DocCard(docService, tagService, mailService, docContainer, imageDialog), block)
+): DocCard = init(DocCard(docService, tagService, mailService, attributeValueService, lineService, wordService, docParser, fileManager, docContainer), block)
 
 fun HasComponents.docImportCard(
         docContainer: DocContainer,

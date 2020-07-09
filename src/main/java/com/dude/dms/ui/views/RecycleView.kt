@@ -12,7 +12,6 @@ import com.dude.dms.brain.t
 import com.dude.dms.extensions.docCard
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
-import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
@@ -28,17 +27,15 @@ class RecycleView(
         private val docService: DocService,
         private val tagService: TagService,
         private val mailService: MailService,
-        attributeValueService: AttributeValueService,
-        lineService: LineService,
-        wordService: WordService,
-        docParser: DocParser,
+        private val attributeValueService: AttributeValueService,
+        private val lineService: LineService,
+        private val wordService: WordService,
+        private val docParser: DocParser,
         private val fileManager: FileManager,
         eventManager: EventManager
 ) : VerticalLayout() {
 
     private var itemContainer: Div
-
-    private val imageDialog = DocImageDialog(docService, tagService, attributeValueService, lineService, wordService, docParser, fileManager)
 
     init {
         val ui = UI.getCurrent()
@@ -89,7 +86,7 @@ class RecycleView(
         docService.findDeleted().forEach { doc ->
             val dc = DocContainer(doc)
             dc.thumbnail = fileManager.getImage(dc.guid)
-            itemContainer.docCard(docService, tagService, mailService, dc, imageDialog)
+            itemContainer.docCard(docService, tagService, mailService, attributeValueService, lineService, wordService, docParser, fileManager, dc)
         }
     }
 

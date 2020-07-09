@@ -10,10 +10,18 @@ import kotlin.collections.ArrayList
 
 @Entity
 class Condition(
-        @OneToOne var attribute: Attribute? = null,
-        @ManyToOne var parent: Condition? = null,
-        @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER) var children: MutableList<Condition> = ArrayList(),
+        @OneToOne(cascade = [CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]) var attribute: Attribute? = null,
+
+        @ManyToOne(cascade = [CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]) var parent: Condition? = null,
+
+        @OneToMany(
+                mappedBy = "parent",
+                fetch = FetchType.EAGER,
+                cascade = [CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]
+        ) var children: MutableList<Condition> = ArrayList(),
+
         @Enumerated(EnumType.STRING) var type: ConditionType,
+
         var text: String? = null
 ) : DataEntity() {
 

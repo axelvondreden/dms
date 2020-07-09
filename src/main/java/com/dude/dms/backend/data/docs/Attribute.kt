@@ -8,10 +8,7 @@ import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.ManyToMany
-import javax.persistence.OneToMany
-import javax.persistence.OneToOne
+import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
@@ -22,7 +19,7 @@ class Attribute(
         var type: Type,
         @OneToMany(mappedBy = "attribute") var attributeValues: Set<AttributeValue> = HashSet(),
         @ManyToMany(mappedBy = "attributes") var tags: Set<Tag> = HashSet(),
-        @OneToOne(mappedBy = "attribute") var condition: Condition? = null
+        @OneToOne(mappedBy = "attribute", cascade = [CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]) var condition: Condition? = null
 ) : DataEntity(), LogsEvents {
 
     enum class Type {

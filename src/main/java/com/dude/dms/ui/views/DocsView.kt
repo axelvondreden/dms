@@ -15,7 +15,6 @@ import com.dude.dms.extensions.docCard
 import com.dude.dms.extensions.viewPageSelector
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
-import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.misc.ViewPageSelector
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
@@ -38,14 +37,14 @@ import kotlin.streams.toList
 @PageTitle("Docs")
 class DocsView(
         private val docService: DocService,
-        lineService: LineService,
-        wordService: WordService,
+        private val lineService: LineService,
+        private val wordService: WordService,
         private val tagService: TagService,
         private val mailService: MailService,
         private val attributeService: AttributeService,
-        attributeValueService: AttributeValueService,
+        private val attributeValueService: AttributeValueService,
         private val fileManager: FileManager,
-        docParser: DocParser,
+        private val docParser: DocParser,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -73,8 +72,6 @@ class DocsView(
     private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
 
     private lateinit var pageSelector: ViewPageSelector
-
-    private val imageDialog = DocImageDialog(docService, tagService, attributeValueService, lineService, wordService, docParser, fileManager)
 
     init {
         eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
@@ -195,7 +192,7 @@ class DocsView(
         docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
             val dc = DocContainer(doc).apply { thumbnail = fileManager.getImage(guid) }
             ui.access {
-                itemContainer.docCard(docService, tagService, mailService, dc, imageDialog)
+                itemContainer.docCard(docService, tagService, mailService, attributeValueService, lineService, wordService, docParser, fileManager, dc)
             }
         }
     }

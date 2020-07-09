@@ -6,15 +6,14 @@ import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docImageEditor
+import com.dude.dms.extensions.docPageSelector
 import com.dude.dms.extensions.findDate
+import com.dude.dms.extensions.modeSelector
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.misc.DocInfoLayout
 import com.dude.dms.ui.components.misc.DocPageSelector
 import com.dude.dms.ui.components.misc.ModeSelector
-import com.dude.dms.extensions.docImageEditor
-import com.dude.dms.extensions.docInfoLayout
-import com.dude.dms.extensions.modeSelector
-import com.dude.dms.extensions.docPageSelector
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -32,14 +31,11 @@ class DocImageDialog(
         lineService: LineService,
         wordService: WordService,
         docParser: DocParser,
-        fileManager: FileManager
+        fileManager: FileManager,
+        private val docContainer: DocContainer
 ) : DmsDialog(t("doc.details")) {
 
-    private var docContainer: DocContainer? = null
-
     private lateinit var imageEditor: DocImageEditor
-
-    private lateinit var infoLayout: DocInfoLayout
 
     private lateinit var editContainer: Div
 
@@ -58,11 +54,14 @@ class DocImageDialog(
             setWidthFull()
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER
 
-            pageSelector = docPageSelector {  }
+            pageSelector = docPageSelector {
+                setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
+            }
             modeSelector = modeSelector { setChangeListener { imageEditor.mode = it } }
             horizontalLayout(isPadding = false, isSpacing = false) {
                 date = datePicker {
-                    addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
+                    value = docContainer.date
+                    addValueChangeListener { event -> event.value?.let { docContainer.date = it } }
                     locale = Locale.forLanguageTag(Options.get().view.locale)
                 }
                 datePick = iconButton(VaadinIcon.CROSSHAIRS.create()) {
@@ -103,23 +102,17 @@ class DocImageDialog(
 
                 imageEditor = docImageEditor(lineService, wordService, docParser, fileManager)
             }
-            infoLayout = DocInfoLayout(tagService, attributeValueService, imageEditor)
             addToPrimary(editContainer)
-            addToSecondary(infoLayout)
+            addToSecondary(DocInfoLayout(tagService, attributeValueService, imageEditor).apply { fill(docContainer) })
         }
 
         addOpenedChangeListener {
             if (!it.isOpened) {
-                docContainer?.doc?.let(docService::save)
+                docContainer.doc?.let(docService::save)
             }
         }
-    }
 
-    fun fill(docContainer: DocContainer) {
-        infoLayout.fill(docContainer)
-        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
         pageSelector.page = 1
-        date.value = docContainer.date
     }
 
     private fun pickDate() {

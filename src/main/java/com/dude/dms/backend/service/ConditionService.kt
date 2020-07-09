@@ -10,4 +10,9 @@ class ConditionService(repository: ConditionRepository) : CrudService<Condition>
     override fun save(entity: Condition): Condition {
         return super.save(entity).also { entity.children.forEach { save(it) } }
     }
+
+    override fun delete(entity: Condition) {
+        entity.children.forEach(this::delete)
+        super.delete(entity)
+    }
 }
