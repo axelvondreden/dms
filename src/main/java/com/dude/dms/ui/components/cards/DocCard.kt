@@ -61,7 +61,7 @@ class DocCard(
             val comp = event.source.ui.get().internals.activeDragSourceComponent
             if (comp is LeftClickableItem) {
                 val tag = TagContainer(event.dragData.get() as Tag)
-                if (tag in docContainer.tags) {
+                if (tag !in docContainer.tags) {
                     docContainer.tags = docContainer.tags.plus(tag)
                     fill()
                 }

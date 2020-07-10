@@ -52,3 +52,4 @@ options.properties
 /package.json
 /pnpm-lock.yaml
 /pnpmfile.js
+/node/

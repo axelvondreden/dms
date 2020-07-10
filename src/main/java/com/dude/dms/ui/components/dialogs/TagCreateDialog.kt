@@ -34,13 +34,13 @@ class TagCreateDialog(
             horizontalLayout {
                 setWidthFull()
 
-                textField(t("name")) { setWidthFull() }
-                colorPicker(t("color")) { setWidthFull() }
+                name = textField(t("name")) { setWidthFull() }
+                colorPicker = colorPicker(t("color")) { setWidthFull() }
             }
             details(t("attributes")) {
                 element.style["width"] = "100%"
 
-                content { attributeSelector(attributeService, eventManager) { setSizeFull() } }
+                content { attributeSelector = attributeSelector(attributeService, eventManager) { setSizeFull() } }
             }
             horizontalLayout {
                 setWidthFull()
