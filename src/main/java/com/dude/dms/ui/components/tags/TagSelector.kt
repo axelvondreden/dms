@@ -1,13 +1,13 @@
 package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.TagContainer
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.tagService
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Label
 import dev.mett.vaadin.tooltip.Tooltips
 
-class TagSelector(private val tagService: TagService) : Grid<TagContainer>() {
+class TagSelector : Grid<TagContainer>() {
 
     var selectedTags: Set<TagContainer>
         get() = asMultiSelect().selectedItems

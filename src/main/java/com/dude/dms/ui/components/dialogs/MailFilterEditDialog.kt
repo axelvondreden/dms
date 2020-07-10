@@ -1,11 +1,11 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.mails.MailFilter
-import com.dude.dms.backend.service.MailFilterService
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.confirmDialog
+import com.dude.dms.extensions.mailFilterService
+import com.dude.dms.extensions.mailManager
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.horizontalLayout
 import com.github.mvysny.karibudsl.v10.onLeftClick
@@ -18,11 +18,7 @@ import com.vaadin.flow.component.treegrid.TreeGrid
 import javax.mail.Folder
 import javax.mail.MessagingException
 
-class MailFilterEditDialog(
-        private val mailFilterService: MailFilterService,
-        private val mailFilter: MailFilter,
-        mailManager: MailManager
-) : DmsDialog("", 70, 70) {
+class MailFilterEditDialog(private val mailFilter: MailFilter) : DmsDialog("", 70, 70) {
 
     private var folderGrid: TreeGrid<Folder>
 

@@ -1,17 +1,13 @@
 package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.AttributeValueService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.extensions.attributeValueField
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
 
-class AttributeValueLayout(
-        private val attributeValueService: AttributeValueService,
-        private val imageEditor: DocImageEditor? = null
-) : Div() {
+class AttributeValueLayout(private val imageEditor: DocImageEditor? = null) : Div() {
 
     private val fields = mutableSetOf<AttributeValueField>()
 
@@ -19,7 +15,7 @@ class AttributeValueLayout(
         clear()
         if (!docContainer.tags.isNullOrEmpty()) {
             docContainer.attributeValues.forEach {
-                val field = attributeValueField(attributeValueService, it, imageEditor)
+                val field = attributeValueField(it, imageEditor)
                 fields.add(field)
             }
         }

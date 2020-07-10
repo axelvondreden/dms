@@ -3,14 +3,16 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.service.*
+import com.dude.dms.backend.service.AttributeService
+import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.MailService
+import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
 import com.dude.dms.ui.components.dialogs.*
-import com.dude.dms.updater.UpdateChecker
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu
@@ -47,10 +49,8 @@ class MainView(
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val docImportService: DocImportService,
-        private val changelogService: ChangelogService,
-        private val updateChecker: UpdateChecker,
         @param:Value("\${build.version}") private val buildVersion: String,
-        private val eventManager: EventManager
+        eventManager: EventManager
 ) : AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybridNoAppBar>(), AfterNavigationObserver, PageConfigurator {
 
     private var docsBadge: DefaultBadgeHolder? = null
@@ -93,7 +93,7 @@ class MainView(
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
-                        LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { ChangelogDialog(changelogService, updateChecker).open() },
+                        LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { ChangelogDialog().open() },
                         LeftNavigationItem(t("administration"), VaadinIcon.DASHBOARD.create(), AdminView::class.java),
                         LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java),
                         recycleEntry)
@@ -103,7 +103,7 @@ class MainView(
     private fun createAttributesEntry(): LeftSubmenu {
         val attributeEntries = mutableListOf<Component>(
                 LeftClickableItem(t("attribute.new"), VaadinIcon.PLUS_CIRCLE.create()) {
-                    AttributeCreateDialog(attributeService).open()
+                    AttributeCreateDialog().open()
                 }
         )
         for (attribute in attributeService.findAll()) {
@@ -117,7 +117,7 @@ class MainView(
                 target = entry
                 isOpenOnClick = true
                 addItem(t("edit")) { UI.getCurrent().navigate(AttributeView::class.java, attribute.name) }
-                addItem(t("delete")) { AttributeDeleteDialog(attribute, attributeService, docService, tagService).open() }
+                addItem(t("delete")) { AttributeDeleteDialog(attribute).open() }
             }
         }
         return LeftSubmenu(t("attributes"), VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
@@ -127,7 +127,7 @@ class MainView(
         tagBadges.clear()
         val tagEntries = mutableListOf<Component>(
                 LeftClickableItem(t("tag.add"), VaadinIcon.PLUS_CIRCLE.create()) {
-                    TagCreateDialog(tagService, attributeService, eventManager).open()
+                    TagCreateDialog().open()
                 }
         )
         for (tag in tagService.findAll()) {
@@ -144,8 +144,8 @@ class MainView(
                 target = entry
                 isOpenOnClick = true
                 addItem(t("docs")) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
-                addItem(t("edit")) { TagEditDialog(tagService, docService, attributeService, eventManager, tag).open() }
-                addItem(t("delete")) { TagDeleteDialog(tag, tagService, docService, mailService, attributeService).open() }
+                addItem(t("edit")) { TagEditDialog(tag).open() }
+                addItem(t("delete")) { TagDeleteDialog(tag).open() }
             }
         }
         return LeftSubmenu(t("tags"), VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)

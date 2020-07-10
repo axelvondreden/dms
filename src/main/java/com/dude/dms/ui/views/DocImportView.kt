@@ -1,11 +1,6 @@
 package com.dude.dms.ui.views
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.AttributeValueService
-import com.dude.dms.backend.service.LineService
-import com.dude.dms.backend.service.TagService
-import com.dude.dms.backend.service.WordService
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
@@ -35,15 +30,7 @@ import kotlin.streams.toList
 
 @Route(value = Const.PAGE_DOCIMPORT, layout = MainView::class)
 @PageTitle("Doc Import")
-class DocImportView(
-        private val docImportService: DocImportService,
-        private val docParser: DocParser,
-        tagService: TagService,
-        attributeValueService: AttributeValueService,
-        lineService: LineService,
-        wordService: WordService,
-        fileManager: FileManager
-) : VerticalLayout() {
+class DocImportView(private val docImportService: DocImportService, private val docParser: DocParser) : VerticalLayout() {
 
     private lateinit var progressBar: ProgressBar
 
@@ -103,7 +90,7 @@ class DocImportView(
                 setSizeFull()
                 style["overflowY"] = "hidden"
             }
-            itemPreview = DocImportPreview(tagService, attributeValueService, lineService, wordService, docParser, fileManager).apply {
+            itemPreview = DocImportPreview().apply {
                 onDone = { docContainer ->
                     docContainer.done = true
                     var index = -1

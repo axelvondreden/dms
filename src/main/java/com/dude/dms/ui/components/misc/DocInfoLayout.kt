@@ -1,15 +1,13 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.AttributeValueService
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.extensions.attributeValueLayout
+import com.dude.dms.extensions.tagSelector
 import com.dude.dms.ui.components.tags.AttributeValueLayout
 import com.dude.dms.ui.components.tags.TagSelector
-import com.dude.dms.extensions.tagSelector
 import com.vaadin.flow.component.html.Div
 
-class DocInfoLayout(tagService: TagService, attributeValueService: AttributeValueService, imageEditor: DocImageEditor) : Div() {
+class DocInfoLayout(imageEditor: DocImageEditor) : Div() {
 
     private var docContainer: DocContainer? = null
 
@@ -20,14 +18,14 @@ class DocInfoLayout(tagService: TagService, attributeValueService: AttributeValu
     init {
         setSizeFull()
 
-        tagSelector = tagSelector(tagService) {
+        tagSelector = tagSelector {
             maxHeight = "50%"
             asMultiSelect().addSelectionListener { event ->
                 docContainer?.tags = event.value
                 docContainer?.let { attributeValueLayout.fill(it) }
             }
         }
-        attributeValueLayout = attributeValueLayout(attributeValueService, imageEditor) {
+        attributeValueLayout = attributeValueLayout(imageEditor) {
             setWidthFull()
             maxHeight = "50%"
         }

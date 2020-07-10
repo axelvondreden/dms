@@ -3,10 +3,7 @@ package com.dude.dms.ui.components.cards
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.*
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.*
 import com.dude.dms.ui.components.dialogs.DocImageDialog
@@ -26,22 +23,12 @@ import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import dev.mett.vaadin.tooltip.Tooltips
 
-class DocCard(
-        private val docService: DocService,
-        private val tagService: TagService,
-        private val mailService: MailService,
-        attributeValueService: AttributeValueService,
-        lineService: LineService,
-        wordService: WordService,
-        docParser: DocParser,
-        fileManager: FileManager,
-        val docContainer: DocContainer
-) : ClickableCard() {
+class DocCard(val docContainer: DocContainer) : ClickableCard() {
 
     private var imgDiv: Div? = null
 
     init {
-        addClickListener { DocImageDialog(docService, tagService, attributeValueService, lineService, wordService, docParser, fileManager, docContainer).open() }
+        addClickListener { DocImageDialog(docContainer).open() }
         fill()
         addClassName("doc-card")
     }
@@ -101,7 +88,7 @@ class DocCard(
                 setWidthFull()
                 fill(docContainer)
             }
-            tagLayout(tagService, docContainer.tags.map { it.tag }.toMutableSet(), compact = true) { setWidthFull() }
+            tagLayout(docContainer.tags.map { it.tag }.toMutableSet(), compact = true) { setWidthFull() }
         }
 
         resize()
@@ -112,7 +99,7 @@ class DocCard(
             addItem(t("delete.forever")) { docService.delete(docContainer.doc!!) }
             addItem(t("restore")) { docService.restore(docContainer.doc!!) }
         } else {
-            addItem(t("delete")) { docDeleteDialog(docService, mailService, docContainer).open() }
+            addItem(t("delete")) { docDeleteDialog(docContainer).open() }
         }
     }
 }

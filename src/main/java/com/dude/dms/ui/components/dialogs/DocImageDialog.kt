@@ -1,15 +1,9 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.*
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.docImageEditor
-import com.dude.dms.extensions.docPageSelector
-import com.dude.dms.extensions.findDate
-import com.dude.dms.extensions.modeSelector
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.misc.DocInfoLayout
 import com.dude.dms.ui.components.misc.DocPageSelector
@@ -24,16 +18,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
-class DocImageDialog(
-        private val docService: DocService,
-        tagService: TagService,
-        attributeValueService: AttributeValueService,
-        lineService: LineService,
-        wordService: WordService,
-        docParser: DocParser,
-        fileManager: FileManager,
-        private val docContainer: DocContainer
-) : DmsDialog(t("doc.details")) {
+class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.details")) {
 
     private lateinit var imageEditor: DocImageEditor
 
@@ -100,10 +85,10 @@ class DocImageDialog(
                 maxHeight = "80vh"
                 style["overflowY"] = "auto"
 
-                imageEditor = docImageEditor(lineService, wordService, docParser, fileManager)
+                imageEditor = docImageEditor()
             }
             addToPrimary(editContainer)
-            addToSecondary(DocInfoLayout(tagService, attributeValueService, imageEditor).apply { fill(docContainer) })
+            addToSecondary(DocInfoLayout(imageEditor).apply { fill(docContainer) })
         }
 
         addOpenedChangeListener {

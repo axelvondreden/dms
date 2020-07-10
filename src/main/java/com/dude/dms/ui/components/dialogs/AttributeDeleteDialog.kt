@@ -1,10 +1,10 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.attributeService
+import com.dude.dms.extensions.docService
+import com.dude.dms.extensions.tagService
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.checkBox
 import com.github.mvysny.karibudsl.v10.onLeftClick
@@ -13,12 +13,7 @@ import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class AttributeDeleteDialog(
-        private val attribute: Attribute,
-        private val attributeService: AttributeService,
-        private val docService: DocService,
-        private val tagService: TagService
-) : DmsDialog(t("attribute.delete"), 20) {
+class AttributeDeleteDialog(private val attribute: Attribute) : DmsDialog(t("attribute.delete"), 20) {
 
     private lateinit var attributeCheck: Checkbox
 

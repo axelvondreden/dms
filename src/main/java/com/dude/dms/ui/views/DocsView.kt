@@ -4,12 +4,13 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.service.*
+import com.dude.dms.backend.service.AttributeService
+import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.docCard
 import com.dude.dms.extensions.viewPageSelector
@@ -37,14 +38,9 @@ import kotlin.streams.toList
 @PageTitle("Docs")
 class DocsView(
         private val docService: DocService,
-        private val lineService: LineService,
-        private val wordService: WordService,
         private val tagService: TagService,
-        private val mailService: MailService,
         private val attributeService: AttributeService,
-        private val attributeValueService: AttributeValueService,
         private val fileManager: FileManager,
-        private val docParser: DocParser,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -192,7 +188,7 @@ class DocsView(
         docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
             val dc = DocContainer(doc).apply { thumbnail = fileManager.getImage(guid) }
             ui.access {
-                itemContainer.docCard(docService, tagService, mailService, attributeValueService, lineService, wordService, docParser, fileManager, dc)
+                itemContainer.docCard(dc)
             }
         }
     }

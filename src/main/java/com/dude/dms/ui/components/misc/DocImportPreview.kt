@@ -1,13 +1,7 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.AttributeValueService
-import com.dude.dms.backend.service.LineService
-import com.dude.dms.backend.service.TagService
-import com.dude.dms.backend.service.WordService
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.*
 import com.github.mvysny.karibudsl.v10.*
@@ -21,14 +15,7 @@ import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
 
-class DocImportPreview(
-        tagService: TagService,
-        attributeValueService: AttributeValueService,
-        lineService: LineService,
-        wordService: WordService,
-        docParser: DocParser,
-        fileManager: FileManager
-) : VerticalLayout() {
+class DocImportPreview : VerticalLayout() {
 
     private var docContainer: DocContainer? = null
 
@@ -129,12 +116,12 @@ class DocImportPreview(
                     style["overflowY"] = "auto"
                     style["flexGrow"] = "1"
 
-                    imageEditor = docImageEditor(lineService, wordService, docParser, fileManager) {
+                    imageEditor = docImageEditor {
                         onTextChange = { refreshTextTools(it) }
                     }
                 }
             })
-            infoLayout = DocInfoLayout(tagService, attributeValueService, imageEditor)
+            infoLayout = DocInfoLayout(imageEditor)
             addToSecondary(infoLayout)
         }
     }

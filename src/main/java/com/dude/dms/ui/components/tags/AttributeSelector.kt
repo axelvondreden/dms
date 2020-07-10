@@ -1,11 +1,11 @@
 package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.attributeCreateDialog
+import com.dude.dms.extensions.attributeService
+import com.dude.dms.extensions.eventManager
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.grid
 import com.github.mvysny.karibudsl.v10.horizontalLayout
@@ -16,7 +16,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import java.util.*
 
-class AttributeSelector(attributeService: AttributeService, eventManager: EventManager) : VerticalLayout() {
+class AttributeSelector : VerticalLayout() {
 
     private val selected = HashSet<Attribute>()
 
@@ -71,7 +71,7 @@ class AttributeSelector(attributeService: AttributeService, eventManager: EventM
             }
         }
         button(t("attribute"), VaadinIcon.PLUS.create()) {
-            onLeftClick { attributeCreateDialog(attributeService).open() }
+            onLeftClick { attributeCreateDialog().open() }
             setWidthFull()
         }
 

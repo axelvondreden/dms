@@ -1,13 +1,8 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.attributeSelector
-import com.dude.dms.extensions.colorPicker
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.components.tags.AttributeSelector
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.*
@@ -15,13 +10,7 @@ import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.textfield.TextField
 
-class TagEditDialog(
-        private val tagService: TagService,
-        private val docService: DocService,
-        attributeService: AttributeService,
-        eventManager: EventManager,
-        private val tag: Tag
-) : DmsDialog(t("tag.edit"), 35) {
+class TagEditDialog(private val tag: Tag) : DmsDialog(t("tag.edit"), 35) {
 
     private lateinit var name: TextField
 
@@ -49,7 +38,7 @@ class TagEditDialog(
                 element.style["width"] = "100%"
 
                 content {
-                    attributeSelector = attributeSelector(attributeService, eventManager) {
+                    attributeSelector = attributeSelector {
                         setSizeFull()
                         selectedAttributes = tag.attributes
                     }

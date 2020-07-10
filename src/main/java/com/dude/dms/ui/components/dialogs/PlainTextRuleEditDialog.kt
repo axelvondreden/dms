@@ -2,10 +2,9 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.service.PlainTextRuleService
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.confirmDialog
+import com.dude.dms.extensions.plainTextRuleService
 import com.dude.dms.extensions.tagSelector
 import com.dude.dms.ui.components.tags.TagSelector
 import com.github.mvysny.karibudsl.v10.*
@@ -15,11 +14,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.textfield.TextField
 
-class PlainTextRuleEditDialog(
-        private val plainTextRuleService: PlainTextRuleService,
-        tagService: TagService,
-        private val plainTextRule: PlainTextRule
-) : DmsDialog("", 70, 70) {
+class PlainTextRuleEditDialog(private val plainTextRule: PlainTextRule) : DmsDialog("", 70, 70) {
 
     private lateinit var plainText: TextField
 
@@ -40,7 +35,7 @@ class PlainTextRuleEditDialog(
                 value = plainTextRule.caseSensitive
             }
         }
-        tagSelector(tagService) {
+        tagSelector {
             height = "80%"
             selectedTags = plainTextRule.tags.map { TagContainer(it) }.toSet()
         }

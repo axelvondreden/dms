@@ -1,19 +1,16 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.WordContainer
-import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.round
+import com.dude.dms.extensions.wordService
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.textfield.TextField
 import org.languagetool.rules.SuggestedReplacement
 
-class WordEditDialog(
-        private val wordService: WordService,
-        private val wordContainer: WordContainer
-) : DmsDialog(t("word.edit"), 40) {
+class WordEditDialog(private val wordContainer: WordContainer) : DmsDialog(t("word.edit"), 40) {
 
     private val originalText = wordContainer.word.text
 

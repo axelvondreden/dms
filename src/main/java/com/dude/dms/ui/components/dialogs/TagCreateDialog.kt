@@ -1,12 +1,8 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.attributeSelector
-import com.dude.dms.extensions.colorPicker
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.components.tags.AttributeSelector
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.*
@@ -15,11 +11,7 @@ import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.textfield.TextField
 
-class TagCreateDialog(
-        private val tagService: TagService,
-        attributeService: AttributeService,
-        eventManager: EventManager
-) : DmsDialog(t("tag.create"), 35) {
+class TagCreateDialog : DmsDialog(t("tag.create"), 35) {
 
     private lateinit var name: TextField
 
@@ -40,7 +32,7 @@ class TagCreateDialog(
             details(t("attributes")) {
                 element.style["width"] = "100%"
 
-                content { attributeSelector = attributeSelector(attributeService, eventManager) { setSizeFull() } }
+                content { attributeSelector = attributeSelector { setSizeFull() } }
             }
             horizontalLayout {
                 setWidthFull()

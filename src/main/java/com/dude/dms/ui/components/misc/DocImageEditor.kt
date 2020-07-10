@@ -5,14 +5,14 @@ import com.dude.dms.backend.containers.LineContainer
 import com.dude.dms.backend.containers.PageContainer
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.docs.Word
-import com.dude.dms.backend.service.LineService
-import com.dude.dms.backend.service.WordService
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DmsOcrTextStripper
-import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docParser
+import com.dude.dms.extensions.fileManager
+import com.dude.dms.extensions.lineService
+import com.dude.dms.extensions.wordService
 import com.dude.dms.ui.EditMode
 import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.helger.commons.io.file.FileHelper
@@ -31,12 +31,7 @@ import kotlin.math.abs
 import kotlin.streams.toList
 
 
-class DocImageEditor(
-        private val lineService: LineService,
-        private val wordService: WordService,
-        private val docParser: DocParser,
-        private val fileManager: FileManager
-) : Div() {
+class DocImageEditor : Div() {
 
     private var zoom = 100
 
@@ -140,7 +135,7 @@ class DocImageEditor(
     private fun addWordWrappers(wordContainers: Set<WordContainer>, ui: UI? = null) {
         val data = mutableSetOf<WordWrapperData>()
         wordContainers.forEach { wordContainer ->
-            val dlg = WordEditDialog(wordService, wordContainer)
+            val dlg = WordEditDialog(wordContainer)
             val word = wordContainer.word
             val div = Div().apply {
                 addClassName("word-container")

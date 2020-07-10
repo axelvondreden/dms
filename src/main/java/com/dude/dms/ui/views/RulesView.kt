@@ -3,12 +3,11 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
-import com.dude.dms.backend.service.*
+import com.dude.dms.backend.service.MailFilterService
+import com.dude.dms.backend.service.PlainTextRuleService
+import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
-import com.dude.dms.brain.mail.MailManager
-import com.dude.dms.brain.parsing.PlainTextRuleValidator
-import com.dude.dms.brain.parsing.RegexRuleValidator
 import com.dude.dms.brain.polling.MailPollingService
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.*
@@ -23,16 +22,11 @@ import com.vaadin.flow.router.Route
 @Route(value = PAGE_RULES, layout = MainView::class)
 @PageTitle("Rules")
 class RulesView(
-        private val docService: DocService,
         private val plainTextRuleService: PlainTextRuleService,
         private val regexRuleService: RegexRuleService,
         private val mailFilterService: MailFilterService,
         private val mailPollingService: MailPollingService,
-        private val tagService: TagService,
-        private val plainTextRuleValidator: PlainTextRuleValidator,
-        private val regexRuleValidator: RegexRuleValidator,
-        private val mailManager: MailManager,
-        private val eventManager: EventManager
+        eventManager: EventManager
 ) : VerticalLayout() {
 
     init {
@@ -66,11 +60,11 @@ class RulesView(
                         setSizeFull()
 
                         button(t("create"), VaadinIcon.PLUS.create()) {
-                            onLeftClick { this@verticalLayout.plaintextRuleCreateDialog(plainTextRuleService, tagService).open() }
+                            onLeftClick { this@verticalLayout.plaintextRuleCreateDialog().open() }
                             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
                         }
                         plainTextRuleService.findAll().forEach {
-                            plaintextRuleCard(docService, tagService, plainTextRuleService, it, plainTextRuleValidator, eventManager)
+                            plaintextRuleCard(it)
                         }
                     }
                 }
@@ -93,11 +87,11 @@ class RulesView(
                         setSizeFull()
 
                         button(t("create"), VaadinIcon.PLUS.create()) {
-                            onLeftClick { this@verticalLayout.regexRuleCreateDialog(regexRuleService, tagService).open() }
+                            onLeftClick { this@verticalLayout.regexRuleCreateDialog().open() }
                             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
                         }
                         regexRuleService.findAll().forEach {
-                            regexRuleCard(docService, tagService, regexRuleService, it, regexRuleValidator, eventManager)
+                            regexRuleCard(it)
                         }
                     }
                 }
@@ -123,7 +117,7 @@ class RulesView(
                             setSizeFull()
 
                             button(t("create"), VaadinIcon.PLUS.create()) {
-                                onLeftClick { this@verticalLayout.mailFilterCreateDialog(mailFilterService, mailManager).open() }
+                                onLeftClick { this@verticalLayout.mailFilterCreateDialog().open() }
                                 addThemeVariants(ButtonVariant.LUMO_PRIMARY)
                             }
                             button(t("check"), VaadinIcon.CLOUD_DOWNLOAD.create()) {
@@ -132,7 +126,7 @@ class RulesView(
                             }
                         }
                         mailFilterService.findAll().forEach {
-                            mailFilterCard(mailFilterService, it, mailManager)
+                            mailFilterCard(it)
                         }
                     }
                 }

@@ -1,9 +1,9 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.MailService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docService
+import com.dude.dms.extensions.mailService
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.checkBox
 import com.github.mvysny.karibudsl.v10.onLeftClick
@@ -12,11 +12,7 @@ import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class DocDeleteDialog(
-        private val docService: DocService,
-        private val mailService: MailService,
-        private val docContainer: DocContainer
-) : DmsDialog(t("doc.delete"), 20) {
+class DocDeleteDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.delete"), 20) {
 
     private lateinit var docCheck: Checkbox
 

@@ -2,12 +2,8 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.rules.RegexRule
-import com.dude.dms.backend.service.RegexRuleService
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.confirmDialog
-import com.dude.dms.extensions.regexField
-import com.dude.dms.extensions.tagSelector
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.components.standard.RegexField
 import com.dude.dms.ui.components.tags.TagSelector
 import com.github.mvysny.karibudsl.v10.button
@@ -16,11 +12,7 @@ import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class RegexRuleEditDialog(
-        private val regexRuleService: RegexRuleService,
-        tagService: TagService,
-        private val regexRule: RegexRule
-) : DmsDialog("", 70, 70) {
+class RegexRuleEditDialog(private val regexRule: RegexRule) : DmsDialog("", 70, 70) {
 
     private lateinit var regex: RegexField
 
@@ -31,7 +23,7 @@ class RegexRuleEditDialog(
             value = regexRule.regex
             setWidthFull()
         }
-        tagSelector(tagService) {
+        tagSelector {
             selectedTags = regexRule.tags.map { TagContainer(it) }.toSet()
             height = "80%"
         }

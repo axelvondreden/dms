@@ -2,8 +2,8 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docService
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.grid
 import com.github.mvysny.karibudsl.v10.onLeftClick
@@ -11,10 +11,7 @@ import com.github.mvysny.karibudsl.v10.text
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class RuleRunnerDialog(
-        private val docService: DocService,
-        private val result: Map<Doc, Set<TagContainer>>
-) : DmsDialog("", 60, 60) {
+class RuleRunnerDialog(private val result: Map<Doc, Set<TagContainer>>) : DmsDialog("", 60, 60) {
 
     init {
         val grid = grid<Pair<Doc, Set<TagContainer>>> {

@@ -2,12 +2,11 @@ package com.dude.dms.ui.views
 
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.service.*
+import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
-import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.docCard
 import com.dude.dms.ui.Const
@@ -23,17 +22,7 @@ import com.vaadin.flow.router.Route
 
 @Route(value = Const.PAGE_RECYCLE, layout = MainView::class)
 @PageTitle("Recycle Bin")
-class RecycleView(
-        private val docService: DocService,
-        private val tagService: TagService,
-        private val mailService: MailService,
-        private val attributeValueService: AttributeValueService,
-        private val lineService: LineService,
-        private val wordService: WordService,
-        private val docParser: DocParser,
-        private val fileManager: FileManager,
-        eventManager: EventManager
-) : VerticalLayout() {
+class RecycleView(private val docService: DocService, private val fileManager: FileManager, eventManager: EventManager) : VerticalLayout() {
 
     private var itemContainer: Div
 
@@ -86,7 +75,7 @@ class RecycleView(
         docService.findDeleted().forEach { doc ->
             val dc = DocContainer(doc)
             dc.thumbnail = fileManager.getImage(dc.guid)
-            itemContainer.docCard(docService, tagService, mailService, attributeValueService, lineService, wordService, docParser, fileManager, dc)
+            itemContainer.docCard(dc)
         }
     }
 

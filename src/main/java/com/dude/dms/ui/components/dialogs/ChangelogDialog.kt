@@ -1,15 +1,15 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.service.ChangelogService
 import com.dude.dms.brain.t
-import com.dude.dms.updater.UpdateChecker
+import com.dude.dms.extensions.changelogService
+import com.dude.dms.extensions.updateChecker
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.github.mvysny.karibudsl.v10.textArea
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class ChangelogDialog(changelogService: ChangelogService, updateChecker: UpdateChecker) : DmsDialog(t("changelog"), 70, 70) {
+class ChangelogDialog : DmsDialog(t("changelog"), 70, 70) {
 
     init {
         button(t("check"), VaadinIcon.REFRESH.create()) {

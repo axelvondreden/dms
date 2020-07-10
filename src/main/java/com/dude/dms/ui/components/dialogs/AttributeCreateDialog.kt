@@ -1,8 +1,8 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.attributeService
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
@@ -12,7 +12,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.textfield.TextField
 
 
-class AttributeCreateDialog(private val attributeService: AttributeService) : DmsDialog(t("attribute.create"), 35) {
+class AttributeCreateDialog : DmsDialog(t("attribute.create"), 35) {
 
     private lateinit var nameTextField: TextField
 
