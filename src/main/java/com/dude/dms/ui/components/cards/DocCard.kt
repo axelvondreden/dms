@@ -13,6 +13,7 @@ import com.github.mvysny.karibudsl.v10.div
 import com.github.mvysny.karibudsl.v10.horizontalLayout
 import com.github.mvysny.karibudsl.v10.iconButton
 import com.helger.commons.io.file.FileHelper
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.dnd.DropTarget
 import com.vaadin.flow.component.html.Div
@@ -21,7 +22,9 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
+import com.vaadin.flow.server.VaadinSession
 import dev.mett.vaadin.tooltip.Tooltips
+
 
 class DocCard(val docContainer: DocContainer) : ClickableCard() {
 
@@ -99,6 +102,11 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
             addItem(t("delete.forever")) { docService.delete(docContainer.doc!!) }
             addItem(t("restore")) { docService.restore(docContainer.doc!!) }
         } else {
+            addItem("Download") {
+                val resource = StreamResource("${docContainer.guid}.pdf") { -> fileManager.getPdf(docContainer.guid).inputStream() }
+                val registration = VaadinSession.getCurrent().resourceRegistry.registerResource(resource)
+                UI.getCurrent().page.setLocation(registration.resourceUri)
+            }
             addItem(t("delete")) { docDeleteDialog(docContainer).open() }
         }
     }
