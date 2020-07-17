@@ -13,6 +13,8 @@ import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.docCard
+import com.dude.dms.extensions.multiSelectComboBox
+import com.dude.dms.extensions.radioButtonGroup
 import com.dude.dms.extensions.viewPageSelector
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
@@ -23,11 +25,13 @@ import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.vaadin.gatanaso.MultiselectComboBox
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.streams.toList
@@ -59,9 +63,9 @@ class DocsView(
 
     private var itemContainer: Div
 
-    private lateinit var tagFilter: ComboBox<Tag>
+    private lateinit var tagFilter: MultiselectComboBox<Tag>
 
-    private lateinit var attributeFilter: ComboBox<Attribute>
+    private lateinit var attributeFilter: MultiselectComboBox<Attribute>
 
     private lateinit var textFilter: TextField
 
@@ -76,49 +80,109 @@ class DocsView(
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
 
-        horizontalLayout {
-            setWidthFull()
+        verticalLayout(isPadding = false, isSpacing = false) {
+            horizontalLayout {
+                setWidthFull()
 
-            tagFilter = comboBox {
-                setItems(tagService.findAll())
-                placeholder = t("tag")
-                isClearButtonVisible = true
-                isPreventInvalidInput = true
-                isAllowCustomValue = false
-                setItemLabelGenerator { it.name }
-                addValueChangeListener { refreshFilter() }
+                textFilter = textField {
+                    width = "25vw"
+                    placeholder = "Text"
+                    isClearButtonVisible = true
+                    addValueChangeListener { refreshFilter() }
+                    valueChangeMode = ValueChangeMode.LAZY
+                }
+                sortFilter = comboBox {
+                    setItems(sorts)
+                    isPreventInvalidInput = true
+                    isAllowCustomValue = false
+                    value = sorts[0]
+                    setItemLabelGenerator { it.first }
+                    addValueChangeListener { refreshFilter() }
+                }
+                iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                    onLeftClick { shrink() }
+                }
+                iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                    onLeftClick { grow() }
+                }
+                pageSelector = viewPageSelector()
             }
-            attributeFilter = comboBox {
-                setItems(attributeService.findAll())
-                placeholder = t("attribute")
-                isClearButtonVisible = true
-                isPreventInvalidInput = true
-                isAllowCustomValue = false
-                setItemLabelGenerator { it.name }
-                addValueChangeListener { refreshFilter() }
+            details("Advanced search") {
+                element.style["width"] = "100%"
+
+                content {
+                    horizontalLayout {
+                        setWidthFull()
+
+                        verticalLayout(isPadding = false, isSpacing = false) {
+                            width = "33%"
+
+                            horizontalLayout(isPadding = false, isSpacing = false) {
+                                setWidthFull()
+
+                                tagFilter = multiSelectComboBox(t("tags"), tagService.findAll()) {
+                                    setWidthFull()
+                                    isClearButtonVisible = true
+                                    isAllowCustomValues = false
+                                    setItemLabelGenerator { it.name }
+                                    addValueChangeListener { refreshFilter() }
+                                }
+                                radioButtonGroup {
+                                    setItems(t("all"), t("any"))
+                                    addThemeVariants(RadioGroupVariant.LUMO_VERTICAL)
+                                    value = t("all")
+                                    addValueChangeListener { refreshFilter() }
+                                }
+                            }
+                            multiSelectComboBox(t("tags.exclude"), tagService.findAll()) {
+                                setWidthFull()
+                                isClearButtonVisible = true
+                                isAllowCustomValues = false
+                                setItemLabelGenerator { it.name }
+                                addValueChangeListener { refreshFilter() }
+                            }
+                        }
+                        verticalLayout(isPadding = false, isSpacing = false) {
+                            width = "33%"
+
+                            horizontalLayout(isPadding = false, isSpacing = false) {
+                                setWidthFull()
+
+                                attributeFilter = multiSelectComboBox(t("attributes"), attributeService.findAll()) {
+                                    setWidthFull()
+                                    isClearButtonVisible = true
+                                    isAllowCustomValues = false
+                                    setItemLabelGenerator { it.name }
+                                    addValueChangeListener { refreshFilter() }
+                                }
+                                radioButtonGroup {
+                                    setItems(t("all"), t("any"))
+                                    addThemeVariants(RadioGroupVariant.LUMO_VERTICAL)
+                                    value = t("all")
+                                    addValueChangeListener { refreshFilter() }
+                                }
+                            }
+                            multiSelectComboBox(t("attributes.exclude"), attributeService.findAll()) {
+                                setWidthFull()
+                                isClearButtonVisible = true
+                                isAllowCustomValues = false
+                                setItemLabelGenerator { it.name }
+                                addValueChangeListener { refreshFilter() }
+                            }
+                        }
+                        verticalLayout(isPadding = false, isSpacing = false) {
+                            width = "33%"
+
+                            datePicker(t("from")) {
+
+                            }
+                            datePicker(t("to")) {
+
+                            }
+                        }
+                    }
+                }
             }
-            textFilter = textField {
-                width = "25vw"
-                placeholder = "Text"
-                isClearButtonVisible = true
-                addValueChangeListener { refreshFilter() }
-                valueChangeMode = ValueChangeMode.LAZY
-            }
-            sortFilter = comboBox {
-                setItems(sorts)
-                isPreventInvalidInput = true
-                isAllowCustomValue = false
-                value = sorts[0]
-                setItemLabelGenerator { it.first }
-                addValueChangeListener { refreshFilter() }
-            }
-            iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
-                onLeftClick { shrink() }
-            }
-            iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
-                onLeftClick { grow() }
-            }
-            pageSelector = viewPageSelector()
         }
         itemContainer = div {
             setSizeFull()
@@ -181,11 +245,12 @@ class DocsView(
     }
 
     private fun fill(ui: UI) {
+        val docs = docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second))
         ui.access {
             itemContainer.removeAll()
-            pageSelector.items = docService.countByFilter(filter).toInt()
+            pageSelector.items = docs.size
         }
-        docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
+        docs.forEach { doc ->
             val dc = DocContainer(doc).apply { thumbnail = fileManager.getImage(guid) }
             ui.access {
                 itemContainer.docCard(dc)
@@ -195,8 +260,8 @@ class DocsView(
 
     private fun refreshFilter() {
         filter = DocService.Filter(
-                tag = tagFilter.optionalValue.orElse(null),
-                attribute = attributeFilter.optionalValue.orElse(null),
+                includedTags = tagFilter.optionalValue.orElse(null),
+                includedAttributes = attributeFilter.optionalValue.orElse(null),
                 text = textFilter.optionalValue.orElse(null)
         )
         fill(viewUI)
@@ -206,7 +271,7 @@ class DocsView(
         if (!t.isNullOrEmpty()) {
             val parts = t.split(":").toTypedArray()
             if ("tag".equals(parts[0], ignoreCase = true)) {
-                tagFilter.value = tagService.findByName(parts[1])
+                tagFilter.value = setOf(tagService.findByName(parts[1]))
             }
         }
     }

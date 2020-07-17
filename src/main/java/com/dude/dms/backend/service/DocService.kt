@@ -4,11 +4,9 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.io.Serializable
 
@@ -21,9 +19,8 @@ class DocService(
 ) : RestoreService<Doc>(docRepository, eventManager) {
 
     data class Filter(
-            var tag: Tag? = null,
-            var attribute: Attribute? = null,
-            var mail: Mail? = null,
+            var includedTags: Set<Tag>? = null,
+            var includedAttributes: Set<Attribute>? = null,
             var text: String? = null
     ) : Serializable
 
@@ -95,20 +92,10 @@ class DocService(
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
     fun findByFilter(filter: Filter, pageable: Pageable): Set<Doc> {
-        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
+        val docs = docRepository.findByFilter(filter.includedTags, filter.includedAttributes, pageable)
         if (!filter.text.isNullOrBlank()) {
             return docs.filter { it.getFullText().contains(filter.text!!, true) }.toSet()
         }
         return docs.toSet()
     }
-
-    fun findByFilter(filter: Filter, sort: Sort): Set<Doc> {
-        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
-        if (!filter.text.isNullOrBlank()) {
-            return docs.filter { it.getFullText().contains(filter.text!!, true) }.toSet()
-        }
-        return docs
-    }
-
-    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail)
 }
