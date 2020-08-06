@@ -1,3 +1,4 @@
+write-host("Downloading dependencies...")
 java -jar "-Dvaadin.productionMode=true" ./dms.jar
 if ($LastExitCode -eq 1337)
 {

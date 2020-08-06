@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Downloading dependencies..."
 java -jar "-Dvaadin.productionMode=true" ./dms.jar
 code=$?
 echo $code
