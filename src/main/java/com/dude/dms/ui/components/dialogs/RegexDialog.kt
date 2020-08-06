@@ -1,11 +1,10 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.brain.t
-import com.vaadin.flow.component.button.Button
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.splitlayout.SplitLayout
 import com.vaadin.flow.component.textfield.TextArea
 import com.vaadin.flow.component.textfield.TextField
@@ -13,37 +12,50 @@ import com.vaadin.flow.data.value.ValueChangeMode
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
-class RegexDialog(private val callBack: TextField, private val matches: ArrayList<String> = ArrayList()) : DmsDialog("Regex", "60vw", "60vh") {
+class RegexDialog(
+        private val callBack: TextField,
+        private val matches: ArrayList<String> = ArrayList()
+) : DmsDialog("Regex", 60, 60) {
 
-    private val regexField = TextField("Regex", callBack.value, "").apply {
-        setWidthFull()
-        addValueChangeListener { refreshResults() }
-        valueChangeMode = ValueChangeMode.EAGER
-    }
+    private lateinit var regexField: TextField
 
-    private val textArea = TextArea(t("testarea")).apply {
-        setWidthFull()
-        height = "50%"
-        addValueChangeListener { refreshResults() }
-        valueChangeMode = ValueChangeMode.EAGER
-    }
+    private lateinit var textArea: TextArea
 
-    private val grid = Grid<String>().apply {
-        addColumn { it }.setHeader(t("matches"))
-        setItems(matches)
-        height = "30%"
-    }
+    private lateinit var grid: Grid<String>
 
     init {
-        val horizontalLayout = HorizontalLayout(regexField, Button(VaadinIcon.CHECK.create()) { save() }).apply {
+        horizontalLayout {
             alignItems = FlexComponent.Alignment.END
+
+            regexField = textField("Regex") {
+                value = callBack.value
+                setWidthFull()
+                addValueChangeListener { refreshResults() }
+                valueChangeMode = ValueChangeMode.EAGER
+            }
+            iconButton(VaadinIcon.CHECK.create()) {
+                onLeftClick { save() }
+            }
         }
-        val splitLayout = SplitLayout(textArea, grid).apply {
+        splitLayout {
             setWidthFull()
             height = "80%"
             orientation = SplitLayout.Orientation.VERTICAL
+
+            textArea = TextArea(t("testarea")).apply {
+                setWidthFull()
+                height = "50%"
+                addValueChangeListener { refreshResults() }
+                valueChangeMode = ValueChangeMode.EAGER
+            }
+            grid = Grid<String>().apply {
+                addColumn { it }.setHeader(t("matches"))
+                setItems(matches)
+                height = "30%"
+            }
+            addToPrimary(textArea)
+            addToSecondary(grid)
         }
-        add(horizontalLayout, splitLayout)
     }
 
     private fun refreshResults() {

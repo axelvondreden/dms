@@ -1,5 +1,8 @@
 package com.dude.dms.ui.components.misc
 
+import com.github.mvysny.karibudsl.v10.iconButton
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.select
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -7,17 +10,11 @@ import com.vaadin.flow.component.select.Select
 
 class DocPageSelector(max: Int = 1) : HorizontalLayout() {
 
-    private val prev = Button(VaadinIcon.ARROW_CIRCLE_LEFT.create()) { prev() }
+    private var prev: Button
 
-    private val next = Button(VaadinIcon.ARROW_CIRCLE_RIGHT.create()) { next() }
+    private var next: Button
 
-    private val current = Select(*(1..max).toList().toTypedArray()).apply {
-        value = page
-        width = "80px"
-        isEmptySelectionAllowed = false
-        style["padding"] = "0px 5px"
-        addValueChangeListener { if (it.isFromClient) page = it.value }
-    }
+    private var current: Select<Int>
 
     var page: Int = 1
         set(value) {
@@ -37,18 +34,32 @@ class DocPageSelector(max: Int = 1) : HorizontalLayout() {
     init {
         isPadding = false
         isSpacing = false
-        add(prev, current, next)
+
+        prev = iconButton(VaadinIcon.ARROW_CIRCLE_LEFT.create()) {
+            onLeftClick { prev() }
+        }
+        current = select {
+            setItems(*(1..max).toList().toTypedArray())
+            value = page
+            width = "80px"
+            isEmptySelectionAllowed = false
+            style["padding"] = "0px 5px"
+            addValueChangeListener { if (it.isFromClient) page = it.value }
+        }
+        next = iconButton(VaadinIcon.ARROW_CIRCLE_RIGHT.create()) {
+            onLeftClick { next() }
+        }
     }
 
     fun setChangeListener(onChange: ((Int) -> Unit)?) {
         this.onChange = onChange
     }
 
-    fun prev() {
+    private fun prev() {
         if (page > 0) page--
     }
 
-    fun next() {
+    private fun next() {
         if (page < max) page++
     }
 

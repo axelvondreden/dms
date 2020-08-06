@@ -4,10 +4,13 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docImportCard
+import com.dude.dms.extensions.progressBar
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocImportCard
 import com.dude.dms.ui.components.dialogs.DocUploadDialog
+import com.dude.dms.ui.components.misc.DocImportPreview
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.UIDetachedException
@@ -15,6 +18,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.progressbar.ProgressBar
@@ -27,72 +31,90 @@ import kotlin.streams.toList
 
 @Route(value = Const.PAGE_DOCIMPORT, layout = MainView::class)
 @PageTitle("Doc Import")
-class DocImportView(builderFactory: BuilderFactory, private val docImportService: DocImportService, private val docParser: DocParser) : VerticalLayout() {
+class DocImportView(private val docImportService: DocImportService, private val docParser: DocParser) : VerticalLayout() {
 
-    private val progressBar = ProgressBar().apply { setWidthFull() }
+    private lateinit var progressBar: ProgressBar
 
-    private val progressText = Text("").apply { setWidthFull() }
+    private lateinit var progressText: Text
 
     private val docs = mutableSetOf<DocContainer>()
 
     private var loading = false
 
-    private val itemContainer = HorizontalLayout().apply {
-        setSizeFull()
-        style["overflowY"] = "hidden"
-    }
+    private lateinit var itemContainer: HorizontalLayout
 
-    private val importButton = Button("Import", VaadinIcon.PLUS_CIRCLE.create()) { createDocs() }.apply {
-        addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        width = "250px"
-    }
+    private lateinit var importButton: Button
 
-    private val itemPreview = builderFactory.docs().importPreview().apply {
-        onDone = { docContainer ->
-            docContainer.done = true
-            var index = -1
-            val cards = itemContainer.children.filter { it is DocImportCard }.map { it as DocImportCard }.toList()
-            cards.firstOrNull { it.docContainer == docContainer }?.let {
-                index = cards.indexOf(it) + 1
-                it.fill()
-            }
-            importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
-            while (index > 0 && index < cards.size) {
-                if (!cards[index].docContainer.done) {
-                    select(cards[index].docContainer)
-                    break
-                }
-                index++
-            }
-        }
-    }
+    private lateinit var itemPreview: DocImportPreview
 
     init {
         setSizeFull()
         isSpacing = false
 
-        val uploadButton = Button("Upload", VaadinIcon.UPLOAD.create()) { DocUploadDialog().open() }.apply {
-            width = "200px"
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        }
-        val refreshButton = Button(t("refresh"), VaadinIcon.REFRESH.create()) { refresh() }.apply { width = "250px" }
-        val rerunRules = Button(t("rules.rerun"), VaadinIcon.MAGIC.create()) { rerunRules() }.apply { width = "250px" }
-        Tooltips.getCurrent().setTooltip(rerunRules, t("rules.rerun.tooltip"))
-
-        val progress = VerticalLayout(progressBar, progressText).apply {
+        horizontalLayout {
             setWidthFull()
-            isSpacing = false
-            isPadding = false
+            alignItems = FlexComponent.Alignment.START
+
+            button("Upload", VaadinIcon.UPLOAD.create()) {
+                onLeftClick { DocUploadDialog().open() }
+                width = "200px"
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+            }
+            button(t("refresh"), VaadinIcon.REFRESH.create()) {
+                onLeftClick { refresh() }
+                width = "250px"
+            }
+            button(t("rules.rerun"), VaadinIcon.MAGIC.create()) {
+                onLeftClick { rerunRules() }
+                width = "250px"
+                Tooltips.getCurrent().setTooltip(this, t("rules.rerun.tooltip"))
+            }
+            verticalLayout(isPadding = false, isSpacing = false) {
+                setWidthFull()
+
+                progressBar = progressBar { setWidthFull() }
+                progressText = text("")
+            }
+            importButton = button("Import", VaadinIcon.PLUS_CIRCLE.create()) {
+                onLeftClick { createDocs() }
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                width = "250px"
+            }
         }
-        val header = HorizontalLayout(uploadButton, refreshButton, rerunRules, progress, importButton).apply { setWidthFull() }
-        val split = SplitLayout(itemContainer, itemPreview).apply {
+        splitLayout {
             setSizeFull()
             orientation = SplitLayout.Orientation.VERTICAL
             setSplitterPosition(15.0)
             setPrimaryStyle("minHeight", "100px")
             setPrimaryStyle("maxHeight", "300px")
+
+            itemContainer = HorizontalLayout().apply {
+                setSizeFull()
+                style["overflowY"] = "hidden"
+            }
+            itemPreview = DocImportPreview().apply {
+                onDone = { docContainer ->
+                    docContainer.done = true
+                    var index = -1
+                    val cards = itemContainer.children.filter { it is DocImportCard }.map { it as DocImportCard }.toList()
+                    cards.firstOrNull { it.docContainer == docContainer }?.let {
+                        index = cards.indexOf(it) + 1
+                        it.fill()
+                    }
+                    importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
+                    while (index > 0 && index < cards.size) {
+                        if (!cards[index].docContainer.done) {
+                            select(cards[index].docContainer)
+                            break
+                        }
+                        index++
+                    }
+                }
+            }
+            addToPrimary(itemContainer)
+            addToSecondary(itemPreview)
         }
-        add(header, split)
+
         refresh()
     }
 
@@ -106,18 +128,22 @@ class DocImportView(builderFactory: BuilderFactory, private val docImportService
         ui.access {
             importButton.text = "Import ${docs.count { it.done }} / ${docs.count()}"
             newDocs.forEach { dc ->
-                val dic = DocImportCard(dc).apply { addClickListener { select(dc) } }
-                ContextMenu().apply {
-                    target = dic
-                    addItem(t("delete")) { delete(dc) }
+                itemContainer.docImportCard(dc) {
+                    onLeftClick { select(dc) }
+                    ContextMenu().apply {
+                        target = this@docImportCard
+                        addItem(t("delete")) { delete(dc) }
+                    }
                 }
-                itemContainer.add(dic)
             }
         }
     }
 
     private fun rerunRules() {
-        docs.filter { !it.done }.forEach { it.tags = docParser.discoverTags(it.pages) }
+        docs.filter { !it.done }.forEach {
+            it.tags = docParser.discoverTags(it)
+            it.attributeValues = docParser.discoverAttributeValues(it).toMutableSet()
+        }
         itemPreview.clear()
         fill()
     }

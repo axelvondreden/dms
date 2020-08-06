@@ -2,21 +2,22 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.extensions.attributeValueField
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
 
-class AttributeValueLayout(private val builderFactory: BuilderFactory, private val imageEditor: DocImageEditor? = null) : Div() {
+class AttributeValueLayout(private val imageEditor: DocImageEditor? = null) : Div() {
 
-    private val fields = mutableListOf<AttributeValueField>()
+    private val fields = mutableSetOf<AttributeValueField>()
 
     fun fill(docContainer: DocContainer) {
         clear()
-        docContainer.attributeValues.forEach {
-            val field = builderFactory.attributes().valueField(it, imageEditor).apply { setWidthFull() }
-            add(field)
-            fields.add(field)
+        if (!docContainer.tags.isNullOrEmpty()) {
+            docContainer.attributeValues.forEach {
+                val field = attributeValueField(it, imageEditor)
+                fields.add(field)
+            }
         }
     }
 

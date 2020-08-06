@@ -1,24 +1,28 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.service.ChangelogService
 import com.dude.dms.brain.t
-import com.dude.dms.updater.UpdateChecker
-import com.vaadin.flow.component.button.Button
+import com.dude.dms.extensions.changelogService
+import com.dude.dms.extensions.updateChecker
+import com.github.mvysny.karibudsl.v10.button
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.textArea
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.textfield.TextArea
 
-class ChangelogDialog(changelogService: ChangelogService, updateChecker: UpdateChecker) : DmsDialog(t("changelog"), "70vw", "70vh") {
+class ChangelogDialog : DmsDialog(t("changelog"), 70, 70) {
 
     init {
-        add(Button(t("check"), VaadinIcon.REFRESH.create()) { updateChecker.check(false) }.apply { addThemeVariants(ButtonVariant.LUMO_PRIMARY) })
+        button(t("check"), VaadinIcon.REFRESH.create()) {
+            onLeftClick { updateChecker.check(false) }
+            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+        }
 
         changelogService.findAll().sortedBy { it.published }.reversed().forEach { changelog ->
-            val area = TextArea(changelog.version, changelog.body, "").apply {
-                isReadOnly = true
+            textArea(changelog.version) {
                 setWidthFull()
+                value = changelog.body
+                isReadOnly = true
             }
-            add(area)
         }
     }
 }

@@ -5,15 +5,16 @@ import com.dude.dms.backend.containers.LineContainer
 import com.dude.dms.backend.containers.PageContainer
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.docs.Word
-import com.dude.dms.backend.service.LineService
-import com.dude.dms.backend.service.WordService
-import com.dude.dms.brain.FileManager
+import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DmsOcrTextStripper
-import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docParser
+import com.dude.dms.extensions.fileManager
+import com.dude.dms.extensions.lineService
+import com.dude.dms.extensions.wordService
 import com.dude.dms.ui.EditMode
-import com.dude.dms.ui.builder.BuilderFactory
+import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.helger.commons.io.file.FileHelper
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
@@ -30,13 +31,7 @@ import kotlin.math.abs
 import kotlin.streams.toList
 
 
-class DocImageEditor(
-        private val builderFactory: BuilderFactory,
-        private val lineService: LineService,
-        private val wordService: WordService,
-        private val docParser: DocParser,
-        private val fileManager: FileManager
-) : Div() {
+class DocImageEditor : Div() {
 
     private var zoom = 100
 
@@ -88,7 +83,7 @@ class DocImageEditor(
         mode = EditMode.EDIT
     }
 
-    fun fill(docContainer: DocContainer, pageContainer: PageContainer) {
+    fun fill(docContainer: DocContainer, pageContainer: PageContainer, force: Boolean = false) {
         this.docContainer = docContainer
         this.pageContainer = pageContainer
         element.removeAllChildren()
@@ -106,7 +101,7 @@ class DocImageEditor(
             addEventListener("mouseup") { mouseUp() }
         }
         element.appendChild(progress.element, image)
-        fillWords(pageContainer)
+        fillWords(pageContainer, force)
     }
 
     fun clear() {
@@ -116,29 +111,31 @@ class DocImageEditor(
         words.clear()
     }
 
-    fun fillWords(pageContainer: PageContainer) {
+    fun fillWords(pageContainer: PageContainer, force: Boolean = false) {
         val old = element.children.filter { it.tag == "div" }.toList()
         old.forEach { element.removeChild(it) }
-        val words = pageContainer.lines.flatMap { it.words }
-        progress.isVisible = true
-        progress.max = words.size.toDouble()
-        val ui = UI.getCurrent()
-        Thread {
-            words.chunked(10).withIndex().forEach {
-                addWordWrappers(it.value.toSet(), ui)
-                ui.access { progress.value = it.index.toDouble() * 10 }
-            }
-            ui.access {
-                element.appendChild(drawDiv.element)
-                progress.isVisible = false
-            }
-        }.start()
+        if (force || Options.get().view.loadWordsInPreview) {
+            val words = pageContainer.lines.flatMap { it.words }
+            progress.isVisible = true
+            progress.max = words.size.toDouble()
+            val ui = UI.getCurrent()
+            Thread {
+                words.chunked(10).withIndex().forEach {
+                    addWordWrappers(it.value.toSet(), ui)
+                    ui.access { progress.value = it.index.toDouble() * 10 }
+                }
+                ui.access {
+                    element.appendChild(drawDiv.element)
+                    progress.isVisible = false
+                }
+            }.start()
+        }
     }
 
     private fun addWordWrappers(wordContainers: Set<WordContainer>, ui: UI? = null) {
         val data = mutableSetOf<WordWrapperData>()
         wordContainers.forEach { wordContainer ->
-            val dlg = builderFactory.docs().wordEditDialog(wordContainer)
+            val dlg = WordEditDialog(wordContainer)
             val word = wordContainer.word
             val div = Div().apply {
                 addClassName("word-container")

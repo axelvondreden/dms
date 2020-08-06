@@ -4,6 +4,10 @@ import com.dude.dms.backend.data.docs.Word
 import org.languagetool.rules.RuleMatch
 
 data class WordContainer(var word: Word, var spelling: RuleMatch? = null) {
+
+    val text: String
+        get() = word.text!!
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

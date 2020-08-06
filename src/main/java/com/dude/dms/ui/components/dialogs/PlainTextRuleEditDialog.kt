@@ -1,46 +1,61 @@
 package com.dude.dms.ui.components.dialogs
 
+import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.brain.t
-import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.misc.ConfirmDialog
-import com.vaadin.flow.component.ComponentEventListener
-import com.vaadin.flow.component.button.Button
+import com.dude.dms.extensions.confirmDialog
+import com.dude.dms.extensions.plainTextRuleService
+import com.dude.dms.extensions.tagSelector
+import com.dude.dms.ui.components.tags.TagSelector
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class PlainTextRuleEditDialog(
-        builderFactory: BuilderFactory,
-        private val plainTextRule: PlainTextRule,
-        private val plainTextRuleService: PlainTextRuleService
-) : DmsDialog("", "70vw", "70vh") {
+class PlainTextRuleEditDialog(private val plainTextRule: PlainTextRule) : DmsDialog("", 70, 70) {
 
-    private val plainText = TextField("Text", plainTextRule.text, "").apply { setWidthFull() }
+    private lateinit var plainText: TextField
 
-    private val ruleTagSelector = builderFactory.tags().selector(pRule = plainTextRule).apply { height = "80%" }
+    private lateinit var ruleTagSelector: TagSelector
 
-    private val caseSensitive = Checkbox("Case sensitive", plainTextRule.caseSensitive)
+    private lateinit var caseSensitive: Checkbox
 
     init {
-        val hLayout = HorizontalLayout(plainText, caseSensitive).apply {
+        horizontalLayout {
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
+
+            textField("Text") {
+                setWidthFull()
+                value = plainTextRule.text
+            }
+            checkBox("Case sensitive") {
+                value = plainTextRule.caseSensitive
+            }
         }
-        val saveButton = Button(t("save"), VaadinIcon.PLUS.create()) { save() }.apply { setWidthFull() }
-        val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
+        tagSelector {
+            height = "80%"
+            selectedTags = plainTextRule.tags.map { TagContainer(it) }.toSet()
+        }
+        horizontalLayout {
             setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_ERROR)
+
+            button(t("save"), VaadinIcon.PLUS.create()) {
+                onLeftClick { save() }
+                setWidthFull()
+            }
+            button(t("delete"), VaadinIcon.TRASH.create()) {
+                onLeftClick { delete() }
+                setWidthFull()
+                addThemeVariants(ButtonVariant.LUMO_ERROR)
+            }
         }
-        add(hLayout, ruleTagSelector, HorizontalLayout(saveButton, deleteButton).apply { setWidthFull() })
     }
 
     private fun delete() {
-        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, ComponentEventListener {
+        confirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, {
             plainTextRuleService.delete(plainTextRule)
             close()
         }).open()

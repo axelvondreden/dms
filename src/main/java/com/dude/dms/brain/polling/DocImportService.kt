@@ -100,8 +100,9 @@ class DocImportService(
 
                 dc.useOcrTxt = dc.ocrPages.wordCount() > dc.pdfPages.wordCount()
 
-                dc.date = docParser.getMostFrequentDate(dc.pageEntities)
-                dc.tags = docParser.discoverTags(dc.pages).toMutableSet()
+                dc.date = docParser.getMostFrequentDate(dc)
+                dc.tags = docParser.discoverTags(dc).toMutableSet()
+                dc.attributeValues = docParser.discoverAttributeValues(dc).toMutableSet()
 
                 docs.add(dc)
                 currentImports.remove(dc.file?.name)

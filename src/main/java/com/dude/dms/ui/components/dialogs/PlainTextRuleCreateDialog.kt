@@ -1,34 +1,37 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.brain.t
-import com.dude.dms.ui.builder.BuilderFactory
-import com.vaadin.flow.component.button.Button
+import com.dude.dms.extensions.plainTextRuleService
+import com.dude.dms.extensions.tagSelector
+import com.dude.dms.ui.components.tags.TagSelector
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class PlainTextRuleCreateDialog(
-        builderFactory: BuilderFactory,
-        private val plainTextRuleService: PlainTextRuleService
-) : DmsDialog("", "70vw", "70vh") {
+class PlainTextRuleCreateDialog : DmsDialog("", 70, 70) {
 
-    private val plainText = TextField("Text").apply { setWidthFull() }
+    private lateinit var plainText: TextField
 
-    private val ruleTagSelector = builderFactory.tags().selector().apply { height = "80%" }
+    private var ruleTagSelector: TagSelector
 
-    private val caseSensitive = Checkbox("Case sensitive")
+    private lateinit var caseSensitive: Checkbox
 
     init {
-        val hLayout = HorizontalLayout(plainText, caseSensitive).apply {
+        horizontalLayout {
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
+
+            plainText = textField("Text") { setWidthFull() }
+            caseSensitive = checkBox("Case sensitive")
         }
-        val button = Button(t("create"), VaadinIcon.PLUS.create()) { create() }.apply { setWidthFull() }
-        add(hLayout, ruleTagSelector, button)
+        ruleTagSelector = tagSelector { height = "80%" }
+        button(t("create"), VaadinIcon.PLUS.create()) {
+            onLeftClick { create() }
+            setWidthFull()
+        }
     }
 
     private fun create() {

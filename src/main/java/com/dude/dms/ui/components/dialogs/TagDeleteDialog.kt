@@ -1,50 +1,46 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.*
 import com.dude.dms.brain.t
-import com.vaadin.flow.component.button.Button
+import com.dude.dms.extensions.attributeService
+import com.dude.dms.extensions.docService
+import com.dude.dms.extensions.mailService
+import com.dude.dms.extensions.tagService
+import com.github.mvysny.karibudsl.v10.button
+import com.github.mvysny.karibudsl.v10.checkBox
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.verticalLayout
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class TagDeleteDialog(
-        private val tag: Tag,
-        private val tagService: TagService,
-        private val docService: DocService,
-        private val mailService: MailService,
-        private val attributeService: AttributeService,
-        private val plainTextRuleService: PlainTextRuleService,
-        private val regexRuleService: RegexRuleService,
-        private val mailFilterService: MailFilterService
-) : DmsDialog(t("tag.delete"), "20vw") {
+class TagDeleteDialog(private val tag: Tag) : DmsDialog(t("tag.delete"), 20) {
 
-    private val tagCheck = Checkbox(t("tag"), true).apply { isEnabled = false }
+    private lateinit var tagCheck: Checkbox
 
-    private val docCheck = Checkbox("${t("docs")} (${docService.countByTag(tag)})")
+    private lateinit var docCheck: Checkbox
 
-    private val mailCheck = Checkbox("${t("mails")} (${mailService.countByTag(tag)})")
+    private lateinit var mailCheck: Checkbox
 
-    private val attributeCheck = Checkbox("${t("attributes")} (${tag.attributes.size}")
-
-    private val plainTextRuleCheck = Checkbox("${t("rules.plain")} (${plainTextRuleService.countByTag(tag)}")
-
-    private val regexRuleCheck = Checkbox("${t("rules.regex")} (${regexRuleService.countByTag(tag)}")
-
-    private val mailFilterCheck = Checkbox("Mail Filter (${mailFilterService.countByTag(tag)}")
+    private lateinit var attributeCheck: Checkbox
 
     init {
-        val deleteButton = Button(t("delete"), VaadinIcon.TRASH.create()) { delete() }.apply {
-            setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_ERROR)
-        }
-        val wrapper = VerticalLayout(tagCheck, docCheck, mailCheck, attributeCheck, deleteButton).apply {
+        verticalLayout(isPadding = false, isSpacing = false) {
             setSizeFull()
-            isPadding = false
-            isSpacing = false
+
+            tagCheck = checkBox(t("tag")) {
+                isEnabled = false
+                value = true
+            }
+            docCheck = checkBox("${t("docs")} (${docService.countByTag(tag)})")
+            mailCheck = checkBox("${t("mails")} (${mailService.countByTag(tag)})")
+            attributeCheck = checkBox("${t("attributes")} (${tag.attributes.size})")
+            button(t("delete"), VaadinIcon.TRASH.create()) {
+                onLeftClick { delete() }
+                setWidthFull()
+                addThemeVariants(ButtonVariant.LUMO_ERROR)
+            }
         }
-        add(wrapper)
     }
 
     private fun delete() {
@@ -57,15 +53,6 @@ class TagDeleteDialog(
         if (attributeCheck.value) {
             tag.attributes.forEach(attributeService::delete)
             tag.attributes = emptySet()
-        }
-        if (plainTextRuleCheck.value) {
-            plainTextRuleService.findByTag(tag).forEach(plainTextRuleService::delete)
-        }
-        if (regexRuleCheck.value) {
-            regexRuleService.findByTag(tag).forEach(regexRuleService::delete)
-        }
-        if (mailFilterCheck.value) {
-            mailFilterService.findByTag(tag).forEach(mailFilterService::delete)
         }
         tagService.delete(tagService.save(tag))
         close()

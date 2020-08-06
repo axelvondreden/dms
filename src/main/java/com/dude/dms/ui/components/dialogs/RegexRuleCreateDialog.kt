@@ -1,35 +1,28 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.rules.RegexRule
-import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.brain.t
-import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.standard.RegexField
-import com.vaadin.flow.component.button.Button
+import com.dude.dms.extensions.regexField
+import com.dude.dms.extensions.regexRuleService
+import com.dude.dms.extensions.tagSelector
+import com.github.mvysny.karibudsl.v10.button
+import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class RegexRuleCreateDialog(
-        builderFactory: BuilderFactory,
-        private val regexRuleService: RegexRuleService
-) : DmsDialog("", "70vw", "70vh") {
-
-    private val regex = RegexField("Regex").apply {
-        setWidthFull()
-    }
-
-    private val ruleTagSelector = builderFactory.tags().selector().apply {
-        height = "80%"
-    }
+class RegexRuleCreateDialog : DmsDialog("", 70, 70) {
 
     init {
-        add(regex, ruleTagSelector, Button(t("create"), VaadinIcon.PLUS.create()) { create() }.apply { setWidthFull() })
-    }
-
-    private fun create() {
-        if (regex.isEmpty) return
-        if (ruleTagSelector.selectedTags.isEmpty()) return
-        val regexRule = RegexRule(regex.value!!, ruleTagSelector.selectedTags.map { it.tag }.toSet())
-        regexRuleService.save(regexRule)
-        close()
+        val regex = regexField("Regex") { setWidthFull() }
+        val ruleTagSelector = tagSelector { height = "80%" }
+        button(t("create"), VaadinIcon.PLUS.create()) {
+            onLeftClick {
+                if (regex.isEmpty) return@onLeftClick
+                if (ruleTagSelector.selectedTags.isEmpty()) return@onLeftClick
+                val regexRule = RegexRule(regex.value!!, ruleTagSelector.selectedTags.map { it.tag }.toSet())
+                regexRuleService.save(regexRule)
+                close()
+            }
+            setWidthFull()
+        }
     }
 }

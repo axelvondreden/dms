@@ -2,7 +2,7 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
-import com.dude.dms.backend.service.AttributeValueService
+import com.dude.dms.extensions.attributeValueService
 import com.dude.dms.extensions.findDate
 import com.dude.dms.extensions.findDecimal
 import com.dude.dms.extensions.round
@@ -15,11 +15,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.NumberField
 
-class AttributeValueField(
-        private val attributeValue: AttributeValue,
-        private val attributeValueService: AttributeValueService,
-        imageEditor: DocImageEditor? = null
-) : HorizontalLayout() {
+class AttributeValueField(val attributeValue: AttributeValue, imageEditor: DocImageEditor? = null) : HorizontalLayout() {
 
     private val validation: () -> Boolean
 
@@ -147,4 +143,15 @@ class AttributeValueField(
     }
 
     fun validate() = validation.invoke()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AttributeValueField
+        if (attributeValue != other.attributeValue) return false
+        return true
+    }
+
+    override fun hashCode() = attributeValue.hashCode()
 }

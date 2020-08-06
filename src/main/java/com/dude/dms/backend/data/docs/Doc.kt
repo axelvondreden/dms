@@ -1,6 +1,9 @@
 package com.dude.dms.backend.data.docs
 
-import com.dude.dms.backend.data.*
+import com.dude.dms.backend.data.Diffable
+import com.dude.dms.backend.data.LogsEvents
+import com.dude.dms.backend.data.RestorableEntity
+import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
@@ -8,7 +11,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
-import javax.validation.constraints.Size
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
@@ -31,6 +33,10 @@ class Doc(
         @ManyToOne
         var mail: Mail? = null
 ) : RestorableEntity(), Diffable<Doc>, LogsEvents {
+
+    fun getFullText() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }
+
+    fun getLine(word: Word) = pages.flatMap { it.lines }.first { word in it.words }
 
     override fun toString() = t("doc")
 }

@@ -1,18 +1,15 @@
 package com.dude.dms.backend.service
 
-import com.dude.dms.backend.containers.PageContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.Page
-import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.io.Serializable
+import java.time.LocalDate
 
 @Service
 class DocService(
@@ -23,9 +20,14 @@ class DocService(
 ) : RestoreService<Doc>(docRepository, eventManager) {
 
     data class Filter(
-            var tag: Tag? = null,
-            var attribute: Attribute? = null,
-            var mail: Mail? = null,
+            var includeAllTags: Boolean,
+            var includeAllAttributes: Boolean,
+            var includedTags: Set<Tag>? = null,
+            var excludedTags: Set<Tag>? = null,
+            var includedAttributes: Set<Attribute>? = null,
+            var excludedAttributes: Set<Attribute>? = null,
+            var from: LocalDate? = null,
+            var to: LocalDate? = null,
             var text: String? = null
     ) : Serializable
 
@@ -97,32 +99,20 @@ class DocService(
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
     fun findByFilter(filter: Filter, pageable: Pageable): Set<Doc> {
-        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, pageable)
+        val docs = docRepository.findByFilter(
+                from = filter.from,
+                to = filter.to,
+                includeAllTags = filter.includeAllTags,
+                includeAllAttributes = filter.includeAllAttributes,
+                includedTags = filter.includedTags,
+                includedAttributes = filter.includedAttributes,
+                excludedTags = filter.excludedTags,
+                excludedAttributes = filter.excludedAttributes,
+                pageable = pageable
+        )
         if (!filter.text.isNullOrBlank()) {
-            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
+            return docs.filter { it.getFullText().contains(filter.text!!, true) }.toSet()
         }
         return docs.toSet()
-    }
-
-    fun findByFilter(filter: Filter, sort: Sort): Set<Doc> {
-        val docs = docRepository.findByFilter(filter.tag, filter.attribute, filter.mail, sort)
-        if (!filter.text.isNullOrBlank()) {
-            return docs.filter { getFullText(it.pages).contains(filter.text!!, true) }.toSet()
-        }
-        return docs
-    }
-
-    fun countByFilter(filter: Filter) = docRepository.countByFilter(filter.tag, filter.attribute, filter.mail)
-
-    fun getFullText(pages: Set<Page>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
-        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.x }.joinToString(" ") { it.text.toString() }
-        }
-    }
-
-    fun getFullText2(pages: Set<PageContainer>) = pages.sortedBy { it.nr }.joinToString("\n") { page ->
-        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
-            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
-        }
     }
 }

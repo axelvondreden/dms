@@ -8,14 +8,13 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docCard
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocCard
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -23,30 +22,33 @@ import com.vaadin.flow.router.Route
 
 @Route(value = Const.PAGE_RECYCLE, layout = MainView::class)
 @PageTitle("Recycle Bin")
-class RecycleView(
-        private val builderFactory: BuilderFactory,
-        private val docService: DocService,
-        private val fileManager: FileManager,
-        eventManager: EventManager
-) : VerticalLayout() {
+class RecycleView(private val docService: DocService, private val fileManager: FileManager, eventManager: EventManager) : VerticalLayout() {
 
-    private val itemContainer = Div().apply {
-        setSizeFull()
-        element.style["display"] = "flex"
-        element.style["flexWrap"] = "wrap"
-    }
-
-    private val empty = Button(t("recyclebin.empty"), VaadinIcon.RECYCLE.create()) { empty() }
+    private var itemContainer: Div
 
     init {
         val ui = UI.getCurrent()
         eventManager.register(this, Doc::class, EventType.UPDATE, EventType.DELETE) { ui.access { fill() } }
 
-        val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
-        val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
+        horizontalLayout {
+            setWidthFull()
 
-        val header = HorizontalLayout(empty, shrinkButton, growButton).apply { setWidthFull() }
-        add(header, itemContainer)
+            button(t("recyclebin.empty"), VaadinIcon.RECYCLE.create()) {
+                onLeftClick { empty() }
+            }
+            iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                onLeftClick { shrink() }
+            }
+            iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                onLeftClick { grow() }
+            }
+        }
+        itemContainer = div {
+            setSizeFull()
+            style["display"] = "flex"
+            style["flexWrap"] = "wrap"
+        }
+
         fill()
     }
 
@@ -72,8 +74,8 @@ class RecycleView(
         itemContainer.removeAll()
         docService.findDeleted().forEach { doc ->
             val dc = DocContainer(doc)
-            dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
-            itemContainer.add(builderFactory.docs().card(dc))
+            dc.thumbnail = fileManager.getImage(dc.guid)
+            itemContainer.docCard(dc)
         }
     }
 

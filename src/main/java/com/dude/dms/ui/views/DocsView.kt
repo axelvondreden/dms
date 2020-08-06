@@ -12,22 +12,29 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.docCard
+import com.dude.dms.extensions.multiSelectComboBox
+import com.dude.dms.extensions.radioButtonGroup
+import com.dude.dms.extensions.viewPageSelector
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.builder.BuilderFactory
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.ViewPageSelector
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.vaadin.gatanaso.MultiselectComboBox
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.streams.toList
@@ -37,7 +44,6 @@ import kotlin.streams.toList
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView::class)
 @PageTitle("Docs")
 class DocsView(
-        private val builderFactory: BuilderFactory,
         private val docService: DocService,
         private val tagService: TagService,
         private val attributeService: AttributeService,
@@ -56,48 +62,23 @@ class DocsView(
 
     private val viewUI = UI.getCurrent()
 
-    private var filter = DocService.Filter()
+    private var itemContainer: Div
 
-    private val itemContainer = Div().apply {
-        setSizeFull()
-        element.style["display"] = "flex"
-        element.style["flexWrap"] = "wrap"
-    }
+    private lateinit var tagIncludeFilter: MultiselectComboBox<Tag>
+    private lateinit var tagIncludeVariant: RadioButtonGroup<String>
+    private lateinit var tagExcludeFilter: MultiselectComboBox<Tag>
 
-    private val tagFilter = ComboBox("", tagService.findAll()).apply {
-        placeholder = t("tag")
-        isClearButtonVisible = true
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        setItemLabelGenerator { it.name }
-        addValueChangeListener { refreshFilter() }
-    }
+    private lateinit var attributeIncludeFilter: MultiselectComboBox<Attribute>
+    private lateinit var attributeIncludeVariant: RadioButtonGroup<String>
+    private lateinit var attributeExcludeFilter: MultiselectComboBox<Attribute>
 
-    private val attributeFilter = ComboBox("", attributeService.findAll()).apply {
-        placeholder = t("attribute")
-        isClearButtonVisible = true
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        setItemLabelGenerator { it.name }
-        addValueChangeListener { refreshFilter() }
-    }
+    private lateinit var textFilter: TextField
+    private lateinit var fromFilter: DatePicker
+    private lateinit var toFilter: DatePicker
 
-    private val textFilter = TextField("", "Text").apply {
-        isClearButtonVisible = true
-        addValueChangeListener { refreshFilter() }
-        valueChangeMode = ValueChangeMode.LAZY
-        width = "25vw"
-    }
+    private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
 
-    private val sortFilter = ComboBox("", sorts).apply {
-        isPreventInvalidInput = true
-        isAllowCustomValue = false
-        value = sorts[0]
-        setItemLabelGenerator { it.first }
-        addValueChangeListener { refreshFilter() }
-    }
-
-    private val pageSelector = ViewPageSelector()
+    private lateinit var pageSelector: ViewPageSelector
 
     init {
         eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
@@ -106,13 +87,119 @@ class DocsView(
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { refreshFilterOptions() }
 
+        verticalLayout(isPadding = false, isSpacing = false) {
+            horizontalLayout {
+                setWidthFull()
+
+                textFilter = textField {
+                    setWidthFull()
+                    placeholder = "Text"
+                    isClearButtonVisible = true
+                    addValueChangeListener { fill(viewUI) }
+                    valueChangeMode = ValueChangeMode.LAZY
+                }
+                fromFilter = datePicker {
+                    placeholder = t("from")
+                    addValueChangeListener { fill(viewUI) }
+                    isClearButtonVisible = true
+                }
+                toFilter = datePicker {
+                    placeholder = t("to")
+                    addValueChangeListener { fill(viewUI) }
+                    isClearButtonVisible = true
+                }
+                sortFilter = comboBox {
+                    setItems(sorts)
+                    isPreventInvalidInput = true
+                    isAllowCustomValue = false
+                    value = sorts[0]
+                    setItemLabelGenerator { it.first }
+                    addValueChangeListener { fill(viewUI) }
+                }
+                iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                    onLeftClick { shrink() }
+                }
+                iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                    onLeftClick { grow() }
+                }
+                pageSelector = viewPageSelector()
+            }
+            details(t("search.advanced")) {
+                element.style["width"] = "100%"
+
+                content {
+                    verticalLayout(isPadding = false, isSpacing = false) {
+                        setWidthFull()
+
+                        horizontalLayout {
+                            setWidthFull()
+                            alignItems = FlexComponent.Alignment.CENTER
+
+                            tagIncludeVariant = radioButtonGroup {
+                                setItems(t("all"), t("any"))
+                                addThemeVariants(RadioGroupVariant.LUMO_VERTICAL)
+                                value = t("all")
+                                addValueChangeListener { fill(viewUI) }
+                            }
+                            tagIncludeFilter = multiSelectComboBox("", tagService.findAll()) {
+                                width = "20vw"
+                                maxWidth = "20vw"
+                                placeholder = t("tags")
+                                isClearButtonVisible = true
+                                isAllowCustomValues = false
+                                setItemLabelGenerator { it.name }
+                                addValueChangeListener { fill(viewUI) }
+                            }
+                            tagExcludeFilter = multiSelectComboBox("", tagService.findAll()) {
+                                width = "20vw"
+                                maxWidth = "20vw"
+                                placeholder = t("tags.exclude")
+                                isClearButtonVisible = true
+                                isAllowCustomValues = false
+                                setItemLabelGenerator { it.name }
+                                addValueChangeListener { fill(viewUI) }
+                            }
+                        }
+                        horizontalLayout {
+                            setWidthFull()
+                            alignItems = FlexComponent.Alignment.CENTER
+
+                            attributeIncludeVariant = radioButtonGroup {
+                                setItems(t("all"), t("any"))
+                                addThemeVariants(RadioGroupVariant.LUMO_VERTICAL)
+                                value = t("all")
+                                addValueChangeListener { fill(viewUI) }
+                            }
+                            attributeIncludeFilter = multiSelectComboBox("", attributeService.findAll()) {
+                                width = "20vw"
+                                maxWidth = "20vw"
+                                placeholder = t("attributes")
+                                isClearButtonVisible = true
+                                isAllowCustomValues = false
+                                setItemLabelGenerator { it.name }
+                                addValueChangeListener { fill(viewUI) }
+                            }
+                            attributeExcludeFilter = multiSelectComboBox("", attributeService.findAll()) {
+                                width = "20vw"
+                                maxWidth = "20vw"
+                                placeholder = t("attributes.exclude")
+                                isClearButtonVisible = true
+                                isAllowCustomValues = false
+                                setItemLabelGenerator { it.name }
+                                addValueChangeListener { fill(viewUI) }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        itemContainer = div {
+            setSizeFull()
+            style["display"] = "flex"
+            style["flexWrap"] = "wrap"
+        }
+
         pageSelector.setChangeListener { scheduleFill(viewUI) }
-
-        val shrinkButton = Button(VaadinIcon.MINUS_CIRCLE.create()) { shrink() }
-        val growButton = Button(VaadinIcon.PLUS_CIRCLE.create()) { grow() }
-
-        val header = HorizontalLayout(tagFilter, attributeFilter, textFilter, sortFilter, shrinkButton, growButton, pageSelector).apply { setWidthFull() }
-        add(header, itemContainer)
         scheduleFill(viewUI)
     }
 
@@ -136,8 +223,8 @@ class DocsView(
     }
 
     private fun refreshFilterOptions() {
-        tagFilter.setItems(tagService.findAll())
-        attributeFilter.setItems(attributeService.findAll())
+        tagIncludeFilter.setItems(tagService.findAll())
+        attributeIncludeFilter.setItems(attributeService.findAll())
     }
 
     private fun grow() {
@@ -167,31 +254,36 @@ class DocsView(
     }
 
     private fun fill(ui: UI) {
+        val docs = docService.findByFilter(getFilter(), PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second))
         ui.access {
             itemContainer.removeAll()
-            pageSelector.items = docService.countByFilter(filter).toInt()
+            pageSelector.items = docs.size
         }
-        docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second)).forEach { doc ->
-            val dc = DocContainer(doc)
-            dc.pages.first { it.nr == 1 }.image = fileManager.getImage(dc.guid)
-            ui.access { itemContainer.add(builderFactory.docs().card(dc)) }
+        docs.forEach { doc ->
+            val dc = DocContainer(doc).apply { thumbnail = fileManager.getImage(guid) }
+            ui.access {
+                itemContainer.docCard(dc)
+            }
         }
     }
 
-    private fun refreshFilter() {
-        filter = DocService.Filter(
-                tag = tagFilter.optionalValue.orElse(null),
-                attribute = attributeFilter.optionalValue.orElse(null),
-                text = textFilter.optionalValue.orElse(null)
-        )
-        fill(viewUI)
-    }
+    private fun getFilter() = DocService.Filter(
+            includeAllTags = t("all") == tagIncludeVariant.value,
+            includeAllAttributes = t("all") == attributeIncludeVariant.value,
+            includedTags = tagIncludeFilter.optionalValue.orElse(null),
+            excludedTags = tagExcludeFilter.optionalValue.orElse(null),
+            includedAttributes = attributeIncludeFilter.optionalValue.orElse(null),
+            excludedAttributes = attributeExcludeFilter.optionalValue.orElse(null),
+            from = fromFilter.optionalValue.orElse(null),
+            to = toFilter.optionalValue.orElse(null),
+            text = textFilter.optionalValue.orElse(null)
+    )
 
     override fun setParameter(beforeEvent: BeforeEvent, @OptionalParameter t: String?) {
         if (!t.isNullOrEmpty()) {
             val parts = t.split(":").toTypedArray()
             if ("tag".equals(parts[0], ignoreCase = true)) {
-                tagFilter.value = tagService.findByName(parts[1])
+                tagIncludeFilter.value = setOf(tagService.findByName(parts[1]))
             }
         }
     }

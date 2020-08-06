@@ -1,68 +1,71 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.TagService
-import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.ui.builder.BuilderFactory
-import com.dude.dms.ui.components.standard.DmsColorPickerSimple
+import com.dude.dms.extensions.*
+import com.dude.dms.ui.components.tags.AttributeSelector
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
-import com.vaadin.flow.component.Component
-import com.vaadin.flow.component.HasSize
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.HasValue
-import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.details.Details
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 
-class TagEditDialog(
-        builderFactory: BuilderFactory,
-        private val tag: Tag,
-        private val tagService: TagService,
-        private val docService: DocService
-) : DmsDialog(t("tag.edit"), "35vw") {
+class TagEditDialog(private val tag: Tag) : DmsDialog(t("tag.edit"), 35) {
 
-    private val name = TextField(t("name"), tag.name, "").apply { setWidthFull() }
+    private lateinit var name: TextField
 
-    @Suppress("UNCHECKED_CAST")
-    private val colorPicker = when {
-        Options.get().tag.simpleColors -> DmsColorPickerSimple(t("color"))
-        else -> ColorPickerFieldRaw(t("color"))
-    }.also {
-        (it as HasSize).setWidthFull()
-        (it as HasValue<*, String>).setValue(tag.color)
-    }
+    private lateinit var colorPicker: ColorPickerFieldRaw
 
-    private val attributeSelector = builderFactory.attributes().selector(tag).apply { setSizeFull() }
+    private lateinit var attributeSelector: AttributeSelector
 
     init {
-        val createButton = Button(t("save")) { save() }.apply {
-            setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        }
-        val cancelButton = Button(t("close")) { close() }.apply {
-            setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_ERROR)
-        }
-        val fieldWrapper = HorizontalLayout(name, colorPicker as Component).apply { setWidthFull() }
-        val buttonLayout = HorizontalLayout(createButton, cancelButton).apply { setWidthFull() }
-        val attributeDetails = Details(t("attributes"), attributeSelector).apply { element.style["width"] = "100%" }
-        val vLayout = VerticalLayout(fieldWrapper, attributeDetails, buttonLayout).apply {
+        verticalLayout(isPadding = false, isSpacing = false) {
             setSizeFull()
-            isPadding = false
-            isSpacing = false
+
+            horizontalLayout {
+                setWidthFull()
+
+                name = textField(t("name")) {
+                    setWidthFull()
+                    value = tag.name
+                }
+                colorPicker = colorPicker(t("color")) {
+                    setWidthFull()
+                    value = tag.color
+                }
+            }
+            details(t("attributes")) {
+                element.style["width"] = "100%"
+
+                content {
+                    attributeSelector = attributeSelector {
+                        setSizeFull()
+                        selectedAttributes = tag.attributes
+                    }
+                }
+            }
+            horizontalLayout {
+                setWidthFull()
+
+                button(t("save")) {
+                    onLeftClick { save() }
+                    setWidthFull()
+                    addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                }
+                button(t("close")) {
+                    onLeftClick { close() }
+                    setWidthFull()
+                    addThemeVariants(ButtonVariant.LUMO_ERROR)
+                }
+            }
         }
-        add(vLayout)
     }
 
     private fun save() {
         if (name.isEmpty) return
         if ((colorPicker as HasValue<*, *>).isEmpty()) return
         tag.name = name.value
-        tag.color = colorPicker.getValue() as String
+        tag.color = colorPicker.value as String
         tag.attributes = attributeSelector.selectedAttributes
         tagService.save(tag)
         docService.findByTag(tag).forEach { docService.save(it) }

@@ -18,6 +18,8 @@ class Page(
         var nr: Int
 ) : RestorableEntity(), LogsEvents {
 
+    fun getFullText() = lines.sortedBy { it.y }.joinToString("\n") { it.getFullText() }
+
     override fun toString() = t("page")
 
     override fun equals(other: Any?): Boolean {

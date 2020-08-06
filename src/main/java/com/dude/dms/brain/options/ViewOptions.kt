@@ -6,5 +6,6 @@ data class ViewOptions(
         var locale: String,
         var darkMode: Boolean,
         var notificationPosition: String,
-        var docCardSize: Int
+        var docCardSize: Int,
+        var loadWordsInPreview: Boolean
 )

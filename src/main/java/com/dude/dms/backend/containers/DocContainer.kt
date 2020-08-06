@@ -26,17 +26,26 @@ class DocContainer(var guid: String, var file: File? = null) {
             field = value
             if (doc != null) {
                 doc!!.tags = value.map { it.tag }.toMutableSet()
-                attributeValues = doc!!.attributeValues
+                attributeValues = doc!!.attributeValues.toMutableSet()
             } else {
-                attributeValues = value.flatMap { it.tag.attributes }.map { AttributeValue(doc, it) }.distinct().toMutableSet()
+                if (!value.isNullOrEmpty()) {
+                    attributeValues.removeIf { av -> value.none { av.attribute in it.tag.attributes } }
+                    attributeValues.addAll(
+                            value.flatMap { it.tag.attributes }
+                                    .filter { attribute -> attribute !in attributeValues.map { it.attribute } }
+                                    .map { AttributeValue(doc, it) }.distinct()
+                    )
+                }
             }
         }
 
     var tagEntities: Set<Tag>
         get() = tags.map { it.tag }.toSet()
-        set(value) { tags = value.map { TagContainer(it) }.toSet() }
+        set(value) {
+            tags = value.map { TagContainer(it) }.toSet()
+        }
 
-    var attributeValues: Set<AttributeValue> = mutableSetOf()
+    var attributeValues: MutableSet<AttributeValue> = mutableSetOf()
 
     var language: String = Options.get().doc.ocrLanguage
 
@@ -60,13 +69,26 @@ class DocContainer(var guid: String, var file: File? = null) {
 
     var pageEntities: Set<Page>
         get() = pages.map { it.page }.toSet()
-        set(value) { pages = value.map { PageContainer(it) }.toSet() }
+        set(value) {
+            pages = value.map { PageContainer(it) }.toSet()
+        }
 
     val words: Set<WordContainer>
         get() = pages.flatMap { it.lines }.flatMap { it.words }.toSet()
 
-    val thumbnail: File
+    var thumbnail: File
         get() = pages.first { it.nr == 1 }.image!!
+        set(value) {
+            pages.first { it.nr == 1 }.image = value
+        }
+
+    fun getLine(word: WordContainer) = doc?.getLine(word.word) ?: pages.flatMap { it.lines }.first { word in it.words }.line
+
+    fun getFullText() = doc?.getFullText() ?: pages.sortedBy { it.nr }.joinToString("\n") { page ->
+        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
+            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

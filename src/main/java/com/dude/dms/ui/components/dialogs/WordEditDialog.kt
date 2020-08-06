@@ -1,38 +1,28 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.WordContainer
-import com.dude.dms.backend.service.WordService
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.round
-import com.vaadin.flow.component.button.Button
+import com.dude.dms.extensions.wordService
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 import org.languagetool.rules.SuggestedReplacement
 
-class WordEditDialog(
-        private val wordService: WordService,
-        private val wordContainer: WordContainer
-) : DmsDialog(t("word.edit"), "40vw") {
+class WordEditDialog(private val wordContainer: WordContainer) : DmsDialog(t("word.edit"), 40) {
 
     private val originalText = wordContainer.word.text
 
-    private val text = TextField("Text", originalText, "").apply { setWidthFull() }
+    private var text: TextField
 
     init {
-        val createButton = Button(t("save"), VaadinIcon.DISC.create()) { save() }.apply {
+        text = textField("Text") {
             setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+            value = originalText
         }
-        val cancelButton = Button(t("close"), VaadinIcon.CLOSE.create()) { close() }.apply {
-            setWidthFull()
-            addThemeVariants(ButtonVariant.LUMO_ERROR)
-        }
-        add(text)
         if (wordContainer.spelling != null) {
-            val grid = Grid<SuggestedReplacement>().apply {
+            grid<SuggestedReplacement> {
                 setWidthFull()
                 maxHeight = "200px"
                 val items = wordContainer.spelling!!.suggestedReplacementObjects
@@ -43,9 +33,21 @@ class WordEditDialog(
                 }
                 addItemClickListener { text.value = it.item.replacement }
             }
-            add(grid)
         }
-        add(HorizontalLayout(createButton, cancelButton).apply { setWidthFull() })
+        horizontalLayout {
+            setWidthFull()
+
+            button(t("save"), VaadinIcon.DISC.create()) {
+                onLeftClick { save() }
+                setWidthFull()
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+            }
+            button(t("close"), VaadinIcon.CLOSE.create()) {
+                onLeftClick { close() }
+                setWidthFull()
+                addThemeVariants(ButtonVariant.LUMO_ERROR)
+            }
+        }
     }
 
     private fun save() {

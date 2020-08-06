@@ -49,3 +49,7 @@ options.properties
 /webdrivers.xml
 /webpack.config.js
 /options.json
+/package.json
+/pnpm-lock.yaml
+/pnpmfile.js
+/node/

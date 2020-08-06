@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.extensions.attributeValueLabel
 import com.vaadin.flow.component.html.Div
 
 class AttributeValueSmallLayout : Div() {
@@ -11,7 +12,11 @@ class AttributeValueSmallLayout : Div() {
 
     fun fill(docContainer: DocContainer) {
         clear()
-        docContainer.attributeValues.forEach { add(AttributeValueLabel(it)) }
+        if (!docContainer.tags.isNullOrEmpty()) {
+            docContainer.attributeValues.forEach {
+                attributeValueLabel(it)
+            }
+        }
     }
 
     fun clear() {
