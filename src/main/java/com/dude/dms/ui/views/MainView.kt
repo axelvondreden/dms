@@ -27,6 +27,7 @@ import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.UIDetachedException
 import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.dependency.CssImport
+import com.vaadin.flow.component.dependency.JsModule
 import com.vaadin.flow.component.dnd.DragSource
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.page.Push
@@ -41,6 +42,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
+@JsModule("@vaadin/vaadin-lumo-styles/presets/compact.js")
 @CssImport("./styles/styles.css")
 @Push
 class MainView(

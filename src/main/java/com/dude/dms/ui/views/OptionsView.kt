@@ -11,6 +11,7 @@ import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -27,8 +28,9 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
     private val options = Options.get()
 
     init {
+        alignItems = FlexComponent.Alignment.CENTER
         card {
-            setWidthFull()
+            width = "50vw"
 
             details(t("view")) {
                 isOpened = true
@@ -80,7 +82,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
         card {
-            setWidthFull()
+            width = "50vw"
 
             details(t("Popups")) {
                 isOpened = true
@@ -107,7 +109,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
         card {
-            setWidthFull()
+            width = "50vw"
 
             details(t("docs")) {
                 isOpened = true
@@ -154,7 +156,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
         card {
-            setWidthFull()
+            width = "50vw"
 
             details(t("mails")) {
                 isOpened = true
@@ -226,7 +228,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
         card {
-            setWidthFull()
+            width = "50vw"
 
             details("Storage") {
                 isOpened = true
@@ -235,7 +237,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
 
                 content {
                     formLayout {
-                        textField("Doc save path (absolute or relative to '" + Paths.get("../").toAbsolutePath() + '\'') {
+                        textField("Doc save path (absolute or relative to '${Paths.get("../").toAbsolutePath()}')") {
                             value = options.doc.savePath
                             addValueChangeListener {
                                 if (it.value.isNotEmpty()) {
@@ -263,7 +265,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
         card {
-            setWidthFull()
+            width = "50vw"
 
             details(t("tags")) {
                 isOpened = true
@@ -287,7 +289,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
             }
         }
         card {
-            setWidthFull()
+            width = "50vw"
 
             details("Update") {
                 isOpened = true

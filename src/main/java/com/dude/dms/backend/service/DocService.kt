@@ -9,6 +9,7 @@ import com.dude.dms.brain.events.EventManager
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.io.Serializable
+import java.time.LocalDate
 
 @Service
 class DocService(
@@ -19,8 +20,14 @@ class DocService(
 ) : RestoreService<Doc>(docRepository, eventManager) {
 
     data class Filter(
+            var includeAllTags: Boolean,
+            var includeAllAttributes: Boolean,
             var includedTags: Set<Tag>? = null,
+            var excludedTags: Set<Tag>? = null,
             var includedAttributes: Set<Attribute>? = null,
+            var excludedAttributes: Set<Attribute>? = null,
+            var from: LocalDate? = null,
+            var to: LocalDate? = null,
             var text: String? = null
     ) : Serializable
 
@@ -92,7 +99,17 @@ class DocService(
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
     fun findByFilter(filter: Filter, pageable: Pageable): Set<Doc> {
-        val docs = docRepository.findByFilter(filter.includedTags, filter.includedAttributes, pageable)
+        val docs = docRepository.findByFilter(
+                from = filter.from,
+                to = filter.to,
+                includeAllTags = filter.includeAllTags,
+                includeAllAttributes = filter.includeAllAttributes,
+                includedTags = filter.includedTags,
+                includedAttributes = filter.includedAttributes,
+                excludedTags = filter.excludedTags,
+                excludedAttributes = filter.excludedAttributes,
+                pageable = pageable
+        )
         if (!filter.text.isNullOrBlank()) {
             return docs.filter { it.getFullText().contains(filter.text!!, true) }.toSet()
         }

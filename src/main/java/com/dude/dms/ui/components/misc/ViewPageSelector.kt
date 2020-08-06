@@ -7,6 +7,7 @@ import com.github.mvysny.karibudsl.v10.select
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.select.Select
 
@@ -46,11 +47,12 @@ class ViewPageSelector : HorizontalLayout() {
     init {
         isPadding = false
         isSpacing = false
+        alignItems = FlexComponent.Alignment.CENTER
 
         prev = iconButton(VaadinIcon.ARROW_CIRCLE_LEFT.create()) {
             onLeftClick { prev() }
         }
-        div = div {  }
+        div = div { width = "max-content" }
         next = iconButton(VaadinIcon.ARROW_CIRCLE_RIGHT.create()) {
             onLeftClick { next() }
         }

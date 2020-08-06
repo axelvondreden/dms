@@ -18,6 +18,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.contextmenu.ContextMenu
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.progressbar.ProgressBar
@@ -52,6 +53,7 @@ class DocImportView(private val docImportService: DocImportService, private val 
 
         horizontalLayout {
             setWidthFull()
+            alignItems = FlexComponent.Alignment.START
 
             button("Upload", VaadinIcon.UPLOAD.create()) {
                 onLeftClick { DocUploadDialog().open() }
