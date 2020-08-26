@@ -1,10 +1,12 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.WordContainer
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.round
 import com.dude.dms.extensions.wordService
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.textfield.TextField
@@ -51,10 +53,17 @@ class WordEditDialog(private val wordContainer: WordContainer) : DmsDialog(t("wo
     }
 
     private fun save() {
-        if (text.isEmpty) return
+        if (text.isEmpty) {
+            LOGGER.showError(t("text.missing"), UI.getCurrent())
+            return
+        }
         val newText = text.value
         wordContainer.word.text = newText
         if (wordContainer.word.id > 0) wordService.save(wordContainer.word)
         close()
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(WordEditDialog::class.java)
     }
 }

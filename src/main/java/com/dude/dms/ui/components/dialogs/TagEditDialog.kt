@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.Tag
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.attributeSelector
 import com.dude.dms.extensions.colorPicker
@@ -9,6 +10,7 @@ import com.dude.dms.extensions.tagService
 import com.dude.dms.ui.components.tags.AttributeSelector
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.textfield.TextField
 
@@ -64,13 +66,23 @@ class TagEditDialog(private val tag: Tag) : DmsDialog(t("tag.edit"), 35) {
     }
 
     private fun save() {
-        if (name.isEmpty) return
-        if (colorPicker.isEmpty) return
+        if (name.isEmpty) {
+            LOGGER.showError(t("name.missing"), UI.getCurrent())
+            return
+        }
+        if (colorPicker.isEmpty) {
+            LOGGER.showError(t("color.missing"), UI.getCurrent())
+            return
+        }
         tag.name = name.value
         tag.color = colorPicker.value as String
         tag.attributes = attributeSelector.selectedAttributes
         tagService.save(tag)
         docService.findByTag(tag).forEach { docService.save(it) }
         close()
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(TagEditDialog::class.java)
     }
 }
