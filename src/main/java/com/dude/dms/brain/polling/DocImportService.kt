@@ -84,7 +84,7 @@ class DocImportService(
                 _progressText = "${index + 1} / $size    " + t("pdf.parse")
                 dc.pdfPages = docParser.getPdfText(dc.guid)
                 if (dc.pdfPages.isNotEmpty()) {
-                    dc.language = spellcheckers.minBy { entry -> dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { container -> container.word.text?.let { entry.value.check(it) } != null } }!!.key
+                    dc.language = spellcheckers.minByOrNull { entry -> dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { container -> container.word.text?.let { entry.value.check(it) } != null } }!!.key
                 }
                 _progressText += " > ${t("recognized.language")}: ${dc.language}"
                 _progress = (index * 4 + 1) / progressMax

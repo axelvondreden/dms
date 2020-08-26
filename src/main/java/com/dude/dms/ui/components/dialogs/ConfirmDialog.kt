@@ -1,4 +1,4 @@
-package com.dude.dms.ui.components.misc
+package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.ui.components.dialogs.DmsDialog
 import com.github.mvysny.karibudsl.v10.button

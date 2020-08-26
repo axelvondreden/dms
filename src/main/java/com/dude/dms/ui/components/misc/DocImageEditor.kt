@@ -291,9 +291,9 @@ class DocImageEditor : Div() {
                 when (mode) {
                     EditMode.EDIT -> {
                         val line = if (docContainer!!.inDB) {
-                            LineContainer(pageContainer!!.page.lines.minBy { abs(it.y - mouseY) }!!)
+                            LineContainer(pageContainer!!.page.lines.minByOrNull { abs(it.y - mouseY) }!!)
                         } else {
-                            pageContainer!!.lines.minBy { abs(it.y - mouseY) }!!
+                            pageContainer!!.lines.minByOrNull { abs(it.y - mouseY) }!!
                         }
                         val txt = docParser.getText(fileManager.getImage(docContainer!!.guid, pageContainer!!.nr), DmsOcrTextStripper.Rect(mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat()))
                         val wordContainer = WordContainer(Word(line.line, txt, mouseX.toFloat(), mouseY.toFloat(), mouseWidth.toFloat(), mouseHeight.toFloat()))

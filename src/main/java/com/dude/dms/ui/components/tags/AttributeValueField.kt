@@ -29,7 +29,7 @@ class AttributeValueField(val attributeValue: AttributeValue, imageEditor: DocIm
             setItems(attributeValueService.findAutocomplete(attributeValue.attribute))
             value = attributeValue.stringValue ?: ""
             addValueChangeListener { event ->
-                if (!event.hasValue.isEmpty() || !isRequired) {
+                if (!event.hasValue.isEmpty || !isRequired) {
                     attributeValue.stringValue = event.value
                     if (attributeValue.doc != null) attributeValueService.save(attributeValue)
                 }
@@ -43,7 +43,7 @@ class AttributeValueField(val attributeValue: AttributeValue, imageEditor: DocIm
             step = 1.0
             value = attributeValue.intValue?.toDouble()
             addValueChangeListener { event ->
-                if (!event.hasValue.isEmpty() || !isRequired) {
+                if (!event.hasValue.isEmpty || !isRequired) {
                     attributeValue.intValue = event.value.toInt()
                     if (attributeValue.doc != null) attributeValueService.save(attributeValue)
                 }
@@ -56,7 +56,7 @@ class AttributeValueField(val attributeValue: AttributeValue, imageEditor: DocIm
             step = 0.01
             value = attributeValue.floatValue?.toDouble()?.round(2)
             addValueChangeListener { event ->
-                if (!event.hasValue.isEmpty() || !isRequired) {
+                if (!event.hasValue.isEmpty || !isRequired) {
                     attributeValue.floatValue = event.value.toFloat()
                     if (attributeValue.doc != null) attributeValueService.save(attributeValue)
                 }
@@ -68,7 +68,7 @@ class AttributeValueField(val attributeValue: AttributeValue, imageEditor: DocIm
         get() = DatePicker(label).apply {
             attributeValue.dateValue?.let { value = it }
             addValueChangeListener { event ->
-                if (!event.hasValue.isEmpty() || !isRequired) {
+                if (!event.hasValue.isEmpty || !isRequired) {
                     attributeValue.dateValue = event.value
                     if (attributeValue.doc != null) attributeValueService.save(attributeValue)
                 }

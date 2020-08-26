@@ -58,7 +58,7 @@ class DocParser(
                         else -> true
                     }
                 }
-                val value = filtered.groupBy { it.text }.maxBy { it.value.size }?.key
+                val value = filtered.groupBy { it.text }.maxByOrNull { it.value.size }?.key
                 if (value != null) {
                     LOGGER.info("Found value: $value")
                     val av = AttributeValue(doc.doc, attr)
