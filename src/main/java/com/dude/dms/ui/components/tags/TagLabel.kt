@@ -16,7 +16,7 @@ class TagLabel(val tag: Tag) : Div() {
             style["backgroundColor"] = tag.color
             // TODO: save colors consistently as hex, then ctx can be removed
             val span = ElementFactory.createSpan(tag.name).apply { style["display"] = "none" }
-            element.appendChild(span)
+            this@TagLabel.element.appendChild(span)
             span.executeJs("" +
                     "var ctx = document.createElement('canvas').getContext('2d');" +
                     "ctx.fillStyle = '${tag.color}';" +
@@ -25,7 +25,7 @@ class TagLabel(val tag: Tag) : Div() {
                     "var r = parseInt(color.slice(0, 2), 16), g = parseInt(color.slice(2, 4), 16), b = parseInt(color.slice(4, 6), 16);" +
                     "return (r * 0.299 + g * 0.487 + b * 0.314) > 156 ? '#000000' : '#FFFFFF';"
             ).then {
-                element.setProperty("style", "color: ${it.asString()}")
+                this@TagLabel.element.setProperty("style", "color: ${it.asString()}")
             }
         }
 

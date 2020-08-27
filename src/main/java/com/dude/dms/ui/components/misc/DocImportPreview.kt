@@ -63,13 +63,16 @@ class DocImportPreview : VerticalLayout() {
                     pageSelector = docPageSelector { }
                     horizontalLayout(isPadding = false, isSpacing = false) {
                         iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                            tooltip(t("zoom.out"))
                             onLeftClick { imageEditor.shrink(zoomButton) }
                         }
                         zoomButton = button("100%") {
+                            tooltip(t("zoom.reset"))
                             onLeftClick { imageEditor.resetZoom(it.source) }
                             style["margin"] = "auto 5px"
                         }
                         iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                            tooltip(t("zoom.in"))
                             onLeftClick { imageEditor.grow(zoomButton) }
                         }
                     }
@@ -97,14 +100,17 @@ class DocImportPreview : VerticalLayout() {
                     modeSelector = modeSelector { }
                     horizontalLayout(isPadding = false, isSpacing = false) {
                         date = datePicker {
+                            tooltip(t("doc.date"))
                             addValueChangeListener { event -> event.value?.let { docContainer?.date = it } }
                             locale = Locale.forLanguageTag(Options.get().view.locale)
                         }
                         datePick = iconButton(VaadinIcon.CROSSHAIRS.create()) {
+                            tooltip(t("doc.date.pick"))
                             onLeftClick { pickDate() }
                         }
                     }
                     doneButton = button(t("done")) {
+                        tooltip(t("doc.done"))
                         onLeftClick { if (infoLayout.validate()) onDone?.invoke(docContainer!!) }
                         addThemeVariants(ButtonVariant.LUMO_PRIMARY)
                         style["margin"] = "auto"
@@ -164,10 +170,10 @@ class DocImportPreview : VerticalLayout() {
 
         pdfButton.text = "PDF $pdfCount / $pdfSpelling %"
         Tooltips.getCurrent().removeTooltip(pdfButton)
-        Tooltips.getCurrent().setTooltip(pdfButton, "$pdfCount ${t("words")}\n $pdfSpelling % ${t("spelling")}")
+        pdfButton.tooltip("$pdfCount ${t("words")}\n $pdfSpelling % ${t("spelling")}")
         ocrButton.text = "OCR $ocrCount / $ocrSpelling %"
         Tooltips.getCurrent().removeTooltip(ocrButton)
-        Tooltips.getCurrent().setTooltip(ocrButton, "${t("language")}: ${docContainer.language}\n$ocrCount ${t("words")}\n $ocrSpelling % ${t("spelling")}")
+        ocrButton.tooltip("${t("language")}: ${docContainer.language}\n$ocrCount ${t("words")}\n $ocrSpelling % ${t("spelling")}")
 
         if (docContainer.useOcrTxt) {
             ocrButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY)

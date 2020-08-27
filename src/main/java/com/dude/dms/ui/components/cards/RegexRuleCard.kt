@@ -28,7 +28,6 @@ class RegexRuleCard(rule: RegexRule) : RippleClickableCard() {
 
         horizontalLayout(isPadding = true) {
             setWidthFull()
-            minHeight = "10vh"
             alignItems = FlexComponent.Alignment.CENTER
 
             button("Run", VaadinIcon.PLAY.create()) {

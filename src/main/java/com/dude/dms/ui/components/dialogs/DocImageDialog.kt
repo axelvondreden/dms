@@ -15,7 +15,6 @@ import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
 class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.details")) {
@@ -63,7 +62,7 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
                 onLeftClick { imageEditor.grow(zoomButton) }
             }
             iconButton(VaadinIcon.AREA_SELECT.create()) {
-                Tooltips.getCurrent().setTooltip(this, t("words.preview.show"))
+                tooltip(t("words.preview.show"))
                 addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
                 onLeftClick {
                     val options = Options.get()

@@ -1,5 +1,7 @@
 package com.dude.dms.ui.components.misc
 
+import com.dude.dms.brain.t
+import com.dude.dms.extensions.tooltip
 import com.github.mvysny.karibudsl.v10.iconButton
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.github.mvysny.karibudsl.v10.select
@@ -36,9 +38,11 @@ class DocPageSelector(max: Int = 1) : HorizontalLayout() {
         isSpacing = false
 
         prev = iconButton(VaadinIcon.ARROW_CIRCLE_LEFT.create()) {
+            tooltip(t("page.prev"))
             onLeftClick { prev() }
         }
         current = select {
+            tooltip(t("page.select"))
             setItems(*(1..max).toList().toTypedArray())
             value = page
             width = "80px"
@@ -47,6 +51,7 @@ class DocPageSelector(max: Int = 1) : HorizontalLayout() {
             addValueChangeListener { if (it.isFromClient) page = it.value }
         }
         next = iconButton(VaadinIcon.ARROW_CIRCLE_RIGHT.create()) {
+            tooltip(t("page.next"))
             onLeftClick { next() }
         }
     }

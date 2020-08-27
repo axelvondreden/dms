@@ -15,7 +15,6 @@ class MailFilterCard(mailFilter: MailFilter) : RippleClickableCard() {
 
         horizontalLayout(isPadding = true) {
             setWidthFull()
-            minHeight = "10vh"
             alignItems = FlexComponent.Alignment.CENTER
 
             label(mailFilter.folder)

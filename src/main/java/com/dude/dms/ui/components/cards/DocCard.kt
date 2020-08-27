@@ -23,7 +23,6 @@ import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import com.vaadin.flow.server.VaadinSession
-import dev.mett.vaadin.tooltip.Tooltips
 
 
 class DocCard(val docContainer: DocContainer) : ClickableCard() {
@@ -65,7 +64,7 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
 
             secondaryLabel(docContainer.date?.convert())
             iconButton(VaadinIcon.ELLIPSIS_V.create()) {
-                Tooltips.getCurrent().setTooltip(this, t("edit"))
+                tooltip(t("edit"))
                 ContextMenu(this).apply { isOpenOnClick = true }.fill()
             }
         }

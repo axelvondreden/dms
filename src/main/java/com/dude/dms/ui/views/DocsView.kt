@@ -12,10 +12,7 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.docCard
-import com.dude.dms.extensions.multiSelectComboBox
-import com.dude.dms.extensions.radioButtonGroup
-import com.dude.dms.extensions.viewPageSelector
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.ViewPageSelector
@@ -117,9 +114,11 @@ class DocsView(
                     addValueChangeListener { fill(viewUI) }
                 }
                 iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
+                    tooltip(t("zoom.out"))
                     onLeftClick { shrink() }
                 }
                 iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
+                    tooltip(t("zoom.in"))
                     onLeftClick { grow() }
                 }
                 pageSelector = viewPageSelector()

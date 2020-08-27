@@ -9,10 +9,7 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DmsOcrTextStripper
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.docParser
-import com.dude.dms.extensions.fileManager
-import com.dude.dms.extensions.lineService
-import com.dude.dms.extensions.wordService
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.EditMode
 import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.helger.commons.io.file.FileHelper
@@ -26,7 +23,6 @@ import com.vaadin.flow.dom.DomEvent
 import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
-import dev.mett.vaadin.tooltip.Tooltips
 import kotlin.math.abs
 import kotlin.streams.toList
 
@@ -173,13 +169,13 @@ class DocImageEditor : Div() {
             ocrBtn.addClickListener {
                 word.text = docParser.getText(pageContainer!!.image!!, DmsOcrTextStripper.Rect(word.x, word.y, word.width, word.height))
                 if (docContainer?.inDB == true) wordService.save(word)
-                if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, word.text) } else Tooltips.getCurrent().setTooltip(wrapper, word.text)
+                if (ui != null) ui.access { wrapper.tooltip(word.text) } else wrapper.tooltip(word.text)
                 onTextChange?.invoke(docContainer!!)
             }
             dlg.addOpenedChangeListener { event ->
                 if (!event.isOpened) {
-                    if (ui != null) ui.access { Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text) }
-                    else Tooltips.getCurrent().setTooltip(wrapper, (if (word.id > 0) wordService.load(word.id) else word)!!.text)
+                    if (ui != null) ui.access { wrapper.tooltip((if (word.id > 0) wordService.load(word.id) else word)!!.text) }
+                    else wrapper.tooltip((if (word.id > 0) wordService.load(word.id) else word)!!.text)
                     wordContainer.spelling = wordContainer.word.text?.let { Spellchecker(docContainer!!.language).check(it) }
                     if (wordContainer.spelling != null) {
                         wrapper.addClassName("word-wrapper-error")
@@ -207,11 +203,9 @@ class DocImageEditor : Div() {
     private fun addWrappersToView(wrappers: Set<WordWrapperData>) {
         element.appendChild(*wrappers.map { it.wrapper.element }.toTypedArray())
         wrappers.forEach {
-            Tooltips.getCurrent().apply {
-                setTooltip(it.wrapper, it.word.text)
-                setTooltip(it.delBtn, t("delete"))
-                setTooltip(it.ocrBtn, t("ocr.run"))
-            }
+            it.wrapper.tooltip(it.word.text)
+            it.delBtn.tooltip(t("delete"))
+            it.ocrBtn.tooltip(t("ocr.run"))
         }
     }
 

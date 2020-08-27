@@ -1,5 +1,7 @@
 package com.dude.dms.ui.components.misc
 
+import com.dude.dms.brain.t
+import com.dude.dms.extensions.tooltip
 import com.github.mvysny.karibudsl.v10.div
 import com.github.mvysny.karibudsl.v10.iconButton
 import com.github.mvysny.karibudsl.v10.onLeftClick
@@ -50,13 +52,16 @@ class ViewPageSelector : HorizontalLayout() {
         alignItems = FlexComponent.Alignment.CENTER
 
         prev = iconButton(VaadinIcon.ARROW_CIRCLE_LEFT.create()) {
+            tooltip(t("page.prev"))
             onLeftClick { prev() }
         }
         div = div { width = "max-content" }
         next = iconButton(VaadinIcon.ARROW_CIRCLE_RIGHT.create()) {
+            tooltip(t("page.next"))
             onLeftClick { next() }
         }
         pageSize = select {
+            tooltip(t("page.docs"))
             setItems(10, 20, 30, 50, 100, 200)
             value = 30
             width = "100px"
