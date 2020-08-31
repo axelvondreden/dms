@@ -1,6 +1,5 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.ui.components.dialogs.DmsDialog
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.ClickEvent

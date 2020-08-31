@@ -3,7 +3,6 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.confirmDialog
 import com.dude.dms.extensions.plainTextRuleService
 import com.dude.dms.extensions.tagSelector
 import com.dude.dms.ui.components.tags.TagSelector
@@ -55,10 +54,10 @@ class PlainTextRuleEditDialog(private val plainTextRule: PlainTextRule) : DmsDia
     }
 
     private fun delete() {
-        confirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, {
+        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
             plainTextRuleService.delete(plainTextRule)
             close()
-        }).open()
+        }.open()
     }
 
     private fun save() {

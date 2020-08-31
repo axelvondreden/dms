@@ -117,15 +117,6 @@ fun HasComponents.docDeleteDialog(docContainer: DocContainer, block: DocDeleteDi
 
 fun HasComponents.docImportPreview(block: DocImportPreview.() -> Unit = {}) = init(DocImportPreview(), block)
 
-fun HasComponents.confirmDialog(
-        message: String,
-        confirmText: String,
-        icon: VaadinIcon,
-        theme: ButtonVariant,
-        event: (ClickEvent<Button>) -> Unit,
-        block: ConfirmDialog.() -> Unit = {}
-) = init(ConfirmDialog(message, confirmText, icon, theme, event), block)
-
 fun HasComponents.card(block: Card.() -> Unit = {}) = init(Card(), block)
 
 fun HasComponents.secondaryLabel(text: String?, block: SecondaryLabel.() -> Unit = {}) = init(SecondaryLabel(text), block)
