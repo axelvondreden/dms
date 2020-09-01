@@ -9,6 +9,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.ConditionCard
+import com.dude.dms.ui.components.dialogs.TagEditDialog
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
@@ -82,8 +83,12 @@ class AttributeView(
     }
 
     private fun save() {
-        if (nameTextField.isEmpty || attribute!!.condition?.isValid() != true) {
-            LOGGER.showInfo("Invalid", UI.getCurrent())
+        if (nameTextField.isEmpty) {
+            LOGGER.showError(t("name.missing"), UI.getCurrent())
+            return
+        }
+        if (attribute?.condition != null && !attribute!!.condition!!.isValid()) {
+            LOGGER.showError(t("condition.invalid"), UI.getCurrent())
             return
         }
         attribute!!.name = nameTextField.value
