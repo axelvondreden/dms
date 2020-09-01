@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.*
@@ -9,6 +10,7 @@ import com.dude.dms.ui.components.misc.DocInfoLayout
 import com.dude.dms.ui.components.misc.DocPageSelector
 import com.dude.dms.ui.components.misc.ModeSelector
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.datepicker.DatePicker
@@ -32,6 +34,8 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
     private lateinit var datePick: Button
 
     private lateinit var date: DatePicker
+
+    private lateinit var docInfoLayout: DocInfoLayout
 
     init {
         horizontalLayout {
@@ -87,9 +91,17 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
                 imageEditor = docImageEditor()
             }
             addToPrimary(editContainer)
-            addToSecondary(DocInfoLayout(imageEditor).apply { fill(docContainer) })
+            docInfoLayout = DocInfoLayout(imageEditor).apply { fill(docContainer) }
+            addToSecondary(docInfoLayout)
         }
 
+        addDialogCloseActionListener {
+            if (docInfoLayout.validate()) {
+                close()
+            } else {
+                LOGGER.showInfo(t("attribute.value.missing"), UI.getCurrent())
+            }
+        }
         addOpenedChangeListener {
             if (!it.isOpened) {
                 docContainer.doc?.let(docService::save)
@@ -105,5 +117,9 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
             datePick.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
         }
         datePick.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+    }
+
+    companion object {
+        private val LOGGER = DmsLogger.getLogger(DocImageDialog::class.java)
     }
 }
