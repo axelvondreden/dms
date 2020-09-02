@@ -32,7 +32,9 @@ class TagDeleteDialog(private val tag: Tag) : DmsDialog(t("tag.delete"), 20) {
                 isEnabled = false
                 value = true
             }
-            docCheck = checkBox("${t("docs")} (${docService.countByTag(tag)})")
+            docCheck = checkBox("${t("docs")} (${docService.countByTag(tag)})") {
+                isEnabled = false
+            }
             mailCheck = checkBox("${t("mails")} (${mailService.countByTag(tag)})")
             attributeCheck = checkBox("${t("attributes")} (${tag.attributes.size})")
             button(t("delete"), VaadinIcon.TRASH.create()) {
@@ -45,10 +47,10 @@ class TagDeleteDialog(private val tag: Tag) : DmsDialog(t("tag.delete"), 20) {
 
     private fun delete() {
         if (docCheck.value) {
-            docService.findByTag(tag).forEach(docService::delete)
+            docService.findByTag(tag).forEach(docService::softDelete)
         }
         if (mailCheck.value) {
-            mailService.findByTag(tag).forEach(mailService::delete)
+            mailService.findByTag(tag).forEach(mailService::softDelete)
         }
         if (attributeCheck.value) {
             tag.attributes.forEach(attributeService::delete)

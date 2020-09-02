@@ -81,7 +81,7 @@ class MainView(
     }
 
     private fun buildAppMenu(): Component {
-        val importDocEntry = LeftNavigationItem(t("doc.import"), VaadinIcon.PLUS_CIRCLE.create(), DocImportView::class.java)
+        val importDocEntry = LeftNavigationItem(t("import"), VaadinIcon.PLUS_CIRCLE.create(), DocImportView::class.java)
         importsBadge = DefaultBadgeHolder(docImportService.count).apply { bind(importDocEntry.badge) }
         val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
