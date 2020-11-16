@@ -180,3 +180,6 @@ fun HasComponents.radioButtonGroup(block: RadioButtonGroup<String>.() -> Unit = 
 fun <T> T.tooltip(text: String?) where T : Component, T : HasStyle {
     Tooltips.getCurrent().setTooltip(this, text)
 }
+
+@VaadinDsl
+fun HasComponents.searchBar(block: SearchBar.() -> Unit = {}) = init(SearchBar(), block)

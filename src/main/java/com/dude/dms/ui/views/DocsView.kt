@@ -11,10 +11,8 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.extensions.docCard
-import com.dude.dms.extensions.seachBar
+import com.dude.dms.extensions.searchBar
 import com.dude.dms.extensions.viewPageSelector
-import com.dude.dms.brain.t
-import com.dude.dms.extensions.*
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.SearchBar
@@ -63,7 +61,7 @@ class DocsView(
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
 
         horizontalLayout {
-            searchBar = seachBar {
+            searchBar = searchBar {
                 onChange = { fill(viewUI) }
             }
         }
