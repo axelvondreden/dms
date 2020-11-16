@@ -58,6 +58,7 @@ class ViewPageSelector : HorizontalLayout() {
             tooltip(t("page.next"))
             onLeftClick { next() }
         }
+        div { width = "2em" }
         label("${t("items.page")}:")
         pageSize = select {
             tooltip(t("page.docs"))
