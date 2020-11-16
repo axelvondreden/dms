@@ -169,7 +169,8 @@ class DocsView(
         if (!t.isNullOrEmpty()) {
             val parts = t.split(":").toTypedArray()
             if ("tag".equals(parts[0], ignoreCase = true)) {
-                searchBar.tagIncludeFilter.value = setOf(tagService.findByName(parts[1]))
+                //TODO
+                //searchBar.value = tagService.findByName(parts[1])
             }
         }
     }

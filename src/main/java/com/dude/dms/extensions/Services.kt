@@ -8,6 +8,7 @@ import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.brain.parsing.RegexRuleValidator
+import com.dude.dms.brain.parsing.SearchParser
 import com.dude.dms.updater.UpdateChecker
 
 val attributeService by lazy { SpringContext.getBean(AttributeService::class.java)!! }
@@ -26,6 +27,7 @@ val tagService by lazy { SpringContext.getBean(TagService::class.java)!! }
 val wordService by lazy { SpringContext.getBean(WordService::class.java)!! }
 
 val docParser by lazy { SpringContext.getBean(DocParser::class.java)!! }
+val searchParser by lazy { SpringContext.getBean(SearchParser::class.java)!! }
 val eventManager by lazy { SpringContext.getBean(EventManager::class.java)!! }
 val fileManager by lazy { SpringContext.getBean(FileManager::class.java)!! }
 val mailManager by lazy { SpringContext.getBean(MailManager::class.java)!! }
