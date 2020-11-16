@@ -2,10 +2,7 @@ package com.dude.dms.ui.components.misc
 
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.tooltip
-import com.github.mvysny.karibudsl.v10.div
-import com.github.mvysny.karibudsl.v10.iconButton
-import com.github.mvysny.karibudsl.v10.onLeftClick
-import com.github.mvysny.karibudsl.v10.select
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -51,6 +48,7 @@ class ViewPageSelector : HorizontalLayout() {
         isSpacing = false
         alignItems = FlexComponent.Alignment.CENTER
 
+        label("${t("page")}:")
         prev = iconButton(VaadinIcon.ARROW_CIRCLE_LEFT.create()) {
             tooltip(t("page.prev"))
             onLeftClick { prev() }
@@ -60,6 +58,7 @@ class ViewPageSelector : HorizontalLayout() {
             tooltip(t("page.next"))
             onLeftClick { next() }
         }
+        label("${t("items.page")}:")
         pageSize = select {
             tooltip(t("page.docs"))
             setItems(10, 20, 30, 50, 100, 200)

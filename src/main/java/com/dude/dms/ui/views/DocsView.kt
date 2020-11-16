@@ -10,6 +10,7 @@ import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
+import com.dude.dms.brain.t
 import com.dude.dms.extensions.docCard
 import com.dude.dms.extensions.searchBar
 import com.dude.dms.extensions.viewPageSelector
@@ -17,17 +18,16 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.SearchBar
 import com.dude.dms.ui.components.misc.ViewPageSelector
-import com.github.mvysny.karibudsl.v10.div
-import com.github.mvysny.karibudsl.v10.horizontalLayout
-import com.github.mvysny.karibudsl.v10.iconButton
-import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.streams.toList
@@ -53,6 +53,8 @@ class DocsView(
 
     private lateinit var searchBar: SearchBar
 
+    private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
+
     init {
         eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
         eventManager.register(this, Doc::class, EventType.UPDATE) { updateDoc(it, viewUI) }
@@ -76,16 +78,27 @@ class DocsView(
             style["position"] = "absolute"
             style["bottom"] = "0"
             style["paddingBottom"] = "4px"
+            style["paddingTop"] = "4px"
             style["borderTop"] = "1px solid var(--lumo-contrast-10pct)"
+
+            label("${t("sort")}:")
+            sortFilter = comboBox {
+                setItems(sorts)
+                isPreventInvalidInput = true
+                isAllowCustomValue = false
+                value = sorts[0]
+                setItemLabelGenerator { it.first }
+                addValueChangeListener { scheduleFill(viewUI) }
+            }
+            div { width = "2em" }
+            label("${t("zoom")}:")
             iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
                 onLeftClick { shrink() }
             }
             iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
                 onLeftClick { grow() }
             }
-            div {
-                width = "2em"
-            }
+            div { width = "2em" }
             pageSelector = viewPageSelector()
         }
 
@@ -139,7 +152,7 @@ class DocsView(
     }
 
     private fun fill(ui: UI) {
-        val docs = docService.findByFilter(searchBar.filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, searchBar.sort))
+        val docs = docService.findByFilter(searchBar.filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second))
         ui.access {
             itemContainer.removeAll()
             pageSelector.items = docs.size
@@ -159,5 +172,14 @@ class DocsView(
                 searchBar.tagIncludeFilter.value = setOf(tagService.findByName(parts[1]))
             }
         }
+    }
+
+    companion object {
+        private val sorts = listOf(
+                "${t("date")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "documentDate"),
+                "${t("date")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "documentDate"),
+                "${t("created")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "insertTime"),
+                "${t("created")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "insertTime")
+        )
     }
 }

@@ -9,7 +9,6 @@ import com.dude.dms.extensions.multiSelectComboBox
 import com.dude.dms.extensions.radioButtonGroup
 import com.dude.dms.extensions.tagService
 import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -17,17 +16,9 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
-import org.springframework.data.domain.Sort
 import org.vaadin.gatanaso.MultiselectComboBox
 
 class SearchBar : HorizontalLayout() {
-
-    private val sorts = listOf(
-            "${t("date")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "documentDate"),
-            "${t("date")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "documentDate"),
-            "${t("created")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "insertTime"),
-            "${t("created")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "insertTime")
-    )
 
     lateinit var tagIncludeFilter: MultiselectComboBox<Tag>
     lateinit var tagIncludeVariant: RadioButtonGroup<String>
@@ -41,7 +32,6 @@ class SearchBar : HorizontalLayout() {
     lateinit var fromFilter: DatePicker
     lateinit var toFilter: DatePicker
 
-    private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
     var onChange: (() -> Unit)? = null
 
     init {
@@ -68,14 +58,6 @@ class SearchBar : HorizontalLayout() {
                 placeholder = t("to")
                 addValueChangeListener { onChange?.invoke()}
                 isClearButtonVisible = true
-            }
-            sortFilter = comboBox {
-                setItems(sorts)
-                isPreventInvalidInput = true
-                isAllowCustomValue = false
-                value = sorts[0]
-                setItemLabelGenerator { it.first }
-                addValueChangeListener { onChange?.invoke()}
             }
         }
         details(t("search.advanced")) {
@@ -147,8 +129,6 @@ class SearchBar : HorizontalLayout() {
             }
         }
     }
-
-    val sort get() = sortFilter.value.second
 
     val filter get() = DocService.Filter(
             includeAllTags = t("all") == tagIncludeVariant.value,
