@@ -28,7 +28,6 @@ class PlainTextRuleCard(rule: PlainTextRule) : RippleClickableCard() {
 
         horizontalLayout(isPadding = true) {
             setWidthFull()
-            minHeight = "10vh"
             alignItems = FlexComponent.Alignment.CENTER
 
             button(t("run"), VaadinIcon.PLAY.create()) {

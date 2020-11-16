@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.t
 import com.dude.dms.extensions.attributeValueField
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.UI
@@ -29,7 +30,7 @@ class AttributeValueLayout(private val imageEditor: DocImageEditor? = null) : Di
     fun validate(silent: Boolean = false): Boolean {
         for (field in fields) {
             if (!field.validate()) {
-                if (!silent) LOGGER.showError("Attribute '" + field.label + " is required.", UI.getCurrent())
+                if (!silent) LOGGER.showError(t("attribute.value.missing", field.label), UI.getCurrent())
                 return false
             }
         }

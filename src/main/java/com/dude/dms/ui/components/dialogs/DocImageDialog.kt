@@ -15,7 +15,6 @@ import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import dev.mett.vaadin.tooltip.Tooltips
 import java.util.*
 
 class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.details")) {
@@ -33,6 +32,8 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
     private lateinit var datePick: Button
 
     private lateinit var date: DatePicker
+
+    private lateinit var docInfoLayout: DocInfoLayout
 
     init {
         horizontalLayout {
@@ -63,7 +64,7 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
                 onLeftClick { imageEditor.grow(zoomButton) }
             }
             iconButton(VaadinIcon.AREA_SELECT.create()) {
-                Tooltips.getCurrent().setTooltip(this, t("words.preview.show"))
+                tooltip(t("words.preview.show"))
                 addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
                 onLeftClick {
                     val options = Options.get()
@@ -88,9 +89,15 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
                 imageEditor = docImageEditor()
             }
             addToPrimary(editContainer)
-            addToSecondary(DocInfoLayout(imageEditor).apply { fill(docContainer) })
+            docInfoLayout = DocInfoLayout(imageEditor).apply { fill(docContainer) }
+            addToSecondary(docInfoLayout)
         }
 
+        addDialogCloseActionListener {
+            if (docInfoLayout.validate()) {
+                close()
+            }
+        }
         addOpenedChangeListener {
             if (!it.isOpened) {
                 docContainer.doc?.let(docService::save)

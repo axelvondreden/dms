@@ -13,6 +13,8 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.extensions.docCard
 import com.dude.dms.extensions.seachBar
 import com.dude.dms.extensions.viewPageSelector
+import com.dude.dms.brain.t
+import com.dude.dms.extensions.*
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.SearchBar

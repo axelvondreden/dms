@@ -3,7 +3,6 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.confirmDialog
 import com.dude.dms.extensions.mailFilterService
 import com.dude.dms.extensions.mailManager
 import com.github.mvysny.karibudsl.v10.button
@@ -56,10 +55,10 @@ class MailFilterEditDialog(private val mailFilter: MailFilter) : DmsDialog("", 7
     }
 
     private fun delete() {
-        confirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR, {
+        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
             mailFilterService.delete(mailFilter)
             close()
-        }).open()
+        }.open()
     }
 
     private fun save() {

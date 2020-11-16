@@ -41,7 +41,7 @@ class AttributeDeleteDialog(private val attribute: Attribute) : DmsDialog(t("att
 
     private fun delete() {
         if (docCheck.value) {
-            docService.findByAttribute(attribute).forEach(docService::delete)
+            docService.findByAttribute(attribute).forEach(docService::softDelete)
         }
         if (tagCheck.value) {
             tagService.findByAttribute(attribute).forEach(tagService::delete)

@@ -6,6 +6,7 @@ import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.docImportCard
 import com.dude.dms.extensions.progressBar
+import com.dude.dms.extensions.tooltip
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocImportCard
 import com.dude.dms.ui.components.dialogs.DocUploadDialog
@@ -25,7 +26,6 @@ import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.splitlayout.SplitLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
-import dev.mett.vaadin.tooltip.Tooltips
 import kotlin.streams.toList
 
 
@@ -67,7 +67,7 @@ class DocImportView(private val docImportService: DocImportService, private val 
             button(t("rules.rerun"), VaadinIcon.MAGIC.create()) {
                 onLeftClick { rerunRules() }
                 width = "250px"
-                Tooltips.getCurrent().setTooltip(this, t("rules.rerun.tooltip"))
+                tooltip(t("rules.rerun.tooltip"))
             }
             verticalLayout(isPadding = false, isSpacing = false) {
                 setWidthFull()

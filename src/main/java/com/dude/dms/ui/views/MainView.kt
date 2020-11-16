@@ -12,6 +12,7 @@ import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
+import com.dude.dms.extensions.tooltip
 import com.dude.dms.ui.components.dialogs.*
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
@@ -36,7 +37,6 @@ import com.vaadin.flow.router.AfterNavigationObserver
 import com.vaadin.flow.server.InitialPageSettings
 import com.vaadin.flow.server.PageConfigurator
 import com.vaadin.flow.theme.lumo.Lumo
-import dev.mett.vaadin.tooltip.Tooltips
 import org.springframework.beans.factory.annotation.Value
 import java.util.*
 import kotlin.collections.HashMap
@@ -81,7 +81,7 @@ class MainView(
     }
 
     private fun buildAppMenu(): Component {
-        val importDocEntry = LeftNavigationItem(t("doc.import"), VaadinIcon.PLUS_CIRCLE.create(), DocImportView::class.java)
+        val importDocEntry = LeftNavigationItem(t("import"), VaadinIcon.PLUS_CIRCLE.create(), DocImportView::class.java)
         importsBadge = DefaultBadgeHolder(docImportService.count).apply { bind(importDocEntry.badge) }
         val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
@@ -112,7 +112,7 @@ class MainView(
             val entry = LeftClickableItem(attribute.name, VaadinIcon.TEXT_LABEL.create()) { }
             val tags = tagService.findByAttribute(attribute).joinToString("\n") { it.name }
             if (tags.isNotEmpty()) {
-                Tooltips.getCurrent().setTooltip(entry, "${t("tags")}:\n$tags")
+                entry.tooltip("${t("tags")}:\n$tags")
             }
             attributeEntries.add(entry)
             ContextMenu().apply {
@@ -139,7 +139,7 @@ class MainView(
             fillBadgeCount(tag)
             val attrs = tag.attributes.joinToString("\n") { it.name }
             if (attrs.isNotEmpty()) {
-                Tooltips.getCurrent().setTooltip(entry, "${t("attributes")}:\n$attrs")
+                entry.tooltip("${t("attributes")}:\n$attrs")
             }
             tagEntries.add(entry)
             ContextMenu().apply {

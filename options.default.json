@@ -33,7 +33,8 @@
       "port": 21
     },
     "backupMethod": "ftp",
-    "maxUploadFileSize": 10
+    "maxUploadFileSize": 10,
+    "offlineLinkLocation": ""
   },
   "tag": {
     "automaticTags": [],

@@ -26,7 +26,10 @@ class AttributeValueField(val attributeValue: AttributeValue, imageEditor: DocIm
     private val textField
         get() = ComboBox<String>(label).apply {
             isAllowCustomValue = true
-            setItems(attributeValueService.findAutocomplete(attributeValue.attribute))
+            val items = attributeValueService.findAutocomplete(attributeValue.attribute)
+            if (items.isNotEmpty()) {
+                setItems()
+            }
             value = attributeValue.stringValue ?: ""
             addValueChangeListener { event ->
                 if (!event.hasValue.isEmpty || !isRequired) {

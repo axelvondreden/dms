@@ -1,5 +1,6 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.mail.MailManager
@@ -16,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.Lumo
+import mslinks.ShellLink
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -23,7 +25,7 @@ import javax.mail.MessagingException
 
 @Route(value = Const.PAGE_OPTIONS, layout = MainView::class)
 @PageTitle("Options")
-class OptionsView(private val tagService: TagService, private val mailManager: MailManager) : VerticalLayout() {
+class OptionsView(private val tagService: TagService, private val docService: DocService, private val mailManager: MailManager) : VerticalLayout() {
 
     private val options = Options.get()
 
@@ -230,14 +232,14 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
         card {
             width = "50vw"
 
-            details("Storage") {
+            details(t("storage")) {
                 isOpened = true
                 style["width"] = "100%"
                 style["padding"] = "5px"
 
                 content {
                     formLayout {
-                        textField("Doc save path (absolute or relative to '${Paths.get("../").toAbsolutePath()}')") {
+                        textField(t("doc.save.path", Paths.get("../").toAbsolutePath())) {
                             value = options.doc.savePath
                             addValueChangeListener {
                                 if (it.value.isNotEmpty()) {
@@ -246,17 +248,56 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
                                         options.doc.savePath = it.value
                                         save()
                                     } else {
-                                        LOGGER.showError("Directory " + it.value + " does not exist.", UI.getCurrent())
+                                        LOGGER.showError(t("dir.missing", it.value), UI.getCurrent())
                                     }
                                 }
                             }
                         }
-                        integerField("Maximum upload file size (MB)") {
+                        integerField(t("upload.max.size")) {
                             value = options.storage.maxUploadFileSize
                             addValueChangeListener {
                                 if (it.value != null && it.value > 0) {
                                     options.storage.maxUploadFileSize = it.value
                                     save()
+                                }
+                            }
+                        }
+                        textField(t("doc.offline.path", Paths.get("../").toAbsolutePath())) {
+                            value = options.storage.offlineLinkLocation
+                            addValueChangeListener {
+                                if (it.value.isNotEmpty()) {
+                                    val dir = File(it.value)
+                                    if (dir.exists() && dir.isDirectory) {
+                                        options.storage.offlineLinkLocation = it.value
+                                        save()
+                                    } else {
+                                        LOGGER.showError(t("dir.missing", it.value), UI.getCurrent())
+                                    }
+                                }
+                            }
+                        }
+                        button(t("create.now")) {
+                            onLeftClick {
+                                if (!options.storage.offlineLinkLocation.isBlank()) {
+                                    val docs = docService.findAll()
+                                    val root = File(options.storage.offlineLinkLocation)
+                                    val docPath = options.doc.savePath
+                                    for (doc in docs) {
+                                        if (doc.tags.isNullOrEmpty()) {
+                                            ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(root.absolutePath, doc.guid + ".lnk").toString())
+                                        } else {
+                                            val tagOrders = permute(doc.tags.toList())
+                                            for (order in tagOrders) {
+                                                var path = root
+                                                for (tag in order) {
+                                                    path = File(path, tag.name)
+                                                    path.mkdir()
+                                                }
+                                                ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(path.absolutePath, doc.guid + ".lnk").toString())
+                                            }
+                                        }
+                                    }
+                                    LOGGER.showInfo(t("done"), UI.getCurrent())
                                 }
                             }
                         }
@@ -274,10 +315,12 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
 
                 content {
                     formLayout {
+                        setWidthFull()
                         multiSelectListBox<String> {
+                            setWidthFull()
                             val entries = tagService.findAll().map { it.name }
                             setItems(entries)
-                            addComponentAsFirst(Text("Automatic Tags"))
+                            addComponentAsFirst(Text(t("tags.automatic")))
                             select(options.tag.automaticTags.filter { it in entries })
                             addSelectionListener {
                                 options.tag.automaticTags = it.allSelectedItems.toList()
@@ -298,7 +341,7 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
 
                 content {
                     formLayout {
-                        integerField("Update check interval (minutes)") {
+                        integerField(t("update.interval")) {
                             value = options.update.checkInterval
                             addValueChangeListener {
                                 if (it.value != null && it.value > 0) {
@@ -311,6 +354,19 @@ class OptionsView(private val tagService: TagService, private val mailManager: M
                 }
             }
         }
+    }
+
+    private fun <T> permute(list: List<T>): List<List<T>> {
+        if (list.size == 1) return listOf(list)
+        val perms = mutableListOf<List<T>>()
+        val sub = list[0]
+        for (perm in permute(list.drop(1)))
+            for (i in 0..perm.size) {
+                val newPerm = perm.toMutableList()
+                newPerm.add(i, sub)
+                perms.add(newPerm)
+            }
+        return perms
     }
 
     private fun save() {

@@ -20,13 +20,16 @@ import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.VaadinDsl
 import com.github.mvysny.karibudsl.v10.init
 import com.vaadin.flow.component.ClickEvent
+import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.HasStyle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.textfield.TextField
+import dev.mett.vaadin.tooltip.Tooltips
 import org.vaadin.gatanaso.MultiselectComboBox
 
 @VaadinDsl
@@ -174,4 +177,6 @@ fun <T> HasComponents.multiSelectComboBox(label: String, items: Collection<T>, b
 fun HasComponents.radioButtonGroup(block: RadioButtonGroup<String>.() -> Unit = {})= init(RadioButtonGroup(), block)
 
 @VaadinDsl
-fun HasComponents.seachBar(block: SearchBar.() -> Unit = {}) = init(SearchBar(), block)
+fun <T> T.tooltip(text: String?) where T : Component, T : HasStyle {
+    Tooltips.getCurrent().setTooltip(this, text)
+}
