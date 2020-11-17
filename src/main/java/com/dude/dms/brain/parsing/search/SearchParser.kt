@@ -13,7 +13,7 @@ class SearchParser(
         get() = ""
 
     fun setInput(input: String): Boolean {
-        this.input = input.trim().split(Regex("\\s*")).toTypedArray()
+        this.input = input.trim().split(Regex("\\s+")).toTypedArray()
         return parse()
     }
 
