@@ -21,7 +21,7 @@ class Doc(
 
         var insertTime: LocalDateTime? = null,
 
-        @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH])
+        @ManyToMany(fetch = FetchType.EAGER)
         var tags: Set<Tag> = HashSet(),
 
         @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
