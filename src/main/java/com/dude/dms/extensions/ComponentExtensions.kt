@@ -19,6 +19,7 @@ import com.github.appreciated.card.label.SecondaryLabel
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.VaadinDsl
 import com.github.mvysny.karibudsl.v10.init
+import com.vaadin.componentfactory.Autocomplete
 import com.vaadin.flow.component.ClickEvent
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents
@@ -183,3 +184,9 @@ fun <T> T.tooltip(text: String?) where T : Component, T : HasStyle {
 
 @VaadinDsl
 fun HasComponents.searchBar(block: SearchBar.() -> Unit = {}) = init(SearchBar(), block)
+
+@VaadinDsl
+fun HasComponents.autocomplete(block: Autocomplete.() -> Unit = {}) = init(Autocomplete(), block)
+
+@VaadinDsl
+fun HasComponents.autocomplete(limit: Int, block: Autocomplete.() -> Unit = {}) = init(Autocomplete(limit), block)

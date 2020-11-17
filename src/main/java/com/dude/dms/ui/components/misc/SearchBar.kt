@@ -1,29 +1,38 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.brain.parsing.search.SearchParser
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.searchParser
+import com.dude.dms.extensions.attributeService
+import com.dude.dms.extensions.autocomplete
+import com.dude.dms.extensions.tagService
 import com.github.mvysny.karibudsl.v10.datePicker
-import com.github.mvysny.karibudsl.v10.textField
+import com.vaadin.componentfactory.Autocomplete
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.component.textfield.TextField
 
 
 class SearchBar : HorizontalLayout() {
 
-    private var textFilter: TextField
+    private var textFilter: Autocomplete
     private var fromFilter: DatePicker
     private var toFilter: DatePicker
 
     var onChange: (() -> Unit)? = null
 
+    private val searchParser = SearchParser(tagService, attributeService)
+
     init {
         setWidthFull()
 
-        textFilter = textField {
-            placeholder = t("search")
+        textFilter = autocomplete(10) {
             setWidthFull()
+            setPlaceholder(t("search"))
+            options = searchParser.getTips()
+            addValueChangeListener {
+                searchParser.setInput(it.value)
+                options = searchParser.getTips()
+            }
         }
         fromFilter = datePicker {
             placeholder = t("from")

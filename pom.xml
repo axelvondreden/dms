@@ -297,6 +297,11 @@
             <artifactId>multiselect-combo-box-flow</artifactId>
             <version>2.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin.componentfactory</groupId>
+            <artifactId>autocomplete</artifactId>
+            <version>2.3.1</version>
+        </dependency>
     </dependencies>
 
     <build>
