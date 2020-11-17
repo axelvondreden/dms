@@ -54,7 +54,7 @@ class PlainTextRuleEditDialog(private val plainTextRule: PlainTextRule) : DmsDia
     }
 
     private fun delete() {
-        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
+        DmsConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
             plainTextRuleService.delete(plainTextRule)
             close()
         }.open()

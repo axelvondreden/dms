@@ -7,7 +7,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class ConfirmDialog(
+class DmsConfirmDialog(
         message: String,
         confirmText: String,
         icon: VaadinIcon,

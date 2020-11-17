@@ -43,7 +43,7 @@ class RegexRuleEditDialog(private val regexRule: RegexRule) : DmsDialog("", 70, 
     }
 
     private fun delete() {
-        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
+        DmsConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
             regexRuleService.delete(regexRule)
             close()
         }.open()

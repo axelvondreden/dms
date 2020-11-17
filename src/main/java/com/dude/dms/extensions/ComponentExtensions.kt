@@ -157,8 +157,8 @@ fun HasComponents.confirmDialog(
         icon: VaadinIcon,
         theme: ButtonVariant,
         event: (ClickEvent<Button>) -> Unit,
-        block: ConfirmDialog.() -> Unit = {}
-) = init(ConfirmDialog(message, confirmText, icon, theme, event), block)
+        block: DmsConfirmDialog.() -> Unit = {}
+) = init(DmsConfirmDialog(message, confirmText, icon, theme, event), block)
 
 @VaadinDsl
 fun HasComponents.card(block: Card.() -> Unit = {}) = init(Card(), block)

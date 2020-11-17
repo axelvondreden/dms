@@ -55,7 +55,7 @@ class MailFilterEditDialog(private val mailFilter: MailFilter) : DmsDialog("", 7
     }
 
     private fun delete() {
-        ConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
+        DmsConfirmDialog(t("delete.sure"), t("delete"), VaadinIcon.TRASH, ButtonVariant.LUMO_ERROR) {
             mailFilterService.delete(mailFilter)
             close()
         }.open()
