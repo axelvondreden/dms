@@ -32,6 +32,8 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.textfield.TextField
 import dev.mett.vaadin.tooltip.Tooltips
 import org.vaadin.gatanaso.MultiselectComboBox
+import java.util.*
+import kotlin.concurrent.schedule
 
 @VaadinDsl
 fun HasComponents.tagLayout(
@@ -180,6 +182,16 @@ fun HasComponents.radioButtonGroup(block: RadioButtonGroup<String>.() -> Unit = 
 @VaadinDsl
 fun <T> T.tooltip(text: String?) where T : Component, T : HasStyle {
     Tooltips.getCurrent().setTooltip(this, text)
+}
+
+@VaadinDsl
+fun <T> T.showTooltip() where T : Component, T : HasStyle {
+    Tooltips.getCurrent().showTooltip(this)
+}
+
+@VaadinDsl
+fun <T> T.clearTooltips() where T : Component, T : HasStyle {
+    Tooltips.getCurrent().removeTooltip(this)
 }
 
 @VaadinDsl

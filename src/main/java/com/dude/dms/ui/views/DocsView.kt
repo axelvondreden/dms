@@ -47,11 +47,11 @@ class DocsView(
 
     private val viewUI = UI.getCurrent()
 
-    private var itemContainer: Div
+    private val itemContainer: Div
+
+    private val searchBar: SearchBar
 
     private lateinit var pageSelector: ViewPageSelector
-
-    private lateinit var searchBar: SearchBar
 
     private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
 
@@ -62,10 +62,8 @@ class DocsView(
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
 
-        horizontalLayout {
-            searchBar = searchBar {
-                onChange = { fill(viewUI) }
-            }
+        searchBar = searchBar {
+            onChange = { fill(viewUI) }
         }
         itemContainer = div {
             setSizeFull()
