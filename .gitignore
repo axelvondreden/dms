@@ -54,3 +54,6 @@ options.properties
 /pnpmfile.js
 /node/
 /dms.iml
+/build/
+/.gradle/
+/gradle/
