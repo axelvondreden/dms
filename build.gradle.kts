@@ -1,4 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -37,6 +36,7 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom("com.vaadin:vaadin-bom:$vaadin_version")
+        mavenBom("dev.forkhandles:forkhandles-bom:1.2.0.0")
     }
 }
 
@@ -86,6 +86,8 @@ dependencies {
     implementation("com.atlascopco:hunspell-bridj:1.0.4")
     implementation("com.github.vatbub:mslinks:1.0.5")
     implementation("com.github.h0tk3y.betterParse:better-parse:0.4.0")
+
+    implementation("dev.forkhandles:parser4k")
 
     implementation("com.github.appreciated:app-layout-addon:4.0.0")
     implementation("com.github.appreciated:apexcharts:2.0.0.beta10")

@@ -7,17 +7,17 @@ class SearchParser(
         private val tagService: TagService,
         private val attributeService: AttributeService) {
 
-    private var blocks = emptyList<Block>()
+    //private var blocks = emptyList<Block>()
 
     val filter
         get() = ""
 
     fun setInput(text: String): String? {
-        try {
+        /*try {
             //blocks = parseBlocks(text)
         } catch (e: ParseException) {
             return e.message
-        }
+        }*/
         return null
     }
 
@@ -135,9 +135,9 @@ class SearchParser(
     }
 
     fun getTips(): List<String> {
-        if (blocks.isEmpty()) {
+        /*if (blocks.isEmpty()) {
             return searchKeys
-        }
+        }*/
         return emptyList()
     }
 
