@@ -18,7 +18,7 @@ private val dateScanFormats: Map<String, DateTimeFormatter>
     get() = Options.get().view.dateScanFormats.map { it to DateTimeFormatter.ofPattern(it) }.toMap()
 
 
-fun Double.convert() = NumberFormat.getNumberInstance(Locale.forLanguageTag(Options.get().view.locale)).format(this)
+fun Double.convert(): String = NumberFormat.getNumberInstance(Locale.forLanguageTag(Options.get().view.locale)).format(this)
 
 fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() || it == '€' }.let { s ->
     var txt = s.replace(',', '.')
@@ -30,9 +30,9 @@ fun String.findDecimal() = filterNot { it.isLetter() || it.isWhitespace() || it 
 
 fun String.findInt() = filterNot { it.isLetter() || it.isWhitespace() || it == '€' || it == ',' || it == '.' }.trim().toIntOrNull()
 
-fun LocalDate.convert() = format(userDateFormat)
+fun LocalDate.convert(): String = format(userDateFormat)
 
-fun LocalDateTime.convert() = format(userDateTimeFormat)
+fun LocalDateTime.convert(): String = format(userDateTimeFormat)
 
 fun String.findDate() = filterNot { it.isLetter() || it.isWhitespace() }.replace(',', '.').let { txt ->
     dateScanFormats.flatMap { entry ->

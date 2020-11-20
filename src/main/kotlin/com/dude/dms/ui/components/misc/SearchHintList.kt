@@ -1,7 +1,8 @@
 package com.dude.dms.ui.components.misc
 
-import com.github.mvysny.karibudsl.v10.label
-import com.vaadin.flow.component.html.Label
+import com.github.mvysny.karibudsl.v10.div
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import kotlin.math.max
 import kotlin.math.min
@@ -9,7 +10,7 @@ import kotlin.math.min
 
 class SearchHintList : VerticalLayout() {
 
-    private var items = emptyList<Label>()
+    private var items = emptyList<Div>()
     private var index = -1
 
     var onSelect: ((String) -> Unit)? = null
@@ -38,15 +39,23 @@ class SearchHintList : VerticalLayout() {
     fun setItems(items: List<String>) {
         removeAll()
         this.items = items.map {
-            label(it) { setWidthFull() }
+            div {
+                text = it
+                setWidthFull()
+                style["paddingLeft"] = "4px"
+                onLeftClick {
+                    onSelect?.invoke(text)
+                    index = -1
+                }
+            }
         }
     }
 
     private fun refreshHighlighting() {
-        items.forEachIndexed { index, text ->
-            text.element.style["border"] = ""
+        items.forEachIndexed { index, div ->
+            div.style["backgroundColor"] = ""
             if (index == this.index) {
-                text.element.style["border"] = "2px solid green"
+                div.style["backgroundColor"] = "var(--lumo-primary-color)"
             }
         }
     }

@@ -26,7 +26,7 @@ class Attribute(
         STRING, INT, FLOAT, DATE
     }
 
-    override fun toString() = t("attribute")
+    override fun toString(): String = t("attribute")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

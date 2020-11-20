@@ -8,7 +8,6 @@ import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.PlainTextRuleValidator
 import com.dude.dms.brain.parsing.RegexRuleValidator
-import com.dude.dms.brain.parsing.search.SearchParser
 import com.dude.dms.updater.UpdateChecker
 
 val attributeService by lazy { SpringContext.getBean(AttributeService::class.java)!! }

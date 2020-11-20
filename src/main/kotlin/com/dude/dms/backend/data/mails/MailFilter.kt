@@ -19,5 +19,5 @@ class MailFilter(
         var tags: Set<Tag> = HashSet()
 ) : DataEntity(), Diffable<MailFilter>, LogsEvents {
 
-    override fun toString() = t("mail.filter")
+    override fun toString(): String = t("mail.filter")
 }

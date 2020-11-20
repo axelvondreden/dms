@@ -1,7 +1,7 @@
 package com.dude.dms.brain.parsing.search
 
 import com.dude.dms.brain.parsing.search.Filter.*
-import com.dude.dms.brain.parsing.search.Op.*
+import com.dude.dms.brain.parsing.search.Query.*
 import com.dude.dms.brain.parsing.search.Value.ArrayLiteral
 import parser4k.*
 import parser4k.commonparsers.Tokens
@@ -30,14 +30,14 @@ object SearchLang {
 
     private val filter = oneOf(equal, notEqual, less, greater, inArray, notInArray)
 
-    private val and = inOrder(ref { op }, token("and"), ref { op }).map { And(it.first, it.third) }
-    private val or = inOrder(ref { op }, token("or"), ref { op }).map { Or(it.first, it.third) }
+    private val and = inOrder(ref { query }, token("and"), ref { query }).map { And(it.first, it.third) }
+    private val or = inOrder(ref { query }, token("or"), ref { query }).map { Or(it.first, it.third) }
 
-    private val paren = inOrder(token("("), ref { op }, token(")")).skipWrapper()
+    private val paren = inOrder(token("("), ref { query }, token(")")).skipWrapper()
 
-    private val op: Parser<Op> = oneOfWithPrecedence(or, and, paren.nestedPrecedence(), filter)
+    private val query: Parser<Query> = oneOfWithPrecedence(or, and, paren.nestedPrecedence(), filter)
 
-    fun parse(s: String): Op = s.parseWith(op)
+    fun parse(s: String): Query = s.parseWith(query)
 
-    fun translate(op: Op): String = op.translate()
+    fun translate(query: Query): String = query.translate()
 }

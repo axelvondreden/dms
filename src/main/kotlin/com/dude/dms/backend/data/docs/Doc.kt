@@ -38,5 +38,5 @@ class Doc(
 
     fun getLine(word: Word) = pages.flatMap { it.lines }.first { word in it.words }
 
-    override fun toString() = t("doc")
+    override fun toString(): String = t("doc")
 }

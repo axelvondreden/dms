@@ -23,5 +23,5 @@ class RegexRule(
         return if (line == null || line.isEmpty()) false else pattern.matcher(line).find()
     }
 
-    override fun toString() = t("rule.regex")
+    override fun toString(): String = t("rule.regex")
 }

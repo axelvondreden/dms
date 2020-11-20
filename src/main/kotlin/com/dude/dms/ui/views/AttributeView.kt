@@ -9,7 +9,6 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.ConditionCard
-import com.dude.dms.ui.components.dialogs.TagEditDialog
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button

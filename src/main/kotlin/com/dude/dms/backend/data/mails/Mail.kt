@@ -29,7 +29,7 @@ class Mail(
         var docs: MutableSet<Doc> = HashSet()
 ) : RestorableEntity(), Diffable<Mail>, LogsEvents {
 
-    override fun toString() = t("mail")
+    override fun toString(): String = t("mail")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -47,6 +47,12 @@ class SearchBar : HorizontalLayout() {
                         }
                         return true;
                         """.trimIndent())
+                    addFocusListener {
+                        textHintList.isVisible = true
+                    }
+                    addBlurListener {
+                        textHintList.isVisible = false
+                    }
                     addKeyDownListener(Key.ARROW_DOWN, {
                         textHintList.down()
                     })
@@ -59,7 +65,7 @@ class SearchBar : HorizontalLayout() {
                     suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
                     addValueChangeListener {
                         val error = searchParser.setInput(it.value)
-                        textHintList.setItems(searchParser.getTips())
+                        textHintList.setItems(searchParser.getHints())
                         if (error.isNullOrBlank()) {
                             suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
                             (suffixComponent as Icon).clearTooltips()
@@ -71,8 +77,14 @@ class SearchBar : HorizontalLayout() {
                     }
                 }
                 textHintList = searchHintList {
-                    setWidthFull()
-                    setItems(searchParser.getTips())
+                    isVisible = false
+                    maxWidth = "40em"
+                    style["position"] = "absolute"
+                    style["top"] = "50px"
+                    style["backgroundColor"] = "var(--lumo-base-color)"
+                    style["zIndex"] = "1"
+                    style["border"] = "2px solid var(--lumo-contrast-20pct)"
+                    setItems(searchParser.getHints())
                     onSelect = {
                         val current = textFilter.value
                         if (current.endsWith(" ")) {

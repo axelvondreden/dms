@@ -20,7 +20,7 @@ class Line(
 
     fun getFullText() = words.sortedBy { it.x }.joinToString(" ") { it.text.toString() }
 
-    override fun toString() = t("line")
+    override fun toString(): String = t("line")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

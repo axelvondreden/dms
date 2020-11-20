@@ -1,11 +1,11 @@
 package com.dude.dms.brain.parsing.search
 
-open class Op {
-    data class And(val left: Op, val right: Op) : Op()
-    data class Or(val left: Op, val right: Op) : Op()
+open class Query {
+    data class And(val left: Query, val right: Query) : Query()
+    data class Or(val left: Query, val right: Query) : Query()
 }
 
-sealed class Filter : Op() {
+sealed class Filter : Query() {
     data class Equal(val key: Key, val value: Value) : Filter()
     data class NotEqual(val key: Key, val value: Value) : Filter()
     data class Less(val key: Key, val value: Value) : Filter()
@@ -25,9 +25,9 @@ sealed class Value {
 
 data class Key(val value: String)
 
-fun Op.translate(): String = when (this) {
-    is Op.And -> "(" + left.translate() + " and " + right.translate() + ")"
-    is Op.Or -> "(" + left.translate() + " or " + right.translate() + ")"
+fun Query.translate(): String = when (this) {
+    is Query.And -> "(" + left.translate() + " and " + right.translate() + ")"
+    is Query.Or -> "(" + left.translate() + " or " + right.translate() + ")"
     is Filter.Equal -> "(" + key.value + "=" + value.translate() + ")"
     is Filter.NotEqual -> "(" + key.value + "!=" + value.translate() + ")"
     is Filter.Less -> "(" + key.value + "<" + value.translate() + ")"

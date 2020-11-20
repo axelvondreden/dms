@@ -29,5 +29,5 @@ class AttributeValue(
 
     override fun hashCode(): Int = Objects.hash(super.hashCode(), doc, attribute)
 
-    override fun toString() = t("attributevalue")
+    override fun toString(): String = t("attributevalue")
 }

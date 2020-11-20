@@ -24,5 +24,5 @@ class PlainTextRule(
         } else false
     }
 
-    override fun toString() = t("rule.plain")
+    override fun toString(): String = t("rule.plain")
 }

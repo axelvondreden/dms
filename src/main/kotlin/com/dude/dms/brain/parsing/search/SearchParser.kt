@@ -26,7 +26,7 @@ class SearchParser() {
         //attributeIncludeFilter.setItems(attributeService.findAll())
     }
 
-    fun getTips(): List<String> {
+    fun getHints(): List<String> {
         if (text.count { it == '"' } % 2 != 0) {
             return emptyList()
         }

@@ -5,7 +5,6 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
@@ -38,7 +37,6 @@ import kotlin.streams.toList
 @PageTitle("Docs")
 class DocsView(
         private val docService: DocService,
-        private val tagService: TagService,
         private val fileManager: FileManager,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {

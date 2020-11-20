@@ -18,5 +18,5 @@ class Changelog(
         var version: String
 ) : DataEntity(), LogsEvents {
 
-        override fun toString() = t("changelog")
+        override fun toString(): String = t("changelog")
 }

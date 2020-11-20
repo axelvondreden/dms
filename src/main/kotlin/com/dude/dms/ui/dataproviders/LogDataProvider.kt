@@ -27,7 +27,7 @@ class LogDataProvider(private val logEntryService: LogEntryService) : GridViewDa
         setSortOrders(Sort.Direction.DESC, "timestamp")
     }
 
-    override fun fetchFromBackEnd(query: Query<LogEntry, Filter>, pageable: Pageable) = when {
+    override fun fetchFromBackEnd(query: Query<LogEntry, Filter>, pageable: Pageable): Page<LogEntry> = when {
         query.filter.isPresent -> {
             val page = logEntryService.findByFilter(query.filter.get(), pageable)
             pageObserver?.accept(page)

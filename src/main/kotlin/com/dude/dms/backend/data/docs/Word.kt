@@ -25,7 +25,7 @@ class Word(
         var height: Float
 ) : RestorableEntity(), LogsEvents {
 
-    override fun toString() = t("word")
+    override fun toString(): String = t("word")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

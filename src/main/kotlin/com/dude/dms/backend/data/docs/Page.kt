@@ -20,7 +20,7 @@ class Page(
 
     fun getFullText() = lines.sortedBy { it.y }.joinToString("\n") { it.getFullText() }
 
-    override fun toString() = t("page")
+    override fun toString(): String = t("page")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

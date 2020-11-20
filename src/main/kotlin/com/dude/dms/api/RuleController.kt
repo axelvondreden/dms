@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 class RuleController(private val plainTextRuleService: PlainTextRuleService) {
 
     @GetMapping("/plain/")
-    fun getAllRules() = plainTextRuleService.findAll()
+    fun getAllRules(): List<PlainTextRule> = plainTextRuleService.findAll()
 
     @GetMapping("/plain/{id}")
     fun getPlainTextRuleById(@PathVariable("id") id: Long): ResponseEntity<PlainTextRule> {

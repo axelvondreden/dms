@@ -7,7 +7,6 @@ import com.dude.dms.extensions.attributeSelector
 import com.dude.dms.extensions.colorPicker
 import com.dude.dms.extensions.tagService
 import com.dude.dms.ui.components.tags.AttributeSelector
-import com.dude.dms.ui.views.AttributeView
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI

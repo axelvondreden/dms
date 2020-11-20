@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 class TagController(private val tagService: TagService) {
 
     @GetMapping("/")
-    fun getAllTags() = tagService.findAll()
+    fun getAllTags(): List<Tag> = tagService.findAll()
 
     @GetMapping("/{name}")
     fun getTagByName(@PathVariable("name") name: String): ResponseEntity<Tag> {
