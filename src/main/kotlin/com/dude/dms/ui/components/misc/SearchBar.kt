@@ -7,12 +7,9 @@ import com.dude.dms.extensions.*
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.datepicker.DatePicker
+import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.listbox.ListBox
-import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
@@ -23,10 +20,9 @@ import kotlin.concurrent.schedule
 class SearchBar : HorizontalLayout() {
 
     private lateinit var textFilter: TextField
-    private lateinit var textTips: ListBox<String>
+    private lateinit var textHintList: SearchHintList
     private val fromFilter: DatePicker
     private val toFilter: DatePicker
-    private lateinit var searchValidatorIcon: Button
 
     var onChange: (() -> Unit)? = null
 
@@ -45,33 +41,51 @@ class SearchBar : HorizontalLayout() {
                     setWidthFull()
                     placeholder = t("search")
                     valueChangeMode = ValueChangeMode.EAGER
-                    element.addEventListener("keydown") {
-                        Notification.show(it.eventData.asString())
-                    }.preventDefault()
+                    element.setAttribute("onkeydown", """
+                        if (event.key == 'ArrowDown' || event.key == 'ArrowUp') {
+                            return false;
+                        }
+                        return true;
+                        """.trimIndent())
+                    addKeyDownListener(Key.ARROW_DOWN, {
+                        textHintList.down()
+                    })
+                    addKeyDownListener(Key.ARROW_UP, {
+                        textHintList.up()
+                    })
+                    addKeyDownListener(Key.ENTER, {
+                        textHintList.select()
+                    })
+                    suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
                     addValueChangeListener {
                         val error = searchParser.setInput(it.value)
-                        textTips.setItems(searchParser.getTips())
+                        textHintList.setItems(searchParser.getTips())
                         if (error.isNullOrBlank()) {
-                            searchValidatorIcon.icon = VaadinIcon.CHECK.create()
-                            searchValidatorIcon.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
-                            searchValidatorIcon.removeThemeVariants(ButtonVariant.LUMO_ERROR)
-                            searchValidatorIcon.clearTooltips()
+                            suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
+                            (suffixComponent as Icon).clearTooltips()
                         } else {
-                            searchValidatorIcon.icon = VaadinIcon.CLOSE.create()
-                            searchValidatorIcon.addThemeVariants(ButtonVariant.LUMO_ERROR)
-                            searchValidatorIcon.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
-                            searchValidatorIcon.tooltip(error)
-                            Timer().schedule(200) { viewUI.access { searchValidatorIcon.showTooltip() } }
+                            suffixComponent = VaadinIcon.BAN.create().apply { color = "var(--lumo-error-text-color)" }
+                            (suffixComponent as Icon).tooltip(error)
+                            Timer().schedule(200) { viewUI.access { (suffixComponent as Icon).showTooltip() } }
                         }
                     }
                 }
-                textTips = listBox {
+                textHintList = searchHintList {
                     setWidthFull()
                     setItems(searchParser.getTips())
+                    onSelect = {
+                        val current = textFilter.value
+                        if (current.endsWith(" ")) {
+                            textFilter.value = "$current$it "
+                        } else {
+                            var itCopy = it
+                            while (!current.endsWith(itCopy)) {
+                                itCopy = itCopy.dropLast(1)
+                            }
+                            textFilter.value = current.dropLast(itCopy.length) + it + " "
+                        }
+                    }
                 }
-            }
-            searchValidatorIcon = iconButton(VaadinIcon.CHECK.create()) {
-                addThemeVariants(ButtonVariant.LUMO_SUCCESS)
             }
         }
 

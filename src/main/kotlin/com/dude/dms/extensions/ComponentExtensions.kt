@@ -19,7 +19,6 @@ import com.github.appreciated.card.label.SecondaryLabel
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.VaadinDsl
 import com.github.mvysny.karibudsl.v10.init
-import com.vaadin.componentfactory.Autocomplete
 import com.vaadin.flow.component.ClickEvent
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents
@@ -32,8 +31,6 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.textfield.TextField
 import dev.mett.vaadin.tooltip.Tooltips
 import org.vaadin.gatanaso.MultiselectComboBox
-import java.util.*
-import kotlin.concurrent.schedule
 
 @VaadinDsl
 fun HasComponents.tagLayout(
@@ -198,7 +195,4 @@ fun <T> T.clearTooltips() where T : Component, T : HasStyle {
 fun HasComponents.searchBar(block: SearchBar.() -> Unit = {}) = init(SearchBar(), block)
 
 @VaadinDsl
-fun HasComponents.autocomplete(block: Autocomplete.() -> Unit = {}) = init(Autocomplete(), block)
-
-@VaadinDsl
-fun HasComponents.autocomplete(limit: Int, block: Autocomplete.() -> Unit = {}) = init(Autocomplete(limit), block)
+fun HasComponents.searchHintList(block: SearchHintList.() -> Unit = {}) = init(SearchHintList(), block)
