@@ -39,7 +39,7 @@ class SearchParser() {
         }
         val inKeyPart = Regex("^\\w*\$|^.*(and|or)\\W\\w*\$").matches(text)
         if (inKeyPart) {
-            val start = text.trim().split(Regex("\\W*")).last()
+            val start = text.trim().split(Regex("\\s+")).last()
             return searchKeys.filter { it.startsWith(start, ignoreCase = true) }
         }
         return listOf("and ", "or ")

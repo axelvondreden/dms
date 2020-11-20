@@ -91,7 +91,6 @@ dependencies {
     implementation("com.github.appreciated:apexcharts:2.0.0.beta10")
     implementation("com.github.appreciated:card:2.0.0")
     implementation("com.github.appreciated:color-picker-field-flow:2.0.0.beta6")
-    implementation("com.vaadin.componentfactory:autocomplete:2.3.1")
     implementation("dev.mett.vaadin:tooltip:1.6.0")
     implementation("org.vaadin.artur:spring-data-provider:2.1.0")
     implementation("org.vaadin.gatanaso:multiselect-combo-box-flow:2.5.0")

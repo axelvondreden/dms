@@ -4,23 +4,26 @@ import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.parsing.search.SearchParser
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.*
-import com.github.mvysny.karibudsl.v10.datePicker
-import com.github.mvysny.karibudsl.v10.horizontalLayout
-import com.github.mvysny.karibudsl.v10.iconButton
-import com.vaadin.componentfactory.Autocomplete
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.listbox.ListBox
+import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.value.ValueChangeMode
 import java.util.*
 import kotlin.concurrent.schedule
 
 
 class SearchBar : HorizontalLayout() {
 
-    private lateinit var textFilter: Autocomplete
+    private lateinit var textFilter: TextField
+    private lateinit var textTips: ListBox<String>
     private val fromFilter: DatePicker
     private val toFilter: DatePicker
     private lateinit var searchValidatorIcon: Button
@@ -36,25 +39,35 @@ class SearchBar : HorizontalLayout() {
 
         horizontalLayout(isPadding = false, isSpacing = false) {
             setWidthFull()
-            textFilter = autocomplete(10) {
+            verticalLayout(isPadding = false, isSpacing = false) {
                 setWidthFull()
-                setPlaceholder(t("search"))
-                options = searchParser.getTips()
-                addChangeListener {
-                    val error = searchParser.setInput(it.value)
-                    options = searchParser.getTips()
-                    if (error.isNullOrBlank()) {
-                        searchValidatorIcon.icon = VaadinIcon.CHECK.create()
-                        searchValidatorIcon.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
-                        searchValidatorIcon.removeThemeVariants(ButtonVariant.LUMO_ERROR)
-                        searchValidatorIcon.clearTooltips()
-                    } else {
-                        searchValidatorIcon.icon = VaadinIcon.CLOSE.create()
-                        searchValidatorIcon.addThemeVariants(ButtonVariant.LUMO_ERROR)
-                        searchValidatorIcon.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
-                        searchValidatorIcon.tooltip(error)
-                        Timer().schedule(200) { viewUI.access { searchValidatorIcon.showTooltip() } }
+                textFilter = textField {
+                    setWidthFull()
+                    placeholder = t("search")
+                    valueChangeMode = ValueChangeMode.EAGER
+                    element.addEventListener("keydown") {
+                        Notification.show(it.eventData.asString())
+                    }.preventDefault()
+                    addValueChangeListener {
+                        val error = searchParser.setInput(it.value)
+                        textTips.setItems(searchParser.getTips())
+                        if (error.isNullOrBlank()) {
+                            searchValidatorIcon.icon = VaadinIcon.CHECK.create()
+                            searchValidatorIcon.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                            searchValidatorIcon.removeThemeVariants(ButtonVariant.LUMO_ERROR)
+                            searchValidatorIcon.clearTooltips()
+                        } else {
+                            searchValidatorIcon.icon = VaadinIcon.CLOSE.create()
+                            searchValidatorIcon.addThemeVariants(ButtonVariant.LUMO_ERROR)
+                            searchValidatorIcon.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                            searchValidatorIcon.tooltip(error)
+                            Timer().schedule(200) { viewUI.access { searchValidatorIcon.showTooltip() } }
+                        }
                     }
+                }
+                textTips = listBox {
+                    setWidthFull()
+                    setItems(searchParser.getTips())
                 }
             }
             searchValidatorIcon = iconButton(VaadinIcon.CHECK.create()) {
