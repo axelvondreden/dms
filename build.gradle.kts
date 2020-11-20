@@ -96,10 +96,6 @@ dependencies {
     implementation("org.vaadin.artur:spring-data-provider:2.1.0")
     implementation("org.vaadin.gatanaso:multiselect-combo-box-flow:2.5.0")
     implementation("org.vaadin.olli:file-download-wrapper:3.0.1")
-
-    testImplementation("org.assertj:assertj-core:3.12.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
 tasks.processResources {
@@ -110,10 +106,6 @@ tasks.processResources {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 springBoot {

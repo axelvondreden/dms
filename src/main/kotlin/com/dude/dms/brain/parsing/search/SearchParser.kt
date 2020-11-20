@@ -1,149 +1,52 @@
 package com.dude.dms.brain.parsing.search
 
-import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.TagService
+import com.dude.dms.extensions.attributeService
+import parser4k.NoMatchingParsers
 
-class SearchParser(
-        private val tagService: TagService,
-        private val attributeService: AttributeService) {
+class SearchParser() {
 
-    //private var blocks = emptyList<Block>()
+    private var text: String = ""
 
     val filter
         get() = ""
 
     fun setInput(text: String): String? {
-        /*try {
-            //blocks = parseBlocks(text)
-        } catch (e: ParseException) {
+        this.text = text
+        try {
+            val op = SearchLang.parse(text.trim())
+        } catch (e: NoMatchingParsers) {
             return e.message
-        }*/
+        }
         return null
     }
 
-    /*fun parseBlocks(text: String): List<Block> {
-        var index = 0
-        val max = text.length
-        var currentText = ""
-        var inString = false
-        var braceCounter = 0
-        val parts = mutableListOf<Part>()
-        while (index < max) {
-            val c = text[index]
-            when {
-                inString -> {
-                    when (c) {
-                        '"' -> {
-                            inString = false
-                            parts.add(StringPart(currentText))
-                            currentText = ""
-                        }
-                        else -> currentText += c
-                    }
-                }
-                braceCounter > 0 -> {
-                    when (c) {
-                        '(' -> braceCounter++
-                        ')' -> braceCounter--
-                    }
-                    if (braceCounter > 0) {
-                        currentText += c
-                    } else {
-                        parts.add(Block(currentText))
-                        currentText = ""
-                    }
-                }
-                c == ' ' -> {
-                    if (currentText.isNotBlank()) {
-                        parts.add(KeyPart(currentText))
-                        currentText = ""
-                    }
-                }
-                c == '"' -> inString = true
-                c == '(' -> braceCounter++
-                c == ')' -> throw ParseException("unexpected ')'")
-                else -> currentText += c
-            }
-            index++
-        }
-        if (currentText.isNotBlank()) {
-            parts.add(KeyPart(currentText))
-        }
-        println(parts.joinToString(" ") { it.debug() })
-        if (inString) throw ParseException("unclosed String")
-        if (braceCounter > 0) throw ParseException("unclosed braces")
-        return parts
-    }*/
-
-    /*fun old(text: String): List<Block> {
-        var index = 0
-        val max = text.length
-        var currentText = ""
-        var inString = false
-        var braceCounter = 0
-        val parts = mutableListOf<Part>()
-        while (index < max) {
-            val c = text[index]
-            when {
-                inString -> {
-                    when (c) {
-                        '"' -> {
-                            inString = false
-                            parts.add(StringPart(currentText))
-                            currentText = ""
-                        }
-                        else -> currentText += c
-                    }
-                }
-                braceCounter > 0 -> {
-                    when (c) {
-                        '(' -> braceCounter++
-                        ')' -> braceCounter--
-                    }
-                    if (braceCounter > 0) {
-                        currentText += c
-                    } else {
-                        parts.add(Block(currentText))
-                        currentText = ""
-                    }
-                }
-                c == ' ' -> {
-                    if (currentText.isNotBlank()) {
-                        parts.add(KeyPart(currentText))
-                        currentText = ""
-                    }
-                }
-                c == '"' -> inString = true
-                c == '(' -> braceCounter++
-                c == ')' -> throw ParseException("unexpected ')'")
-                else -> currentText += c
-            }
-            index++
-        }
-        if (currentText.isNotBlank()) {
-            parts.add(KeyPart(currentText))
-        }
-        println(parts.joinToString(" ") { it.debug() })
-        if (inString) throw ParseException("unclosed String")
-        if (braceCounter > 0) throw ParseException("unclosed braces")
-        return parts
-    }*/
-
     fun refresh() {
+        attributes = attributeService.findAll().map { it.name }
         //tagIncludeFilter.setItems(tagService.findAll())
         //attributeIncludeFilter.setItems(attributeService.findAll())
     }
 
     fun getTips(): List<String> {
-        /*if (blocks.isEmpty()) {
+        if (text.count { it == '"' } % 2 != 0) {
+            return emptyList()
+        }
+        if (text.isBlank()) {
             return searchKeys
-        }*/
-        return emptyList()
+        }
+        val inValuePart = listOf("\\=", "\\!\\=", "\\<", "\\>", "in \\[", "not in \\[").any { Regex(".*$it(\\s*)?\\S*\$").matches(text) }
+        if (inValuePart) {
+            return emptyList()
+        }
+        val inKeyPart = Regex("^\\w*\$|^.*(and|or)\\W\\w*\$").matches(text)
+        if (inKeyPart) {
+            val start = text.trim().split(Regex("\\W*")).last()
+            return searchKeys.filter { it.startsWith(start, ignoreCase = true) }
+        }
+        return listOf("and ", "or ")
     }
 
     companion object {
-        private val searchKeys = listOf(
-                "text", "date", "tag", "attribute"
-        )
+        var attributes = attributeService.findAll().map { it.name }
+        val searchKeys = listOf("text", "date", "tag", *attributes.toTypedArray())
     }
 }

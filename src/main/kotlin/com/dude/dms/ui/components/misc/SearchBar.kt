@@ -27,7 +27,7 @@ class SearchBar : HorizontalLayout() {
 
     var onChange: (() -> Unit)? = null
 
-    private val searchParser = SearchParser(tagService, attributeService)
+    private val searchParser = SearchParser()
 
     private val viewUI = UI.getCurrent()
 
