@@ -8,7 +8,6 @@ object Const {
     const val PAGE_DOCIMPORT = "import"
     const val PAGE_DOCS = "docs"
     const val PAGE_LOG = "log"
-    const val PAGE_MAILS = "mails"
     const val PAGE_OPTIONS = "options"
     const val PAGE_RECYCLE = "recycle"
     const val PAGE_ROOT = ""

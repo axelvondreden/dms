@@ -6,7 +6,6 @@ import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
-import com.dude.dms.updater.UpdateChecker
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
@@ -21,13 +20,11 @@ class StartUpRunner(
         private val wordService: WordService,
         private val fileManager: FileManager,
         private val docImportService: DocImportService,
-        private val updateChecker: UpdateChecker,
         private val directoryChecker: DirectoryChecker,
         private val optionsChecker: OptionsChecker
 ) : CommandLineRunner {
 
     override fun run(vararg args: String) {
-        updateChecker.check(true)
         optionsChecker.checkOptions()
         directoryChecker.checkDirectories()
         LOGGER.info("Cleaning up files...")

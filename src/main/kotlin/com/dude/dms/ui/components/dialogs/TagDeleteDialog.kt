@@ -4,7 +4,6 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.attributeService
 import com.dude.dms.extensions.docService
-import com.dude.dms.extensions.mailService
 import com.dude.dms.extensions.tagService
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.checkBox
@@ -20,8 +19,6 @@ class TagDeleteDialog(private val tag: Tag) : DmsDialog(t("tag.delete"), 20) {
 
     private lateinit var docCheck: Checkbox
 
-    private lateinit var mailCheck: Checkbox
-
     private lateinit var attributeCheck: Checkbox
 
     init {
@@ -35,7 +32,6 @@ class TagDeleteDialog(private val tag: Tag) : DmsDialog(t("tag.delete"), 20) {
             docCheck = checkBox("${t("docs")} (${docService.countByTag(tag)})") {
                 isEnabled = false
             }
-            mailCheck = checkBox("${t("mails")} (${mailService.countByTag(tag)})")
             attributeCheck = checkBox("${t("attributes")} (${tag.attributes.size})")
             button(t("delete"), VaadinIcon.TRASH.create()) {
                 onLeftClick { delete() }
@@ -48,9 +44,6 @@ class TagDeleteDialog(private val tag: Tag) : DmsDialog(t("tag.delete"), 20) {
     private fun delete() {
         if (docCheck.value) {
             docService.findByTag(tag).forEach(docService::softDelete)
-        }
-        if (mailCheck.value) {
-            mailService.findByTag(tag).forEach(mailService::softDelete)
         }
         if (attributeCheck.value) {
             tag.attributes.forEach(attributeService::delete)

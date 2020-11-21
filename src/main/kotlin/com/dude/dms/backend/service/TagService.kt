@@ -2,8 +2,6 @@ package com.dude.dms.backend.service
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.data.mails.Mail
-import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.repositories.TagRepository
 import com.dude.dms.brain.events.EventManager
 import org.springframework.stereotype.Service
@@ -13,7 +11,6 @@ class TagService(
         private val tagRepository: TagRepository,
         private val plainTextRuleService: PlainTextRuleService,
         private val regexRuleService: RegexRuleService,
-        private val mailFilterService: MailFilterService,
         private val docService: DocService,
         eventManager: EventManager
 ) : EventService<Tag>(tagRepository, eventManager) {
@@ -29,10 +26,6 @@ class TagService(
             it.tags = it.tags.minus(entity)
             regexRuleService.save(it)
         }
-        mailFilterService.findByTag(entity).forEach {
-            it.tags = findByMailFilter(it).minus(entity)
-            mailFilterService.save(it)
-        }
         docService.findByTag(entity).forEach {
             it.tags = it.tags.minus(entity)
             docService.save(it)
@@ -41,10 +34,6 @@ class TagService(
     }
 
     fun findByName(name: String) = tagRepository.findByName(name)
-
-    private fun findByMailFilter(mailFilter: MailFilter) = tagRepository.findByMailFilters(mailFilter)
-
-    fun findByMail(mail: Mail) = tagRepository.findByMails(mail)
 
     fun findByAttribute(attribute: Attribute) = tagRepository.findByAttributes(attribute)
 

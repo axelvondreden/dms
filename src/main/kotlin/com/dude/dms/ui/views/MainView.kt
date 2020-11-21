@@ -5,7 +5,6 @@ import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.MailService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
@@ -47,7 +46,6 @@ import kotlin.concurrent.schedule
 @Push
 class MainView(
         private val docService: DocService,
-        private val mailService: MailService,
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val docImportService: DocImportService,
@@ -159,7 +157,7 @@ class MainView(
     }
 
     private fun fillBadgeCount(tag: Tag) {
-        tagBadges[tag.id]?.count = docService.countByTag(tag).toInt() + mailService.countByTag(tag).toInt()
+        tagBadges[tag.id]?.count = docService.countByTag(tag).toInt()
     }
 
     override fun afterNavigation(afterNavigationEvent: AfterNavigationEvent) {

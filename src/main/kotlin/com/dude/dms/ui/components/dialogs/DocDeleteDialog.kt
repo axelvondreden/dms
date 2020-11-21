@@ -3,7 +3,6 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.docService
-import com.dude.dms.extensions.mailService
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.checkBox
 import com.github.mvysny.karibudsl.v10.onLeftClick
@@ -16,8 +15,6 @@ class DocDeleteDialog(private val docContainer: DocContainer) : DmsDialog(t("doc
 
     private lateinit var docCheck: Checkbox
 
-    private lateinit var mailCheck: Checkbox
-
     init {
         verticalLayout(isPadding = false, isSpacing = false) {
             setSizeFull()
@@ -26,7 +23,6 @@ class DocDeleteDialog(private val docContainer: DocContainer) : DmsDialog(t("doc
                 value = true
                 isEnabled = false
             }
-            mailCheck = checkBox("${t("mail")} (${docContainer.doc?.let { mailService.countByDoc(it) }})")
             button(t("delete"), VaadinIcon.TRASH.create()) {
                 onLeftClick { delete() }
                 setWidthFull()
@@ -37,9 +33,6 @@ class DocDeleteDialog(private val docContainer: DocContainer) : DmsDialog(t("doc
 
     private fun delete() {
         docContainer.doc?.let {
-            if (mailCheck.value) {
-                mailService.findByDoc(it).forEach(mailService::delete)
-            }
             docService.findByGuid(it.guid)?.let { doc -> docService.softDelete(doc) }
         }
         close()

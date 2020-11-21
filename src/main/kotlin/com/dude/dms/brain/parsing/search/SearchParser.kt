@@ -4,7 +4,7 @@ import com.dude.dms.extensions.attributeService
 import parser4k.InputIsNotConsumed
 import parser4k.NoMatchingParsers
 
-class SearchParser() {
+class SearchParser {
 
     private var text: String = ""
 

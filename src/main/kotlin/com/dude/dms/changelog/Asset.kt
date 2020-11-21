@@ -1,3 +1,3 @@
-package com.dude.dms.updater
+package com.dude.dms.changelog
 
 data class Asset(var name: String, var url: String)

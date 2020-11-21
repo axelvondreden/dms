@@ -1,4 +1,4 @@
-package com.dude.dms.updater
+package com.dude.dms.changelog
 
 import java.time.LocalDateTime
 

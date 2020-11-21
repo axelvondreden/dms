@@ -4,9 +4,13 @@ plugins {
     kotlin("jvm") version "1.4.10"
     id("org.springframework.boot") version "2.3.4.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    //id("org.jetbrains.kotlin.plugin.spring").version("1.4.10")
     id("org.jetbrains.kotlin.plugin.noarg") version "1.4.10" apply true
     id("org.jetbrains.kotlin.plugin.allopen") version "1.4.10" apply true
     id("com.vaadin") version "0.14.3.7"
+    //id("com.github.johnrengelman.shadow") version "6.1.0"
+    application
+    //id("org.springframework.boot.experimental.thin-launcher") version "1.0.25.RELEASE"
 }
 
 ext {
@@ -20,8 +24,8 @@ noArg {
 group = "com.dude.dms"
 version = "0.2.5"
 
-val karibudsl_version = "1.0.3"
-val vaadin_version = "14.4.2"
+val karibudslVersion = "1.0.3"
+val vaadinVersion = "14.4.2"
 
 defaultTasks("clean", "build")
 
@@ -35,13 +39,13 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("com.vaadin:vaadin-bom:$vaadin_version")
+        mavenBom("com.vaadin:vaadin-bom:$vaadinVersion")
         mavenBom("dev.forkhandles:forkhandles-bom:1.2.0.0")
     }
 }
 
 dependencies {
-    implementation("com.github.mvysny.karibudsl:karibu-dsl:$karibudsl_version")
+    implementation("com.github.mvysny.karibudsl:karibu-dsl:$karibudslVersion")
 
     implementation("com.vaadin:vaadin-spring-boot-starter") {
         // Webjars are only needed when running in Vaadin 13 compatibility mode
@@ -50,6 +54,7 @@ dependencies {
                 "org.webjars.bowergithub.vaadin", "org.webjars.bowergithub.webcomponents")
                 .forEach { exclude(it) }
     }
+
     //providedCompile("javax.servlet:javax.servlet-api:3.1.0")
     implementation("commons-net:commons-net:3.7")
     implementation("commons-logging:commons-logging:1.2")
@@ -58,7 +63,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation(kotlin("stdlib-jdk8"))
+    //implementation(kotlin("stdlib-jdk8"))
 
     implementation("org.springframework.boot:spring-boot-devtools")
 
@@ -78,7 +83,6 @@ dependencies {
     implementation("org.hibernate:hibernate-core:5.4.10.Final")
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.21")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
-    implementation("com.sun.mail:jakarta.mail:1.6.4")
     implementation("org.bytedeco:tesseract-platform:4.1.1-1.5.4")
     implementation("org.languagetool:languagetool-core:5.1")
     implementation("org.languagetool:language-de:5.1")
@@ -97,6 +101,11 @@ dependencies {
     implementation("org.vaadin.olli:file-download-wrapper:3.0.1")
 }
 
+
+application {
+    mainClass.set("com.dude.dms.ApplicationKt")
+}
+
 tasks.processResources {
     filesMatching("**/application.properties") {
         expand( project.properties )
@@ -107,12 +116,32 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 
+val createConfig by tasks.registering {
+    val config = file("$buildDir/config")
+    outputs.dir(config)
+    doLast {
+        config.mkdirs()
+        File("$rootDir/options.default.json").copyTo(File(config, "options.default.json"), overwrite = true)
+        File("$rootDir/tessdata/").copyRecursively(File(config, "tessdata/"), overwrite = true)
+    }
+}
+
+distributions {
+    boot {
+        contents {
+            from(createConfig) {
+                into("config")
+            }
+        }
+    }
+}
+
 springBoot {
     mainClassName = "com.dude.dms.ApplicationKt"
 }
 
 vaadin {
-    if (gradle.startParameter.taskNames.contains("stage")) {
+    if (gradle.startParameter.taskNames.contains("bootDistZip")) {
         productionMode = true
     }
     pnpmEnable = true

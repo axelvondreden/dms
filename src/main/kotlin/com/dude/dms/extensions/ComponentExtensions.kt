@@ -6,7 +6,6 @@ import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.mails.MailFilter
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.brain.parsing.search.Hint
@@ -73,18 +72,6 @@ fun HasComponents.regexRuleEditDialog(regexRule: RegexRule, block: RegexRuleEdit
 @VaadinDsl
 fun HasComponents.regexRuleCard(regexRule: RegexRule, block: RegexRuleCard.() -> Unit = {})
         = init(RegexRuleCard(regexRule), block)
-
-@VaadinDsl
-fun HasComponents.mailFilterCreateDialog(block: MailFilterCreateDialog.() -> Unit = {})
-        = init(MailFilterCreateDialog(), block)
-
-@VaadinDsl
-fun HasComponents.mailFilterEditDialog(mailFilter: MailFilter, block: MailFilterEditDialog.() -> Unit = {})
-        = init(MailFilterEditDialog(mailFilter), block)
-
-@VaadinDsl
-fun HasComponents.mailFilterCard(mailFilter: MailFilter, block: MailFilterCard.() -> Unit = {})
-        = init(MailFilterCard(mailFilter), block)
 
 @VaadinDsl
 fun HasComponents.ruleRunnerDialog(result: Map<Doc, Set<TagContainer>>, block: RuleRunnerDialog.() -> Unit = {})

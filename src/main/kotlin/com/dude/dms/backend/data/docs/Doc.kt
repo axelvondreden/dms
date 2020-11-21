@@ -4,7 +4,6 @@ import com.dude.dms.backend.data.Diffable
 import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.RestorableEntity
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.mails.Mail
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
@@ -28,10 +27,7 @@ class Doc(
         var pages: Set<Page> = HashSet(),
 
         @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
-        var attributeValues: Set<AttributeValue> = HashSet(),
-
-        @ManyToOne
-        var mail: Mail? = null
+        var attributeValues: Set<AttributeValue> = HashSet()
 ) : RestorableEntity(), Diffable<Doc>, LogsEvents {
 
     fun getFullText() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }

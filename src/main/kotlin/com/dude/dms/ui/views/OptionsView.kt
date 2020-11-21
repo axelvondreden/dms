@@ -3,7 +3,6 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
-import com.dude.dms.brain.mail.MailManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.extensions.card
@@ -21,11 +20,10 @@ import mslinks.ShellLink
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
-import javax.mail.MessagingException
 
 @Route(value = Const.PAGE_OPTIONS, layout = MainView::class)
 @PageTitle("Options")
-class OptionsView(private val tagService: TagService, private val docService: DocService, private val mailManager: MailManager) : VerticalLayout() {
+class OptionsView(private val tagService: TagService, private val docService: DocService) : VerticalLayout() {
 
     private val options = Options.get()
 
@@ -150,78 +148,6 @@ class OptionsView(private val tagService: TagService, private val docService: Do
                                 if (!isEmpty) {
                                     options.doc.ocrLanguage = value
                                     save()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        card {
-            width = "50vw"
-
-            details(t("mails")) {
-                isOpened = true
-                style["width"] = "100%"
-                style["padding"] = "5px"
-
-                content {
-                    formLayout {
-                        textField("IMAP Host") {
-                            value = options.mail.host
-                            addValueChangeListener {
-                                if (!it.value.isNullOrEmpty()) {
-                                    options.mail.host = it.value
-                                    save()
-                                }
-                            }
-                        }
-                        integerField("IMAP Port") {
-                            value = options.mail.port
-                            addValueChangeListener {
-                                if (it.value != null && it.value > 0) {
-                                    try {
-                                        options.mail.port = it.value
-                                        save()
-                                    } catch (ignored: NumberFormatException) {
-                                    }
-                                }
-                            }
-                        }
-                        textField("IMAP Login") {
-                            value = options.mail.login
-                            addValueChangeListener {
-                                if (!it.value.isNullOrEmpty()) {
-                                    options.mail.login = it.value
-                                    save()
-                                }
-                            }
-                        }
-                        passwordField("IMAP ${t("password")}") {
-                            value = options.mail.password
-                            addValueChangeListener {
-                                if (!it.value.isNullOrEmpty()) {
-                                    options.mail.password = it.value
-                                    save()
-                                }
-                            }
-                        }
-                        integerField("IMAP Interval (min)") {
-                            value = options.mail.pollingInterval
-                            addValueChangeListener {
-                                if (it.value != null && it.value > 0) {
-                                    options.mail.pollingInterval = it.value
-                                    save()
-                                }
-                            }
-                        }
-                        button(t("connect")) {
-                            onLeftClick {
-                                try {
-                                    mailManager.testConnection()
-                                    LOGGER.showInfo(t("settings.saved"), UI.getCurrent())
-                                } catch (e: MessagingException) {
-                                    LOGGER.showError(t("mail.imap.error", e), UI.getCurrent())
                                 }
                             }
                         }

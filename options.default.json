@@ -18,13 +18,6 @@
     "imageParserDpi": 300.0,
     "ocrLanguage": "deu"
   },
-  "mail": {
-    "host": "",
-    "port": 993,
-    "login": "",
-    "password": "",
-    "pollingInterval": 60
-  },
   "storage": {
     "ftp": {
       "url": "",

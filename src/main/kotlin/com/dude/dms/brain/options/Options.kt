@@ -9,7 +9,6 @@ import java.io.FileOutputStream
 data class Options(
         var view: ViewOptions,
         var doc: DocOptions,
-        var mail: MailOptions,
         var storage: StorageOptions,
         var tag: TagOptions,
         var update: UpdateOptions) {
