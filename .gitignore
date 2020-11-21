@@ -26,7 +26,6 @@ buildNumber.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -56,4 +55,3 @@ options.properties
 /dms.iml
 /build/
 /.gradle/
-/gradle/
