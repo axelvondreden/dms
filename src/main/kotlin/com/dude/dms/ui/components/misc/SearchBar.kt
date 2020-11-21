@@ -88,13 +88,17 @@ class SearchBar : HorizontalLayout() {
                     onSelect = {
                         val current = textFilter.value
                         if (current.endsWith(" ")) {
-                            textFilter.value = "$current$it "
+                            textFilter.value = "$current${it.text} "
                         } else {
-                            var itCopy = it
+                            var itCopy = it.text
                             while (!current.endsWith(itCopy)) {
                                 itCopy = itCopy.dropLast(1)
                             }
-                            textFilter.value = current.dropLast(itCopy.length) + it + " "
+                            textFilter.value = current.dropLast(itCopy.length) + it.text + " "
+                        }
+                        if (it.caretBackwardsMovement > 0) {
+                            val index = textFilter.value.length - 1 - it.caretBackwardsMovement
+                            textFilter.element.executeJs("this.shadowRoot.children[1].children[1].children[1].children[0].setSelectionRange($index, $index)")
                         }
                     }
                 }

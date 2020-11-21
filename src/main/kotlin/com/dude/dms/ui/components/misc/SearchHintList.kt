@@ -1,8 +1,8 @@
 package com.dude.dms.ui.components.misc
 
-import com.github.mvysny.karibudsl.v10.div
+import com.dude.dms.brain.parsing.search.Hint
+import com.dude.dms.extensions.searchHintItem
 import com.github.mvysny.karibudsl.v10.onLeftClick
-import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import kotlin.math.max
 import kotlin.math.min
@@ -10,10 +10,10 @@ import kotlin.math.min
 
 class SearchHintList : VerticalLayout() {
 
-    private var items = emptyList<Div>()
+    private var items = emptyList<SearchHintItem>()
     private var index = -1
 
-    var onSelect: ((String) -> Unit)? = null
+    var onSelect: ((Hint) -> Unit)? = null
 
     init {
         isPadding = false
@@ -21,6 +21,7 @@ class SearchHintList : VerticalLayout() {
     }
 
     fun up() {
+        if (index == -1) index = items.size
         index = max(-1, index - 1)
         refreshHighlighting()
     }
@@ -32,19 +33,16 @@ class SearchHintList : VerticalLayout() {
 
     fun select() {
         if (index !in items.indices) return
-        onSelect?.invoke(items[index].text)
+        onSelect?.invoke(items[index].hint)
         index = -1
     }
 
-    fun setItems(items: List<String>) {
+    fun setItems(items: List<Hint>) {
         removeAll()
         this.items = items.map {
-            div {
-                text = it
-                setWidthFull()
-                style["paddingLeft"] = "4px"
+            searchHintItem(it) {
                 onLeftClick {
-                    onSelect?.invoke(text)
+                    onSelect?.invoke(hint)
                     index = -1
                 }
             }
@@ -52,10 +50,10 @@ class SearchHintList : VerticalLayout() {
     }
 
     private fun refreshHighlighting() {
-        items.forEachIndexed { index, div ->
-            div.style["backgroundColor"] = ""
+        items.forEachIndexed { index, item ->
+            item.style["backgroundColor"] = ""
             if (index == this.index) {
-                div.style["backgroundColor"] = "var(--lumo-primary-color)"
+                item.style["backgroundColor"] = "var(--lumo-primary-color)"
             }
         }
     }
