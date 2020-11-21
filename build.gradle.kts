@@ -4,13 +4,10 @@ plugins {
     kotlin("jvm") version "1.4.10"
     id("org.springframework.boot") version "2.3.4.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    //id("org.jetbrains.kotlin.plugin.spring").version("1.4.10")
     id("org.jetbrains.kotlin.plugin.noarg") version "1.4.10" apply true
     id("org.jetbrains.kotlin.plugin.allopen") version "1.4.10" apply true
     id("com.vaadin") version "0.14.3.7"
-    //id("com.github.johnrengelman.shadow") version "6.1.0"
     application
-    //id("org.springframework.boot.experimental.thin-launcher") version "1.0.25.RELEASE"
 }
 
 ext {
@@ -34,7 +31,6 @@ repositories {
     jcenter()
     maven { setUrl("https://maven.vaadin.com/vaadin-addons") }
     maven { setUrl("https://dl.bintray.com/hotkeytlt/maven") }
-    //maven { setUrl("https://maven.vaadin.com/vaadin-prereleases") }
 }
 
 dependencyManagement {
@@ -55,15 +51,12 @@ dependencies {
                 .forEach { exclude(it) }
     }
 
-    //providedCompile("javax.servlet:javax.servlet-api:3.1.0")
     implementation("commons-net:commons-net:3.7")
     implementation("commons-logging:commons-logging:1.2")
     implementation("com.h2database:h2")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    //implementation(kotlin("stdlib-jdk8"))
 
     implementation("org.springframework.boot:spring-boot-devtools")
 
