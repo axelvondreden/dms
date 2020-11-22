@@ -114,6 +114,10 @@ tasks.bootDistZip {
     archiveBaseName.set("dms")
 }
 
+tasks.bootStartScripts {
+    applicationName = "dms"
+}
+
 val createConfig by tasks.registering {
     val config = file("$buildDir/config")
     outputs.dir(config)
