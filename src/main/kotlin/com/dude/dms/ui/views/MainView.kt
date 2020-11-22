@@ -11,7 +11,7 @@ import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.tooltip
+import com.dude.dms.utils.tooltip
 import com.dude.dms.ui.components.dialogs.*
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder

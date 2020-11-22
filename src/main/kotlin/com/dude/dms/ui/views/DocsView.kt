@@ -10,9 +10,9 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.docCard
-import com.dude.dms.extensions.searchBar
-import com.dude.dms.extensions.viewPageSelector
+import com.dude.dms.utils.docCard
+import com.dude.dms.utils.searchBar
+import com.dude.dms.utils.viewPageSelector
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.SearchBar

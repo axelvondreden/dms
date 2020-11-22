@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.docService
+import com.dude.dms.utils.docService
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.grid
 import com.github.mvysny.karibudsl.v10.onLeftClick

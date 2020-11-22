@@ -1,4 +1,4 @@
-package com.dude.dms.extensions
+package com.dude.dms.utils
 
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.TagContainer

@@ -9,7 +9,7 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.parsing.DmsOcrTextStripper
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.*
+import com.dude.dms.utils.*
 import com.dude.dms.ui.EditMode
 import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.helger.commons.io.file.FileHelper

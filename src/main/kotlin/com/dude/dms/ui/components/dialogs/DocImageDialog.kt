@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.*
+import com.dude.dms.utils.*
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.dude.dms.ui.components.misc.DocInfoLayout
 import com.dude.dms.ui.components.misc.DocPageSelector

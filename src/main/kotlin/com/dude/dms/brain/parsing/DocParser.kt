@@ -8,9 +8,9 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.findDate
-import com.dude.dms.extensions.findDecimal
-import com.dude.dms.extensions.findInt
+import com.dude.dms.utils.findDate
+import com.dude.dms.utils.findDecimal
+import com.dude.dms.utils.findInt
 import org.springframework.stereotype.Component
 import java.io.File
 import java.time.LocalDate

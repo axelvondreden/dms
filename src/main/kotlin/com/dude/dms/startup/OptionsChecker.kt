@@ -1,5 +1,7 @@
 package com.dude.dms.startup
 
+import com.dude.dms.utils.optionsDefaultPath
+import com.dude.dms.utils.optionsPath
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -12,15 +14,15 @@ class OptionsChecker {
 
     fun checkOptions() {
         val objectMapper = jacksonObjectMapper()
-        val defaultTree = objectMapper.readTree(File("options.default.json"))
-        val json = File("options.json")
+        val defaultTree = objectMapper.readTree(File(optionsDefaultPath))
+        val json = File(optionsPath)
         if (!json.exists()) {
-            objectMapper.writeValue(FileOutputStream("options.json"), defaultTree)
+            objectMapper.writeValue(FileOutputStream(optionsPath), defaultTree)
         } else {
-            val userTree = objectMapper.readTree(File("options.json"))
+            val userTree = objectMapper.readTree(File(optionsPath))
             if (defaultTree != userTree) {
                 updateOptions(defaultTree, userTree)
-                objectMapper.writeValue(FileOutputStream("options.json"), userTree)
+                objectMapper.writeValue(FileOutputStream(optionsPath), userTree)
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.brain.parsing.search.Hint
-import com.dude.dms.extensions.searchHintItem
+import com.dude.dms.utils.searchHintItem
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import kotlin.math.max

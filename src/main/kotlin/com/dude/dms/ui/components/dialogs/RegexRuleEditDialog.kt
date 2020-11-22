@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.*
+import com.dude.dms.utils.*
 import com.dude.dms.ui.components.standard.RegexField
 import com.dude.dms.ui.components.tags.TagSelector
 import com.github.mvysny.karibudsl.v10.button

@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.tooltip
+import com.dude.dms.utils.tooltip
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div

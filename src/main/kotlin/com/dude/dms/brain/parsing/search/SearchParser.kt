@@ -1,6 +1,6 @@
 package com.dude.dms.brain.parsing.search
 
-import com.dude.dms.extensions.attributeService
+import com.dude.dms.utils.attributeService
 import parser4k.InputIsNotConsumed
 import parser4k.NoMatchingParsers
 

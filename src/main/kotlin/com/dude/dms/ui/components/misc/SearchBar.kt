@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.misc
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.parsing.search.SearchParser
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.*
+import com.dude.dms.utils.*
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.UI

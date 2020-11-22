@@ -7,7 +7,7 @@ import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.*
+import com.dude.dms.utils.*
 import com.dude.dms.ui.Const.PAGE_RULES
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant

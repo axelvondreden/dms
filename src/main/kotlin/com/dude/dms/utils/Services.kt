@@ -1,4 +1,4 @@
-package com.dude.dms.extensions
+package com.dude.dms.utils
 
 import com.dude.dms.backend.service.*
 import com.dude.dms.brain.FileManager

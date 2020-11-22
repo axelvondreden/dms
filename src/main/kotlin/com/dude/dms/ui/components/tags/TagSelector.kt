@@ -2,7 +2,7 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.tagService
+import com.dude.dms.utils.tagService
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Label
 import dev.mett.vaadin.tooltip.Tooltips

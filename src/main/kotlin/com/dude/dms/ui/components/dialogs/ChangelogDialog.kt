@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.changelogService
+import com.dude.dms.utils.changelogService
 import com.github.mvysny.karibudsl.v10.label
 import com.github.mvysny.karibudsl.v10.textArea
 

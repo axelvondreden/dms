@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.misc
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.*
+import com.dude.dms.utils.*
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant

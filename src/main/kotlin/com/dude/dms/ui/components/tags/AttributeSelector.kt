@@ -3,9 +3,9 @@ package com.dude.dms.ui.components.tags
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.attributeCreateDialog
-import com.dude.dms.extensions.attributeService
-import com.dude.dms.extensions.eventManager
+import com.dude.dms.utils.attributeCreateDialog
+import com.dude.dms.utils.attributeService
+import com.dude.dms.utils.eventManager
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.grid
 import com.github.mvysny.karibudsl.v10.horizontalLayout

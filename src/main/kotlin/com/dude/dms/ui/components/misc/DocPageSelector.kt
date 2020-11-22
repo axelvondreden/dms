@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.tooltip
+import com.dude.dms.utils.tooltip
 import com.github.mvysny.karibudsl.v10.iconButton
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.github.mvysny.karibudsl.v10.select

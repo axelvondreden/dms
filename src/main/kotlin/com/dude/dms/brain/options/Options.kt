@@ -1,5 +1,7 @@
 package com.dude.dms.brain.options
 
+import com.dude.dms.utils.optionsDefaultPath
+import com.dude.dms.utils.optionsPath
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
@@ -15,7 +17,7 @@ data class Options(
 
     fun save() {
         options = null
-        jacksonObjectMapper().writeValue(FileOutputStream("options.json"), this)
+        jacksonObjectMapper().writeValue(FileOutputStream(optionsPath), this)
     }
 
     companion object {
@@ -23,11 +25,11 @@ data class Options(
 
         fun get(): Options {
             if (options == null) try {
-                options = jacksonObjectMapper().readValue(File("options.json").readText(), Options::class.java)
+                options = jacksonObjectMapper().readValue(File(optionsPath).readText(), Options::class.java)
             } catch (e: FileNotFoundException) {
-                return jacksonObjectMapper().readValue(File("options.default.json").readText(), Options::class.java)
+                return jacksonObjectMapper().readValue(File(optionsDefaultPath).readText(), Options::class.java)
             } catch (e: MissingKotlinParameterException) {
-                return jacksonObjectMapper().readValue(File("options.default.json").readText(), Options::class.java)
+                return jacksonObjectMapper().readValue(File(optionsDefaultPath).readText(), Options::class.java)
             }
             return options!!
         }

@@ -2,7 +2,7 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.attributeService
+import com.dude.dms.utils.attributeService
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox

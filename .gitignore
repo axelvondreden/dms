@@ -47,7 +47,7 @@ options.properties
 /.idea/
 /webdrivers.xml
 /webpack.config.js
-/options.json
+/config/options.json
 /package.json
 /pnpm-lock.yaml
 /pnpmfile.js

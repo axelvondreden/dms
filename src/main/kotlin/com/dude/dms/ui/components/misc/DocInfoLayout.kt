@@ -1,8 +1,8 @@
 package com.dude.dms.ui.components.misc
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.extensions.attributeValueLayout
-import com.dude.dms.extensions.tagSelector
+import com.dude.dms.utils.attributeValueLayout
+import com.dude.dms.utils.tagSelector
 import com.dude.dms.ui.components.tags.AttributeValueLayout
 import com.dude.dms.ui.components.tags.TagSelector
 import com.vaadin.flow.component.html.Div

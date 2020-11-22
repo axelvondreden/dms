@@ -8,6 +8,7 @@ import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.utils.tessdataPath
 import org.bytedeco.leptonica.global.lept
 import org.bytedeco.tesseract.TessBaseAPI
 import org.springframework.stereotype.Component
@@ -19,7 +20,7 @@ class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
 
     override fun getPages(guid: String, language: String): Set<PageContainer> {
         val api = TessBaseAPI()
-        if (api.Init("tessdata", language) != 0) {
+        if (api.Init(tessdataPath, language) != 0) {
             LOGGER.error(t("image.ocr.error"))
             return emptySet()
         }
@@ -80,7 +81,7 @@ class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
 
     fun getText(img: File, rect: Rect, language: String = Options.get().doc.ocrLanguage): String {
         val api = TessBaseAPI()
-        if (api.Init("tessdata", language) != 0) {
+        if (api.Init(tessdataPath, language) != 0) {
             LOGGER.error(t("image.ocr.error"))
             return ""
         }

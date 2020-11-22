@@ -2,10 +2,10 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
-import com.dude.dms.extensions.attributeValueService
-import com.dude.dms.extensions.findDate
-import com.dude.dms.extensions.findDecimal
-import com.dude.dms.extensions.round
+import com.dude.dms.utils.attributeValueService
+import com.dude.dms.utils.findDate
+import com.dude.dms.utils.findDecimal
+import com.dude.dms.utils.round
 import com.dude.dms.ui.components.misc.DocImageEditor
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant

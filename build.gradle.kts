@@ -114,7 +114,7 @@ val createConfig by tasks.registering {
     outputs.dir(config)
     doLast {
         config.mkdirs()
-        File("$rootDir/options.default.json").copyTo(File(config, "options.default.json"), overwrite = true)
+        File("$rootDir/config/options.default.json").copyTo(File(config, "options.default.json"), overwrite = true)
         File("$rootDir/tessdata/").copyRecursively(File(config, "tessdata/"), overwrite = true)
     }
 }

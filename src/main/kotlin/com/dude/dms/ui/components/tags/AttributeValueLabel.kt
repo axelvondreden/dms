@@ -2,7 +2,7 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
-import com.dude.dms.extensions.convert
+import com.dude.dms.utils.convert
 import com.github.mvysny.karibudsl.v10.label
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 

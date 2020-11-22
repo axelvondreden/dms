@@ -3,10 +3,10 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.attributeSelector
-import com.dude.dms.extensions.colorPicker
-import com.dude.dms.extensions.docService
-import com.dude.dms.extensions.tagService
+import com.dude.dms.utils.attributeSelector
+import com.dude.dms.utils.colorPicker
+import com.dude.dms.utils.docService
+import com.dude.dms.utils.tagService
 import com.dude.dms.ui.components.tags.AttributeSelector
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.*

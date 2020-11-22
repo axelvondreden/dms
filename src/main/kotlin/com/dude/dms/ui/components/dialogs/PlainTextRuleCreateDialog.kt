@@ -2,8 +2,8 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.plainTextRuleService
-import com.dude.dms.extensions.tagSelector
+import com.dude.dms.utils.plainTextRuleService
+import com.dude.dms.utils.tagSelector
 import com.dude.dms.ui.components.tags.TagSelector
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.checkbox.Checkbox

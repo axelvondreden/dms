@@ -5,7 +5,7 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.card
+import com.dude.dms.utils.card
 import com.dude.dms.ui.Const
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Text

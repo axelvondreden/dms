@@ -3,8 +3,8 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.round
-import com.dude.dms.extensions.wordService
+import com.dude.dms.utils.round
+import com.dude.dms.utils.wordService
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant

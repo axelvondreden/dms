@@ -4,9 +4,9 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.docImportCard
-import com.dude.dms.extensions.progressBar
-import com.dude.dms.extensions.tooltip
+import com.dude.dms.utils.docImportCard
+import com.dude.dms.utils.progressBar
+import com.dude.dms.utils.tooltip
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocImportCard
 import com.dude.dms.ui.components.dialogs.DocUploadDialog

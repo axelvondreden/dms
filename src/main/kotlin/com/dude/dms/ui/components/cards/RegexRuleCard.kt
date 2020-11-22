@@ -3,7 +3,7 @@ package com.dude.dms.ui.components.cards
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.rules.RegexRule
 import com.dude.dms.brain.events.EventType
-import com.dude.dms.extensions.*
+import com.dude.dms.utils.*
 import com.dude.dms.ui.components.tags.TagLayout
 import com.github.appreciated.card.RippleClickableCard
 import com.github.mvysny.karibudsl.v10.button

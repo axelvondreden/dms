@@ -2,9 +2,9 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.t
-import com.dude.dms.extensions.attributeService
-import com.dude.dms.extensions.docService
-import com.dude.dms.extensions.tagService
+import com.dude.dms.utils.attributeService
+import com.dude.dms.utils.docService
+import com.dude.dms.utils.tagService
 import com.github.mvysny.karibudsl.v10.button
 import com.github.mvysny.karibudsl.v10.checkBox
 import com.github.mvysny.karibudsl.v10.onLeftClick
