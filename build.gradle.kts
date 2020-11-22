@@ -125,7 +125,9 @@ distributions {
             from(createConfig) {
                 into("config")
             }
+            distributionBaseName.set("dms")
         }
+        distributionBaseName.set("dms")
     }
 }
 
