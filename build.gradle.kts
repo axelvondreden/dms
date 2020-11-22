@@ -109,9 +109,14 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 
+tasks.bootJar {
+    archiveBaseName.set("dms")
+}
+
 tasks.bootDistZip {
     archiveFileName.set("dms.zip")
     archiveBaseName.set("dms")
+    isZip64 = true
 }
 
 tasks.bootStartScripts {
