@@ -109,6 +109,10 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 
+tasks.bootJar {
+    archiveBaseName.set("dms")
+}
+
 val createConfig by tasks.registering {
     val config = file("$buildDir/config")
     outputs.dir(config)
