@@ -110,7 +110,7 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.bootDistZip {
-    archiveFileName.set("dms")
+    archiveFileName.set("dms.zip")
     archiveBaseName.set("dms")
 }
 
