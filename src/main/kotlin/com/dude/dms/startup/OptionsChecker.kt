@@ -17,6 +17,7 @@ class OptionsChecker {
         val defaultTree = objectMapper.readTree(File(optionsDefaultPath))
         val json = File(optionsPath)
         if (!json.exists()) {
+            json.createNewFile()
             objectMapper.writeValue(FileOutputStream(optionsPath), defaultTree)
         } else {
             val userTree = objectMapper.readTree(File(optionsPath))

@@ -8,7 +8,7 @@ import com.github.mvysny.karibudsl.v10.textArea
 class ChangelogDialog : DmsDialog(t("changelog"), 70, 70) {
 
     init {
-        label(changelogService.currentVersion)
+        label("DMS Version: ${changelogService.currentVersion}")
 
         changelogService.findAll().sortedBy { it.published }.reversed().forEach { changelog ->
             textArea(changelog.tag) {

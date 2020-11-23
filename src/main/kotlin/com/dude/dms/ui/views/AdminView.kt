@@ -51,7 +51,7 @@ class AdminView(private val docService: DocService, tagService: TagService, priv
                 .build().apply { width = "70%" }
         )
 
-        val dbData = listOf("DOC", "TAG", "ATTRIBUTE_VALUE", "LOG_ENTRY", "WORD").map { it to (dbService.getTableSize(it) / (1024.0 * 1024.0)).round(2) }.toMap()
+        val dbData = listOf("DOC", "DOC_TEXT", "TAG", "ATTRIBUTE_VALUE", "LOG_ENTRY", "WORD").map { it to (dbService.getTableSize(it) / (1024.0 * 1024.0)).round(2) }.toMap()
         add(ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.bar).build())
                 .withPlotOptions(PlotOptionsBuilder.get().withBar(BarBuilder.get().build()).build())

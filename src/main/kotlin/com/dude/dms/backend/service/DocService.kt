@@ -4,32 +4,22 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.docs.DocText
 import com.dude.dms.backend.repositories.DocRepository
 import com.dude.dms.brain.events.EventManager
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.io.Serializable
-import java.time.LocalDate
+import javax.persistence.EntityManager
 
 @Service
 class DocService(
         private val docRepository: DocRepository,
         private val attributeValueService: AttributeValueService,
         private val pageService: PageService,
-        eventManager: EventManager
+        private val docTextService: DocTextService,
+        eventManager: EventManager,
+        private val entityManager: EntityManager
 ) : RestoreService<Doc>(docRepository, eventManager) {
-
-    data class Filter(
-            var includeAllTags: Boolean,
-            var includeAllAttributes: Boolean,
-            var includedTags: Set<Tag>? = null,
-            var excludedTags: Set<Tag>? = null,
-            var includedAttributes: Set<Attribute>? = null,
-            var excludedAttributes: Set<Attribute>? = null,
-            var from: LocalDate? = null,
-            var to: LocalDate? = null,
-            var text: String? = null
-    ) : Serializable
 
     fun create(entity: Doc, attributeValues: Set<AttributeValue>): Doc {
         val new = super.create(entity)
@@ -37,12 +27,18 @@ class DocService(
             it.doc = new
             attributeValueService.create(it)
         }
+        val text = DocText(new, new.getFullText())
+        docTextService.create(text)
+        new.docText = text
+        super.save(new)
         return new
     }
 
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
         createAttributeValues(new)
+        val text = DocText(new, new.getFullText())
+        docTextService.save(text)
         return new
     }
 
@@ -50,24 +46,32 @@ class DocService(
         createAttributeValues(entity)
         super.save(entity)
         deleteAttributeValues(entity)
+        val text = entity.docText
+        if (text != null) {
+            text.text = entity.getFullText()
+            docTextService.save(text)
+        }
         return entity
     }
 
     override fun delete(entity: Doc) {
         entity.pages.forEach(pageService::delete)
         entity.attributeValues.forEach(attributeValueService::delete)
+        entity.docText?.let { docTextService.delete(it) }
         load(entity.id)?.let { super.delete(it) }
     }
 
     override fun softDelete(entity: Doc) {
         entity.pages.forEach(pageService::softDelete)
         entity.attributeValues.forEach(attributeValueService::softDelete)
+        entity.docText?.let { docTextService.softDelete(it) }
         super.softDelete(entity)
     }
 
     override fun restore(entity: Doc) {
         entity.pages.forEach(pageService::restore)
         entity.attributeValues.forEach(attributeValueService::restore)
+        entity.docText?.let { docTextService.restore(it) }
         super.restore(entity)
     }
 
@@ -98,21 +102,14 @@ class DocService(
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
-    fun findByFilter(filter: Filter, pageable: Pageable): Set<Doc> {
-        val docs = docRepository.findByFilter(
-                from = filter.from,
-                to = filter.to,
-                includeAllTags = filter.includeAllTags,
-                includeAllAttributes = filter.includeAllAttributes,
-                includedTags = filter.includedTags,
-                includedAttributes = filter.includedAttributes,
-                excludedTags = filter.excludedTags,
-                excludedAttributes = filter.excludedAttributes,
-                pageable = pageable
-        )
-        if (!filter.text.isNullOrBlank()) {
-            return docs.filter { it.getFullText().contains(filter.text!!, true) }.toSet()
+    fun findByFilter(filter: String, pageable: Pageable): Set<Doc> {
+        if (filter.isBlank()) {
+            return findAll(pageable).toSet()
         }
-        return docs.toSet()
+        val query = entityManager.createQuery("SELECT doc FROM Doc doc WHERE $filter ORDER BY doc.id asc", Doc::class.java).apply {
+            firstResult = pageable.offset.toInt()
+            maxResults = pageable.pageSize
+        }
+        return query.resultList.toSet()
     }
 }

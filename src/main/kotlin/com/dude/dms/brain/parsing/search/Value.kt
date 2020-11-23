@@ -13,7 +13,8 @@ data class IntLiteral(val value: Int) : Value() {
 }
 data class StringLiteral(val value: String) : Value() {
     override fun translate() = "'$value'"
+    fun translateLike() = "'%$value%'"
 }
 data class ArrayLiteral(val value: List<StringLiteral>) : Value() {
-    override fun translate() = value.joinToString(", ") { it.translate() }
+    override fun translate() = "(${value.joinToString(", ") { it.translate() }})"
 }

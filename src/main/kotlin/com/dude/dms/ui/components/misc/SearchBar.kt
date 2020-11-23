@@ -1,10 +1,15 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.backend.service.DocService
 import com.dude.dms.brain.parsing.search.SearchParser
 import com.dude.dms.brain.t
-import com.dude.dms.utils.*
-import com.github.mvysny.karibudsl.v10.*
+import com.dude.dms.utils.clearTooltips
+import com.dude.dms.utils.searchHintList
+import com.dude.dms.utils.showTooltip
+import com.dude.dms.utils.tooltip
+import com.github.mvysny.karibudsl.v10.datePicker
+import com.github.mvysny.karibudsl.v10.horizontalLayout
+import com.github.mvysny.karibudsl.v10.textField
+import com.github.mvysny.karibudsl.v10.verticalLayout
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.datepicker.DatePicker
@@ -24,7 +29,7 @@ class SearchBar : HorizontalLayout() {
     private val fromFilter: DatePicker
     private val toFilter: DatePicker
 
-    var onChange: (() -> Unit)? = null
+    var onChange: ((String) -> Unit)? = null
 
     private val searchParser = SearchParser()
 
@@ -63,22 +68,11 @@ class SearchBar : HorizontalLayout() {
                         textHintList.select()
                     })
                     suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
-                    addValueChangeListener {
-                        val error = searchParser.setInput(it.value)
-                        textHintList.setItems(searchParser.getHints())
-                        if (error.isNullOrBlank()) {
-                            suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
-                            (suffixComponent as Icon).clearTooltips()
-                        } else {
-                            suffixComponent = VaadinIcon.BAN.create().apply { color = "var(--lumo-error-text-color)" }
-                            (suffixComponent as Icon).tooltip(error)
-                            Timer().schedule(200) { viewUI.access { (suffixComponent as Icon).showTooltip() } }
-                        }
-                    }
+                    addValueChangeListener { searchTextChange(it.value) }
                 }
                 textHintList = searchHintList {
                     isVisible = false
-                    maxWidth = "40em"
+                    maxWidth = "30em"
                     style["position"] = "absolute"
                     style["top"] = "50px"
                     style["backgroundColor"] = "var(--lumo-base-color)"
@@ -107,29 +101,46 @@ class SearchBar : HorizontalLayout() {
 
         fromFilter = datePicker {
             placeholder = t("from")
-            addValueChangeListener { onChange?.invoke() }
+            //addValueChangeListener { onChange?.invoke() }
             isClearButtonVisible = true
         }
         toFilter = datePicker {
             placeholder = t("to")
-            addValueChangeListener { onChange?.invoke() }
+            //addValueChangeListener { onChange?.invoke() }
             isClearButtonVisible = true
         }
     }
 
-    val filter
-        get() = DocService.Filter(
-                true, true,
-                /*includeAllTags = t("all") == tagIncludeVariant.value,
-                includeAllAttributes = t("all") == attributeIncludeVariant.value,
-                includedTags = tagIncludeFilter.optionalValue.orElse(null),
-                excludedTags = tagExcludeFilter.optionalValue.orElse(null),
-                includedAttributes = attributeIncludeFilter.optionalValue.orElse(null),
-                excludedAttributes = attributeExcludeFilter.optionalValue.orElse(null),*/
-                from = fromFilter.optionalValue.orElse(null),
-                to = toFilter.optionalValue.orElse(null),
-                //text = textFilter.optionalValue.orElse(null)
-        )
+    private fun searchTextChange(newValue: String) {
+        val result = searchParser.setInput(newValue)
+        textHintList.setItems(searchParser.getHints())
+        (textFilter.suffixComponent as Icon).clearTooltips()
+        if (newValue.isBlank()) {
+            onChange?.invoke("")
+            setSearchStatusSuccess("")
+        } else {
+            if (result.isValid) {
+                onChange?.invoke(result.query!!.translate())
+                setSearchStatusSuccess(result.query!!.translate())
+            } else {
+                setSearchStatusFail(result.error!!)
+            }
+        }
+    }
+
+    private fun setSearchStatusSuccess(msg: String) {
+        textFilter.suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
+        if (msg.isNotBlank()) {
+            (textFilter.suffixComponent as Icon).tooltip(msg)
+            Timer().schedule(200) { viewUI.access { (textFilter.suffixComponent as Icon).showTooltip() } }
+        }
+    }
+
+    private fun setSearchStatusFail(msg: String) {
+        textFilter.suffixComponent = VaadinIcon.BAN.create().apply { color = "var(--lumo-error-text-color)" }
+        (textFilter.suffixComponent as Icon).tooltip(msg)
+        Timer().schedule(200) { viewUI.access { (textFilter.suffixComponent as Icon).showTooltip() } }
+    }
 
     fun refresh() {
         searchParser.refresh()

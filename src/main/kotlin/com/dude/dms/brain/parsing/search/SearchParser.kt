@@ -6,21 +6,22 @@ import parser4k.NoMatchingParsers
 
 class SearchParser {
 
+    data class ParseResult(val query: Query?, val error: String?, val isValid: Boolean)
+
     private var text: String = ""
 
     val filter
         get() = ""
 
-    fun setInput(text: String): String? {
+    fun setInput(text: String): ParseResult {
         this.text = text
-        try {
-            val op = SearchLang.parse(text.trim())
+        return try {
+            ParseResult(SearchLang.parse(text.trim()), null, true)
         } catch (e: NoMatchingParsers) {
-            return e.message
+            ParseResult(null, e.message, false)
         } catch (e: InputIsNotConsumed) {
-            return e.message
+            ParseResult(null, e.message, false)
         }
-        return null
     }
 
     fun refresh() {
@@ -58,9 +59,9 @@ class SearchParser {
         if (keyTest.first != null) {
             if (text.endsWith(" ")) return keyTest.first!!.hints
             val start = text.takeLast(keyTest.second)
-            return queryTest.first!!.hints.filter { it.text.startsWith(start, ignoreCase = true) }
+            return keyTest.first!!.hints.filter { it.text.startsWith(start, ignoreCase = true) }
         }
-        return listOf(Hint("???"))
+        return emptyList()
     }
 
     companion object {

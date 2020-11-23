@@ -53,6 +53,8 @@ class DocsView(
 
     private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
 
+    private var filter = ""
+
     init {
         eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
         eventManager.register(this, Doc::class, EventType.UPDATE) { updateDoc(it, viewUI) }
@@ -61,7 +63,10 @@ class DocsView(
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
 
         searchBar = searchBar {
-            onChange = { fill(viewUI) }
+            onChange = {
+                filter = it
+                fill(viewUI)
+            }
         }
         itemContainer = div {
             setSizeFull()
@@ -148,7 +153,7 @@ class DocsView(
     }
 
     private fun fill(ui: UI) {
-        val docs = docService.findByFilter(searchBar.filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second))
+        val docs = docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second))
         ui.access {
             itemContainer.removeAll()
             pageSelector.items = docs.size
