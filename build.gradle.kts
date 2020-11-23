@@ -116,7 +116,6 @@ tasks.bootJar {
 tasks.bootDistZip {
     archiveFileName.set("dms.zip")
     archiveBaseName.set("dms")
-    isZip64 = true
 }
 
 tasks.bootStartScripts {
