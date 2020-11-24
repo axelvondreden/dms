@@ -107,14 +107,11 @@ class SearchBar : HorizontalLayout() {
             setSearchStatusSuccess("")
         } else {
             if (result.isValid) {
-                onChange?.invoke(result.query!!.translate())
-                setSearchStatusSuccess(result.query!!.translate())
+                onChange?.invoke(result.search!!.translate())
+                setSearchStatusSuccess(result.search!!.translate())
             } else {
                 setSearchStatusFail(result.error!!)
             }
-        }
-        if (!hintResult.filtered && hintResult.hints.size == 1) {
-            textHintList.select(hintResult.hints.first())
         }
     }
 

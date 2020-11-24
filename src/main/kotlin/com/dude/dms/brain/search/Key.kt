@@ -10,6 +10,10 @@ abstract class Key : Hints {
     abstract fun getValueHints(op: Operator): List<Hint>
 }
 
+abstract class OrderKey : Key(), Translatable {
+    abstract val orderHints: List<Hint>
+}
+
 object TextKey : Key() {
     override val hints get() = listOf(Hint("~=", t("search.like")), Hint("!~=", t("search.notlike")))
 
@@ -21,13 +25,20 @@ object TextKey : Key() {
     }
 }
 
-object DateKey : Key() {
+object DateKey : OrderKey() {
     override val hints get() = listOf(
             Hint("=", t("search.equal")),
             Hint("!=", t("search.notequal")),
             Hint("<", t("search.less")),
             Hint(">", t("search.greater"))
     )
+
+    override val orderHints get() = listOf(
+            Hint(t("search.order.asc"), t("ascending")),
+            Hint(t("search.order.desc"), t("descending"))
+    )
+
+    override fun translate() = "doc.documentDate"
 
     override fun getValueHints(op: Operator): List<Hint> {
         return when (op) {

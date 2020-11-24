@@ -20,6 +20,15 @@ object SearchLang {
     private val dateKey = token(t("date")).map { DateKey }
     private val tagKey = token(t("tag")).map { TagKey }
 
+    private val orderAsc = token(t("search.order.asc")).map { Asc }
+    private val orderDesc = token(t("search.order.desc")).map { Desc }
+    private val orderBy = inOrder(
+            token(t("search.order")),
+            token(t("search.order.by")),
+            oneOf(dateKey),
+            oneOf(orderAsc, orderDesc)
+    ).map { OrderBy(it.val3, it.val4) }
+
     private val equal = token("=").map { Equal }
     private val notEqual = token("!=").map { NotEqual }
     private val less = token("<").map { Less }
@@ -49,10 +58,14 @@ object SearchLang {
     private val paren = inOrder(token("("), ref { query }, token(")")).skipWrapper()
 
     private val query: Parser<Query> = oneOfWithPrecedence(or, and, paren.nestedPrecedence(), filter)
+
+    private val search: Parser<Search> = inOrder(optional(query), optional(orderBy)).map { Search(it.first, it.second) }
+
     private val key: Parser<Key> = oneOf(textKey, tagKey, dateKey)
+    private val orderKey: Parser<OrderKey> = oneOf(dateKey)
     private val op: Parser<Operator> = oneOf(equal, notEqual, less, greater, inArray, notInArray, like, notLike)
 
-    fun parse(s: String): Query = s.parseWith(query)
+    fun parse(s: String): Search = s.parseWith(search)
 
     /**
      * Tries to parse a valid query while dropping the last character continuously
@@ -86,6 +99,25 @@ object SearchLang {
         while (count < 5 && testKey == null) {
             try {
                 testKey = s.takeLast(count).parseWith(key)
+            } catch (e: NoMatchingParsers) {
+                count++
+            } catch (e: InputIsNotConsumed) {
+                count++
+            }
+        }
+        return testKey to count
+    }
+
+    /**
+     * Tries to parse a valid order-key while increasing the amount if searched characters from the end of the string
+     * @return [Pair] order-key and number of characters until a key could be parsed
+     */
+    fun testForOrderKeyFromEnd(s: String): Pair<OrderKey?, Int> {
+        var count = 1
+        var testKey: OrderKey? = null
+        while (count < 5 && testKey == null) {
+            try {
+                testKey = s.takeLast(count).parseWith(orderKey)
             } catch (e: NoMatchingParsers) {
                 count++
             } catch (e: InputIsNotConsumed) {

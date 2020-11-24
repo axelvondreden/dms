@@ -106,7 +106,7 @@ class DocService(
         if (filter.isBlank()) {
             return findAll(pageable).toSet()
         }
-        val query = entityManager.createQuery("SELECT doc FROM Doc doc WHERE $filter ORDER BY doc.id asc", Doc::class.java).apply {
+        val query = entityManager.createQuery("SELECT doc FROM Doc doc WHERE $filter", Doc::class.java).apply {
             firstResult = pageable.offset.toInt()
             maxResults = pageable.pageSize
         }
