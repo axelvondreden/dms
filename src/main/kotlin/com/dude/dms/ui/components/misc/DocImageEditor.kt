@@ -23,6 +23,8 @@ import com.vaadin.flow.dom.DomEvent
 import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.streams.toList
 
@@ -115,7 +117,7 @@ class DocImageEditor : Div() {
             progress.isVisible = true
             progress.max = words.size.toDouble()
             val ui = UI.getCurrent()
-            Thread {
+            GlobalScope.launch {
                 words.chunked(10).withIndex().forEach {
                     addWordWrappers(it.value.toSet(), ui)
                     ui.access { progress.value = it.index.toDouble() * 10 }
@@ -124,7 +126,7 @@ class DocImageEditor : Div() {
                     element.appendChild(drawDiv.element)
                     progress.isVisible = false
                 }
-            }.start()
+            }
         }
     }
 

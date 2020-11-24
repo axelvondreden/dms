@@ -8,7 +8,7 @@ import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.rules.PlainTextRule
 import com.dude.dms.backend.data.rules.RegexRule
-import com.dude.dms.brain.parsing.search.Hint
+import com.dude.dms.brain.search.hint.Hint
 import com.dude.dms.ui.components.cards.*
 import com.dude.dms.ui.components.dialogs.*
 import com.dude.dms.ui.components.misc.*

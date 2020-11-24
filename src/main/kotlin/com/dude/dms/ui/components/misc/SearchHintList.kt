@@ -1,6 +1,7 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.brain.parsing.search.Hint
+import com.dude.dms.brain.search.hint.Hint
+import com.dude.dms.brain.search.hint.HintResult
 import com.dude.dms.utils.searchHintItem
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -37,9 +38,14 @@ class SearchHintList : VerticalLayout() {
         index = -1
     }
 
-    fun setItems(items: List<Hint>) {
+    fun select(hint: Hint) {
+        items.firstOrNull { it.hint == hint }?.let { onSelect?.invoke(it.hint) }
+        index = -1
+    }
+
+    fun setHints(result: HintResult) {
         removeAll()
-        this.items = items.map {
+        this.items = result.hints.map {
             searchHintItem(it) {
                 onLeftClick {
                     onSelect?.invoke(hint)

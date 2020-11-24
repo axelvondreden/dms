@@ -1,4 +1,4 @@
-package com.dude.dms.brain.parsing.search
+package com.dude.dms.brain.search
 
 interface Translatable {
     fun translate(): String

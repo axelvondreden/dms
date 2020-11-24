@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.brain.parsing.search.Hint
+import com.dude.dms.brain.search.hint.Hint
 import com.github.mvysny.karibudsl.v10.div
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout

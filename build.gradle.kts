@@ -41,6 +41,8 @@ dependencyManagement {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+
     implementation("com.github.mvysny.karibudsl:karibu-dsl:$karibudslVersion")
 
     implementation("com.vaadin:vaadin-spring-boot-starter") {

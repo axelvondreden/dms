@@ -1,18 +1,16 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.brain.parsing.search.SearchParser
+import com.dude.dms.brain.search.SearchParser
 import com.dude.dms.brain.t
 import com.dude.dms.utils.clearTooltips
 import com.dude.dms.utils.searchHintList
 import com.dude.dms.utils.showTooltip
 import com.dude.dms.utils.tooltip
-import com.github.mvysny.karibudsl.v10.datePicker
 import com.github.mvysny.karibudsl.v10.horizontalLayout
 import com.github.mvysny.karibudsl.v10.textField
 import com.github.mvysny.karibudsl.v10.verticalLayout
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -26,8 +24,6 @@ class SearchBar : HorizontalLayout() {
 
     private lateinit var textFilter: TextField
     private lateinit var textHintList: SearchHintList
-    private val fromFilter: DatePicker
-    private val toFilter: DatePicker
 
     var onChange: ((String) -> Unit)? = null
 
@@ -44,6 +40,7 @@ class SearchBar : HorizontalLayout() {
                 setWidthFull()
                 textFilter = textField {
                     setWidthFull()
+                    isClearButtonVisible = true
                     placeholder = t("search")
                     valueChangeMode = ValueChangeMode.EAGER
                     element.setAttribute("onkeydown", """
@@ -78,7 +75,7 @@ class SearchBar : HorizontalLayout() {
                     style["backgroundColor"] = "var(--lumo-base-color)"
                     style["zIndex"] = "1"
                     style["border"] = "2px solid var(--lumo-contrast-20pct)"
-                    setItems(searchParser.getHints())
+                    setHints(searchParser.getHints())
                     onSelect = {
                         val current = textFilter.value
                         if (current.endsWith(" ")) {
@@ -98,22 +95,12 @@ class SearchBar : HorizontalLayout() {
                 }
             }
         }
-
-        fromFilter = datePicker {
-            placeholder = t("from")
-            //addValueChangeListener { onChange?.invoke() }
-            isClearButtonVisible = true
-        }
-        toFilter = datePicker {
-            placeholder = t("to")
-            //addValueChangeListener { onChange?.invoke() }
-            isClearButtonVisible = true
-        }
     }
 
     private fun searchTextChange(newValue: String) {
         val result = searchParser.setInput(newValue)
-        textHintList.setItems(searchParser.getHints())
+        val hintResult = searchParser.getHints()
+        textHintList.setHints(hintResult)
         (textFilter.suffixComponent as Icon).clearTooltips()
         if (newValue.isBlank()) {
             onChange?.invoke("")
@@ -125,6 +112,9 @@ class SearchBar : HorizontalLayout() {
             } else {
                 setSearchStatusFail(result.error!!)
             }
+        }
+        if (!hintResult.filtered && hintResult.hints.size == 1) {
+            textHintList.select(hintResult.hints.first())
         }
     }
 

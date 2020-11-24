@@ -1,4 +1,4 @@
-package com.dude.dms.brain.parsing.search
+package com.dude.dms.brain.search
 
 import com.dude.dms.brain.t
 import parser4k.*

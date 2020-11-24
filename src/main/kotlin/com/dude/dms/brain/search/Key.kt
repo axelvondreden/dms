@@ -1,5 +1,7 @@
-package com.dude.dms.brain.parsing.search
+package com.dude.dms.brain.search
 
+import com.dude.dms.brain.search.hint.Hint
+import com.dude.dms.brain.search.hint.Hints
 import com.dude.dms.brain.t
 import com.dude.dms.utils.convert
 import java.time.LocalDate
