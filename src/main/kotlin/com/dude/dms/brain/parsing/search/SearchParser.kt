@@ -1,5 +1,6 @@
 package com.dude.dms.brain.parsing.search
 
+import com.dude.dms.brain.t
 import com.dude.dms.utils.attributeService
 import parser4k.InputIsNotConsumed
 import parser4k.NoMatchingParsers
@@ -45,11 +46,18 @@ class SearchParser {
         }
         val opTest = SearchLang.testForOpFromEnd(text.trim())
         if (opTest.first != null) {
-            if (text.endsWith(" ")) return opTest.first!!.hints
-            val start = text.takeLast(opTest.second)
-            return opTest.first!!.hints.filter { it.text.startsWith(start, ignoreCase = true) }
+            val keyTest = SearchLang.testForKeyFromEnd(text.trim().dropLast(opTest.second))
+            if (keyTest.first != null) {
+                if (text.endsWith(" ")) return keyTest.first!!.getValueHints(opTest.first!!)
+                val start = text.takeLast(keyTest.second)
+                return keyTest.first!!.getValueHints(opTest.first!!).filter { it.text.startsWith(start, ignoreCase = true) }
+            } else {
+                if (text.endsWith(" ")) return opTest.first!!.hints
+                val start = text.takeLast(opTest.second)
+                return opTest.first!!.hints.filter { it.text.startsWith(start, ignoreCase = true) }
+            }
         }
-        val inKeyPart = Regex("^\\w*\$|^.*(and\\W*|or\\W*|\\()\\w*\$", RegexOption.IGNORE_CASE).matches(text)
+        val inKeyPart = Regex("^\\w*\$|^.*(${t("and")}\\W*|${t("or")}\\W*|\\()\\w*\$", RegexOption.IGNORE_CASE).matches(text)
         if (inKeyPart) {
             if (text.endsWith(" ")) return searchKeys
             val start = text.trim().split(Regex("\\s+")).last()
@@ -67,8 +75,9 @@ class SearchParser {
     companion object {
         var attributes = attributeService.findAll().map { it.name }
         val searchKeys = listOf(
-                Hint("text", "Search in document text"),
-                Hint("tag", "Search for document tags")
+                Hint(t("text"), t("doc.text")),
+                Hint(t("tag"), t("doc.tag")),
+                Hint(t("date"), t("doc.date"))
         )//, *attributes.toTypedArray())
     }
 }

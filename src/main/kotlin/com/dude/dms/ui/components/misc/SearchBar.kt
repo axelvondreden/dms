@@ -85,7 +85,7 @@ class SearchBar : HorizontalLayout() {
                             textFilter.value = "$current${it.text} "
                         } else {
                             var itCopy = it.text
-                            while (!current.endsWith(itCopy)) {
+                            while (!current.endsWith(itCopy, ignoreCase = true)) {
                                 itCopy = itCopy.dropLast(1)
                             }
                             textFilter.value = current.dropLast(itCopy.length) + it.text + " "

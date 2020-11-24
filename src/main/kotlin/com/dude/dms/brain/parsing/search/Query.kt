@@ -1,7 +1,9 @@
 package com.dude.dms.brain.parsing.search
 
+import com.dude.dms.brain.t
+
 abstract class Query : Translatable, Hints {
-    override val hints get() = listOf(Hint("and"), Hint("or"))
+    override val hints get() = listOf(Hint(t("and")), Hint(t("or")))
 }
 
 data class And(val left: Query, val right: Query) : Query() {

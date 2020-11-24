@@ -1,5 +1,6 @@
 package com.dude.dms.brain.parsing.search
 
+import com.dude.dms.brain.t
 import parser4k.*
 import parser4k.commonparsers.Tokens
 import parser4k.commonparsers.joinedWith
@@ -9,13 +10,15 @@ object SearchLang {
 
     private val boolLiteral = oneOf(str("true"), str("false")).map { if (it == "true") True else False }
     private val intLiteral = Tokens.integer.map { IntLiteral(it.toInt()) }
-    private val stringLiteral = Tokens.string.map { StringLiteral(it) }
+    private val stringLiteral = Tokens.string.map(::StringLiteral)
+    private val dateLiteral = inOrder(intLiteral, token("."), intLiteral, token("."), intLiteral).map { DateLiteral(it.val1.value, it.val3.value, it.val5.value) }
     private val arrayLiteral = inOrder(token("["), ref { stringLiteral }.joinedWith(token(",")), token("]"))
             .skipWrapper().map(::ArrayLiteral)
     private val unaryMinus = inOrder(token("-"), ref { intLiteral }).map { (_, it) -> IntLiteral(-it.value) }
 
-    private val textKey = token("text").map { TextKey }
-    private val tagKey = token("tag").map { TagKey }
+    private val textKey = token(t("text")).map { TextKey }
+    private val dateKey = token(t("date")).map { DateKey }
+    private val tagKey = token(t("tag")).map { TagKey }
 
     private val equal = token("=").map { Equal }
     private val notEqual = token("!=").map { NotEqual }
@@ -27,6 +30,7 @@ object SearchLang {
     private val notLike = token("!~=").map { NotLike }
 
     private val textFilter = inOrder(textKey, oneOf(like, notLike), stringLiteral).map { TextFilter(it.second, it.third) }
+    private val dateFilter = inOrder(dateKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { DateFilter(it.second, it.third) }
     private val tagFilter = inOrder(
             tagKey,
             oneOf(
@@ -37,15 +41,15 @@ object SearchLang {
             )
     ).map { TagFilter(it.second.first, it.second.second) }
 
-    private val filter = oneOf(textFilter, tagFilter)
+    private val filter = oneOf(textFilter, tagFilter, dateFilter)
 
-    private val and = inOrder(ref { query }, token("and"), ref { query }).map { And(it.first, it.third) }
-    private val or = inOrder(ref { query }, token("or"), ref { query }).map { Or(it.first, it.third) }
+    private val and = inOrder(ref { query }, token(t("and")), ref { query }).map { And(it.first, it.third) }
+    private val or = inOrder(ref { query }, token(t("or")), ref { query }).map { Or(it.first, it.third) }
 
     private val paren = inOrder(token("("), ref { query }, token(")")).skipWrapper()
 
     private val query: Parser<Query> = oneOfWithPrecedence(or, and, paren.nestedPrecedence(), filter)
-    private val key: Parser<Key> = oneOf(textKey, tagKey)
+    private val key: Parser<Key> = oneOf(textKey, tagKey, dateKey)
     private val op: Parser<Operator> = oneOf(equal, notEqual, less, greater, inArray, notInArray, like, notLike)
 
     fun parse(s: String): Query = s.parseWith(query)
@@ -98,17 +102,16 @@ object SearchLang {
     fun testForOpFromEnd(s: String): Pair<Operator?, Int> {
         var count = 1
         var testOp: Operator? = null
-        while (count < 5 && testOp == null) {
+        var resultCount = 0
+        while (count < 5) {
             try {
                 testOp = s.takeLast(count).parseWith(op)
+                resultCount = count
             } catch (e: NoMatchingParsers) {
-                count++
             } catch (e: InputIsNotConsumed) {
-                count++
             }
+            count++
         }
-        return testOp to count
+        return testOp to resultCount
     }
-
-    fun translate(query: Query): String = query.translate()
 }
