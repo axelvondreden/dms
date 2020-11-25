@@ -107,7 +107,13 @@ class MainView(
                 }
         )
         for (attribute in attributeService.findAll()) {
-            val entry = LeftClickableItem(attribute.name, VaadinIcon.TEXT_LABEL.create()) { }
+            val icon = when (attribute.type) {
+                Attribute.Type.STRING -> VaadinIcon.TEXT_LABEL
+                Attribute.Type.INT -> VaadinIcon.HASH
+                Attribute.Type.FLOAT -> VaadinIcon.SUPERSCRIPT
+                Attribute.Type.DATE -> VaadinIcon.CALENDAR
+            }
+            val entry = LeftClickableItem(attribute.name, icon.create()) { }
             val tags = tagService.findByAttribute(attribute).joinToString("\n") { it.name }
             if (tags.isNotEmpty()) {
                 entry.tooltip("${t("tags")}:\n$tags")
@@ -120,7 +126,7 @@ class MainView(
                 addItem(t("delete")) { AttributeDeleteDialog(attribute).open() }
             }
         }
-        return LeftSubmenu(t("attributes"), VaadinIcon.ACCESSIBILITY.create(), attributeEntries).withCloseMenuOnNavigation(false)
+        return LeftSubmenu(t("attributes"), VaadinIcon.FILE_TREE.create(), attributeEntries).withCloseMenuOnNavigation(false)
     }
 
     private fun createTagsEntry(): LeftSubmenu {

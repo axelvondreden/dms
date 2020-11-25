@@ -112,7 +112,6 @@ class SearchBar : VerticalLayout() {
         textFilter.suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
         if (msg.isNotBlank()) {
             (textFilter.suffixComponent as Icon).tooltip(msg)
-            Timer().schedule(200) { viewUI.access { (textFilter.suffixComponent as Icon).showTooltip() } }
         }
     }
 

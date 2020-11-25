@@ -5,6 +5,7 @@ import com.dude.dms.brain.search.hint.Hints
 import com.dude.dms.brain.t
 import com.dude.dms.utils.convert
 import com.dude.dms.utils.tagService
+import com.vaadin.flow.component.icon.VaadinIcon
 import java.time.LocalDate
 
 abstract class Key : Hints {
@@ -75,8 +76,8 @@ object TagKey: Key() {
     )
 
     override fun getValueHints(op: Operator) = when (op) {
-        is Equal, is NotEqual -> tagService.findAll().map { Hint(it.name, t("tag")) }
-        is InArray, NotInArray -> listOf(Hint("[, ]", t("list"), 3))
+        is Equal, is NotEqual -> tagService.findAll().map { Hint(it.name, t("tag"), icon = VaadinIcon.TAG) }
+        is InArray, NotInArray -> listOf(Hint("[, ]", t("list"), 3, VaadinIcon.TAG))
         else -> emptyList()
     }
 }

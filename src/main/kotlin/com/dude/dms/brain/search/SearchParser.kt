@@ -5,6 +5,7 @@ import com.dude.dms.brain.search.hint.Hint
 import com.dude.dms.brain.search.hint.HintResult
 import com.dude.dms.brain.t
 import com.dude.dms.utils.attributeService
+import com.vaadin.flow.component.icon.VaadinIcon
 import parser4k.InputIsNotConsumed
 import parser4k.NoMatchingParsers
 
@@ -95,13 +96,13 @@ class SearchParser {
                 Hint(t("date"), t("doc.date")),
                 Hint(t("created"), t("doc.insert.date"))
         ).plus(attributeService.findAll().map {
-            val desc = when (it.type) {
-                Attribute.Type.STRING -> "${t("attribute")} (${t("text")})"
-                Attribute.Type.INT -> "${t("attribute")} (Integer)"
-                Attribute.Type.FLOAT -> "${t("attribute")} (${t("number")})"
-                Attribute.Type.DATE -> "${t("attribute")} (${t("date")})"
+            val param = when (it.type) {
+                Attribute.Type.STRING -> "${t("attribute")} (${t("text")})" to VaadinIcon.TEXT_LABEL
+                Attribute.Type.INT -> "${t("attribute")} (Integer)" to VaadinIcon.HASH
+                Attribute.Type.FLOAT -> "${t("attribute")} (${t("number")})" to VaadinIcon.SUPERSCRIPT
+                Attribute.Type.DATE -> "${t("attribute")} (${t("date")})" to VaadinIcon.CALENDAR
             }
-            Hint(it.name, desc)
+            Hint(it.name, param.first, icon = param.second)
         })
         val orderKeys = listOf(
                 Hint(t("date"), t("doc.date")),
