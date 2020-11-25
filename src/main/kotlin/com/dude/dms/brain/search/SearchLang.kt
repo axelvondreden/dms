@@ -98,7 +98,7 @@ object SearchLang {
     fun testForKeyFromEnd(s: String): Pair<Key?, Int> {
         var count = 1
         var testKey: Key? = null
-        while (count < 5 && testKey == null) {
+        while (count < 10 && testKey == null) {
             try {
                 testKey = s.takeLast(count).parseWith(key)
             } catch (e: NoMatchingParsers) {
@@ -117,7 +117,7 @@ object SearchLang {
     fun testForOrderKeyFromEnd(s: String): Pair<OrderKey?, Int> {
         var count = 1
         var testKey: OrderKey? = null
-        while (count < 5 && testKey == null) {
+        while (count < 10 && testKey == null) {
             try {
                 testKey = s.takeLast(count).parseWith(orderKey)
             } catch (e: NoMatchingParsers) {
