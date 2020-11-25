@@ -98,8 +98,12 @@ class SearchParser {
         val searchKeys = listOf(
                 Hint(t("text"), t("doc.text")),
                 Hint(t("tag"), t("doc.tag")),
-                Hint(t("date"), t("doc.date"))
+                Hint(t("date"), t("doc.date")),
+                Hint(t("created"), t("doc.insert.date"))
         )//, *attributes.toTypedArray())
-        val orderKeys = listOf(Hint(t("date"), t("doc.date")))
+        val orderKeys = listOf(
+                Hint(t("date"), t("doc.date")),
+                Hint(t("created"), t("doc.insert.date"))
+        )
     }
 }

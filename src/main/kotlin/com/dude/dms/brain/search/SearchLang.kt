@@ -18,6 +18,7 @@ object SearchLang {
 
     private val textKey = token(t("text")).map { TextKey }
     private val dateKey = token(t("date")).map { DateKey }
+    private val createdKey = token(t("created")).map { DateKey }
     private val tagKey = token(t("tag")).map { TagKey }
 
     private val orderAsc = token(t("search.order.asc")).map { Asc }
@@ -25,7 +26,7 @@ object SearchLang {
     private val orderBy = inOrder(
             token(t("search.order")),
             token(t("search.order.by")),
-            oneOf(dateKey),
+            oneOf(dateKey, createdKey),
             oneOf(orderAsc, orderDesc)
     ).map { OrderBy(it.val3, it.val4) }
 
@@ -40,6 +41,7 @@ object SearchLang {
 
     private val textFilter = inOrder(textKey, oneOf(like, notLike), stringLiteral).map { TextFilter(it.second, it.third) }
     private val dateFilter = inOrder(dateKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { DateFilter(it.second, it.third) }
+    private val createdFilter = inOrder(createdKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { CreatedFilter(it.second, it.third) }
     private val tagFilter = inOrder(
             tagKey,
             oneOf(
@@ -50,7 +52,7 @@ object SearchLang {
             )
     ).map { TagFilter(it.second.first, it.second.second) }
 
-    private val filter = oneOf(textFilter, tagFilter, dateFilter)
+    private val filter = oneOf(textFilter, tagFilter, dateFilter, createdFilter)
 
     private val and = inOrder(ref { query }, token(t("and")), ref { query }).map { And(it.first, it.third) }
     private val or = inOrder(ref { query }, token(t("or")), ref { query }).map { Or(it.first, it.third) }

@@ -48,6 +48,29 @@ object DateKey : OrderKey() {
     }
 }
 
+object CreatedKey : OrderKey() {
+    override val hints get() = listOf(
+            Hint("=", t("search.equal")),
+            Hint("!=", t("search.notequal")),
+            Hint("<", t("search.less")),
+            Hint(">", t("search.greater"))
+    )
+
+    override val orderHints get() = listOf(
+            Hint(t("search.order.asc"), t("ascending")),
+            Hint(t("search.order.desc"), t("descending"))
+    )
+
+    override fun translate() = "doc.insertTime"
+
+    override fun getValueHints(op: Operator): List<Hint> {
+        return when (op) {
+            is Equal, is NotEqual, is Less, is Greater -> listOf(Hint(LocalDate.now().convert(), t("date")))
+            else -> emptyList()
+        }
+    }
+}
+
 object TagKey: Key() {
     override val hints get() = listOf(
             Hint("=", t("search.equal")),
