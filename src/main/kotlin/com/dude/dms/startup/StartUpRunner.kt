@@ -65,7 +65,7 @@ class StartUpRunner(
             }
         }
 
-        GlobalScope.launch { docImportService.import() }
+        docImportService.import()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
         LOGGER.info(t("startup.complete"))
     }

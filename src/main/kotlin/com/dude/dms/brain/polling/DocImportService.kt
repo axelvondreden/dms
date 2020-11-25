@@ -13,8 +13,7 @@ import com.dude.dms.brain.parsing.DocParser
 import com.dude.dms.brain.parsing.Spellchecker
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.springframework.stereotype.Component
 import java.io.File
 import java.time.LocalDateTime
@@ -40,7 +39,7 @@ class DocImportService(
     val count: Int
         get() {
             val count = pdfs.size + imgs.size
-            if (count > docs.size && !importing) GlobalScope.launch { import() }
+            if (count > docs.size && !importing) import()
             return count
         }
 
@@ -54,56 +53,65 @@ class DocImportService(
         if (importing) return
         importing = true
         progressBacking = 0.0
-        try {
-            val dcs = mutableSetOf<DocContainer>()
-            val newPdfs = pdfs.filter { pdf -> pdf.name !in docs.mapNotNull { it.file?.name } && pdf.name !in currentImports }
-            for (pdf in newPdfs.withIndex()) {
-                progressTextBacking = "${pdf.index + 1} / ${newPdfs.size} ${t("saving", pdf.value.name)}"
-                progressBacking = pdf.index.toDouble() / newPdfs.size
-                dcs.add(fileManager.importPdf(pdf.value, false)?.let { guid -> DocContainer(guid, pdf.value) } ?: continue)
-            }
-            val newImgs = imgs.filter { img -> img.name !in docs.mapNotNull { it.file?.name } && img.name !in currentImports }
-            for (img in newImgs.withIndex()) {
-                progressTextBacking = "${img.index + 1} / ${newImgs.size} ${t("saving", img.value.name)}"
-                progressBacking = img.index.toDouble() / newImgs.size
-                dcs.add(fileManager.importImage(img.value, false)?.let { guid -> DocContainer(guid, img.value) } ?: continue)
-            }
-            currentImports.addAll(dcs.mapNotNull { it.file?.name })
-            val spellcheckers = Const.OCR_LANGUAGES.map { it to Spellchecker(it) }.toMap()
-            val size = dcs.size
-            val progressMax = size * 4.0
-            progressBacking = 0.0
-            dcs.forEachIndexed { index, dc ->
-                progressTextBacking = "${index + 1} / $size    " + t("pdf.parse")
-                dc.pdfPages = docParser.getPdfText(dc.guid)
-                if (dc.pdfPages.isNotEmpty()) {
-                    dc.language = spellcheckers.minByOrNull { entry -> dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { container -> container.word.text?.let { entry.value.check(it) } != null } }!!.key
+        GlobalScope.launch {
+            try {
+                val dcs = mutableSetOf<DocContainer>()
+                val newPdfs = pdfs.filter { pdf -> pdf.name !in docs.mapNotNull { it.file?.name } && pdf.name !in currentImports }
+                for (pdf in newPdfs.withIndex()) {
+                    progressTextBacking = "${pdf.index + 1} / ${newPdfs.size} ${t("saving", pdf.value.name)}"
+                    progressBacking = pdf.index.toDouble() / newPdfs.size
+                    dcs.add(fileManager.importPdf(pdf.value, false)?.let { guid -> DocContainer(guid, pdf.value) }
+                            ?: continue)
                 }
-                progressTextBacking += " > ${t("recognized.language")}: ${dc.language}"
-                progressBacking = (index * 4 + 1) / progressMax
-                dc.pdfPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
-                progressTextBacking += " > " + t("image.ocr", dc.language)
+                val newImgs = imgs.filter { img -> img.name !in docs.mapNotNull { it.file?.name } && img.name !in currentImports }
+                for (img in newImgs.withIndex()) {
+                    progressTextBacking = "${img.index + 1} / ${newImgs.size} ${t("saving", img.value.name)}"
+                    progressBacking = img.index.toDouble() / newImgs.size
+                    dcs.add(fileManager.importImage(img.value, false)?.let { guid -> DocContainer(guid, img.value) }
+                            ?: continue)
+                }
+                currentImports.addAll(dcs.mapNotNull { it.file?.name })
+                val spellcheckers = Const.OCR_LANGUAGES.map { it to Spellchecker(it) }.toMap()
+                val size = dcs.size
+                val progressMax = size * 4.0
+                progressBacking = 0.0
+                //var progressCount = 0
+                dcs.forEachIndexed { index, dc ->
+                    progressTextBacking = "${index + 1} / $size    " + t("pdf.parse")
 
-                dc.ocrPages = docParser.getOcrText(dc.guid, dc.language)
-                dc.ocrPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
-                progressBacking = (index * 4 + 2) / progressMax
-                dc.pdfPages.words().forEach { container -> container.spelling = container.word.text?.let { spellcheckers.getValue(dc.language).check(it) } }
-                dc.ocrPages.words().forEach { container -> container.spelling = container.word.text?.let { spellcheckers.getValue(dc.language).check(it) } }
-                progressBacking = (index * 4 + 3) / progressMax
+                    val pdfPages = async { docParser.getPdfText(dc.guid) }
+                    val ocrPages = async { docParser.getOcrText(dc.guid, dc.language) }
 
-                dc.useOcrTxt = dc.ocrPages.wordCount() > dc.pdfPages.wordCount()
+                    dc.pdfPages = pdfPages.await()
+                    if (dc.pdfPages.isNotEmpty()) {
+                        dc.language = spellcheckers.minByOrNull { entry -> dc.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { container -> container.word.text?.let { entry.value.check(it) } != null } }!!.key
+                    }
+                    progressTextBacking += " > ${t("recognized.language")}: ${dc.language}"
+                    progressBacking = (index * 4 + 1) / progressMax
+                    dc.pdfPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
+                    progressTextBacking += " > " + t("image.ocr", dc.language)
 
-                dc.date = docParser.getMostFrequentDate(dc)
-                dc.tags = docParser.discoverTags(dc).toMutableSet()
-                dc.attributeValues = docParser.discoverAttributeValues(dc).toMutableSet()
+                    dc.ocrPages = ocrPages.await()
+                    dc.ocrPages.forEach { it.image = fileManager.getImage(dc.guid, it.nr) }
+                    progressBacking = (index * 4 + 2) / progressMax
+                    dc.pdfPages.words().forEach { container -> container.spelling = container.word.text?.let { spellcheckers.getValue(dc.language).check(it) } }
+                    dc.ocrPages.words().forEach { container -> container.spelling = container.word.text?.let { spellcheckers.getValue(dc.language).check(it) } }
+                    progressBacking = (index * 4 + 3) / progressMax
 
-                docs.add(dc)
-                currentImports.remove(dc.file?.name)
-                progressBacking = (index * 4 + 4) / progressMax
+                    dc.useOcrTxt = dc.ocrPages.wordCount() > dc.pdfPages.wordCount()
+
+                    dc.date = docParser.getMostFrequentDate(dc)
+                    dc.tags = docParser.discoverTags(dc).toMutableSet()
+                    dc.attributeValues = docParser.discoverAttributeValues(dc).toMutableSet()
+
+                    docs.add(dc)
+                    currentImports.remove(dc.file?.name)
+                    progressBacking = (index * 4 + 4) / progressMax
+                }
+            } finally {
+                progressBacking = 1.0
+                importing = false
             }
-        } finally {
-            progressBacking = 1.0
-            importing = false
         }
     }
 

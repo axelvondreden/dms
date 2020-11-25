@@ -163,7 +163,7 @@ class DocImportView(private val docImportService: DocImportService, private val 
         progressBar.value = 0.0
         progressText.text = ""
         if (docImportService.progress < 1.0) {
-            GlobalScope.launch { docImportService.import() }
+            docImportService.import()
         }
         val ui = UI.getCurrent()
         GlobalScope.launch {
