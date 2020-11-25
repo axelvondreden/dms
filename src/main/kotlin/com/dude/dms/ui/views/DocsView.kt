@@ -119,7 +119,6 @@ class DocsView(
 
     private fun softReload(ui: UI) {
         scheduleFill(ui)
-        searchBar.refresh()
     }
 
     private fun grow() {
@@ -166,8 +165,7 @@ class DocsView(
         if (!t.isNullOrEmpty()) {
             val parts = t.split(":").toTypedArray()
             if ("tag".equals(parts[0], ignoreCase = true)) {
-                //TODO
-                //searchBar.value = tagService.findByName(parts[1])
+                searchBar.textFilter.value = "${t("tag")} = ${parts[1]}"
             }
         }
     }

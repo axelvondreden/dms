@@ -3,7 +3,6 @@ package com.dude.dms.brain.search
 import com.dude.dms.brain.search.hint.Hint
 import com.dude.dms.brain.search.hint.HintResult
 import com.dude.dms.brain.t
-import com.dude.dms.utils.attributeService
 import parser4k.InputIsNotConsumed
 import parser4k.NoMatchingParsers
 
@@ -25,12 +24,6 @@ class SearchParser {
         } catch (e: InputIsNotConsumed) {
             ParseResult(null, e.message, false)
         }
-    }
-
-    fun refresh() {
-        attributes = attributeService.findAll().map { it.name }
-        //tagIncludeFilter.setItems(tagService.findAll())
-        //attributeIncludeFilter.setItems(attributeService.findAll())
     }
 
     //TODO: refactor
@@ -94,7 +87,6 @@ class SearchParser {
     }
 
     companion object {
-        var attributes = attributeService.findAll().map { it.name }
         val searchKeys = listOf(
                 Hint(t("text"), t("doc.text")),
                 Hint(t("tag"), t("doc.tag")),

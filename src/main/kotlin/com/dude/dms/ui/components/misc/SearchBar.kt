@@ -20,7 +20,7 @@ import kotlin.concurrent.schedule
 
 class SearchBar : VerticalLayout() {
 
-    private var textFilter: TextField
+    var textFilter: TextField
     private lateinit var hintList: SearchHintList
 
     var onChange: ((String) -> Unit)? = null
@@ -120,9 +120,5 @@ class SearchBar : VerticalLayout() {
         textFilter.suffixComponent = VaadinIcon.BAN.create().apply { color = "var(--lumo-error-text-color)" }
         (textFilter.suffixComponent as Icon).tooltip(msg)
         Timer().schedule(200) { viewUI.access { (textFilter.suffixComponent as Icon).showTooltip() } }
-    }
-
-    fun refresh() {
-        searchParser.refresh()
     }
 }
