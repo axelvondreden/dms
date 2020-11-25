@@ -22,7 +22,7 @@ group = "com.dude.dms"
 version = "0.2.5"
 
 val karibudslVersion = "1.0.3"
-val vaadinVersion = "14.4.2"
+val vaadinVersion = "14.4.3"
 
 defaultTasks("clean", "build")
 
