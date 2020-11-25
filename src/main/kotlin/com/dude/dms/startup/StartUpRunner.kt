@@ -6,6 +6,8 @@ import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
@@ -63,7 +65,7 @@ class StartUpRunner(
             }
         }
 
-        Thread { docImportService.import() }.start()
+        GlobalScope.launch { docImportService.import() }
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
         LOGGER.info(t("startup.complete"))
     }

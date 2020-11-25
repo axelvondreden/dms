@@ -26,6 +26,9 @@ import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.splitlayout.SplitLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.streams.toList
 
 
@@ -160,10 +163,10 @@ class DocImportView(private val docImportService: DocImportService, private val 
         progressBar.value = 0.0
         progressText.text = ""
         if (docImportService.progress < 1.0) {
-            Thread { docImportService.import() }.start()
+            GlobalScope.launch { docImportService.import() }
         }
         val ui = UI.getCurrent()
-        Thread {
+        GlobalScope.launch {
             try {
                 var process = docImportService.progress
                 while (process < 1.0) {
@@ -172,9 +175,9 @@ class DocImportView(private val docImportService: DocImportService, private val 
                         progressText.text = docImportService.progressText
                     }
                     process = docImportService.progress
-                    Thread.sleep(100)
+                    delay(100)
                 }
-                Thread.sleep(50)
+                delay(50)
                 ui.access {
                     progressBar.value = 1.0
                     progressText.text = t("done")
@@ -184,17 +187,17 @@ class DocImportView(private val docImportService: DocImportService, private val 
             } finally {
                 loading = false
             }
-        }.start()
+        }
 
-        Thread {
+        GlobalScope.launch {
             try {
                 var process = docImportService.progress
                 while (process < 1.0) {
                     fill(ui, true)
                     process = docImportService.progress
-                    Thread.sleep(1000)
+                    delay(1000)
                 }
-                Thread.sleep(50)
+                delay(50)
                 ui.access {
                     progressBar.value = 1.0
                     progressText.text = t("done")
@@ -204,7 +207,7 @@ class DocImportView(private val docImportService: DocImportService, private val 
             } finally {
                 loading = false
             }
-        }.start()
+        }
     }
 
     private fun createDocs() {
