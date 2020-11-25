@@ -10,13 +10,16 @@ import com.dude.dms.ui.components.standard.DmsDatePicker
 import com.dude.dms.ui.dataproviders.LogDataProvider
 import com.dude.dms.ui.dataproviders.LogDataProvider.Filter
 import com.dude.dms.utils.convert
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.GridVariant
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextArea
 import com.vaadin.flow.component.textfield.TextField
@@ -24,6 +27,8 @@ import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouteAlias
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.vaadin.olli.FileDownloadWrapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -86,6 +91,14 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
         }
         export.wrapComponent(exportButton)
 
+        val delete = Button(t("delete.all")) {
+            val ui = UI.getCurrent()
+            GlobalScope.launch {
+                logEntryService.findAll().forEach(logEntryService::delete)
+                ui.access { refreshFilter() }
+            }
+        }.apply { addThemeVariants(ButtonVariant.LUMO_ERROR) }
+
         grid.apply {
             pageSize = 200
             dataProvider = logDataProvider
@@ -111,7 +124,7 @@ class LogView(private val logDataProvider: LogDataProvider, logEntryService: Log
             getCell(grid.getColumnByKey("ui")).setComponent(uiFilter)
         }
 
-        add(export, grid)
+        add(HorizontalLayout(export, delete), grid)
         refreshFilter()
     }
 
