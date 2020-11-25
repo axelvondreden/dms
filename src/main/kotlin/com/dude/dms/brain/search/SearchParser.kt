@@ -39,7 +39,7 @@ class SearchParser {
             return HintResult(emptyList())
         }
         if (text.isBlank()) {
-            return HintResult(searchKeys)
+            return HintResult(searchKeys.plus(Hint("${t("search.order")} ${t("search.order.by")}")))
         }
         val inOrderBy = text.contains(Regex("${t("search.order")}\\W*${t("search.order.by")}"))
         if (inOrderBy) {
