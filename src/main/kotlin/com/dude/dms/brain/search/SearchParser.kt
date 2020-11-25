@@ -1,8 +1,10 @@
 package com.dude.dms.brain.search
 
+import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.brain.search.hint.Hint
 import com.dude.dms.brain.search.hint.HintResult
 import com.dude.dms.brain.t
+import com.dude.dms.utils.attributeService
 import parser4k.InputIsNotConsumed
 import parser4k.NoMatchingParsers
 
@@ -92,7 +94,15 @@ class SearchParser {
                 Hint(t("tag"), t("doc.tag")),
                 Hint(t("date"), t("doc.date")),
                 Hint(t("created"), t("doc.insert.date"))
-        )//, *attributes.toTypedArray())
+        ).plus(attributeService.findAll().map {
+            val desc = when (it.type) {
+                Attribute.Type.STRING -> "${t("attribute")} (${t("text")})"
+                Attribute.Type.INT -> "${t("attribute")} (Integer)"
+                Attribute.Type.FLOAT -> "${t("attribute")} (${t("number")})"
+                Attribute.Type.DATE -> "${t("attribute")} (${t("date")})"
+            }
+            Hint(it.name, desc)
+        })
         val orderKeys = listOf(
                 Hint(t("date"), t("doc.date")),
                 Hint(t("created"), t("doc.insert.date"))

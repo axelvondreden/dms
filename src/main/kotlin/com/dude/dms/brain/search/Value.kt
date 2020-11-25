@@ -16,7 +16,10 @@ data class IntLiteral(val value: Int) : Value() {
 
 data class StringLiteral(val value: String) : Value() {
     override fun translate() = "'$value'"
-    fun translateLike() = "'%$value%'"
+}
+
+data class StringLikeLiteral(val value: String) : Value() {
+    override fun translate() = "'%$value%'"
 }
 
 data class TagLiteral(val value: String) : Value() {

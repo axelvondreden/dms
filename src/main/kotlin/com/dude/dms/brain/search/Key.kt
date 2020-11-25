@@ -80,3 +80,20 @@ object TagKey: Key() {
         else -> emptyList()
     }
 }
+
+data class StringAttributeKey(val name: String): Key() {
+    override val hints get() = listOf(
+            Hint("=", t("search.equal")),
+            Hint("!=", t("search.notequal")),
+            Hint("~=", t("search.like")),
+            Hint("!~=", t("search.notlike")),
+            Hint("in", t("search.inarray")),
+            Hint("!in", t("search.notinarray"))
+    )
+
+    override fun getValueHints(op: Operator) = when (op) {
+        is Equal, is NotEqual, is Like, is NotLike -> listOf(Hint("\"\"", t("text"), 1))
+        is InArray, NotInArray -> listOf(Hint("[\"\", \"\"]", t("list"), 6))
+        else -> emptyList()
+    }
+}

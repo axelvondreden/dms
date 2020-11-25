@@ -107,7 +107,7 @@ class DocService(
             return findAll(pageable).toSet()
         }
         val query = entityManager.createQuery("""
-            SELECT distinct doc FROM Doc doc LEFT JOIN doc.tags tag $filter
+            SELECT distinct doc FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter
             """.trimIndent(), Doc::class.java
         ).apply {
             firstResult = pageable.offset.toInt()

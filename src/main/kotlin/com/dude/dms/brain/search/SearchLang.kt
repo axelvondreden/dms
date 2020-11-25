@@ -1,6 +1,8 @@
 package com.dude.dms.brain.search
 
+import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.brain.t
+import com.dude.dms.utils.attributeService
 import com.dude.dms.utils.tagService
 import parser4k.*
 import parser4k.commonparsers.Tokens
@@ -9,13 +11,15 @@ import parser4k.commonparsers.token
 
 object SearchLang {
 
-    private val tagsList = tagService.findAll()
+    private val tagList = tagService.findAll()
+    private val attributeList = attributeService.findAll()
 
     private val boolLiteral = oneOf(str("true"), str("false")).map { if (it == "true") True else False }
     private val intLiteral = Tokens.integer.map { IntLiteral(it.toInt()) }
     private val stringLiteral = Tokens.string.map(::StringLiteral)
+    private val stringLikeLiteral = Tokens.string.map(::StringLikeLiteral)
     private val dateLiteral = inOrder(intLiteral, token("."), intLiteral, token("."), intLiteral).map { DateLiteral(it.val1.value, it.val3.value, it.val5.value) }
-    private val tagLiteral = oneOf(tagsList.map { token(it.name) }).map(::TagLiteral)
+    private val tagLiteral = oneOf(tagList.map { token(it.name) }).map(::TagLiteral)
     private val stringArrayLiteral = inOrder(token("["), ref { stringLiteral }.joinedWith(token(",")), token("]"))
             .skipWrapper().map(::StringArrayLiteral)
     private val tagArrayLiteral = inOrder(token("["), ref { tagLiteral }.joinedWith(token(",")), token("]"))
@@ -26,6 +30,8 @@ object SearchLang {
     private val dateKey = token(t("date")).map { DateKey }
     private val createdKey = token(t("created")).map { CreatedKey }
     private val tagKey = token(t("tag")).map { TagKey }
+    private val stringAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.STRING }.map { token(it.name) }).map { StringAttributeKey(it) }
+    private val attributeKey = oneOf(stringAttributeKey)
 
     private val orderAsc = token(t("search.order.asc")).map { Asc }
     private val orderDesc = token(t("search.order.desc")).map { Desc }
@@ -45,20 +51,27 @@ object SearchLang {
     private val like = token("~=").map { Like }
     private val notLike = token("!~=").map { NotLike }
 
-    private val textFilter = inOrder(textKey, oneOf(like, notLike), stringLiteral).map { TextFilter(it.second, it.third) }
+    private val textFilter = inOrder(textKey, oneOf(like, notLike), stringLikeLiteral).map { TextFilter(it.second, it.third) }
     private val dateFilter = inOrder(dateKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { DateFilter(it.second, it.third) }
     private val createdFilter = inOrder(createdKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { CreatedFilter(it.second, it.third) }
     private val tagFilter = inOrder(
             tagKey,
             oneOf(
-                    inOrder(equal, tagLiteral),
-                    inOrder(notEqual, tagLiteral),
-                    inOrder(inArray, tagArrayLiteral),
-                    inOrder(notInArray, tagArrayLiteral)
+                    inOrder(oneOf(equal, notEqual), tagLiteral),
+                    inOrder(oneOf(inArray, notInArray), tagArrayLiteral),
             )
     ).map { TagFilter(it.second.first, it.second.second) }
+    private val stringAttributeFilter: Parser<StringAttributeFilter> = inOrder(
+            stringAttributeKey,
+            oneOf(
+                    inOrder(oneOf(equal, notEqual), stringLiteral),
+                    inOrder(oneOf(like, notLike), stringLikeLiteral),
+                    inOrder(oneOf(inArray, notInArray), stringArrayLiteral)
+            )
+    ).map { StringAttributeFilter(it.first.name, it.second.first, it.second.second) }
+    private val attributeFilter = oneOf(stringAttributeFilter)
 
-    private val filter = oneOf(textFilter, tagFilter, dateFilter, createdFilter)
+    private val filter = oneOf(textFilter, tagFilter, dateFilter, createdFilter, attributeFilter)
 
     private val and = inOrder(ref { query }, token(t("and")), ref { query }).map { And(it.first, it.third) }
     private val or = inOrder(ref { query }, token(t("or")), ref { query }).map { Or(it.first, it.third) }
@@ -69,7 +82,7 @@ object SearchLang {
 
     private val search: Parser<Search> = inOrder(optional(query), optional(orderBy)).map { Search(it.first, it.second) }
 
-    private val key: Parser<Key> = oneOf(textKey, tagKey, dateKey, createdKey)
+    private val key: Parser<Key> = oneOf(textKey, tagKey, dateKey, createdKey, attributeKey)
     private val orderKey: Parser<OrderKey> = oneOf(dateKey, createdKey)
     private val op: Parser<Operator> = oneOf(equal, notEqual, less, greater, inArray, notInArray, like, notLike)
 
