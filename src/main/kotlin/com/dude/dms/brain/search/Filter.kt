@@ -11,7 +11,7 @@ data class DateFilter(val op: Operator, val value: DateLiteral) : Filter() {
 }
 
 data class CreatedFilter(val op: Operator, val value: DateLiteral) : Filter() {
-    override fun translate() = "doc.insertTime ${op.translate()} ${value.translate()}"
+    override fun translate() = "cast(doc.insertTime as LocalDate) ${op.translate()} ${value.translate()}"
 }
 
 data class TagFilter(val op: Operator, val value: Value) : Filter() {
