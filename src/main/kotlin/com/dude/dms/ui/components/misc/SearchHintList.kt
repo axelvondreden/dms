@@ -19,6 +19,8 @@ class SearchHintList : VerticalLayout() {
     init {
         isPadding = false
         isSpacing = false
+
+        onLeftClick { println("left") }
     }
 
     fun up() {

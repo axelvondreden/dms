@@ -15,5 +15,5 @@ data class CreatedFilter(val op: Operator, val value: DateLiteral) : Filter() {
 }
 
 data class TagFilter(val op: Operator, val value: Value) : Filter() {
-    override fun translate() = "tag ${op.translate()} ${value.translate()}"
+    override fun translate() = "tag.name ${op.translate()} ${value.translate()}"
 }

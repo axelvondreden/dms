@@ -1,6 +1,7 @@
 package com.dude.dms.brain.search
 
 import com.dude.dms.brain.t
+import com.dude.dms.utils.tagService
 import parser4k.*
 import parser4k.commonparsers.Tokens
 import parser4k.commonparsers.joinedWith
@@ -8,12 +9,17 @@ import parser4k.commonparsers.token
 
 object SearchLang {
 
+    private val tagsList = tagService.findAll()
+
     private val boolLiteral = oneOf(str("true"), str("false")).map { if (it == "true") True else False }
     private val intLiteral = Tokens.integer.map { IntLiteral(it.toInt()) }
     private val stringLiteral = Tokens.string.map(::StringLiteral)
     private val dateLiteral = inOrder(intLiteral, token("."), intLiteral, token("."), intLiteral).map { DateLiteral(it.val1.value, it.val3.value, it.val5.value) }
-    private val arrayLiteral = inOrder(token("["), ref { stringLiteral }.joinedWith(token(",")), token("]"))
-            .skipWrapper().map(::ArrayLiteral)
+    private val tagLiteral = oneOf(tagsList.map { token(it.name) }).map(::TagLiteral)
+    private val stringArrayLiteral = inOrder(token("["), ref { stringLiteral }.joinedWith(token(",")), token("]"))
+            .skipWrapper().map(::StringArrayLiteral)
+    private val tagArrayLiteral = inOrder(token("["), ref { tagLiteral }.joinedWith(token(",")), token("]"))
+            .skipWrapper().map(::TagArrayLiteral)
     private val unaryMinus = inOrder(token("-"), ref { intLiteral }).map { (_, it) -> IntLiteral(-it.value) }
 
     private val textKey = token(t("text")).map { TextKey }
@@ -45,10 +51,10 @@ object SearchLang {
     private val tagFilter = inOrder(
             tagKey,
             oneOf(
-                    inOrder(equal, stringLiteral),
-                    inOrder(notEqual, stringLiteral),
-                    inOrder(inArray, arrayLiteral),
-                    inOrder(notInArray, arrayLiteral)
+                    inOrder(equal, tagLiteral),
+                    inOrder(notEqual, tagLiteral),
+                    inOrder(inArray, tagArrayLiteral),
+                    inOrder(notInArray, tagArrayLiteral)
             )
     ).map { TagFilter(it.second.first, it.second.second) }
 

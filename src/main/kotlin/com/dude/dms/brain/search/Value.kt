@@ -19,10 +19,18 @@ data class StringLiteral(val value: String) : Value() {
     fun translateLike() = "'%$value%'"
 }
 
+data class TagLiteral(val value: String) : Value() {
+    override fun translate() = "'${value}'"
+}
+
 data class DateLiteral(val day: Int, val month: Int, val year: Int) : Value() {
     override fun translate() = "'$year-$month-$day'"
 }
 
-data class ArrayLiteral(val value: List<StringLiteral>) : Value() {
+data class StringArrayLiteral(val value: List<StringLiteral>) : Value() {
+    override fun translate() = "(${value.joinToString(", ") { it.translate() }})"
+}
+
+data class TagArrayLiteral(val value: List<TagLiteral>) : Value() {
     override fun translate() = "(${value.joinToString(", ") { it.translate() }})"
 }

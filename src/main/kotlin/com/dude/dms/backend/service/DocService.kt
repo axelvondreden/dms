@@ -106,7 +106,10 @@ class DocService(
         if (filter.isBlank()) {
             return findAll(pageable).toSet()
         }
-        val query = entityManager.createQuery("SELECT doc FROM Doc doc $filter", Doc::class.java).apply {
+        val query = entityManager.createQuery("""
+            SELECT distinct doc FROM Doc doc LEFT JOIN doc.tags tag $filter
+            """.trimIndent(), Doc::class.java
+        ).apply {
             firstResult = pageable.offset.toInt()
             maxResults = pageable.pageSize
         }
