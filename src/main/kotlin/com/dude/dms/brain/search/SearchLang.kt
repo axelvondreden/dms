@@ -18,7 +18,7 @@ object SearchLang {
 
     private val textKey = token(t("text")).map { TextKey }
     private val dateKey = token(t("date")).map { DateKey }
-    private val createdKey = token(t("created")).map { DateKey }
+    private val createdKey = token(t("created")).map { CreatedKey }
     private val tagKey = token(t("tag")).map { TagKey }
 
     private val orderAsc = token(t("search.order.asc")).map { Asc }
@@ -63,8 +63,8 @@ object SearchLang {
 
     private val search: Parser<Search> = inOrder(optional(query), optional(orderBy)).map { Search(it.first, it.second) }
 
-    private val key: Parser<Key> = oneOf(textKey, tagKey, dateKey)
-    private val orderKey: Parser<OrderKey> = oneOf(dateKey)
+    private val key: Parser<Key> = oneOf(textKey, tagKey, dateKey, createdKey)
+    private val orderKey: Parser<OrderKey> = oneOf(dateKey, createdKey)
     private val op: Parser<Operator> = oneOf(equal, notEqual, less, greater, inArray, notInArray, like, notLike)
 
     fun parse(s: String): Search = s.parseWith(search)
