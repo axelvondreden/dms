@@ -19,8 +19,7 @@ class SearchHintList : VerticalLayout() {
     init {
         isPadding = false
         isSpacing = false
-
-        onLeftClick { println("left") }
+        style["opacity"] = "0.95"
     }
 
     fun up() {
