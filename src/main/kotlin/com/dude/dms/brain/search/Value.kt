@@ -14,6 +14,10 @@ data class IntLiteral(val value: Int) : Value() {
     override fun translate() = value.toString()
 }
 
+data class FloatLiteral(val value: Double) : Value() {
+    override fun translate() = value.toString()
+}
+
 data class StringLiteral(val value: String) : Value() {
     override fun translate() = "'$value'"
 }

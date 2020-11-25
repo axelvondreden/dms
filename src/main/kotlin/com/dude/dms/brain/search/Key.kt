@@ -81,7 +81,16 @@ object TagKey: Key() {
     }
 }
 
-data class StringAttributeKey(val name: String): Key() {
+abstract class AttributeKey(open val name: String) : Key() {
+    override val hints get() = listOf(
+            Hint("=", t("search.equal")),
+            Hint("!=", t("search.notequal")),
+            Hint("<", t("search.less")),
+            Hint(">", t("search.greater"))
+    )
+}
+
+data class StringAttributeKey(override val name: String): AttributeKey(name) {
     override val hints get() = listOf(
             Hint("=", t("search.equal")),
             Hint("!=", t("search.notequal")),
@@ -96,4 +105,16 @@ data class StringAttributeKey(val name: String): Key() {
         is InArray, NotInArray -> listOf(Hint("[\"\", \"\"]", t("list"), 6))
         else -> emptyList()
     }
+}
+
+data class IntAttributeKey(override val name: String): AttributeKey(name) {
+    override fun getValueHints(op: Operator) = listOf(Hint("0", "Integer"))
+}
+
+data class FloatAttributeKey(override val name: String): AttributeKey(name) {
+    override fun getValueHints(op: Operator) = listOf(Hint("0.0", t("number")))
+}
+
+data class DateAttributeKey(override val name: String): AttributeKey(name) {
+    override fun getValueHints(op: Operator) = listOf(Hint(LocalDate.now().convert(), t("date")))
 }

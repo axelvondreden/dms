@@ -16,6 +16,7 @@ object SearchLang {
 
     private val boolLiteral = oneOf(str("true"), str("false")).map { if (it == "true") True else False }
     private val intLiteral = Tokens.integer.map { IntLiteral(it.toInt()) }
+    private val floatLiteral = Tokens.number.map { FloatLiteral(it.toDouble()) }
     private val stringLiteral = Tokens.string.map(::StringLiteral)
     private val stringLikeLiteral = Tokens.string.map(::StringLikeLiteral)
     private val dateLiteral = inOrder(intLiteral, token("."), intLiteral, token("."), intLiteral).map { DateLiteral(it.val1.value, it.val3.value, it.val5.value) }
@@ -30,8 +31,15 @@ object SearchLang {
     private val dateKey = token(t("date")).map { DateKey }
     private val createdKey = token(t("created")).map { CreatedKey }
     private val tagKey = token(t("tag")).map { TagKey }
-    private val stringAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.STRING }.map { token(it.name) }).map { StringAttributeKey(it) }
-    private val attributeKey = oneOf(stringAttributeKey)
+    private val stringAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.STRING }
+            .map { token(it.name) }).map { StringAttributeKey(it) }
+    private val intAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.INT }
+            .map { token(it.name) }).map { IntAttributeKey(it) }
+    private val floatAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.FLOAT }
+            .map { token(it.name) }).map { FloatAttributeKey(it) }
+    private val dateAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.DATE }
+            .map { token(it.name) }).map { DateAttributeKey(it) }
+    private val attributeKey = oneOf(stringAttributeKey, intAttributeKey, floatAttributeKey, dateAttributeKey)
 
     private val orderAsc = token(t("search.order.asc")).map { Asc }
     private val orderDesc = token(t("search.order.desc")).map { Desc }
@@ -61,15 +69,26 @@ object SearchLang {
                     inOrder(oneOf(inArray, notInArray), tagArrayLiteral),
             )
     ).map { TagFilter(it.second.first, it.second.second) }
-    private val stringAttributeFilter: Parser<StringAttributeFilter> = inOrder(
-            stringAttributeKey,
-            oneOf(
-                    inOrder(oneOf(equal, notEqual), stringLiteral),
-                    inOrder(oneOf(like, notLike), stringLikeLiteral),
-                    inOrder(oneOf(inArray, notInArray), stringArrayLiteral)
-            )
-    ).map { StringAttributeFilter(it.first.name, it.second.first, it.second.second) }
-    private val attributeFilter = oneOf(stringAttributeFilter)
+
+    private val stringAttributeFilter: Parser<StringAttributeFilter> = inOrder(stringAttributeKey, oneOf(
+            inOrder(oneOf(equal, notEqual), stringLiteral),
+            inOrder(oneOf(like, notLike), stringLikeLiteral),
+            inOrder(oneOf(inArray, notInArray), stringArrayLiteral)
+    )).map { StringAttributeFilter(it.first.name, it.second.first, it.second.second) }
+
+    private val intAttributeFilter: Parser<IntAttributeFilter> = inOrder(
+            intAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), intLiteral)
+    ).map { IntAttributeFilter(it.first.name, it.second.first, it.second.second) }
+
+    private val floatAttributeFilter: Parser<FloatAttributeFilter> = inOrder(
+            floatAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), floatLiteral)
+    ).map { FloatAttributeFilter(it.first.name, it.second.first, it.second.second) }
+
+    private val dateAttributeFilter: Parser<DateAttributeFilter> = inOrder(
+            dateAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), dateLiteral)
+    ).map { DateAttributeFilter(it.first.name, it.second.first, it.second.second) }
+
+    private val attributeFilter = oneOf(stringAttributeFilter, intAttributeFilter, floatAttributeFilter, dateAttributeFilter)
 
     private val filter = oneOf(textFilter, tagFilter, dateFilter, createdFilter, attributeFilter)
 

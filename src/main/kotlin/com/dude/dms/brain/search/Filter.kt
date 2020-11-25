@@ -22,3 +22,18 @@ data class StringAttributeFilter(val name: String, val op: Operator, val value: 
     override fun translate() =
             "(av.attribute.name = '$name' and av.stringValue ${op.translate()} ${value.translate()})"
 }
+
+data class IntAttributeFilter(val name: String, val op: Operator, val value: IntLiteral) : Filter() {
+    override fun translate() =
+            "(av.attribute.name = '$name' and av.intValue ${op.translate()} ${value.translate()})"
+}
+
+data class FloatAttributeFilter(val name: String, val op: Operator, val value: FloatLiteral) : Filter() {
+    override fun translate() =
+            "(av.attribute.name = '$name' and av.floatValue ${op.translate()} ${value.translate()})"
+}
+
+data class DateAttributeFilter(val name: String, val op: Operator, val value: DateLiteral) : Filter() {
+    override fun translate() =
+            "(av.attribute.name = '$name' and av.dateValue ${op.translate()} ${value.translate()})"
+}
