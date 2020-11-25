@@ -59,6 +59,8 @@ class DocsView(
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
 
         style["paddingTop"] = "0px"
+        style["paddingBottom"] = "0px"
+        setHeightFull()
 
         searchBar = searchBar {
             style["position"] = "sticky"
@@ -72,7 +74,7 @@ class DocsView(
             }
         }
         itemContainer = div {
-            setSizeFull()
+            setWidthFull()
             style["display"] = "flex"
             style["flexWrap"] = "wrap"
         }
@@ -82,6 +84,7 @@ class DocsView(
             alignItems = FlexComponent.Alignment.CENTER
             style["position"] = "sticky"
             style["bottom"] = "0"
+            style["marginTop"] = "auto"
             style["borderTop"] = "1px solid var(--lumo-contrast-10pct)"
             style["backgroundColor"] = "var(--lumo-base-color)"
 
