@@ -10,23 +10,21 @@ import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.utils.docCard
-import com.dude.dms.utils.searchBar
-import com.dude.dms.utils.viewPageSelector
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.SearchBar
 import com.dude.dms.ui.components.misc.ViewPageSelector
+import com.dude.dms.utils.docCard
+import com.dude.dms.utils.searchBar
+import com.dude.dms.utils.viewPageSelector
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.streams.toList
@@ -51,8 +49,6 @@ class DocsView(
 
     private lateinit var pageSelector: ViewPageSelector
 
-    private lateinit var sortFilter: ComboBox<Pair<String, Sort>>
-
     private var filter = ""
 
     init {
@@ -62,7 +58,14 @@ class DocsView(
         eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
         eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
 
+        style["paddingTop"] = "0px"
+
         searchBar = searchBar {
+            style["position"] = "sticky"
+            style["top"] = "0"
+            style["zIndex"] = "1"
+            style["borderBottom"] = "1px solid var(--lumo-contrast-10pct)"
+            style["backgroundColor"] = "var(--lumo-base-color)"
             onChange = {
                 filter = it
                 fill(viewUI)
@@ -76,22 +79,12 @@ class DocsView(
         horizontalLayout {
             setWidthFull()
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER
-            style["position"] = "absolute"
+            alignItems = FlexComponent.Alignment.CENTER
+            style["position"] = "sticky"
             style["bottom"] = "0"
-            style["paddingBottom"] = "4px"
-            style["paddingTop"] = "4px"
             style["borderTop"] = "1px solid var(--lumo-contrast-10pct)"
+            style["backgroundColor"] = "var(--lumo-base-color)"
 
-            label("${t("sort")}:")
-            sortFilter = comboBox {
-                setItems(sorts)
-                isPreventInvalidInput = true
-                isAllowCustomValue = false
-                value = sorts[0]
-                setItemLabelGenerator { it.first }
-                addValueChangeListener { scheduleFill(viewUI) }
-            }
-            div { width = "2em" }
             label("${t("zoom")}:")
             iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
                 onLeftClick { shrink() }
@@ -153,7 +146,7 @@ class DocsView(
     }
 
     private fun fill(ui: UI) {
-        val docs = docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value, sortFilter.value.second))
+        val docs = docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value))
         ui.access {
             itemContainer.removeAll()
             pageSelector.items = docs.size
@@ -174,14 +167,5 @@ class DocsView(
                 //searchBar.value = tagService.findByName(parts[1])
             }
         }
-    }
-
-    companion object {
-        private val sorts = listOf(
-                "${t("date")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "documentDate"),
-                "${t("date")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "documentDate"),
-                "${t("created")} ${t("descending")}" to Sort.by(Sort.Direction.DESC, "insertTime"),
-                "${t("created")} ${t("ascending")}" to Sort.by(Sort.Direction.ASC, "insertTime")
-        )
     }
 }

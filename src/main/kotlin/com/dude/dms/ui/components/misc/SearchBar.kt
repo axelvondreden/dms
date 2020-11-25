@@ -6,24 +6,22 @@ import com.dude.dms.utils.clearTooltips
 import com.dude.dms.utils.searchHintList
 import com.dude.dms.utils.showTooltip
 import com.dude.dms.utils.tooltip
-import com.github.mvysny.karibudsl.v10.horizontalLayout
 import com.github.mvysny.karibudsl.v10.textField
-import com.github.mvysny.karibudsl.v10.verticalLayout
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 import java.util.*
 import kotlin.concurrent.schedule
 
 
-class SearchBar : HorizontalLayout() {
+class SearchBar : VerticalLayout() {
 
-    private lateinit var textFilter: TextField
-    private lateinit var textHintList: SearchHintList
+    private var textFilter: TextField
+    private lateinit var hintList: SearchHintList
 
     var onChange: ((String) -> Unit)? = null
 
@@ -32,66 +30,61 @@ class SearchBar : HorizontalLayout() {
     private val viewUI = UI.getCurrent()
 
     init {
+        isPadding = false
+        isMargin = false
         setWidthFull()
-
-        horizontalLayout(isPadding = false, isSpacing = false) {
+        textFilter = textField {
             setWidthFull()
-            verticalLayout(isPadding = false, isSpacing = false) {
-                setWidthFull()
-                textFilter = textField {
-                    setWidthFull()
-                    isClearButtonVisible = true
-                    placeholder = t("search")
-                    valueChangeMode = ValueChangeMode.EAGER
-                    element.setAttribute("onkeydown", """
+            isClearButtonVisible = true
+            placeholder = t("search")
+            valueChangeMode = ValueChangeMode.EAGER
+            element.setAttribute("onkeydown", """
                         if (event.key == 'ArrowDown' || event.key == 'ArrowUp') {
                             return false;
                         }
                         return true;
                         """.trimIndent())
-                    addFocusListener {
-                        textHintList.isVisible = true
+            addFocusListener {
+                hintList.isVisible = true
+            }
+            addBlurListener {
+                hintList.isVisible = false
+            }
+            addKeyDownListener(Key.ARROW_DOWN, {
+                hintList.down()
+            })
+            addKeyDownListener(Key.ARROW_UP, {
+                hintList.up()
+            })
+            addKeyDownListener(Key.ENTER, {
+                hintList.select()
+            })
+            suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
+            addValueChangeListener { searchTextChange(it.value) }
+        }
+        hintList = searchHintList {
+            isVisible = false
+            maxWidth = "30em"
+            style["position"] = "absolute"
+            style["top"] = "30px"
+            style["backgroundColor"] = "var(--lumo-base-color)"
+            style["zIndex"] = "1"
+            style["border"] = "2px solid var(--lumo-contrast-20pct)"
+            setHints(searchParser.getHints())
+            onSelect = {
+                val current = textFilter.value
+                if (current.endsWith(" ")) {
+                    textFilter.value = "$current${it.text} "
+                } else {
+                    var itCopy = it.text
+                    while (!current.endsWith(itCopy, ignoreCase = true)) {
+                        itCopy = itCopy.dropLast(1)
                     }
-                    addBlurListener {
-                        textHintList.isVisible = false
-                    }
-                    addKeyDownListener(Key.ARROW_DOWN, {
-                        textHintList.down()
-                    })
-                    addKeyDownListener(Key.ARROW_UP, {
-                        textHintList.up()
-                    })
-                    addKeyDownListener(Key.ENTER, {
-                        textHintList.select()
-                    })
-                    suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
-                    addValueChangeListener { searchTextChange(it.value) }
+                    textFilter.value = current.dropLast(itCopy.length) + it.text + " "
                 }
-                textHintList = searchHintList {
-                    isVisible = false
-                    maxWidth = "30em"
-                    style["position"] = "absolute"
-                    style["top"] = "50px"
-                    style["backgroundColor"] = "var(--lumo-base-color)"
-                    style["zIndex"] = "1"
-                    style["border"] = "2px solid var(--lumo-contrast-20pct)"
-                    setHints(searchParser.getHints())
-                    onSelect = {
-                        val current = textFilter.value
-                        if (current.endsWith(" ")) {
-                            textFilter.value = "$current${it.text} "
-                        } else {
-                            var itCopy = it.text
-                            while (!current.endsWith(itCopy, ignoreCase = true)) {
-                                itCopy = itCopy.dropLast(1)
-                            }
-                            textFilter.value = current.dropLast(itCopy.length) + it.text + " "
-                        }
-                        if (it.caretBackwardsMovement > 0) {
-                            val index = textFilter.value.length - 1 - it.caretBackwardsMovement
-                            textFilter.element.executeJs("this.shadowRoot.children[1].children[1].children[1].children[0].setSelectionRange($index, $index)")
-                        }
-                    }
+                if (it.caretBackwardsMovement > 0) {
+                    val index = textFilter.value.length - 1 - it.caretBackwardsMovement
+                    textFilter.element.executeJs("this.shadowRoot.children[1].children[1].children[1].children[0].setSelectionRange($index, $index)")
                 }
             }
         }
@@ -100,7 +93,7 @@ class SearchBar : HorizontalLayout() {
     private fun searchTextChange(newValue: String) {
         val result = searchParser.setInput(newValue)
         val hintResult = searchParser.getHints()
-        textHintList.setHints(hintResult)
+        hintList.setHints(hintResult)
         (textFilter.suffixComponent as Icon).clearTooltips()
         if (newValue.isBlank()) {
             onChange?.invoke("")
