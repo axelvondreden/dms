@@ -27,9 +27,9 @@ class DocParser(
 
     fun getPdfText(guid: String) = pdfStripper.getPages(guid, "")
 
-    fun getOcrText(guid: String, language: String = Options.get().doc.ocrLanguage) = ocrStripper.getPages(guid, language)
+    suspend fun getOcrText(guid: String, language: String = Options.get().doc.ocrLanguage) = ocrStripper.getPages(guid, language)
 
-    fun getText(img: File, rect: DmsOcrTextStripper.Rect, language: String = Options.get().doc.ocrLanguage) = ocrStripper.getText(img, rect, language)
+    fun getText(img: File, rect: DmsOcrTextStripper.Rect, language: String = Options.get().doc.ocrLanguage) = ocrStripper.getTextFromArea(img, rect, language)
 
     fun discoverTags(doc: DocContainer): Set<TagContainer> {
         val docText = doc.getFullText()

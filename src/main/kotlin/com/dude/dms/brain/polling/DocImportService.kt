@@ -75,7 +75,6 @@ class DocImportService(
                 val size = dcs.size
                 val progressMax = size * 4.0
                 progressBacking = 0.0
-                //var progressCount = 0
                 dcs.forEachIndexed { index, dc ->
                     progressTextBacking = "${index + 1} / $size    " + t("pdf.parse")
 

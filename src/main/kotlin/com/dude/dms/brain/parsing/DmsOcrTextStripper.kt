@@ -12,12 +12,16 @@ import com.dude.dms.utils.tessdataPath
 import org.bytedeco.leptonica.global.lept
 import org.bytedeco.tesseract.TessBaseAPI
 import org.springframework.stereotype.Component
+import org.w3c.dom.Node
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Component
 class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
 
+    /**
+     * Parses all pages of a document for the given [guid] and returns a set of [PageContainer]
+     */
     override fun getPages(guid: String, language: String): Set<PageContainer> {
         val api = TessBaseAPI()
         if (api.Init(tessdataPath, language) != 0) {
@@ -28,58 +32,68 @@ class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
         val pages = mutableSetOf<PageContainer>()
         fileManager.getImages(guid).forEach {
             LOGGER.info(t("image.ocr.page", language, it.index + 1))
-
-            // Open input image with leptonica library
-            val image = lept.pixRead(it.value.absolutePath)
-            api.SetImage(image)
-
-            val alto = api.GetAltoText(0)
-            val xml = alto.string
-
-            alto.deallocate()
-            lept.pixDestroy(image)
-
-            val factory = DocumentBuilderFactory.newInstance()
-            val builder = factory.newDocumentBuilder()
-
-            // Parse Alto-XML
-            val doc = builder.parse(xml.byteInputStream())
-            val page = doc.documentElement
-            val textLines = doc.getElementsByTagName("TextLine")
-
-
-            val pageWidth = page.getAttribute("WIDTH").toFloat()
-            val pageHeight = page.getAttribute("HEIGHT").toFloat()
-
-            val lines = mutableSetOf<Line>()
-
-            for (i in 0 until textLines.length) {
-                val textLine = textLines.item(i)
-                val words = mutableSetOf<Word>()
-                val line = Line(null, words, textLine.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F)
-                val textWords = textLine.childNodes
-                for (j in 0 until textWords.length) {
-                    val textWord = textWords.item(j)
-                    if (textWord.nodeName == "String") {
-                        val text = textWord.attributes.getNamedItem("CONTENT").nodeValue
-                        if (!text.isValidWord()) continue
-
-                        val width = textWord.attributes.getNamedItem("WIDTH").nodeValue.toFloat() / pageWidth * 100.0F
-                        val x = textWord.attributes.getNamedItem("HPOS").nodeValue.toFloat() / pageWidth * 100.0F
-                        val height = textWord.attributes.getNamedItem("HEIGHT").nodeValue.toFloat() / pageHeight * 100.0F
-                        val y = textWord.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F
-                        words.add(Word(line, text, x, y, width, height))
-                    }
-                }
-                lines.add(line)
-            }
-            pages.add(PageContainer(Page(null, lines, it.index + 1)))
+            pages.add(getPage(api, it.value, it.index + 1))
         }
         api.End()
         return pages
     }
 
-    fun getText(img: File, rect: Rect, language: String = Options.get().doc.ocrLanguage): String {
+    /**
+     * Parses a single [img] and returns a [PageContainer] for the given [pageNr]
+     */
+    private fun getPage(api: TessBaseAPI, img: File, pageNr: Int): PageContainer {
+        val image = lept.pixRead(img.absolutePath)
+        api.SetImage(image)
+
+        val alto = api.GetAltoText(0)
+        val xml = alto.string
+
+        alto.deallocate()
+        lept.pixDestroy(image)
+
+        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xml.byteInputStream())
+        val page = doc.documentElement
+        val textLines = doc.getElementsByTagName("TextLine")
+
+        val pageWidth = page.getAttribute("WIDTH").toFloat()
+        val pageHeight = page.getAttribute("HEIGHT").toFloat()
+
+        val lines = mutableSetOf<Line>()
+
+        for (i in 0 until textLines.length) {
+            lines.add(getLine(textLines.item(i), pageWidth, pageHeight))
+        }
+        return PageContainer(Page(null, lines, pageNr))
+    }
+
+    /**
+     * Parses a single [Line] for a [Page] by combining multiple [Word]s
+     */
+    private fun getLine(node: Node, pageWidth: Float, pageHeight: Float): Line {
+        val words = mutableSetOf<Word>()
+        val line = Line(null, words, node.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F)
+        val textWords = node.childNodes
+        for (j in 0 until textWords.length) {
+            val textWord = textWords.item(j)
+            if (textWord.nodeName == "String") {
+                val text = textWord.attributes.getNamedItem("CONTENT").nodeValue
+                if (!text.isValidWord()) continue
+
+                val width = textWord.attributes.getNamedItem("WIDTH").nodeValue.toFloat() / pageWidth * 100.0F
+                val x = textWord.attributes.getNamedItem("HPOS").nodeValue.toFloat() / pageWidth * 100.0F
+                val height = textWord.attributes.getNamedItem("HEIGHT").nodeValue.toFloat() / pageHeight * 100.0F
+                val y = textWord.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F
+                words.add(Word(line, text, x, y, width, height))
+            }
+        }
+        return line
+    }
+
+    /**
+     * Searches for text in the specified [rect] of an [img].
+     * [language] overwrites the default language
+     */
+    fun getTextFromArea(img: File, rect: Rect, language: String = Options.get().doc.ocrLanguage): String {
         val api = TessBaseAPI()
         if (api.Init(tessdataPath, language) != 0) {
             LOGGER.error(t("image.ocr.error"))
