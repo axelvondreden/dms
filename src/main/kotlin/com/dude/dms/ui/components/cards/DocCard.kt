@@ -52,6 +52,7 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
                 val tag = TagContainer(event.dragData.get() as Tag)
                 if (tag !in docContainer.tags) {
                     docContainer.tags = docContainer.tags.plus(tag)
+                    docContainer.doc?.let(docService::save)
                     fill()
                 }
             }
