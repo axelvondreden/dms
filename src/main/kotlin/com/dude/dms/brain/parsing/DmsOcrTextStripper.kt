@@ -19,22 +19,23 @@ import javax.xml.parsers.DocumentBuilderFactory
 @Component
 class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
 
+    val apis by lazy {
+        mapOf(
+                "eng" to TessBaseAPI().apply { Init(tessdataPath, "eng") },
+                "deu" to TessBaseAPI().apply { Init(tessdataPath, "deu") }
+        )
+    }
+
     /**
      * Parses all pages of a document for the given [guid] and returns a set of [PageContainer]
      */
     override fun getPages(guid: String, language: String): Set<PageContainer> {
-        val api = TessBaseAPI()
-        if (api.Init(tessdataPath, language) != 0) {
-            LOGGER.error(t("image.ocr.error"))
-            return emptySet()
-        }
-
+        val api = apis[language]
         val pages = mutableSetOf<PageContainer>()
         fileManager.getImages(guid).forEach {
             LOGGER.info(t("image.ocr.page", language, it.index + 1))
-            pages.add(getPage(api, it.value, it.index + 1))
+            pages.add(getPage(api!!, it.value, it.index + 1))
         }
-        api.End()
         return pages
     }
 
@@ -50,6 +51,7 @@ class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
 
         alto.deallocate()
         lept.pixDestroy(image)
+        api.Clear()
 
         val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xml.byteInputStream())
         val page = doc.documentElement
