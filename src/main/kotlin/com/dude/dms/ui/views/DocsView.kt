@@ -18,6 +18,7 @@ import com.dude.dms.utils.docCard
 import com.dude.dms.utils.searchBar
 import com.dude.dms.utils.viewPageSelector
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -48,6 +49,8 @@ class DocsView(
     private val searchBar: SearchBar
 
     private lateinit var pageSelector: ViewPageSelector
+
+    private lateinit var itemCount: Text
 
     private var filter = ""
 
@@ -97,6 +100,8 @@ class DocsView(
             }
             div { width = "2em" }
             pageSelector = viewPageSelector()
+            div { width = "2em" }
+            itemCount = text(t("items") + ":")
         }
 
         pageSelector.setChangeListener { scheduleFill(viewUI) }
@@ -152,6 +157,7 @@ class DocsView(
         ui.access {
             itemContainer.removeAll()
             pageSelector.items = docs.size
+            itemCount.text = "${t("items")}: ${docs.size}"
         }
         docs.forEach { doc ->
             val dc = DocContainer(doc).apply { thumbnail = fileManager.getImage(guid) }
