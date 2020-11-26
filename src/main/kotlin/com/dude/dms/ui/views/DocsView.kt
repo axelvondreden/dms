@@ -80,6 +80,7 @@ class DocsView(
             setWidthFull()
             style["display"] = "flex"
             style["flexWrap"] = "wrap"
+            style["paddingBottom"] = "40px"
         }
         horizontalLayout {
             setWidthFull()
