@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class LineService(
-        private val lineRepository: LineRepository,
+        lineRepository: LineRepository,
         private val wordService: WordService,
         eventManager: EventManager
 ) : RestoreService<Line>(lineRepository, eventManager) {
@@ -26,6 +26,4 @@ class LineService(
         entity.words.forEach(wordService::restore)
         super.restore(entity)
     }
-
-    fun findIncomplete() = lineRepository.findByDeletedIsNull()
 }

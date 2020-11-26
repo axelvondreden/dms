@@ -13,6 +13,4 @@ class PlainTextRuleService(
 ) : EventService<PlainTextRule>(ruleRepository, eventManager) {
 
     fun findByTag(tag: Tag) = ruleRepository.findByTags(tag)
-
-    fun countByTag(tag: Tag) = ruleRepository.countByTags(tag)
 }

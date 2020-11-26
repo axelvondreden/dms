@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class WordService(
-        private val wordRepository: WordRepository,
+        wordRepository: WordRepository,
         eventManager: EventManager
-) : RestoreService<Word>(wordRepository, eventManager) {
-
-    fun findIncomplete() = wordRepository.findByDeletedIsNull()
-}
+) : RestoreService<Word>(wordRepository, eventManager)

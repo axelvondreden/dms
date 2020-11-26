@@ -50,6 +50,10 @@ class DocService(
         if (text != null) {
             text.text = entity.getFullText()
             docTextService.save(text)
+        } else {
+            val new = DocText(entity, entity.getFullText())
+            entity.docText = docTextService.save(new)
+            super.save(entity)
         }
         return entity
     }
@@ -90,7 +94,7 @@ class DocService(
                 .distinct().forEach { attributeValueService.delete(it) }
     }
 
-    fun findIncomplete() = docRepository.findByDeletedIsNull()
+    fun findByTextIsNull() = docRepository.findByDocTextIsNull()
 
     fun findByGuid(guid: String) = docRepository.findByGuid(guid)
 

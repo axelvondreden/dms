@@ -14,6 +14,4 @@ interface RestoreRepository<T : RestorableEntity> : JpaRepository<T, Long> {
     fun findByDeletedTrue(): List<T>
 
     fun countByDeletedTrue(): Long
-
-    fun findByDeletedIsNull(): List<T>
 }
