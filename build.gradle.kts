@@ -1,12 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.10"
-    id("org.springframework.boot") version "2.3.4.RELEASE"
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.4.10" apply true
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.10" apply true
+    kotlin("jvm") version "1.4.20"
+    id("org.springframework.boot") version "2.4.0"
+    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.4.20" apply true
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.20" apply true
     id("com.vaadin") version "0.14.3.7"
+    id("com.github.ben-manes.versions") version "0.36.0"
     application
 }
 
@@ -36,15 +37,21 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom("com.vaadin:vaadin-bom:$vaadinVersion")
-        mavenBom("dev.forkhandles:forkhandles-bom:1.2.0.0")
+        mavenBom("dev.forkhandles:forkhandles-bom:1.6.0.0")
     }
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
-    implementation("com.github.mvysny.karibudsl:karibu-dsl:$karibudslVersion")
+    implementation("com.h2database:h2")
+    implementation("org.hibernate:hibernate-core:5.4.10.Final")
+    implementation("javax.persistence:javax.persistence-api")
 
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    implementation("com.vaadin:vaadin-spring")
     implementation("com.vaadin:vaadin-spring-boot-starter") {
         // Webjars are only needed when running in Vaadin 13 compatibility mode
         arrayOf("com.vaadin.webjar", "org.webjars.bowergithub.insites",
@@ -53,37 +60,27 @@ dependencies {
                 .forEach { exclude(it) }
     }
 
-    implementation("commons-net:commons-net:3.7")
-    implementation("commons-logging:commons-logging:1.2")
-    implementation("com.h2database:h2")
-
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    implementation("org.springframework.boot:spring-boot-devtools")
-
-    implementation("com.vaadin:vaadin-spring")
-
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework.boot:spring-boot-devtools")
+    implementation("org.springframework:spring-web")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
         exclude("org.apache.tomcat")
     }
-    implementation("org.springframework:spring-web")
-    implementation("org.springframework.boot:spring-boot-starter-web")
 
+    implementation("commons-net:commons-net:3.7")
+    implementation("commons-logging:commons-logging:1.2")
     implementation("javax.xml.bind:jaxb-api")
     implementation("org.reactivestreams:reactive-streams")
-    implementation("javax.persistence:javax.persistence-api")
-    implementation("org.hibernate:hibernate-core:5.4.10.Final")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0-rc2")
+    implementation("com.github.mvysny.karibudsl:karibu-dsl:$karibudslVersion")
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.21")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
     implementation("org.bytedeco:tesseract-platform:4.1.1-1.5.4")
     implementation("org.languagetool:languagetool-core:5.1")
     implementation("org.languagetool:language-de:5.1")
     implementation("org.languagetool:language-en:5.1")
-    implementation("com.atlascopco:hunspell-bridj:1.0.4")
-    implementation("com.github.vatbub:mslinks:1.0.5")
+    implementation("com.github.vatbub:mslinks:1.0.6")
     implementation("dev.forkhandles:parser4k")
 
     implementation("com.github.appreciated:app-layout-addon:4.0.0")
@@ -92,7 +89,6 @@ dependencies {
     implementation("com.github.appreciated:color-picker-field-flow:2.0.0.beta6")
     implementation("dev.mett.vaadin:tooltip:1.6.0")
     implementation("org.vaadin.artur:spring-data-provider:2.1.0")
-    implementation("org.vaadin.gatanaso:multiselect-combo-box-flow:2.5.0")
     implementation("org.vaadin.olli:file-download-wrapper:3.0.1")
 }
 

@@ -30,7 +30,6 @@ import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.textfield.TextField
 import dev.mett.vaadin.tooltip.Tooltips
-import org.vaadin.gatanaso.MultiselectComboBox
 
 @VaadinDsl
 fun HasComponents.tagLayout(
@@ -156,10 +155,6 @@ fun HasComponents.secondaryLabel(text: String?, block: SecondaryLabel.() -> Unit
 
 @VaadinDsl
 fun HasComponents.progressBar(block: ProgressBar.() -> Unit = {}) = init(ProgressBar(), block)
-
-@VaadinDsl
-fun <T> HasComponents.multiSelectComboBox(label: String, items: Collection<T>, block: MultiselectComboBox<T>.() -> Unit = {})
-        = init(MultiselectComboBox<T>(label, items), block)
 
 @VaadinDsl
 fun HasComponents.radioButtonGroup(block: RadioButtonGroup<String>.() -> Unit = {})= init(RadioButtonGroup(), block)
