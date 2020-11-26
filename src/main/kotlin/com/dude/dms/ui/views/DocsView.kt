@@ -161,7 +161,7 @@ class DocsView(
             itemCount.text = "${t("items")}: ${docs.size}"
         }
         docs.forEach { doc ->
-            val dc = DocContainer(doc).apply { thumbnail = fileManager.getImage(guid) }
+            val dc = DocContainer(doc)
             ui.access {
                 itemContainer.docCard(dc)
             }

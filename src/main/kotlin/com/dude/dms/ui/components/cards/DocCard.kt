@@ -23,11 +23,15 @@ import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 import com.vaadin.flow.server.VaadinSession
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class DocCard(val docContainer: DocContainer) : ClickableCard() {
 
     private var imgDiv: Div? = null
+
+    private val viewUI = UI.getCurrent()
 
     init {
         addClickListener { DocImageDialog(docContainer).open() }
@@ -73,16 +77,23 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
             setSizeFull()
             style["overflow"] = "hidden"
 
-            val img = docContainer.pages.first { it.nr == 1 }.image!!
             val image = Element("object").apply {
                 setAttribute("attribute.type", "image/png")
                 style["width"] = "100%"
                 style["height"] = "100%"
                 style["objectFit"] = "cover"
                 style["objectPosition"] = "top left"
-                setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(img) }))
             }
             element.appendChild(image)
+
+            GlobalScope.launch {
+                docContainer.thumbnail = fileManager.getImage(docContainer.guid)
+                viewUI.access {
+                    image.setAttribute("data", StreamResource("image.png", InputStreamFactory {
+                        FileHelper.getInputStream(docContainer.thumbnail)
+                    }))
+                }
+            }
         }
         div {
             addClassName("doc-info-wrapper")
