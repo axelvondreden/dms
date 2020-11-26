@@ -7,5 +7,6 @@ data class ViewOptions(
         var darkMode: Boolean,
         var notificationPosition: String,
         var docCardSize: Int,
+        var itemsPerPage: Int,
         var loadWordsInPreview: Boolean
 )

@@ -1,5 +1,6 @@
 package com.dude.dms.ui.components.misc
 
+import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.utils.tooltip
 import com.github.mvysny.karibudsl.v10.*
@@ -63,11 +64,15 @@ class ViewPageSelector : HorizontalLayout() {
         pageSize = select {
             tooltip(t("page.docs"))
             setItems(10, 20, 30, 50, 100, 200)
-            value = 30
+            value = Options.get().view.itemsPerPage
             width = "100px"
             isEmptySelectionAllowed = false
             style["padding"] = "0px 5px"
             addValueChangeListener {
+                Options.get().apply {
+                    view.itemsPerPage = it.value
+                    save()
+                }
                 if (it.isFromClient) {
                     page = 0
                 }

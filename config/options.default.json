@@ -10,6 +10,7 @@
     "darkMode": false,
     "notificationPosition": "BOTTOM_END",
     "docCardSize": 200,
+    "itemsPerPage": 30,
     "loadWordsInPreview": true
   },
   "doc": {
