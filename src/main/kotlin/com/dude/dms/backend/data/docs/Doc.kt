@@ -32,7 +32,7 @@ class Doc(
         var attributeValues: Set<AttributeValue> = HashSet()
 ) : RestorableEntity(), Diffable<Doc>, LogsEvents {
 
-    fun getFullText() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }
+    fun getFullText() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }.toLowerCase()
 
     fun getLine(word: Word) = pages.flatMap { it.lines }.first { word in it.words }
 

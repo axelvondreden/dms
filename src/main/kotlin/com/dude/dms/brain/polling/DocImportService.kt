@@ -133,6 +133,7 @@ class DocImportService(
                 }
             }
         }
+        docService.save(doc)
         delete(docContainer)
     }
 

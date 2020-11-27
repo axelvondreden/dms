@@ -33,6 +33,11 @@ class StartUpRunner(
             docService.save(it)
         }
 
+        docService.findAll().forEach {
+            LOGGER.info("Updating text ${it.guid}...")
+            docService.save(it)
+        }
+
         docImportService.import()
         LocaleContextHolder.setLocale(Locale.forLanguageTag(Options.get().view.locale))
         LOGGER.info(t("startup.complete"))

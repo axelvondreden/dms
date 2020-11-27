@@ -52,7 +52,7 @@ class DocService(
             docTextService.save(text)
         } else {
             val new = DocText(entity, entity.getFullText())
-            entity.docText = docTextService.save(new)
+            entity.docText = docTextService.create(new)
             super.save(entity)
         }
         return entity

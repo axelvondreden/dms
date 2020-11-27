@@ -3,7 +3,7 @@ package com.dude.dms.brain.search
 abstract class Filter : Query()
 
 data class TextFilter(val op: Operator, val value: StringLikeLiteral) : Filter() {
-    override fun translate() = "doc.docText.text ${op.translate()} ${value.translate()}"
+    override fun translate() = "doc.docText.text ${op.translate()} lower(concat('%', ${value.translate()},'%'))"
 }
 
 data class DateFilter(val op: Operator, val value: DateLiteral) : Filter() {

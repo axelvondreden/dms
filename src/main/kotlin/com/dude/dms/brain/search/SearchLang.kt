@@ -19,13 +19,14 @@ object SearchLang {
     private val floatLiteral = Tokens.number.map { FloatLiteral(it.toDouble()) }
     private val stringLiteral = Tokens.string.map(::StringLiteral)
     private val stringLikeLiteral = Tokens.string.map(::StringLikeLiteral)
-    private val dateLiteral = inOrder(intLiteral, token("."), intLiteral, token("."), intLiteral).map { DateLiteral(it.val1.value, it.val3.value, it.val5.value) }
+    private val dateLiteral = inOrder(intLiteral, token("."), intLiteral, token("."), intLiteral)
+            .map { DateLiteral(it.val1.value, it.val3.value, it.val5.value) }
     private val tagLiteral = oneOf(tagList.map { token(it.name) }).map(::TagLiteral)
-    private val stringArrayLiteral = inOrder(token("["), ref { stringLiteral }.joinedWith(token(",")), token("]"))
+    private val stringArrayLiteral = inOrder(token("["), stringLiteral.joinedWith(token(",")), token("]"))
             .skipWrapper().map(::StringArrayLiteral)
-    private val tagArrayLiteral = inOrder(token("["), ref { tagLiteral }.joinedWith(token(",")), token("]"))
-            .skipWrapper().map(::TagArrayLiteral)
-    private val unaryMinus = inOrder(token("-"), ref { intLiteral }).map { (_, it) -> IntLiteral(-it.value) }
+    private val tagArrayLiteral = inOrder(token("["), tagLiteral.joinedWith(token(",")), token("]")).skipWrapper()
+            .map(::TagArrayLiteral)
+    private val unaryMinus = inOrder(token("-"), intLiteral).map { (_, it) -> IntLiteral(-it.value) }
 
     private val textKey = token(t("text")).map { TextKey }
     private val dateKey = token(t("date")).map { DateKey }

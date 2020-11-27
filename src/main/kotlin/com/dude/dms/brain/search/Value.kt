@@ -23,7 +23,7 @@ data class StringLiteral(val value: String) : Value() {
 }
 
 data class StringLikeLiteral(val value: String) : Value() {
-    override fun translate() = "'%$value%'"
+    override fun translate() = "'$value'"
 }
 
 data class TagLiteral(val value: String) : Value() {
