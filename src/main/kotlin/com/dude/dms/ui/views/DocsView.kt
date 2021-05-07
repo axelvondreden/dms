@@ -156,7 +156,7 @@ class DocsView(
         val count = docService.countByFilter(filter)
         ui.access {
             itemContainer.removeAll()
-            pageSelector.items = count
+            pageSelector.items = count.toInt()
             itemCount.text = "${t("items")}: ${docs.size}"
         }
         docs.forEach { doc ->

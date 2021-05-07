@@ -120,11 +120,11 @@ class DocService(
         return query.resultList.toSet()
     }
 
-    fun countByFilter(filter: String): Int {
-        if (filter.isBlank()) return count().toInt()
+    fun countByFilter(filter: String): Long {
+        if (filter.isBlank()) return count()
         return entityManager.createQuery("""
-            SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter
-            """.trimIndent(), Int::class.java
-        ).singleResult
+                SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter
+                """.trimIndent()
+        ).singleResult as Long
     }
 }
