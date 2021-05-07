@@ -5,7 +5,6 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.DocService
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
@@ -36,7 +35,6 @@ import kotlin.streams.toList
 @PageTitle("Docs")
 class DocsView(
         private val docService: DocService,
-        private val fileManager: FileManager,
         eventManager: EventManager
 ) : VerticalLayout(), HasUrlParameter<String?> {
 
@@ -155,9 +153,10 @@ class DocsView(
 
     private fun fill(ui: UI) {
         val docs = docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value))
+        val count = docService.countByFilter(filter)
         ui.access {
             itemContainer.removeAll()
-            pageSelector.items = docs.size
+            pageSelector.items = count
             itemCount.text = "${t("items")}: ${docs.size}"
         }
         docs.forEach { doc ->

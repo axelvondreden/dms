@@ -119,4 +119,12 @@ class DocService(
         }
         return query.resultList.toSet()
     }
+
+    fun countByFilter(filter: String): Int {
+        if (filter.isBlank()) return count().toInt()
+        return entityManager.createQuery("""
+            SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter
+            """.trimIndent(), Int::class.java
+        ).singleResult
+    }
 }
