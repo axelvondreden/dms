@@ -21,6 +21,7 @@ class StartUpRunner(
 ) : CommandLineRunner {
 
     override fun run(vararg args: String) {
+        LOGGER.info(System.getProperty("user.dir"))
         optionsChecker.checkOptions()
         directoryChecker.checkDirectories()
         LOGGER.info("Cleaning up files...")
