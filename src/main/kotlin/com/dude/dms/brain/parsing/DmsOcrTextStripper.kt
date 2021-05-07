@@ -19,7 +19,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 @Component
 class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
 
-    val apis by lazy {
+    private val apis by lazy {
         mapOf(
                 "eng" to TessBaseAPI().apply { Init(tessdataPath, "eng") },
                 "deu" to TessBaseAPI().apply { Init(tessdataPath, "deu") }

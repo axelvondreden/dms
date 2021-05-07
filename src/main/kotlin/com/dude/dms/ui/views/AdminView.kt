@@ -31,7 +31,7 @@ class AdminView(private val docService: DocService, tagService: TagService, priv
     private val options = Options.get()
 
     init {
-        val data = tagService.findAll().map { it.name to docService.countByTag(it).toDouble() }.toMap()
+        val data = tagService.findAll().associate { it.name to docService.countByTag(it).toDouble() }
         add(ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.bar).build())
                 .withPlotOptions(PlotOptionsBuilder.get().withBar(BarBuilder.get().build()).build())
@@ -40,8 +40,8 @@ class AdminView(private val docService: DocService, tagService: TagService, priv
                 .build().apply { width = "70%" }
         )
 
-        val pdfSize = File(options.doc.savePath, "pdf").listFiles()?.map { it.length() }?.sum()?.toDouble()?.div(1024.0 * 1024.0)?.round(2) ?: 0.0
-        val imgSize = File(options.doc.savePath, "img").listFiles()?.map { it.length() }?.sum()?.toDouble()?.div(1024.0 * 1024.0)?.round(2) ?: 0.0
+        val pdfSize = File(options.doc.savePath, "pdf").listFiles()?.sumOf { it.length() }?.toDouble()?.div(1024.0 * 1024.0)?.round(2) ?: 0.0
+        val imgSize = File(options.doc.savePath, "img").listFiles()?.sumOf { it.length() }?.toDouble()?.div(1024.0 * 1024.0)?.round(2) ?: 0.0
 
         add(ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.pie).build())
@@ -51,7 +51,9 @@ class AdminView(private val docService: DocService, tagService: TagService, priv
                 .build().apply { width = "70%" }
         )
 
-        val dbData = listOf("DOC", "DOC_TEXT", "TAG", "ATTRIBUTE_VALUE", "LOG_ENTRY", "WORD").map { it to (dbService.getTableSize(it) / (1024.0 * 1024.0)).round(2) }.toMap()
+        val dbData = listOf("DOC", "DOC_TEXT", "TAG", "ATTRIBUTE_VALUE", "LOG_ENTRY", "WORD")
+            .associateWith { (dbService.getTableSize(it) / (1024.0 * 1024.0)).round(2) }
+
         add(ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.bar).build())
                 .withPlotOptions(PlotOptionsBuilder.get().withBar(BarBuilder.get().build()).build())

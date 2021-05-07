@@ -19,7 +19,7 @@ class PlainTextRule(
             if (caseSensitive) text in line
             else {
                 val locale = LocaleContextHolder.getLocale()
-                text.toLowerCase(locale) in line.toLowerCase(locale)
+                text.lowercase(locale) in line.lowercase(locale)
             }
         } else false
     }

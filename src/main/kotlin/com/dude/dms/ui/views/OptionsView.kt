@@ -204,7 +204,7 @@ class OptionsView(private val tagService: TagService, private val docService: Do
                         }
                         button(t("create.now")) {
                             onLeftClick {
-                                if (!options.storage.offlineLinkLocation.isBlank()) {
+                                if (options.storage.offlineLinkLocation.isNotBlank()) {
                                     val docs = docService.findAll()
                                     val root = File(options.storage.offlineLinkLocation)
                                     val docPath = options.doc.savePath

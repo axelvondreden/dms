@@ -163,8 +163,8 @@ class DocImportPreview : VerticalLayout() {
     }
 
     private fun refreshTextTools(docContainer: DocContainer) {
-        val pdfCount = docContainer.pdfPages.flatMap { it.lines }.sumBy { it.words.size }
-        val ocrCount = docContainer.ocrPages.flatMap { it.lines }.sumBy { it.words.size }
+        val pdfCount = docContainer.pdfPages.flatMap { it.lines }.sumOf { it.words.size }
+        val ocrCount = docContainer.ocrPages.flatMap { it.lines }.sumOf { it.words.size }
         val pdfSpelling = ((1F - (docContainer.pdfPages.flatMap { it.lines }.flatMap { it.words }.count { it.spelling != null } / pdfCount.toFloat())) * 100.0F).toInt()
         val ocrSpelling = ((1F - (docContainer.ocrPages.flatMap { it.lines }.flatMap { it.words }.count { it.spelling != null } / ocrCount.toFloat())) * 100.0F).toInt()
 

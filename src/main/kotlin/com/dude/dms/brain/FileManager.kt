@@ -2,6 +2,7 @@ package com.dude.dms.brain
 
 import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.brain.options.Options
+import org.apache.pdfbox.Loader
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -82,7 +83,7 @@ class FileManager {
     }
 
     private fun createImageFromPdf(guid: String) {
-        val pdDoc = PDDocument.load(getPdf(guid))
+        val pdDoc = Loader.loadPDF(getPdf(guid))
         val pr = PDFRenderer(pdDoc)
         for (i in 0 until pdDoc.numberOfPages) {
             try {

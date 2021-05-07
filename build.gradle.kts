@@ -1,18 +1,18 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.20"
-    id("org.springframework.boot") version "2.4.0"
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.4.20" apply true
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.20" apply true
-    id("com.vaadin") version "0.14.3.7"
-    id("com.github.ben-manes.versions") version "0.36.0"
+    kotlin("jvm") version "1.5.0"
+    id("org.springframework.boot") version "2.4.5"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.5.0" apply true
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.0" apply true
+    id("com.vaadin") version "0.14.5.1"
+    id("com.github.ben-manes.versions") version "0.38.0"
     application
 }
 
 ext {
-    set("vaadinVersion", "14.3.7")
+    set("vaadinVersion", "14.5.1")
 }
 
 noArg {
@@ -22,8 +22,8 @@ noArg {
 group = "com.dude.dms"
 version = "0.2.5"
 
-val karibudslVersion = "1.0.3"
-val vaadinVersion = "14.4.3"
+val karibudslVersion = "1.0.6"
+val vaadinVersion = "14.5.4"
 
 defaultTasks("clean", "build")
 
@@ -31,18 +31,17 @@ repositories {
     mavenCentral()
     jcenter()
     maven { setUrl("https://maven.vaadin.com/vaadin-addons") }
-    maven { setUrl("https://dl.bintray.com/hotkeytlt/maven") }
 }
 
 dependencyManagement {
     imports {
         mavenBom("com.vaadin:vaadin-bom:$vaadinVersion")
-        mavenBom("dev.forkhandles:forkhandles-bom:1.6.0.0")
+        mavenBom("dev.forkhandles:forkhandles-bom:1.10.0.0")
     }
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0-RC")
 
     implementation("com.h2database:h2")
     implementation("org.hibernate:hibernate-core:5.4.10.Final")
@@ -73,18 +72,18 @@ dependencies {
     implementation("commons-logging:commons-logging:1.2")
     implementation("javax.xml.bind:jaxb-api")
     implementation("org.reactivestreams:reactive-streams")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0-rc2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
     implementation("com.github.mvysny.karibudsl:karibu-dsl:$karibudslVersion")
-    implementation("org.apache.pdfbox:pdfbox-tools:2.0.21")
-    implementation("org.bytedeco:tesseract-platform:4.1.1-1.5.4")
-    implementation("org.languagetool:languagetool-core:5.1")
-    implementation("org.languagetool:language-de:5.1")
-    implementation("org.languagetool:language-en:5.1")
-    implementation("com.github.vatbub:mslinks:1.0.6")
+    implementation("org.apache.pdfbox:pdfbox-tools:3.0.0-RC1")
+    implementation("org.bytedeco:tesseract-platform:4.1.1-1.5.5")
+    implementation("org.languagetool:languagetool-core:5.3")
+    implementation("org.languagetool:language-de:5.3")
+    implementation("org.languagetool:language-en:5.3")
+    implementation("com.github.vatbub:mslinks:1.0.6.1")
     implementation("dev.forkhandles:parser4k")
 
     implementation("com.github.appreciated:app-layout-addon:4.0.0")
-    implementation("com.github.appreciated:apexcharts:2.0.0.beta10")
+    implementation("com.github.appreciated:apexcharts:2.0.0.beta11")
     implementation("com.github.appreciated:card:2.0.0")
     implementation("com.github.appreciated:color-picker-field-flow:2.0.0.beta6")
     implementation("dev.mett.vaadin:tooltip:1.6.0")
@@ -143,7 +142,7 @@ distributions {
 }
 
 springBoot {
-    mainClassName = "com.dude.dms.ApplicationKt"
+    mainClass.set("com.dude.dms.ApplicationKt")
 }
 
 vaadin {

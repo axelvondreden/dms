@@ -87,7 +87,7 @@ class DocContainer(var guid: String, var file: File? = null) {
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
             line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
         }
-    }.toLowerCase()
+    }.lowercase()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

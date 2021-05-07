@@ -14,7 +14,7 @@ import com.vaadin.flow.server.Command
 
 class ModeSelector : HorizontalLayout() {
 
-    var mode: EditMode = EditMode.EDIT
+    private var mode: EditMode = EditMode.EDIT
         set(value) {
             field = value
             current.value = value

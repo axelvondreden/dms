@@ -9,7 +9,7 @@ import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.t
-import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.Loader
 import org.apache.pdfbox.text.PDFTextStripper
 import org.apache.pdfbox.text.TextPosition
 import org.springframework.stereotype.Component
@@ -24,7 +24,7 @@ class DmsPdfTextStripper(private val fileManager: FileManager) : PDFTextStripper
     override fun getPages(guid: String, language: String): Set<PageContainer> {
         LOGGER.info(t("pdf.parse"))
         pages = mutableSetOf()
-        getText(PDDocument.load(fileManager.getPdf(guid)))
+        getText(Loader.loadPDF(fileManager.getPdf(guid)))
         return pages
     }
 
@@ -36,7 +36,7 @@ class DmsPdfTextStripper(private val fileManager: FileManager) : PDFTextStripper
     private fun createLine(textPositions: List<TextPosition>) {
         val words = createWords(textPositions.toList(), textPositions[0].pageWidth, textPositions[0].pageHeight)
         if (!words.isNullOrEmpty()) {
-            val line = Line(null, words.map { it.word }.toMutableSet(), words.map { it.word.y }.minOrNull()!!)
+            val line = Line(null, words.map { it.word }.toMutableSet(), words.minOf { it.word.y })
             words.forEach { it.word.line = line }
             val page = pages.firstOrNull { it.nr == currentPageNo }
             if (page != null) page.lines = page.lines.plus(LineContainer(line))

@@ -71,7 +71,7 @@ class DocImportService(
                             ?: continue)
                 }
                 currentImports.addAll(dcs.mapNotNull { it.file?.name })
-                val spellcheckers = Const.OCR_LANGUAGES.map { it to Spellchecker(it) }.toMap()
+                val spellcheckers = Const.OCR_LANGUAGES.associate { it to Spellchecker(it) }
                 val size = dcs.size
                 val progressMax = size * 4.0
                 progressBacking = 0.0
@@ -146,7 +146,7 @@ class DocImportService(
 
     private fun Set<PageContainer>.words() = flatMap { it.lines }.flatMap { it.words }
 
-    private fun Set<PageContainer>.wordCount() = flatMap { it.lines }.sumBy { it.words.size }
+    private fun Set<PageContainer>.wordCount() = flatMap { it.lines }.sumOf { it.words.size }
 
     companion object {
         private var importing = false
