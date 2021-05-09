@@ -2,7 +2,13 @@ package com.dude.dms.utils
 
 import java.io.File
 
-val tessdataPath by lazy { if (File("tessdata").exists()) "tessdata" else "../config/tessdata" }
+val tessdataPath by lazy {
+    when {
+        File("tessdata").exists() -> "tessdata"
+        File("config/tessdata").exists() -> "config/tessdata"
+        else -> "../config/tessdata"
+    }
+}
 
 val optionsDefaultPath by lazy {
     if (File("config").exists()) {
