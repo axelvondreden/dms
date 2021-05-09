@@ -1,10 +1,12 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.data.Query
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.backend.service.QueryService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
@@ -49,6 +51,7 @@ class MainView(
         private val tagService: TagService,
         private val attributeService: AttributeService,
         private val docImportService: DocImportService,
+        private val queryService: QueryService,
         @param:Value("\${build.version}") private val buildVersion: String,
         eventManager: EventManager
 ) : AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybridNoAppBar>(), AfterNavigationObserver, PageConfigurator {
@@ -70,6 +73,7 @@ class MainView(
         eventManager.register(this, Doc::class, DELETE) { ui.access { docsBadge!!.decrease(); fillBadgeCount(it) } }
         eventManager.register(this, Attribute::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
         eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
+        eventManager.register(this, Query::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
 
         Timer().schedule(10 * 1000, 10 * 1000) {
             try {
@@ -88,8 +92,9 @@ class MainView(
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
         val rulesEntry = LeftNavigationItem(t("rules"), VaadinIcon.MAGIC.create(), RulesView::class.java)
+        val queriesEntry = createQueriesEntry()
         return LeftAppMenuBuilder.get()
-                .add(importDocEntry, docsEntry, tagsEntry, attributesEntry, rulesEntry)
+                .add(importDocEntry, docsEntry, tagsEntry, attributesEntry, rulesEntry, queriesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
@@ -156,6 +161,12 @@ class MainView(
         }
         return LeftSubmenu(t("tags"), VaadinIcon.TAGS.create(), tagEntries).withCloseMenuOnNavigation(false)
     }
+
+    private fun createQueriesEntry() = LeftSubmenu(
+        t("my.queries"),
+        VaadinIcon.FOLDER_SEARCH.create(),
+        queryService.findAll().map { query -> LeftClickableItem(query.name, VaadinIcon.SEARCH.create()) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "query:${query.id}") } }
+    ).withCloseMenuOnNavigation(false)
 
     private fun fillBadgeCount(doc: Doc) {
         doc.tags.forEach { fillBadgeCount(it) }

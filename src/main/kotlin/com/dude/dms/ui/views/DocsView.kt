@@ -14,6 +14,7 @@ import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.misc.SearchBar
 import com.dude.dms.ui.components.misc.ViewPageSelector
 import com.dude.dms.utils.docCard
+import com.dude.dms.utils.queryService
 import com.dude.dms.utils.searchBar
 import com.dude.dms.utils.viewPageSelector
 import com.github.mvysny.karibudsl.v10.*
@@ -172,6 +173,9 @@ class DocsView(
             val parts = t.split(":").toTypedArray()
             if ("tag".equals(parts[0], ignoreCase = true)) {
                 searchBar.textFilter.value = "${t("tag")} = ${parts[1]}"
+            }
+            if ("query".equals(parts[0], ignoreCase = true)) {
+                searchBar.textFilter.value = queryService.load(parts[1].toLong())?.searchText ?: ""
             }
         }
     }

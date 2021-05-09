@@ -23,7 +23,7 @@ class SearchHintList : VerticalLayout() {
     }
 
     fun up() {
-        if (index == -1) index = items.size - 1
+        if (index == -1) index = items.size
         index = max(-1, index - 1)
         refreshHighlighting()
     }

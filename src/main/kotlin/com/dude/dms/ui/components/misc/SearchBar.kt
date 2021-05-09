@@ -2,65 +2,77 @@ package com.dude.dms.ui.components.misc
 
 import com.dude.dms.brain.search.SearchParser
 import com.dude.dms.brain.t
+import com.dude.dms.ui.components.dialogs.QuerySaveDialog
 import com.dude.dms.utils.clearTooltips
 import com.dude.dms.utils.searchHintList
-import com.dude.dms.utils.showTooltip
 import com.dude.dms.utils.tooltip
-import com.github.mvysny.karibudsl.v10.textField
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Key
-import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
-import java.util.*
-import kotlin.concurrent.schedule
 
 
 class SearchBar : VerticalLayout() {
 
-    var textFilter: TextField
+    lateinit var textFilter: TextField
+    private lateinit var saveIcon: Icon
     private lateinit var hintList: SearchHintList
+    private var searchStatusIcon = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
 
     var onChange: ((String) -> Unit)? = null
 
     private val searchParser = SearchParser()
 
-    private val viewUI = UI.getCurrent()
-
     init {
         isPadding = false
         isMargin = false
         setWidthFull()
-        textFilter = textField {
+        horizontalLayout(isPadding = false, isSpacing = false) {
+            alignItems = FlexComponent.Alignment.CENTER
             setWidthFull()
-            isClearButtonVisible = true
-            placeholder = t("search")
-            valueChangeMode = ValueChangeMode.EAGER
-            element.setAttribute("onkeydown", """
+            textFilter = textField {
+                setWidthFull()
+                isClearButtonVisible = true
+                placeholder = t("search")
+                valueChangeMode = ValueChangeMode.EAGER
+                element.setAttribute(
+                    "onkeydown", """
                         if (event.key == 'ArrowDown' || event.key == 'ArrowUp') {
                             return false;
                         }
                         return true;
-                        """.trimIndent())
-            addFocusListener {
-                hintList.isVisible = true
+                        """.trimIndent()
+                )
+                addFocusListener {
+                    hintList.isVisible = true
+                }
+                addBlurListener {
+                    hintList.isVisible = false
+                }
+                addKeyDownListener(Key.ARROW_DOWN, {
+                    hintList.down()
+                })
+                addKeyDownListener(Key.ARROW_UP, {
+                    hintList.up()
+                })
+                addKeyDownListener(Key.ENTER, {
+                    hintList.select()
+                })
+                suffixComponent = searchStatusIcon
+                addValueChangeListener { searchTextChange(it.value) }
             }
-            addBlurListener {
-                hintList.isVisible = false
+            saveIcon = icon(VaadinIcon.DISC) {
+                alignSelf = FlexComponent.Alignment.CENTER
+                style["paddingLeft"] = "8px"
+                tooltip(t("save"))
+                onLeftClick {
+                    QuerySaveDialog(textFilter.value).open()
+                }
             }
-            addKeyDownListener(Key.ARROW_DOWN, {
-                hintList.down()
-            })
-            addKeyDownListener(Key.ARROW_UP, {
-                hintList.up()
-            })
-            addKeyDownListener(Key.ENTER, {
-                hintList.select()
-            })
-            suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
-            addValueChangeListener { searchTextChange(it.value) }
         }
         hintList = searchHintList {
             isVisible = false
@@ -94,30 +106,36 @@ class SearchBar : VerticalLayout() {
         val result = searchParser.setInput(newValue)
         val hintResult = searchParser.getHints()
         hintList.setHints(hintResult)
-        (textFilter.suffixComponent as Icon).clearTooltips()
+        searchStatusIcon.clearTooltips()
         if (newValue.isBlank()) {
             onChange?.invoke("")
+            saveIcon.isVisible = false
             setSearchStatusSuccess("")
         } else {
             if (result.isValid) {
                 onChange?.invoke(result.search!!.translate())
+                saveIcon.isVisible = true
                 setSearchStatusSuccess(result.search!!.translate())
             } else {
+                saveIcon.isVisible = false
                 setSearchStatusFail(result.error!!)
             }
         }
     }
 
     private fun setSearchStatusSuccess(msg: String) {
-        textFilter.suffixComponent = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
-        if (msg.isNotBlank()) {
-            (textFilter.suffixComponent as Icon).tooltip(msg)
+        searchStatusIcon = VaadinIcon.CHECK.create().apply {
+            color = "var(--lumo-success-text-color)"
+            if (msg.isNotBlank()) {
+                tooltip(msg)
+            }
         }
     }
 
     private fun setSearchStatusFail(msg: String) {
-        textFilter.suffixComponent = VaadinIcon.BAN.create().apply { color = "var(--lumo-error-text-color)" }
-        (textFilter.suffixComponent as Icon).tooltip(msg)
-        Timer().schedule(200) { viewUI.access { (textFilter.suffixComponent as Icon).showTooltip() } }
+        searchStatusIcon = VaadinIcon.BAN.create().apply {
+            color = "var(--lumo-error-text-color)"
+            tooltip(msg)
+        }
     }
 }
