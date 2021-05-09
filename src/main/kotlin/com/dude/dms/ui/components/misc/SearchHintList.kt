@@ -23,12 +23,13 @@ class SearchHintList : VerticalLayout() {
     }
 
     fun up() {
-        if (index == -1) index = items.size
+        if (index == -1) index = items.size - 1
         index = max(-1, index - 1)
         refreshHighlighting()
     }
 
     fun down() {
+        if (index == items.size - 1) index = -1
         index = min(items.size - 1, index + 1)
         refreshHighlighting()
     }
@@ -46,6 +47,7 @@ class SearchHintList : VerticalLayout() {
 
     fun setHints(result: HintResult) {
         removeAll()
+        index = -1
         this.items = result.hints.map {
             searchHintItem(it) {
                 onLeftClick {
