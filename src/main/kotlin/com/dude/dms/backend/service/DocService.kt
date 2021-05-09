@@ -122,8 +122,10 @@ class DocService(
 
     fun countByFilter(filter: String): Long {
         if (filter.isBlank()) return count()
+        //HACK
+        val filterWithoutOrder = filter.replace(Regex("order by.*", RegexOption.IGNORE_CASE), "")
         return entityManager.createQuery("""
-                SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter
+                SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filterWithoutOrder
                 """.trimIndent()
         ).singleResult as Long
     }
