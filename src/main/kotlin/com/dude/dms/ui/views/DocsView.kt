@@ -171,11 +171,10 @@ class DocsView(
     override fun setParameter(beforeEvent: BeforeEvent, @OptionalParameter t: String?) {
         if (!t.isNullOrEmpty()) {
             val parts = t.split(":").toTypedArray()
-            if ("tag".equals(parts[0], ignoreCase = true)) {
-                searchBar.textFilter.value = "${t("tag")} = ${parts[1]}"
-            }
-            if ("query".equals(parts[0], ignoreCase = true)) {
-                searchBar.textFilter.value = queryService.load(parts[1].toLong())?.searchText ?: ""
+            when {
+                "tag".equals(parts[0], ignoreCase = true) -> searchBar.textFilter.value = "${t("tag")} = ${parts[1]}"
+                "query".equals(parts[0], ignoreCase = true) -> searchBar.textFilter.value = queryService.load(parts[1].toLong())?.searchText ?: ""
+                else -> searchBar.textFilter.clear()
             }
         }
     }

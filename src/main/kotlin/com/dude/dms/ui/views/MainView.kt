@@ -165,7 +165,16 @@ class MainView(
     private fun createQueriesEntry() = LeftSubmenu(
         t("my.queries"),
         VaadinIcon.FOLDER_SEARCH.create(),
-        queryService.findAll().map { query -> LeftClickableItem(query.name, VaadinIcon.SEARCH.create()) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "query:${query.id}") } }
+        queryService.findAll().map { query ->
+            LeftClickableItem(query.name, VaadinIcon.SEARCH.create()) { }.also { item ->
+                ContextMenu().apply {
+                    target = item
+                    isOpenOnClick = true
+                    addItem(t("search")) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "query:${query.id}") }
+                    addItem(t("delete")) { QueryDeleteDialog(query).open() }
+                }
+            }
+        }
     ).withCloseMenuOnNavigation(false)
 
     private fun fillBadgeCount(doc: Doc) {

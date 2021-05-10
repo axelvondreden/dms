@@ -23,7 +23,7 @@ group = "com.dude.dms"
 version = "0.2.5"
 
 val karibudslVersion = "1.0.6"
-val vaadinVersion = "14.5.4"
+val vaadinVersion = "14.5.5"
 
 defaultTasks("clean", "build")
 
@@ -85,6 +85,7 @@ dependencies {
     implementation("com.github.appreciated:app-layout-addon:4.0.0")
     implementation("com.github.appreciated:apexcharts:2.0.0.beta11")
     implementation("com.github.appreciated:card:2.0.0")
+    implementation("com.github.appreciated:color-picker-field-flow:2.0.0.beta6")
     implementation("dev.mett.vaadin:tooltip:1.6.0")
     implementation("org.vaadin.artur:spring-data-provider:2.1.0")
     implementation("org.vaadin.olli:file-download-wrapper:3.0.1")
