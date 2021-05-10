@@ -16,7 +16,6 @@ import com.dude.dms.ui.components.standard.RegexField
 import com.dude.dms.ui.components.tags.*
 import com.github.appreciated.card.Card
 import com.github.appreciated.card.label.SecondaryLabel
-import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.VaadinDsl
 import com.github.mvysny.karibudsl.v10.init
 import com.vaadin.flow.component.ClickEvent
@@ -81,9 +80,6 @@ fun HasComponents.regexDialog(textField: TextField, block: RegexDialog.() -> Uni
 
 @VaadinDsl
 fun HasComponents.regexField(label: String = "", block: RegexField.() -> Unit = {}) = init(RegexField(label), block)
-
-@VaadinDsl
-fun HasComponents.colorPicker(label: String = "", block: ColorPickerFieldRaw.() -> Unit = {}) = init(ColorPickerFieldRaw(label), block)
 
 @VaadinDsl
 fun HasComponents.docPageSelector(max: Int = 1, block: DocPageSelector.() -> Unit = {}) = init(DocPageSelector(max), block)

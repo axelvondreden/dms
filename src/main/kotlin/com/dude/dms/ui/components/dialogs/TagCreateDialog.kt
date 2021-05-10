@@ -3,11 +3,9 @@ package com.dude.dms.ui.components.dialogs
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
-import com.dude.dms.utils.attributeSelector
-import com.dude.dms.utils.colorPicker
-import com.dude.dms.utils.tagService
 import com.dude.dms.ui.components.tags.AttributeSelector
-import com.github.juchar.colorpicker.ColorPickerFieldRaw
+import com.dude.dms.utils.attributeSelector
+import com.dude.dms.utils.tagService
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
@@ -18,7 +16,7 @@ class TagCreateDialog : DmsDialog(t("tag.create"), 35) {
 
     private lateinit var name: TextField
 
-    private lateinit var colorPicker: ColorPickerFieldRaw
+    private lateinit var colorPicker: TextField
 
     private lateinit var attributeSelector: AttributeSelector
 
@@ -30,7 +28,7 @@ class TagCreateDialog : DmsDialog(t("tag.create"), 35) {
                 setWidthFull()
 
                 name = textField(t("name")) { setWidthFull() }
-                colorPicker = colorPicker(t("color")) { setWidthFull() }
+                colorPicker = textField(t("color") + " (#hex)") { setWidthFull() }
             }
             details(t("attributes")) {
                 element.style["width"] = "100%"
