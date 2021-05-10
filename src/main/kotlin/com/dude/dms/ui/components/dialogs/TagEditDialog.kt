@@ -4,9 +4,11 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.utils.attributeSelector
+import com.dude.dms.utils.colorPicker
 import com.dude.dms.utils.docService
 import com.dude.dms.utils.tagService
 import com.dude.dms.ui.components.tags.AttributeSelector
+import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
@@ -16,7 +18,7 @@ class TagEditDialog(private val tag: Tag) : DmsDialog(t("tag.edit"), 35) {
 
     private lateinit var name: TextField
 
-    private lateinit var colorPicker: TextField
+    private lateinit var colorPicker: ColorPickerFieldRaw
 
     private lateinit var attributeSelector: AttributeSelector
 
@@ -31,7 +33,7 @@ class TagEditDialog(private val tag: Tag) : DmsDialog(t("tag.edit"), 35) {
                     setWidthFull()
                     value = tag.name
                 }
-                colorPicker = textField(t("color") + " (#hex)") {
+                colorPicker = colorPicker(t("color")) {
                     setWidthFull()
                     value = tag.color
                 }
