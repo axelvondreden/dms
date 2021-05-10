@@ -48,7 +48,6 @@ options.properties
 /webdrivers.xml
 /webpack.config.js
 /config/options.json
-/package.json
 /pnpm-lock.yaml
 /pnpmfile.js
 /node/
