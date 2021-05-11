@@ -30,8 +30,8 @@ import com.vaadin.flow.router.HasUrlParameter
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import de.f0rce.ace.AceEditor
-import de.f0rce.ace.enums.AceMode
-import de.f0rce.ace.enums.AceTheme
+import de.f0rce.ace.AceMode
+import de.f0rce.ace.AceTheme
 
 
 @Route(value = Const.PAGE_ATTRIBUTE, layout = MainView::class)
