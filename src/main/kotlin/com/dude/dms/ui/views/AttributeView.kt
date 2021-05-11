@@ -58,7 +58,7 @@ class AttributeView(
     private lateinit var testFinalValue: TextField
     private lateinit var testDocLabel: Label
 
-    private val filter: AttributeFilterText
+    private lateinit var filter: AttributeFilterText
 
     init {
         setSizeFull()
