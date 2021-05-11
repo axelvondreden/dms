@@ -1,20 +1,26 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.backend.data.rules.Condition
-import com.dude.dms.backend.data.rules.ConditionType
+import com.dude.dms.backend.data.filter.AttributeFilter
+import com.dude.dms.backend.service.AttributeFilterService
 import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.ConditionService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
-import com.dude.dms.ui.components.cards.ConditionCard
+import com.dude.dms.ui.components.dialogs.DocSelectDialog
+import com.dude.dms.ui.components.misc.AttributeFilterText
+import com.dude.dms.utils.aceEditor
+import com.dude.dms.utils.attributeFilterText
+import com.dude.dms.utils.card
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
@@ -24,16 +30,21 @@ import com.vaadin.flow.router.BeforeEvent
 import com.vaadin.flow.router.HasUrlParameter
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
+import de.f0rce.ace.AceEditor
+import de.f0rce.ace.enums.AceMode
+import de.f0rce.ace.enums.AceTheme
 
 
 @Route(value = Const.PAGE_ATTRIBUTE, layout = MainView::class)
 @PageTitle("Attributes")
 class AttributeView(
         private val attributeService: AttributeService,
-        private val conditionService: ConditionService
+        private val attributeFilterService: AttributeFilterService
 ) : VerticalLayout(), HasUrlParameter<String> {
 
     private var attribute: Attribute? = null
+    private var attributeFilter: AttributeFilter? = null
+    private var testDoc: DocContainer? = null
 
     private lateinit var nameTextField: TextField
 
@@ -43,9 +54,15 @@ class AttributeView(
 
     private lateinit var saveButton: Button
 
-    private var conditionLayout: VerticalLayout
+    private lateinit var testText: AceEditor
+    private lateinit var testGrid: Grid<WordContainer>
+    private lateinit var testDocLabel: Label
+
+    private val filter: AttributeFilterText
 
     init {
+        setSizeFull()
+
         horizontalLayout {
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
@@ -62,23 +79,80 @@ class AttributeView(
                 addThemeVariants(ButtonVariant.LUMO_PRIMARY)
             }
         }
-        conditionLayout = verticalLayout { setSizeFull() }
+        filter = attributeFilterText {
+            setWidthFull()
+            onChange = {
+                if (testDoc != null && it.attributeFilter != null && it.isValid) {
+                    testGrid.setItems(testDoc!!.getWordsForAttributeFilter(it.attributeFilter))
+                } else {
+                    testGrid.setItems(emptyList())
+                }
+            }
+        }
+        card {
+            setWidthFull()
+
+            details(t("filter") + " Test") {
+                isOpened = true
+                style["width"] = "99%"
+                style["height"] = "100%"
+                style["padding"] = "5px"
+
+                content {
+                    setWidthFull()
+
+                    horizontalLayout {
+                        button(t("doc.select")) {
+                            onLeftClick {
+                                DocSelectDialog {
+                                    testDoc = it
+                                    testText.value = testDoc!!.getFullText()
+                                    testDocLabel.text = testDoc!!.guid
+                                    //HACK to quickly trigger onchange and apply filter
+                                    val v = filter.filter.value
+                                    filter.filter.clear()
+                                    filter.filter.value = v
+                                }.open()
+                            }
+                        }
+                        testDocLabel = label("")
+                    }
+                    horizontalLayout {
+                        alignItems = FlexComponent.Alignment.STRETCH
+                        setSizeFull()
+                        verticalLayout {
+                            width = "60%"
+                            label(t("doc.text"))
+                            testText = aceEditor {
+                                setSizeFull()
+                                theme = AceTheme.dracula
+                                mode = AceMode.text
+                                isReadOnly = true
+                            }
+                        }
+                        verticalLayout {
+                            setSizeFull()
+                            width = "40%"
+                            label(t("words.matched"))
+                            testGrid = grid {
+                                setWidthFull()
+                                addColumn { it.text }.setHeader(t("word"))
+                                addItemClickListener {
+                                    //testText.setSelection()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun fill() {
         nameTextField.value = attribute?.name
         typeComboBox.value = attribute?.type
         requiredToggle.value = attribute?.isRequired
-        conditionLayout.removeAll()
-        if (attribute?.condition != null) {
-            conditionLayout.add(Label(t("attribute.rule.description")))
-            conditionLayout.add(ConditionCard(attribute!!.condition!!))
-        } else {
-            conditionLayout.add(Button(t("condition.new"), VaadinIcon.PLUS.create()) {
-                attribute!!.condition = Condition(attribute!!, type = ConditionType.EQUALS)
-                fill()
-            })
-        }
+        filter.filter.value = attributeFilter?.filter
     }
 
     private fun save() {
@@ -86,14 +160,16 @@ class AttributeView(
             LOGGER.showError(t("name.missing"), UI.getCurrent())
             return
         }
-        if (attribute?.condition != null && !attribute!!.condition!!.isValid()) {
+        if (!filter.filter.isEmpty && !filter.isValid) {
             LOGGER.showError(t("condition.invalid"), UI.getCurrent())
             return
         }
+        attributeFilter!!.filter = filter.filter.value
+        attributeFilterService.save(attributeFilter!!)
+
         attribute!!.name = nameTextField.value
         attribute!!.type = typeComboBox.value
         attribute!!.isRequired = requiredToggle.value
-        attribute!!.condition?.let(conditionService::save)
         attributeService.save(attribute!!)
         LOGGER.showInfo(t("saved"), UI.getCurrent())
         fill()
@@ -101,7 +177,18 @@ class AttributeView(
 
     override fun setParameter(beforeEvent: BeforeEvent, t: String) {
         if (t.isNotEmpty()) {
-            attribute = attributeService.findByName(t)
+            attribute = attributeService.load(t.toLong())
+            if (attribute != null) {
+                val findByAttribute = attributeFilterService.findByAttribute(attribute!!)
+                attributeFilter = if (findByAttribute != null) {
+                    findByAttribute
+                } else {
+                    val af = attributeFilterService.create(AttributeFilter(attribute!!, ""))
+                    attribute!!.attributeFilter = af
+                    attributeService.save(attribute!!)
+                    af
+                }
+            }
             fill()
         }
     }

@@ -1,6 +1,6 @@
 package com.dude.dms.api
 
-import com.dude.dms.backend.data.rules.PlainTextRule
+import com.dude.dms.backend.data.filter.PlainTextRule
 import com.dude.dms.backend.service.PlainTextRuleService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

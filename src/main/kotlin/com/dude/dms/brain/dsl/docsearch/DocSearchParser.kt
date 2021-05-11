@@ -1,17 +1,17 @@
-package com.dude.dms.brain.search
+package com.dude.dms.brain.dsl.docsearch
 
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.brain.search.hint.Hint
-import com.dude.dms.brain.search.hint.HintResult
+import com.dude.dms.brain.dsl.hint.Hint
+import com.dude.dms.brain.dsl.hint.HintResult
 import com.dude.dms.brain.t
 import com.dude.dms.utils.attributeService
 import com.vaadin.flow.component.icon.VaadinIcon
 import parser4k.InputIsNotConsumed
 import parser4k.NoMatchingParsers
 
-class SearchParser {
+class DocSearchParser {
 
-    data class ParseResult(val search: Search?, val error: String?, val isValid: Boolean)
+    data class ParseResult(val docSearch: DocSearchLang.Search?, val error: String?, val isValid: Boolean)
 
     private var text: String = ""
 
@@ -21,7 +21,7 @@ class SearchParser {
     fun setInput(text: String): ParseResult {
         this.text = text
         return try {
-            ParseResult(SearchLang.parse(text.trim()), null, true)
+            ParseResult(DocSearchLang.parse(text.trim()), null, true)
         } catch (e: NoMatchingParsers) {
             ParseResult(null, e.message, false)
         } catch (e: InputIsNotConsumed) {
@@ -45,22 +45,22 @@ class SearchParser {
                 val start = text.trim().split(Regex("\\s+")).last()
                 return HintResult(orderKeys.filter { it.text.startsWith(start, ignoreCase = true) }, true)
             }
-            val keyTest = SearchLang.testForOrderKeyFromEnd(text.trim())
+            val keyTest = DocSearchLang.testForOrderKeyFromEnd(text.trim())
             if (keyTest.first != null) {
                 if (text.endsWith(" ")) return HintResult(keyTest.first!!.orderHints)
                 val start = text.takeLast(keyTest.second)
                 return HintResult(keyTest.first!!.orderHints.filter { it.text.startsWith(start, ignoreCase = true) }, true)
             }
         } else {
-            val queryTest = SearchLang.testForQueryDroppingLast(text.trim())
+            val queryTest = DocSearchLang.testForQueryDroppingLast(text.trim())
             if (queryTest.first != null) {
                 if (text.endsWith(" ")) return HintResult(queryTest.first!!.hints)
                 val start = text.takeLast(queryTest.second)
                 return HintResult(queryTest.first!!.hints.filter { it.text.startsWith(start, ignoreCase = true) }, true)
             }
-            val opTest = SearchLang.testForOpFromEnd(text.trim())
+            val opTest = DocSearchLang.testForOpFromEnd(text.trim())
             if (opTest.first != null) {
-                val keyTest = SearchLang.testForKeyFromEnd(text.trim().dropLast(opTest.second))
+                val keyTest = DocSearchLang.testForKeyFromEnd(text.trim().dropLast(opTest.second))
                 if (keyTest.first != null) {
                     if (text.endsWith(" ")) return HintResult(keyTest.first!!.getValueHints(opTest.first!!))
                     val start = text.takeLast(keyTest.second)
@@ -79,7 +79,7 @@ class SearchParser {
                 val start = text.trim().split(Regex("\\s+")).last()
                 return HintResult(searchKeys.filter { it.text.startsWith(start, ignoreCase = true) }, true)
             }
-            val keyTest = SearchLang.testForKeyFromEnd(text.trim())
+            val keyTest = DocSearchLang.testForKeyFromEnd(text.trim())
             if (keyTest.first != null) {
                 if (text.endsWith(" ")) return HintResult(keyTest.first!!.hints)
                 val start = text.takeLast(keyTest.second)

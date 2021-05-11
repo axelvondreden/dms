@@ -1,12 +1,12 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.backend.data.Query
+import com.dude.dms.backend.data.filter.DocFilter
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.QueryService
+import com.dude.dms.backend.service.DocFilterService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
@@ -47,13 +47,13 @@ import kotlin.concurrent.schedule
 @CssImport("./styles/styles.css")
 @Push
 class MainView(
-        private val docService: DocService,
-        private val tagService: TagService,
-        private val attributeService: AttributeService,
-        private val docImportService: DocImportService,
-        private val queryService: QueryService,
-        @param:Value("\${build.version}") private val buildVersion: String,
-        eventManager: EventManager
+    private val docService: DocService,
+    private val tagService: TagService,
+    private val attributeService: AttributeService,
+    private val docImportService: DocImportService,
+    private val docFilterService: DocFilterService,
+    @param:Value("\${build.version}") private val buildVersion: String,
+    eventManager: EventManager
 ) : AppLayoutRouterLayout<LeftLayouts.LeftResponsiveHybridNoAppBar>(), AfterNavigationObserver, PageConfigurator {
 
     private var docsBadge: DefaultBadgeHolder? = null
@@ -73,7 +73,7 @@ class MainView(
         eventManager.register(this, Doc::class, DELETE) { ui.access { docsBadge!!.decrease(); fillBadgeCount(it) } }
         eventManager.register(this, Attribute::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
         eventManager.register(this, Tag::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
-        eventManager.register(this, Query::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
+        eventManager.register(this, DocFilter::class, CREATE, UPDATE, DELETE) { ui.access { appLayout.setAppMenu(buildAppMenu()) } }
 
         Timer().schedule(10 * 1000, 10 * 1000) {
             try {
@@ -127,7 +127,7 @@ class MainView(
             ContextMenu().apply {
                 target = entry
                 isOpenOnClick = true
-                addItem(t("edit")) { UI.getCurrent().navigate(AttributeView::class.java, attribute.name) }
+                addItem(t("edit")) { UI.getCurrent().navigate(AttributeView::class.java, attribute.id.toString()) }
                 addItem(t("delete")) { AttributeDeleteDialog(attribute).open() }
             }
         }
@@ -165,7 +165,7 @@ class MainView(
     private fun createQueriesEntry() = LeftSubmenu(
         t("my.queries"),
         VaadinIcon.FOLDER_SEARCH.create(),
-        queryService.findAll().map { query ->
+        docFilterService.findAll().map { query ->
             LeftClickableItem(query.name, VaadinIcon.SEARCH.create()) { }.also { item ->
                 ContextMenu().apply {
                     target = item

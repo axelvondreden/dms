@@ -2,8 +2,8 @@ package com.dude.dms.backend.data
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.data.rules.RegexRule
+import com.dude.dms.backend.data.filter.PlainTextRule
+import com.dude.dms.backend.data.filter.RegexRule
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator

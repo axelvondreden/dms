@@ -11,6 +11,7 @@ import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
+import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.dude.dms.ui.components.misc.SearchBar
 import com.dude.dms.ui.components.misc.ViewPageSelector
 import com.dude.dms.utils.docCard
@@ -163,7 +164,9 @@ class DocsView(
         docs.forEach { doc ->
             val dc = DocContainer(doc)
             ui.access {
-                itemContainer.docCard(dc)
+                itemContainer.docCard(dc) {
+                    addClickListener { DocImageDialog(docContainer).open() }
+                }
             }
         }
     }
@@ -173,7 +176,7 @@ class DocsView(
             val parts = t.split(":").toTypedArray()
             when {
                 "tag".equals(parts[0], ignoreCase = true) -> searchBar.textFilter.value = "${t("tag")} = ${parts[1]}"
-                "query".equals(parts[0], ignoreCase = true) -> searchBar.textFilter.value = queryService.load(parts[1].toLong())?.searchText ?: ""
+                "query".equals(parts[0], ignoreCase = true) -> searchBar.textFilter.value = queryService.load(parts[1].toLong())?.filter ?: ""
                 else -> searchBar.textFilter.clear()
             }
         }

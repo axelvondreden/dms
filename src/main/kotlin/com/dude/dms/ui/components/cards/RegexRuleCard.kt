@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.rules.RegexRule
+import com.dude.dms.backend.data.filter.RegexRule
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.utils.*
 import com.dude.dms.ui.components.tags.TagLayout

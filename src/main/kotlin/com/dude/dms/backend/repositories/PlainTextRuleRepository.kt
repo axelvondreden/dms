@@ -1,7 +1,7 @@
 package com.dude.dms.backend.repositories
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.rules.PlainTextRule
+import com.dude.dms.backend.data.filter.PlainTextRule
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PlainTextRuleRepository : JpaRepository<PlainTextRule, Long> {

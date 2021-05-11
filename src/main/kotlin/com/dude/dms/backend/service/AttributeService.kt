@@ -12,7 +12,7 @@ class AttributeService(
         private val attributeRepository: AttributeRepository,
         private val tagService: TagService,
         private val attributeValueService: AttributeValueService,
-        private val conditionService: ConditionService,
+        private val attributeFilterService: AttributeFilterService,
         eventManager: EventManager
 ) : EventService<Attribute>(attributeRepository, eventManager) {
 
@@ -30,7 +30,7 @@ class AttributeService(
             tagService.save(it)
         }
         attributeValueService.findByAttribute(entity).forEach(attributeValueService::delete)
-        entity.condition?.let(conditionService::delete)
+        entity.attributeFilter?.let(attributeFilterService::delete)
         load(entity.id)?.let { super.delete(it) }
     }
 

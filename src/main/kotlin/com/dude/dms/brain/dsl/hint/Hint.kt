@@ -1,4 +1,4 @@
-package com.dude.dms.brain.search.hint
+package com.dude.dms.brain.dsl.hint
 
 import com.vaadin.flow.component.icon.VaadinIcon
 

@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.data.rules.RegexRule
+import com.dude.dms.backend.data.filter.RegexRule
 import com.dude.dms.brain.t
 import com.dude.dms.utils.regexField
 import com.dude.dms.utils.regexRuleService

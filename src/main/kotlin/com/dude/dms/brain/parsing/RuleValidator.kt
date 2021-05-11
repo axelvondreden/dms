@@ -1,7 +1,7 @@
 package com.dude.dms.brain.parsing
 
 import com.dude.dms.backend.containers.TagContainer
-import com.dude.dms.backend.data.rules.Rule
+import com.dude.dms.backend.data.filter.Rule
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 
@@ -12,6 +12,6 @@ abstract class RuleValidator<T : Rule>(protected val tagService: TagService, pro
     abstract fun getTags(docText: String?): Set<TagContainer>
 
     fun runRuleForAll(rule: T) = docService.findAll().map { doc ->
-        doc to getTagsForRule(doc.getFullText(), rule).filter { it.tag !in doc.tags }.toSet()
+        doc to getTagsForRule(doc.getFullTextLowerCase(), rule).filter { it.tag !in doc.tags }.toSet()
     }.filter { it.second.isNotEmpty() }.toMap()
 }

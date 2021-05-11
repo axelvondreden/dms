@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.rules.PlainTextRule
+import com.dude.dms.backend.data.filter.PlainTextRule
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.t
 import com.dude.dms.utils.*

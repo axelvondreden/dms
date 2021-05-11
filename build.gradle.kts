@@ -89,6 +89,7 @@ dependencies {
     implementation("dev.mett.vaadin:tooltip:1.6.0")
     implementation("org.vaadin.artur:spring-data-provider:2.1.0")
     implementation("org.vaadin.olli:file-download-wrapper:3.0.1")
+    implementation("de.f0rce:ace:1.1.0")
 }
 
 

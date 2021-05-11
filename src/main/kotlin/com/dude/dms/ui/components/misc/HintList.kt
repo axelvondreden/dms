@@ -1,17 +1,17 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.brain.search.hint.Hint
-import com.dude.dms.brain.search.hint.HintResult
-import com.dude.dms.utils.searchHintItem
+import com.dude.dms.brain.dsl.hint.Hint
+import com.dude.dms.brain.dsl.hint.HintResult
+import com.dude.dms.utils.hintItem
 import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import kotlin.math.max
 import kotlin.math.min
 
 
-class SearchHintList : VerticalLayout() {
+class HintList : VerticalLayout() {
 
-    private var items = emptyList<SearchHintItem>()
+    private var items = emptyList<HintItem>()
     private var index = -1
 
     var onSelect: ((Hint) -> Unit)? = null
@@ -49,7 +49,7 @@ class SearchHintList : VerticalLayout() {
         removeAll()
         index = -1
         this.items = result.hints.map {
-            searchHintItem(it) {
+            hintItem(it) {
                 onLeftClick {
                     onSelect?.invoke(hint)
                     index = -1

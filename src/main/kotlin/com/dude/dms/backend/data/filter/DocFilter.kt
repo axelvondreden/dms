@@ -1,5 +1,8 @@
-package com.dude.dms.backend.data
+package com.dude.dms.backend.data.filter
 
+import com.dude.dms.backend.data.DataEntity
+import com.dude.dms.backend.data.Diffable
+import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
@@ -8,16 +11,16 @@ import javax.persistence.Entity
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
-class Query(
+class DocFilter(
         var name: String,
-        var searchText: String
-) : DataEntity(), Diffable<Query>, LogsEvents {
+        var filter: String
+) : DataEntity(), LogsEvents {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         if (!super.equals(other)) return false
-        return name == (other as Query).name
+        return name == (other as DocFilter).name
     }
 
     override fun hashCode() = Objects.hash(super.hashCode(), name)

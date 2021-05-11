@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.data.Query
+import com.dude.dms.backend.data.filter.DocFilter
 import com.dude.dms.brain.t
 import com.dude.dms.utils.queryService
 import com.github.mvysny.karibudsl.v10.button
@@ -9,7 +9,7 @@ import com.github.mvysny.karibudsl.v10.verticalLayout
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
 
-class QueryDeleteDialog(private val query: Query) : DmsDialog(t("query.delete"), 20) {
+class QueryDeleteDialog(private val docFilter: DocFilter) : DmsDialog(t("query.delete"), 20) {
 
     init {
         verticalLayout(isPadding = false, isSpacing = false) {
@@ -24,7 +24,7 @@ class QueryDeleteDialog(private val query: Query) : DmsDialog(t("query.delete"),
     }
 
     private fun delete() {
-        queryService.delete(query)
+        queryService.delete(docFilter)
         close()
     }
 }

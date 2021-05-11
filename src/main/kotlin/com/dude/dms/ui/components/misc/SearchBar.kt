@@ -1,10 +1,10 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.brain.search.SearchParser
+import com.dude.dms.brain.dsl.docsearch.DocSearchParser
 import com.dude.dms.brain.t
 import com.dude.dms.ui.components.dialogs.QuerySaveDialog
 import com.dude.dms.utils.clearTooltips
-import com.dude.dms.utils.searchHintList
+import com.dude.dms.utils.hintList
 import com.dude.dms.utils.tooltip
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Key
@@ -16,16 +16,16 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 
 
-class SearchBar : VerticalLayout() {
+class SearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout() {
 
     lateinit var textFilter: TextField
     private lateinit var saveIcon: Icon
-    private lateinit var hintList: SearchHintList
+    private lateinit var hintList: HintList
     private var searchStatusIcon = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
 
     var onChange: ((String) -> Unit)? = null
 
-    private val searchParser = SearchParser()
+    private val searchParser = DocSearchParser()
 
     init {
         isPadding = false
@@ -72,9 +72,10 @@ class SearchBar : VerticalLayout() {
                 onLeftClick {
                     QuerySaveDialog(textFilter.value).open()
                 }
+                if (hideSaveIcon) isVisible = false
             }
         }
-        hintList = searchHintList {
+        hintList = hintList {
             isVisible = false
             maxWidth = "30em"
             style["position"] = "absolute"
@@ -113,9 +114,9 @@ class SearchBar : VerticalLayout() {
             setSearchStatusSuccess("")
         } else {
             if (result.isValid) {
-                onChange?.invoke(result.search!!.translate())
-                saveIcon.isVisible = true
-                setSearchStatusSuccess(result.search!!.translate())
+                onChange?.invoke(result.docSearch!!.translate())
+                saveIcon.isVisible = !hideSaveIcon
+                setSearchStatusSuccess(result.docSearch!!.translate())
             } else {
                 saveIcon.isVisible = false
                 setSearchStatusFail(result.error!!)

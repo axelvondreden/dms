@@ -6,9 +6,9 @@ import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.data.rules.RegexRule
-import com.dude.dms.brain.search.hint.Hint
+import com.dude.dms.backend.data.filter.PlainTextRule
+import com.dude.dms.backend.data.filter.RegexRule
+import com.dude.dms.brain.dsl.hint.Hint
 import com.dude.dms.ui.components.cards.*
 import com.dude.dms.ui.components.dialogs.*
 import com.dude.dms.ui.components.misc.*
@@ -29,6 +29,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup
 import com.vaadin.flow.component.textfield.TextField
+import de.f0rce.ace.AceEditor
 import dev.mett.vaadin.tooltip.Tooltips
 
 @VaadinDsl
@@ -175,10 +176,16 @@ fun <T> T.clearTooltips() where T : Component, T : HasStyle {
 }
 
 @VaadinDsl
-fun HasComponents.searchBar(block: SearchBar.() -> Unit = {}) = init(SearchBar(), block)
+fun HasComponents.searchBar(hideSaveIcon: Boolean = false, block: SearchBar.() -> Unit = {}) = init(SearchBar(hideSaveIcon), block)
 
 @VaadinDsl
-fun HasComponents.searchHintList(block: SearchHintList.() -> Unit = {}) = init(SearchHintList(), block)
+fun HasComponents.attributeFilterText(block: AttributeFilterText.() -> Unit = {}) = init(AttributeFilterText(), block)
 
 @VaadinDsl
-fun HasComponents.searchHintItem(hint: Hint, block: SearchHintItem.() -> Unit = {}) = init(SearchHintItem(hint), block)
+fun HasComponents.hintList(block: HintList.() -> Unit = {}) = init(HintList(), block)
+
+@VaadinDsl
+fun HasComponents.hintItem(hint: Hint, block: HintItem.() -> Unit = {}) = init(HintItem(hint), block)
+
+@VaadinDsl
+fun HasComponents.aceEditor(block: AceEditor.() -> Unit = {}) = init(AceEditor(), block)

@@ -1,4 +1,4 @@
-package com.dude.dms.backend.data.rules
+package com.dude.dms.backend.data.filter
 
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents

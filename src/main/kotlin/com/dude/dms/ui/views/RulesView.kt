@@ -1,7 +1,7 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.backend.data.rules.PlainTextRule
-import com.dude.dms.backend.data.rules.RegexRule
+import com.dude.dms.backend.data.filter.PlainTextRule
+import com.dude.dms.backend.data.filter.RegexRule
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.backend.service.RegexRuleService
 import com.dude.dms.brain.events.EventManager

@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Page
+import com.dude.dms.brain.dsl.attributefilter.*
 import com.dude.dms.brain.options.Options
 import java.io.File
 import java.time.LocalDate
@@ -81,13 +82,49 @@ class DocContainer(var guid: String, var file: File? = null) {
             pages.first { it.nr == 1 }.image = value
         }
 
-    fun getLine(word: WordContainer) = doc?.getLine(word.word) ?: pages.flatMap { it.lines }.first { word in it.words }.line
+    private fun getLine(word: WordContainer) = doc?.getLine(word.word) ?: pages.flatMap { it.lines }.first { word in it.words }.line
+
+    fun getFullTextLowerCase() = doc?.getFullTextLowerCase() ?: pages.sortedBy { it.nr }.joinToString("\n") { page ->
+        page.lines.sortedBy { it.y }.joinToString("\n") { line ->
+            line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
+        }
+    }.lowercase()
 
     fun getFullText() = doc?.getFullText() ?: pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
             line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
         }
-    }.lowercase()
+    }
+
+    fun getWordsForAttributeFilter(filter: AttributeFilterLang.Query) = words.filter { filterIsValid(filter, it) }.toSet()
+
+    private fun filterIsValid(filter: AttributeFilterLang.Query, word: WordContainer): Boolean {
+        return when (filter) {
+            is AttributeFilterLang.Query.And -> filterIsValid(filter.left, word) && filterIsValid(filter.right, word)
+            is AttributeFilterLang.Query.Or -> filterIsValid(filter.left, word) || filterIsValid(filter.right, word)
+            is AttributeFilterLang.Filter.CurrentWord -> testFilter(word.text, filter.value.value, filter.op)
+            is AttributeFilterLang.Filter.NextWord -> {
+                val words = getLine(word).words.sortedBy { it.x }
+                val index = words.indexOf(word.word)
+                index < words.size - 1 && testFilter(words[index + 1].text ?: "", filter.value.value, filter.op)
+            }
+            is AttributeFilterLang.Filter.PreviousWord -> {
+                val words = getLine(word).words.sortedBy { it.x }
+                val index = words.indexOf(word.word)
+                index > 0 && testFilter(words[index - 1].text ?: "", filter.value.value, filter.op)
+            }
+            is AttributeFilterLang.Filter.Line -> testFilter(getLine(word).getFullText(), filter.value.value, filter.op)
+        }
+    }
+
+    private fun testFilter(wordText: String, filterText: String, op: AttributeFilterLang.Operator): Boolean {
+        return when (op) {
+            AttributeFilterLang.Operator.Equal -> wordText.equals(filterText, ignoreCase = true)
+            AttributeFilterLang.Operator.NotEqual -> !wordText.equals(filterText, ignoreCase = true)
+            AttributeFilterLang.Operator.Contains -> wordText.contains(filterText, ignoreCase = true)
+            AttributeFilterLang.Operator.NotContains -> !wordText.contains(filterText, ignoreCase = true)
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

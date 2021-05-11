@@ -1,4 +1,4 @@
-package com.dude.dms.brain.search.hint
+package com.dude.dms.brain.dsl.hint
 
 interface Hints {
     val hints: List<Hint>

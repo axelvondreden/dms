@@ -1,6 +1,6 @@
 package com.dude.dms.ui.components.dialogs
 
-import com.dude.dms.backend.data.Query
+import com.dude.dms.backend.data.filter.DocFilter
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.utils.queryService
@@ -48,7 +48,7 @@ class QuerySaveDialog(private val searchText: String) : DmsDialog(t("search.save
             LOGGER.showError(t("query.exists"), UI.getCurrent())
             return
         }
-        queryService.create(Query(name.value, searchText))
+        queryService.create(DocFilter(name.value, searchText))
         close()
     }
 

@@ -6,7 +6,6 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.utils.*
-import com.dude.dms.ui.components.dialogs.DocImageDialog
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.github.appreciated.card.ClickableCard
 import com.github.mvysny.karibudsl.v10.div
@@ -34,7 +33,6 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
     private val viewUI = UI.getCurrent()
 
     init {
-        addClickListener { DocImageDialog(docContainer).open() }
         fill()
         addClassName("doc-card")
     }

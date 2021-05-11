@@ -1,7 +1,7 @@
 package com.dude.dms.brain.parsing
 
 import com.dude.dms.backend.containers.TagContainer
-import com.dude.dms.backend.data.rules.PlainTextRule
+import com.dude.dms.backend.data.filter.PlainTextRule
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.PlainTextRuleService
 import com.dude.dms.backend.service.TagService

@@ -27,7 +27,7 @@ class DocService(
             it.doc = new
             attributeValueService.create(it)
         }
-        val text = DocText(new, new.getFullText())
+        val text = DocText(new, new.getFullTextLowerCase())
         docTextService.create(text)
         new.docText = text
         super.save(new)
@@ -37,7 +37,7 @@ class DocService(
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
         createAttributeValues(new)
-        val text = DocText(new, new.getFullText())
+        val text = DocText(new, new.getFullTextLowerCase())
         docTextService.save(text)
         return new
     }
@@ -48,10 +48,10 @@ class DocService(
         deleteAttributeValues(entity)
         val text = entity.docText
         if (text != null) {
-            text.text = entity.getFullText()
+            text.text = entity.getFullTextLowerCase()
             docTextService.save(text)
         } else {
-            val new = DocText(entity, entity.getFullText())
+            val new = DocText(entity, entity.getFullTextLowerCase())
             entity.docText = docTextService.create(new)
             super.save(entity)
         }

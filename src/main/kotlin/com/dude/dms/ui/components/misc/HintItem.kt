@@ -1,13 +1,13 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.brain.search.hint.Hint
+import com.dude.dms.brain.dsl.hint.Hint
 import com.github.mvysny.karibudsl.v10.div
 import com.github.mvysny.karibudsl.v10.icon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 
 
-class SearchHintItem(val hint: Hint) : HorizontalLayout() {
+class HintItem(val hint: Hint) : HorizontalLayout() {
 
     init {
         setWidthFull()

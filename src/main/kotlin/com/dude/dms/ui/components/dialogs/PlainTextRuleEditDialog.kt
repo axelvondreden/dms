@@ -1,7 +1,7 @@
 package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.containers.TagContainer
-import com.dude.dms.backend.data.rules.PlainTextRule
+import com.dude.dms.backend.data.filter.PlainTextRule
 import com.dude.dms.brain.t
 import com.dude.dms.utils.plainTextRuleService
 import com.dude.dms.utils.tagSelector

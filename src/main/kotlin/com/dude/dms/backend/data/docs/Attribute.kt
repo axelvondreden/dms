@@ -3,7 +3,7 @@ package com.dude.dms.backend.data.docs
 import com.dude.dms.backend.data.DataEntity
 import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.Tag
-import com.dude.dms.backend.data.rules.Condition
+import com.dude.dms.backend.data.filter.AttributeFilter
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
@@ -19,7 +19,7 @@ class Attribute(
         var type: Type,
         @OneToMany(mappedBy = "attribute") var attributeValues: Set<AttributeValue> = HashSet(),
         @ManyToMany(mappedBy = "attributes") var tags: Set<Tag> = HashSet(),
-        @OneToOne(mappedBy = "attribute", cascade = [CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]) var condition: Condition? = null
+        @OneToOne(mappedBy = "attribute", fetch = FetchType.EAGER) var attributeFilter: AttributeFilter? = null
 ) : DataEntity(), LogsEvents {
 
     enum class Type {
