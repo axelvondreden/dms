@@ -121,4 +121,11 @@ class AttributeFilterText : VerticalLayout() {
         }
         filter.suffixComponent = statusIcon
     }
+
+    fun refresh() {
+        //HACK to quickly trigger onchange and apply filter
+        val v = filter.value
+        filter.clear()
+        filter.value = v
+    }
 }

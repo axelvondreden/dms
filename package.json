@@ -3,7 +3,7 @@
   "license": "UNLICENSED",
   "vaadin": {
     "dependencies": {
-      "lit-element": "2.4.0",
+      "lit-element": "2.5.0",
       "@polymer/polymer": "3.2.0",
       "@webcomponents/webcomponentsjs": "^2.2.10",
       "@vaadin/vaadin-grid": "5.7.13",
@@ -71,7 +71,7 @@
     "hash": "7db3e0c8761ce4b843fb14263d73f5ab6758db6ff98139b5dab3ba3bb1b36160"
   },
   "dependencies": {
-    "lit-element": "2.4.0",
+    "lit-element": "2.5.0",
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@vaadin/vaadin-grid": "5.7.13",

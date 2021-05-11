@@ -7,13 +7,12 @@ import com.dude.dms.backend.data.filter.AttributeFilter
 import com.dude.dms.backend.service.AttributeFilterService
 import com.dude.dms.backend.service.AttributeService
 import com.dude.dms.brain.DmsLogger
+import com.dude.dms.brain.dsl.attributefilter.AttributeFilterParser
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.dialogs.DocSelectDialog
 import com.dude.dms.ui.components.misc.AttributeFilterText
-import com.dude.dms.utils.aceEditor
-import com.dude.dms.utils.attributeFilterText
-import com.dude.dms.utils.card
+import com.dude.dms.utils.*
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
@@ -56,6 +55,7 @@ class AttributeView(
 
     private lateinit var testText: AceEditor
     private lateinit var testGrid: Grid<WordContainer>
+    private lateinit var testFinalValue: TextField
     private lateinit var testDocLabel: Label
 
     private val filter: AttributeFilterText
@@ -72,6 +72,7 @@ class AttributeView(
                 setItems(*Attribute.Type.values())
                 isPreventInvalidInput = true
                 isAllowCustomValue = false
+                addValueChangeListener { filter.refresh() }
             }
             requiredToggle = checkBox(t("attribute.required"))
             saveButton = button(t("save"), VaadinIcon.DISC.create()) {
@@ -82,11 +83,7 @@ class AttributeView(
         filter = attributeFilterText {
             setWidthFull()
             onChange = {
-                if (testDoc != null && it.attributeFilter != null && it.isValid) {
-                    testGrid.setItems(testDoc!!.getWordsForAttributeFilter(it.attributeFilter))
-                } else {
-                    testGrid.setItems(emptyList())
-                }
+                filterChange(it)
             }
         }
         card {
@@ -108,10 +105,7 @@ class AttributeView(
                                     testDoc = it
                                     testText.value = testDoc!!.getFullText()
                                     testDocLabel.text = testDoc!!.guid
-                                    //HACK to quickly trigger onchange and apply filter
-                                    val v = filter.filter.value
-                                    filter.filter.clear()
-                                    filter.filter.value = v
+                                    filter.refresh()
                                 }.open()
                             }
                         }
@@ -121,7 +115,7 @@ class AttributeView(
                         alignItems = FlexComponent.Alignment.STRETCH
                         setSizeFull()
                         verticalLayout {
-                            width = "60%"
+                            width = "70%"
                             label(t("doc.text"))
                             testText = aceEditor {
                                 setSizeFull()
@@ -132,7 +126,7 @@ class AttributeView(
                         }
                         verticalLayout {
                             setSizeFull()
-                            width = "40%"
+                            width = "30%"
                             label(t("words.matched"))
                             testGrid = grid {
                                 setWidthFull()
@@ -141,10 +135,41 @@ class AttributeView(
                                     //testText.setSelection()
                                 }
                             }
+                            testFinalValue = textField(t("word.final")) {
+                                setWidthFull()
+                                isReadOnly = true
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun filterChange(result: AttributeFilterParser.ParseResult) {
+        if (testDoc != null && result.attributeFilter != null && result.isValid) {
+            val words = testDoc!!.getWordsForAttributeFilter(result.attributeFilter)
+            testGrid.setItems(words)
+
+            val filtered = words.filter {
+                when (attribute!!.type) {
+                    Attribute.Type.INT -> it.text.findInt() != null
+                    Attribute.Type.FLOAT -> it.text.findDecimal() != null
+                    Attribute.Type.DATE -> it.text.findDate() != null
+                    else -> true
+                }
+            }
+            val value = filtered.groupBy { it.text }.maxByOrNull { it.value.size }?.key
+            if (value != null) {
+                testFinalValue.value = when (typeComboBox.value) {
+                    Attribute.Type.INT -> value.findInt().toString()
+                    Attribute.Type.FLOAT -> value.findDecimal()!!.toFloat().toString()
+                    Attribute.Type.DATE -> value.findDate().toString()
+                    else -> value
+                }
+            }
+        } else {
+            testGrid.setItems(emptyList())
         }
     }
 
@@ -173,6 +198,7 @@ class AttributeView(
         attributeService.save(attribute!!)
         LOGGER.showInfo(t("saved"), UI.getCurrent())
         fill()
+        filter.refresh()
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, t: String) {
