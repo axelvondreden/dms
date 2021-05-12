@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
-abstract class CrudService<T : DataEntity>(protected val repository: JpaRepository<T, Long>) {
+abstract class CrudService<T : DataEntity>(private val repository: JpaRepository<T, Long>) {
 
     open fun create(entity: T): T = repository.saveAndFlush(entity)
 

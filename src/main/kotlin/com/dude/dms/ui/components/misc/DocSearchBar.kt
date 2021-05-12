@@ -16,7 +16,7 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 
 
-class SearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout() {
+class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout() {
 
     lateinit var textFilter: TextField
     private lateinit var saveIcon: Icon

@@ -1,34 +1,26 @@
 package com.dude.dms.utils
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.AttributeValue
-import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.filter.PlainTextRule
-import com.dude.dms.backend.data.filter.RegexRule
 import com.dude.dms.brain.dsl.hint.Hint
-import com.dude.dms.ui.components.cards.*
-import com.dude.dms.ui.components.dialogs.*
+import com.dude.dms.ui.components.cards.DocCard
+import com.dude.dms.ui.components.cards.DocImportCard
+import com.dude.dms.ui.components.dialogs.AttributeCreateDialog
+import com.dude.dms.ui.components.dialogs.DocDeleteDialog
+import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.dude.dms.ui.components.misc.*
-import com.dude.dms.ui.components.standard.RegexField
 import com.dude.dms.ui.components.tags.*
 import com.github.appreciated.card.Card
 import com.github.appreciated.card.label.SecondaryLabel
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.VaadinDsl
 import com.github.mvysny.karibudsl.v10.init
-import com.vaadin.flow.component.ClickEvent
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.HasStyle
-import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.progressbar.ProgressBar
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup
-import com.vaadin.flow.component.textfield.TextField
 import de.f0rce.ace.AceEditor
 import dev.mett.vaadin.tooltip.Tooltips
 
@@ -50,40 +42,6 @@ fun HasComponents.tagSelector(block: TagSelector.() -> Unit = {}) = init(TagSele
 fun HasComponents.attributeSelector(block: AttributeSelector.() -> Unit = {}) = init(AttributeSelector(), block)
 
 @VaadinDsl
-fun HasComponents.plaintextRuleCreateDialog(block: PlainTextRuleCreateDialog.() -> Unit = {})
-        = init(PlainTextRuleCreateDialog(), block)
-
-@VaadinDsl
-fun HasComponents.plaintextRuleEditDialog(plainTextRule: PlainTextRule, block: PlainTextRuleEditDialog.() -> Unit = {})
-        = init(PlainTextRuleEditDialog(plainTextRule), block)
-
-@VaadinDsl
-fun HasComponents.plaintextRuleCard(plainTextRule: PlainTextRule, block: PlainTextRuleCard.() -> Unit = {})
-        = init(PlainTextRuleCard(plainTextRule), block)
-
-@VaadinDsl
-fun HasComponents.regexRuleCreateDialog(block: RegexRuleCreateDialog.() -> Unit = {})
-        = init(RegexRuleCreateDialog(), block)
-
-@VaadinDsl
-fun HasComponents.regexRuleEditDialog(regexRule: RegexRule, block: RegexRuleEditDialog.() -> Unit = {})
-        = init(RegexRuleEditDialog(regexRule), block)
-
-@VaadinDsl
-fun HasComponents.regexRuleCard(regexRule: RegexRule, block: RegexRuleCard.() -> Unit = {})
-        = init(RegexRuleCard(regexRule), block)
-
-@VaadinDsl
-fun HasComponents.ruleRunnerDialog(result: Map<Doc, Set<TagContainer>>, block: RuleRunnerDialog.() -> Unit = {})
-        = init(RuleRunnerDialog(result), block)
-
-@VaadinDsl
-fun HasComponents.regexDialog(textField: TextField, block: RegexDialog.() -> Unit = {}) = init(RegexDialog(textField), block)
-
-@VaadinDsl
-fun HasComponents.regexField(label: String = "", block: RegexField.() -> Unit = {}) = init(RegexField(label), block)
-
-@VaadinDsl
 fun HasComponents.colorPicker(label: String = "", block: ColorPickerFieldRaw.() -> Unit = {}) = init(ColorPickerFieldRaw(label), block)
 
 @VaadinDsl
@@ -99,10 +57,6 @@ fun HasComponents.modeSelector(block: ModeSelector.() -> Unit = {}) = init(ModeS
 fun HasComponents.docImageEditor(block: DocImageEditor.() -> Unit = {}) = init(DocImageEditor(), block)
 
 @VaadinDsl
-fun HasComponents.docInfoLayout(docImageEditor: DocImageEditor, block: DocInfoLayout.() -> Unit = {})
-        = init(DocInfoLayout(docImageEditor), block)
-
-@VaadinDsl
 fun HasComponents.docCard(docContainer: DocContainer, block: DocCard.() -> Unit = {}) = init(DocCard(docContainer), block)
 
 @VaadinDsl
@@ -112,6 +66,9 @@ fun HasComponents.docImportCard(docContainer: DocContainer, block: DocImportCard
 @VaadinDsl
 fun HasComponents.wordEditDialog(wordContainer: WordContainer, block: WordEditDialog.() -> Unit = {})
         = init(WordEditDialog(wordContainer), block)
+
+@VaadinDsl
+fun HasComponents.filterTestLayout(block: FilterTestLayout.() -> Unit = {}) = init(FilterTestLayout(), block)
 
 @VaadinDsl
 fun HasComponents.attributeValueLayout(imageEditor: DocImageEditor? = null, block: AttributeValueLayout.() -> Unit = {})
@@ -136,19 +93,6 @@ fun HasComponents.attributeValueLabel(attributeValue: AttributeValue, block: Att
 fun HasComponents.docDeleteDialog(docContainer: DocContainer, block: DocDeleteDialog.() -> Unit = {}) = init(DocDeleteDialog(docContainer), block)
 
 @VaadinDsl
-fun HasComponents.docImportPreview(block: DocImportPreview.() -> Unit = {}) = init(DocImportPreview(), block)
-
-@VaadinDsl
-fun HasComponents.confirmDialog(
-        message: String,
-        confirmText: String,
-        icon: VaadinIcon,
-        theme: ButtonVariant,
-        event: (ClickEvent<Button>) -> Unit,
-        block: DmsConfirmDialog.() -> Unit = {}
-) = init(DmsConfirmDialog(message, confirmText, icon, theme, event), block)
-
-@VaadinDsl
 fun HasComponents.card(block: Card.() -> Unit = {}) = init(Card(), block)
 
 @VaadinDsl
@@ -156,9 +100,6 @@ fun HasComponents.secondaryLabel(text: String?, block: SecondaryLabel.() -> Unit
 
 @VaadinDsl
 fun HasComponents.progressBar(block: ProgressBar.() -> Unit = {}) = init(ProgressBar(), block)
-
-@VaadinDsl
-fun HasComponents.radioButtonGroup(block: RadioButtonGroup<String>.() -> Unit = {})= init(RadioButtonGroup(), block)
 
 @VaadinDsl
 fun <T> T.tooltip(text: String?) where T : Component, T : HasStyle {
@@ -176,10 +117,13 @@ fun <T> T.clearTooltips() where T : Component, T : HasStyle {
 }
 
 @VaadinDsl
-fun HasComponents.searchBar(hideSaveIcon: Boolean = false, block: SearchBar.() -> Unit = {}) = init(SearchBar(hideSaveIcon), block)
+fun HasComponents.searchBar(hideSaveIcon: Boolean = false, block: DocSearchBar.() -> Unit = {}) = init(DocSearchBar(hideSaveIcon), block)
 
 @VaadinDsl
 fun HasComponents.attributeFilterText(block: AttributeFilterText.() -> Unit = {}) = init(AttributeFilterText(), block)
+
+@VaadinDsl
+fun HasComponents.tagFilterText(block: TagFilterText.() -> Unit = {}) = init(TagFilterText(), block)
 
 @VaadinDsl
 fun HasComponents.hintList(block: HintList.() -> Unit = {}) = init(HintList(), block)

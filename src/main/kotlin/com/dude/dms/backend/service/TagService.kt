@@ -9,23 +9,15 @@ import org.springframework.stereotype.Service
 @Service
 class TagService(
         private val tagRepository: TagRepository,
-        private val plainTextRuleService: PlainTextRuleService,
-        private val regexRuleService: RegexRuleService,
         private val docService: DocService,
+        private val tagFilterService: TagFilterService,
         eventManager: EventManager
 ) : EventService<Tag>(tagRepository, eventManager) {
 
     override fun create(entity: Tag) = tagRepository.findByName(entity.name) ?: super.create(entity)
 
     override fun delete(entity: Tag) {
-        plainTextRuleService.findByTag(entity).forEach {
-            it.tags = it.tags.minus(entity)
-            plainTextRuleService.save(it)
-        }
-        regexRuleService.findByTag(entity).forEach {
-            it.tags = it.tags.minus(entity)
-            regexRuleService.save(it)
-        }
+        entity.tagFilter?.let(tagFilterService::delete)
         docService.findByTag(entity).forEach {
             it.tags = it.tags.minus(entity)
             docService.save(it)

@@ -1,6 +1,5 @@
 package com.dude.dms.backend.data.docs
 
-import com.dude.dms.backend.data.Diffable
 import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.RestorableEntity
 import com.dude.dms.brain.t
@@ -20,7 +19,7 @@ class DocText(
         @Column(columnDefinition = "LONGVARCHAR")
         @Size(max = 9999999)
         var text: String?,
-) : RestorableEntity(), Diffable<DocText>, LogsEvents {
+) : RestorableEntity(), LogsEvents {
 
     override fun toString(): String = "${t("doc")} text"
 }

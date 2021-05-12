@@ -4,7 +4,7 @@ import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.components.cards.DocCard
-import com.dude.dms.ui.components.misc.SearchBar
+import com.dude.dms.ui.components.misc.DocSearchBar
 import com.dude.dms.ui.components.misc.ViewPageSelector
 import com.dude.dms.utils.docCard
 import com.dude.dms.utils.docService
@@ -21,7 +21,7 @@ class DocSelectDialog(private val onSelect: (DocContainer) -> Unit) : DmsDialog(
 
     private val itemContainer: Div
 
-    private val searchBar: SearchBar
+    private val searchBar: DocSearchBar
 
     private lateinit var pageSelector: ViewPageSelector
 

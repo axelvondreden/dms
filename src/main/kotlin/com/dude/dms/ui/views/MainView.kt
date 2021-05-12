@@ -91,10 +91,9 @@ class MainView(
         recycleBadge = DefaultBadgeHolder(docService.countDeleted().toInt()).apply { bind(recycleEntry.badge) }
         val tagsEntry = createTagsEntry()
         val attributesEntry = createAttributesEntry()
-        val rulesEntry = LeftNavigationItem(t("rules"), VaadinIcon.MAGIC.create(), RulesView::class.java)
         val queriesEntry = createQueriesEntry()
         return LeftAppMenuBuilder.get()
-                .add(importDocEntry, docsEntry, tagsEntry, attributesEntry, rulesEntry, queriesEntry)
+                .add(importDocEntry, docsEntry, tagsEntry, attributesEntry, queriesEntry)
                 .withStickyFooter()
                 .addToSection(Section.FOOTER,
                         LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
@@ -155,7 +154,7 @@ class MainView(
                 target = entry
                 isOpenOnClick = true
                 addItem(t("docs")) { UI.getCurrent().navigate<String, DocsView>(DocsView::class.java, "tag:${tag.name}") }
-                addItem(t("edit")) { TagEditDialog(tag).open() }
+                addItem(t("edit")) { UI.getCurrent().navigate(TagView::class.java, tag.id.toString()) }
                 addItem(t("delete")) { TagDeleteDialog(tag).open() }
             }
         }

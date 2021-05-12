@@ -11,7 +11,6 @@ object Const {
     const val PAGE_OPTIONS = "options"
     const val PAGE_RECYCLE = "recycle"
     const val PAGE_ROOT = ""
-    const val PAGE_RULES = "rules"
     const val PAGE_TAG = "tag"
 
     @JvmField

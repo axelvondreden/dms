@@ -15,7 +15,7 @@ private val userDateTimeFormat: DateTimeFormatter
     get() = DateTimeFormatter.ofPattern("${Options.get().view.dateFormat} HH:mm:ss")
 
 private val dateScanFormats: Map<String, DateTimeFormatter>
-    get() = Options.get().view.dateScanFormats.map { it to DateTimeFormatter.ofPattern(it) }.toMap()
+    get() = Options.get().view.dateScanFormats.associateWith { DateTimeFormatter.ofPattern(it) }
 
 
 fun Double.convert(): String = NumberFormat.getNumberInstance(Locale.forLanguageTag(Options.get().view.locale)).format(this)

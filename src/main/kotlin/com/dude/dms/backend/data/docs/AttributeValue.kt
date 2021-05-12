@@ -30,4 +30,12 @@ class AttributeValue(
     override fun hashCode(): Int = Objects.hash(super.hashCode(), doc, attribute)
 
     override fun toString(): String = t("attributevalue")
+
+    val convertedValue: String
+        get() = when (attribute.type) {
+            Attribute.Type.STRING -> stringValue.toString()
+            Attribute.Type.INT -> intValue.toString()
+            Attribute.Type.FLOAT -> floatValue.toString()
+            Attribute.Type.DATE -> dateValue.toString()
+        }
 }

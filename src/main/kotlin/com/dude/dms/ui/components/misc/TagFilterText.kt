@@ -1,11 +1,11 @@
 package com.dude.dms.ui.components.misc
 
-import com.dude.dms.brain.dsl.attributefilter.AttributeFilterParser
+import com.dude.dms.brain.dsl.tagFilterLang.TagFilterParser
 import com.dude.dms.brain.t
 import com.dude.dms.utils.clearTooltips
 import com.dude.dms.utils.hintList
 import com.dude.dms.utils.tooltip
-import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.karibudsl.v10.textField
 import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -13,25 +13,25 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
 
 
-class AttributeFilterText : VerticalLayout() {
+class TagFilterText : VerticalLayout() {
 
     val filter: TextField
     private lateinit var hintList: HintList
     private var statusIcon = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
 
-    var onChange: ((AttributeFilterParser.ParseResult) -> Unit)? = null
+    var onChange: ((TagFilterParser.ParseResult) -> Unit)? = null
 
     val isValid get() = _isValid
 
     private var _isValid = false
 
-    private val parser = AttributeFilterParser()
+    private val parser = TagFilterParser()
 
     init {
         isPadding = false
         isMargin = false
         style["position"] = "relative"
-        filter = textField(t("attribute.filter.info")) {
+        filter = textField(t("tag.filter.info")) {
             setWidthFull()
             isClearButtonVisible = true
             valueChangeMode = ValueChangeMode.EAGER

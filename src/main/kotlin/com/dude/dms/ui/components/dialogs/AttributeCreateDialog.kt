@@ -2,8 +2,10 @@ package com.dude.dms.ui.components.dialogs
 
 import com.dude.dms.backend.data.docs.Attribute
 import com.dude.dms.brain.t
+import com.dude.dms.ui.views.AttributeView
 import com.dude.dms.utils.attributeService
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.checkbox.Checkbox
 import com.vaadin.flow.component.combobox.ComboBox
@@ -59,8 +61,8 @@ class AttributeCreateDialog : DmsDialog(t("attribute.create"), 35) {
         if (nameTextField.isEmpty) {
             return
         }
-        val attribute = Attribute(nameTextField.value, requiredToggle.value, typeComboBox.value)
-        attributeService.create(attribute)
+        val attribute = attributeService.create(Attribute(nameTextField.value, requiredToggle.value, typeComboBox.value))
         close()
+        UI.getCurrent().navigate(AttributeView::class.java, attribute.id.toString())
     }
 }

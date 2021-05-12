@@ -7,6 +7,7 @@ import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.dsl.attributefilter.AttributeFilterParser
+import com.dude.dms.brain.dsl.tagFilterLang.TagFilterParser
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.utils.findDate
@@ -20,8 +21,6 @@ import java.time.LocalDate
 @Component
 class DocParser(
         private val tagService: TagService,
-        private val plainTextRuleValidator: PlainTextRuleValidator,
-        private val regexRuleValidator: RegexRuleValidator,
         private val pdfStripper: DmsPdfTextStripper,
         private val ocrStripper: DmsOcrTextStripper
 ) {
@@ -33,12 +32,19 @@ class DocParser(
     fun getText(img: File, rect: DmsOcrTextStripper.Rect, language: String = Options.get().doc.ocrLanguage) = ocrStripper.getTextFromArea(img, rect, language)
 
     fun discoverTags(doc: DocContainer): Set<TagContainer> {
-        val docText = doc.getFullTextLowerCase()
         val tags = mutableSetOf<TagContainer>()
         tags.addAll(Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.map { TagContainer(it, t("automatic")) })
-        if (docText.isNotEmpty()) {
-            tags.addAll(plainTextRuleValidator.getTags(docText))
-            tags.addAll(regexRuleValidator.getTags(docText))
+
+        val parser = TagFilterParser()
+        doc.tagEntities.forEach { tag ->
+            if (tag.tagFilter != null) {
+                val result = parser.setInput(tag.tagFilter!!.filter)
+                if (result.tagFilter != null && result.isValid) {
+                    if (doc.checkTagFilter(result.tagFilter)) {
+                        tags.add(TagContainer(tag))
+                    }
+                }
+            }
         }
         LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.tag.name }))
         return tags

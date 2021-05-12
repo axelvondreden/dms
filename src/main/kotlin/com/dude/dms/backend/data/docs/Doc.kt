@@ -1,6 +1,5 @@
 package com.dude.dms.backend.data.docs
 
-import com.dude.dms.backend.data.Diffable
 import com.dude.dms.backend.data.LogsEvents
 import com.dude.dms.backend.data.RestorableEntity
 import com.dude.dms.backend.data.Tag
@@ -30,7 +29,7 @@ class Doc(
 
         @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
         var attributeValues: Set<AttributeValue> = HashSet()
-) : RestorableEntity(), Diffable<Doc>, LogsEvents {
+) : RestorableEntity(), LogsEvents {
 
     fun getFullTextLowerCase() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }.lowercase()
 
