@@ -6,13 +6,13 @@ plugins {
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.jetbrains.kotlin.plugin.noarg") version "1.5.0" apply true
     id("org.jetbrains.kotlin.plugin.allopen") version "1.5.0" apply true
-    id("com.vaadin") version "0.14.5.1"
+    id("com.vaadin") version "0.14.6.0"
     id("com.github.ben-manes.versions") version "0.38.0"
     application
 }
 
 ext {
-    set("vaadinVersion", "14.5.1")
+    set("vaadinVersion", "14.6.0")
 }
 
 noArg {

@@ -6,9 +6,12 @@ import com.dude.dms.ui.components.dialogs.QuerySaveDialog
 import com.dude.dms.utils.clearTooltips
 import com.dude.dms.utils.hintList
 import com.dude.dms.utils.tooltip
-import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.karibudsl.v10.horizontalLayout
+import com.github.mvysny.karibudsl.v10.iconButton
+import com.github.mvysny.karibudsl.v10.onLeftClick
+import com.github.mvysny.karibudsl.v10.textField
 import com.vaadin.flow.component.Key
-import com.vaadin.flow.component.icon.Icon
+import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -19,7 +22,7 @@ import com.vaadin.flow.data.value.ValueChangeMode
 class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout() {
 
     lateinit var filter: TextField
-    private lateinit var saveIcon: Icon
+    private lateinit var saveButton: Button
     private lateinit var hintList: HintList
     private var statusIcon = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
 
@@ -29,19 +32,17 @@ class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout()
 
     init {
         isPadding = false
-        isMargin = false
         setWidthFull()
-        horizontalLayout(isPadding = false, isSpacing = false) {
+        horizontalLayout(isPadding = false) {
             alignItems = FlexComponent.Alignment.CENTER
             setWidthFull()
 
-            saveIcon = icon(VaadinIcon.DISC) {
-                alignSelf = FlexComponent.Alignment.CENTER
-                style["paddingRight"] = "8px"
+            saveButton = iconButton(VaadinIcon.DISC.create()) {
                 tooltip(t("save"))
                 onLeftClick {
                     QuerySaveDialog(filter.value).open()
                 }
+                isEnabled = false
                 if (hideSaveIcon) isVisible = false
             }
             filter = textField {
@@ -111,15 +112,15 @@ class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout()
         statusIcon.clearTooltips()
         if (newValue.isBlank()) {
             onChange?.invoke("")
-            saveIcon.isVisible = false
+            saveButton.isEnabled = false
             setSearchStatusSuccess("")
         } else {
             if (result.isValid) {
                 onChange?.invoke(result.docSearch!!.translate())
-                saveIcon.isVisible = !hideSaveIcon
+                saveButton.isEnabled = true
                 setSearchStatusSuccess(result.docSearch!!.translate())
             } else {
-                saveIcon.isVisible = false
+                saveButton.isEnabled = false
                 setSearchStatusFail(result.error!!)
             }
         }
