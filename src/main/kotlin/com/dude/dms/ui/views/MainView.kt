@@ -179,6 +179,7 @@ class MainView(
     private fun fillBadgeCount(doc: Doc) {
         doc.tags.forEach { fillBadgeCount(it) }
         recycleBadge?.count = docService.countDeleted().toInt()
+        importsBadge?.count = docImportService.count
     }
 
     private fun fillBadgeCount(tag: Tag) {
