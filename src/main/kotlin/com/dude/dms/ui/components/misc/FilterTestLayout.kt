@@ -3,14 +3,19 @@ package com.dude.dms.ui.components.misc
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.AttributeValue
+import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.components.dialogs.DocSelectDialog
 import com.dude.dms.utils.aceEditor
 import com.dude.dms.utils.docParser
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Label
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import de.f0rce.ace.AceEditor
 import de.f0rce.ace.AceMode
@@ -20,54 +25,79 @@ class FilterTestLayout : VerticalLayout() {
 
     private var docContainer: DocContainer? = null
 
-    private lateinit var testDocLabel: Label
+    private var extended = false
+    private val extendedLayout: HorizontalLayout
+
+    private lateinit var toggleButton: Button
+    private lateinit var docSelectButton: Button
+
+    private lateinit var docLabel: Label
     private lateinit var docText: AceEditor
     private lateinit var tagGrid: Grid<TagContainer>
     private lateinit var attributeGrid: Grid<AttributeValue>
 
     init {
+        isPadding = false
         setWidthFull()
+        maxHeight = "35em"
+        style["borderTop"] = "1px solid var(--lumo-contrast-10pct)"
 
-        horizontalLayout {
-            button(t("doc.select")) {
+        horizontalLayout(isPadding = false) {
+            toggleButton = button("Test", VaadinIcon.PLAY.create()) {
+                onLeftClick { testToggle() }
+                addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+            }
+            docSelectButton = button(t("doc.select")) {
+                isVisible = false
                 onLeftClick {
                     DocSelectDialog {
                         docContainer = it
                         docText.value = docContainer!!.getFullText()
-                        testDocLabel.text = docContainer!!.guid
+                        docLabel.text = docContainer!!.guid
                         fill(docContainer!!)
                     }.open()
                 }
             }
-            testDocLabel = label("")
+            docLabel = label("") { isVisible = false }
         }
-        horizontalLayout {
+
+        extendedLayout = horizontalLayout {
+            isVisible = false
             alignItems = FlexComponent.Alignment.STRETCH
             setSizeFull()
-            verticalLayout {
-                width = "70%"
-                label(t("doc.text"))
+            verticalLayout(isPadding = false) {
+                width = "40%"
+
                 docText = aceEditor {
                     setSizeFull()
-                    theme = AceTheme.dracula
+                    theme = if (Options.get().view.darkMode) AceTheme.dracula else AceTheme.ambiance
                     mode = AceMode.text
                     isReadOnly = true
                 }
             }
-            verticalLayout {
-                setSizeFull()
+            tagGrid = grid {
                 width = "30%"
-                label(t("words.matched"))
-                tagGrid = grid {
-                    setWidthFull()
-                    addColumn { it.tag }.setHeader(t("tag"))
-                }
-                attributeGrid = grid {
-                    setWidthFull()
-                    addColumn { it.attribute.name }.setHeader(t("attribute"))
-                    addColumn { it.convertedValue }.setHeader(t("value"))
-                }
+                addColumn { it.tag }.setHeader(t("tag"))
             }
+            attributeGrid = grid {
+                width = "30%"
+                addColumn { it.attribute.name }.setHeader(t("attribute"))
+                addColumn { it.convertedValue }.setHeader(t("value"))
+            }
+        }
+    }
+
+    private fun testToggle() {
+        extended = !extended
+        extendedLayout.isVisible = extended
+        docSelectButton.isVisible = extended
+        docLabel.isVisible = extended
+        if (extended) {
+            toggleButton.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
+            toggleButton.addThemeVariants(ButtonVariant.LUMO_ERROR)
+        } else {
+            toggleButton.removeThemeVariants(ButtonVariant.LUMO_ERROR)
+            toggleButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS)
         }
     }
 

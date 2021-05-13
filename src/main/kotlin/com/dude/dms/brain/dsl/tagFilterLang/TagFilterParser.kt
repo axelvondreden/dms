@@ -74,11 +74,6 @@ class TagFilterParser {
     }
 
     companion object {
-        val filterKeys = listOf(
-            Hint("this", t("word.current")),
-            Hint("next", t("word.next")),
-            Hint("previous", t("word.previous")),
-            Hint("line", t("line.current"))
-        )
+        val filterKeys = listOf(Hint("line", t("line.current")))
     }
 }

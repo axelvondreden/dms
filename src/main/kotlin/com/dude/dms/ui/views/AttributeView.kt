@@ -10,7 +10,6 @@ import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.misc.AttributeFilterText
 import com.dude.dms.ui.components.misc.FilterTestLayout
 import com.dude.dms.utils.attributeFilterText
-import com.dude.dms.utils.card
 import com.dude.dms.utils.filterTestLayout
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
@@ -48,7 +47,7 @@ class AttributeView(
 
     private val filter: AttributeFilterText
 
-    private lateinit var filterTestLayout: FilterTestLayout
+    private val filterTestLayout: FilterTestLayout
 
     init {
         setSizeFull()
@@ -57,6 +56,10 @@ class AttributeView(
             setWidthFull()
             alignItems = FlexComponent.Alignment.END
 
+            saveButton = button(t("save"), VaadinIcon.DISC.create()) {
+                onLeftClick { save() }
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+            }
             nameTextField = textField(t("name"))
             typeComboBox = comboBox(t("attribute.type")) {
                 setItems(*Attribute.Type.values())
@@ -64,30 +67,11 @@ class AttributeView(
                 isAllowCustomValue = false
             }
             requiredToggle = checkBox(t("attribute.required"))
-            saveButton = button(t("save"), VaadinIcon.DISC.create()) {
-                onLeftClick { save() }
-                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-            }
         }
         filter = attributeFilterText {
             setWidthFull()
         }
-        card {
-            setWidthFull()
-
-            details(t("filter") + " Test") {
-                isOpened = true
-                style["width"] = "99%"
-                style["height"] = "100%"
-                style["padding"] = "5px"
-
-                content {
-                    setWidthFull()
-
-                    filterTestLayout = filterTestLayout {  }
-                }
-            }
-        }
+        filterTestLayout = filterTestLayout()
     }
 
 

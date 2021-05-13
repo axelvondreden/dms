@@ -45,14 +45,14 @@ class TagView(
 
     private val filter: TagFilterText
 
-    private lateinit var filterTestLayout: FilterTestLayout
+    private val filterTestLayout: FilterTestLayout
 
     init {
         setSizeFull()
 
         horizontalLayout {
             setWidthFull()
-            verticalLayout {
+            verticalLayout(isPadding = false) {
                 width = "20em"
 
                 saveButton = button(t("save"), VaadinIcon.DISC.create()) {
@@ -70,22 +70,7 @@ class TagView(
         filter = tagFilterText {
             setWidthFull()
         }
-        card {
-            setWidthFull()
-
-            details(t("filter") + " Test") {
-                isOpened = true
-                style["width"] = "99%"
-                style["height"] = "100%"
-                style["padding"] = "5px"
-
-                content {
-                    setWidthFull()
-
-                    filterTestLayout = filterTestLayout {  }
-                }
-            }
-        }
+        filterTestLayout = filterTestLayout {  }
     }
 
     private fun fill() {
