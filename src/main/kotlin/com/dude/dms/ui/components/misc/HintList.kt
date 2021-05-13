@@ -62,7 +62,7 @@ class HintList : VerticalLayout() {
         items.forEachIndexed { index, item ->
             item.style["backgroundColor"] = ""
             if (index == this.index) {
-                item.style["backgroundColor"] = "var(--lumo-secondary-color)"
+                item.style["backgroundColor"] = "var(--lumo-contrast-20pct)"
             }
         }
     }

@@ -70,7 +70,7 @@ class FilterTestLayout : VerticalLayout() {
 
                 docText = aceEditor {
                     setSizeFull()
-                    theme = if (Options.get().view.darkMode) AceTheme.dracula else AceTheme.ambiance
+                    theme = if (Options.get().view.darkMode) AceTheme.dracula else AceTheme.clouds
                     mode = AceMode.text
                     isReadOnly = true
                 }

@@ -36,7 +36,7 @@ class DocParser(
         tags.addAll(Options.get().tag.automaticTags.mapNotNull { tagService.findByName(it) }.map { TagContainer(it, t("automatic")) })
 
         val parser = TagFilterParser()
-        doc.tagEntities.forEach { tag ->
+        tagService.findAll().forEach { tag ->
             if (tag.tagFilter != null) {
                 val result = parser.setInput(tag.tagFilter!!.filter)
                 if (result.tagFilter != null && result.isValid) {
@@ -46,7 +46,7 @@ class DocParser(
                 }
             }
         }
-        LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.tag.name }))
+        if (tags.isNotEmpty()) LOGGER.info(t("tag.discovered", tags.joinToString(", ") { it.tag.name }))
         return tags
     }
 
