@@ -39,7 +39,7 @@ class DocSelectDialog(private val onSelect: (DocContainer) -> Unit) : DmsDialog(
             style["borderBottom"] = "1px solid var(--lumo-contrast-10pct)"
             style["backgroundColor"] = "var(--lumo-base-color)"
             onChange = {
-                filter = it
+                this@DocSelectDialog.filter = it
                 fill()
             }
         }

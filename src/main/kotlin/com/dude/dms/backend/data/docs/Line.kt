@@ -5,16 +5,14 @@ import com.dude.dms.backend.data.RestorableEntity
 import com.dude.dms.brain.t
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
 class Line(
         @ManyToOne var page: Page?,
-        @OneToMany(mappedBy = "line", fetch = FetchType.EAGER) var words: Set<Word> = HashSet(),
+        @OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
+        var words: Set<Word> = HashSet(),
         var y: Float
 ) : RestorableEntity(), LogsEvents {
 

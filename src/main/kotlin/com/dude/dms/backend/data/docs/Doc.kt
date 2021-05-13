@@ -13,22 +13,22 @@ import javax.persistence.*
 @JsonIdentityInfo(generator = PropertyGenerator::class, property = "id")
 @Entity
 class Doc(
-        var guid: String,
+    var guid: String,
 
-        @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE]) var docText: DocText? = null,
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE, CascadeType.REMOVE]) var docText: DocText? = null,
 
-        var documentDate: LocalDate? = null,
+    var documentDate: LocalDate? = null,
 
-        var insertTime: LocalDateTime? = null,
+    var insertTime: LocalDateTime? = null,
 
-        @ManyToMany(fetch = FetchType.EAGER)
-        var tags: Set<Tag> = HashSet(),
+    @ManyToMany(fetch = FetchType.EAGER)
+    var tags: Set<Tag> = HashSet(),
 
-        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
-        var pages: Set<Page> = HashSet(),
+    @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
+    var pages: Set<Page> = HashSet(),
 
-        @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER)
-        var attributeValues: Set<AttributeValue> = HashSet()
+    @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
+    var attributeValues: Set<AttributeValue> = HashSet()
 ) : RestorableEntity(), LogsEvents {
 
     fun getFullTextLowerCase() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }.lowercase()

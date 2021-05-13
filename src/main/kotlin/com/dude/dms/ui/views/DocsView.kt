@@ -72,7 +72,7 @@ class DocsView(
             style["borderBottom"] = "1px solid var(--lumo-contrast-10pct)"
             style["backgroundColor"] = "var(--lumo-base-color)"
             onChange = {
-                filter = it
+                this@DocsView.filter = it
                 fill(viewUI)
             }
         }
@@ -175,9 +175,9 @@ class DocsView(
         if (!t.isNullOrEmpty()) {
             val parts = t.split(":").toTypedArray()
             when {
-                "tag".equals(parts[0], ignoreCase = true) -> docSearchBar.textFilter.value = "${t("tag")} = ${parts[1]}"
-                "query".equals(parts[0], ignoreCase = true) -> docSearchBar.textFilter.value = queryService.load(parts[1].toLong())?.filter ?: ""
-                else -> docSearchBar.textFilter.clear()
+                "tag".equals(parts[0], ignoreCase = true) -> docSearchBar.filter.value = "${t("tag")} = ${parts[1]}"
+                "query".equals(parts[0], ignoreCase = true) -> docSearchBar.filter.value = queryService.load(parts[1].toLong())?.filter ?: ""
+                else -> docSearchBar.filter.clear()
             }
         }
     }

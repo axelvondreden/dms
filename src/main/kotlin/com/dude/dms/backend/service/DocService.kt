@@ -58,13 +58,6 @@ class DocService(
         return entity
     }
 
-    override fun delete(entity: Doc) {
-        entity.pages.forEach(pageService::delete)
-        entity.attributeValues.forEach(attributeValueService::delete)
-        entity.docText?.let { docTextService.delete(it) }
-        load(entity.id)?.let { super.delete(it) }
-    }
-
     override fun softDelete(entity: Doc) {
         entity.pages.forEach(pageService::softDelete)
         entity.attributeValues.forEach(attributeValueService::softDelete)

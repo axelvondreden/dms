@@ -58,7 +58,7 @@ class TagFilterText : VerticalLayout() {
             addKeyDownListener(Key.ENTER, {
                 hintList.select()
             })
-            suffixComponent = statusIcon
+            prefixComponent = statusIcon
             addValueChangeListener { textChange(it.value) }
         }
         hintList = hintList {
@@ -111,7 +111,7 @@ class TagFilterText : VerticalLayout() {
 
     private fun setStatusSuccess() {
         statusIcon = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
-        filter.suffixComponent = statusIcon
+        filter.prefixComponent = statusIcon
     }
 
     private fun setStatusFail(msg: String) {
@@ -119,6 +119,6 @@ class TagFilterText : VerticalLayout() {
             color = "var(--lumo-error-text-color)"
             tooltip(msg)
         }
-        filter.suffixComponent = statusIcon
+        filter.prefixComponent = statusIcon
     }
 }

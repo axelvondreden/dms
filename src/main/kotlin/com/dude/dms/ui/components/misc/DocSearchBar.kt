@@ -18,10 +18,10 @@ import com.vaadin.flow.data.value.ValueChangeMode
 
 class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout() {
 
-    lateinit var textFilter: TextField
+    lateinit var filter: TextField
     private lateinit var saveIcon: Icon
     private lateinit var hintList: HintList
-    private var searchStatusIcon = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
+    private var statusIcon = VaadinIcon.CHECK.create().apply { color = "var(--lumo-success-text-color)" }
 
     var onChange: ((String) -> Unit)? = null
 
@@ -34,7 +34,17 @@ class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout()
         horizontalLayout(isPadding = false, isSpacing = false) {
             alignItems = FlexComponent.Alignment.CENTER
             setWidthFull()
-            textFilter = textField {
+
+            saveIcon = icon(VaadinIcon.DISC) {
+                alignSelf = FlexComponent.Alignment.CENTER
+                style["paddingRight"] = "8px"
+                tooltip(t("save"))
+                onLeftClick {
+                    QuerySaveDialog(filter.value).open()
+                }
+                if (hideSaveIcon) isVisible = false
+            }
+            filter = textField {
                 setWidthFull()
                 isClearButtonVisible = true
                 placeholder = t("search")
@@ -62,17 +72,8 @@ class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout()
                 addKeyDownListener(Key.ENTER, {
                     hintList.select()
                 })
-                suffixComponent = searchStatusIcon
+                prefixComponent = statusIcon
                 addValueChangeListener { searchTextChange(it.value) }
-            }
-            saveIcon = icon(VaadinIcon.DISC) {
-                alignSelf = FlexComponent.Alignment.CENTER
-                style["paddingLeft"] = "8px"
-                tooltip(t("save"))
-                onLeftClick {
-                    QuerySaveDialog(textFilter.value).open()
-                }
-                if (hideSaveIcon) isVisible = false
             }
         }
         hintList = hintList {
@@ -85,19 +86,19 @@ class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout()
             style["border"] = "2px solid var(--lumo-contrast-20pct)"
             setHints(searchParser.getHints())
             onSelect = {
-                val current = textFilter.value
+                val current = filter.value
                 if (current.endsWith(" ")) {
-                    textFilter.value = "$current${it.text} "
+                    filter.value = "$current${it.text} "
                 } else {
                     var itCopy = it.text
                     while (!current.endsWith(itCopy, ignoreCase = true)) {
                         itCopy = itCopy.dropLast(1)
                     }
-                    textFilter.value = current.dropLast(itCopy.length) + it.text + " "
+                    filter.value = current.dropLast(itCopy.length) + it.text + " "
                 }
                 if (it.caretBackwardsMovement > 0) {
-                    val index = textFilter.value.length - 1 - it.caretBackwardsMovement
-                    textFilter.element.executeJs("this.shadowRoot.children[1].children[1].children[1].children[0].setSelectionRange($index, $index)")
+                    val index = filter.value.length - 1 - it.caretBackwardsMovement
+                    filter.element.executeJs("this.shadowRoot.children[1].children[1].children[1].children[0].setSelectionRange($index, $index)")
                 }
             }
         }
@@ -107,7 +108,7 @@ class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout()
         val result = searchParser.setInput(newValue)
         val hintResult = searchParser.getHints()
         hintList.setHints(hintResult)
-        searchStatusIcon.clearTooltips()
+        statusIcon.clearTooltips()
         if (newValue.isBlank()) {
             onChange?.invoke("")
             saveIcon.isVisible = false
@@ -125,18 +126,20 @@ class DocSearchBar(private val hideSaveIcon: Boolean = false) : VerticalLayout()
     }
 
     private fun setSearchStatusSuccess(msg: String) {
-        searchStatusIcon = VaadinIcon.CHECK.create().apply {
+        statusIcon = VaadinIcon.CHECK.create().apply {
             color = "var(--lumo-success-text-color)"
             if (msg.isNotBlank()) {
                 tooltip(msg)
             }
         }
+        filter.prefixComponent = statusIcon
     }
 
     private fun setSearchStatusFail(msg: String) {
-        searchStatusIcon = VaadinIcon.BAN.create().apply {
+        statusIcon = VaadinIcon.BAN.create().apply {
             color = "var(--lumo-error-text-color)"
             tooltip(msg)
         }
+        filter.prefixComponent = statusIcon
     }
 }
