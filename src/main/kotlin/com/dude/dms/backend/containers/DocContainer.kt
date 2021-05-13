@@ -4,6 +4,7 @@ import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Page
+import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.brain.dsl.attributefilter.*
 import com.dude.dms.brain.dsl.tagFilterLang.TagFilterLang
 import com.dude.dms.brain.options.Options
@@ -155,4 +156,16 @@ class DocContainer(var guid: String, var file: File? = null) {
     }
 
     override fun hashCode() = guid.hashCode()
+
+    companion object {
+        fun fromString(text: String) = DocContainer("temp").apply {
+            pages = setOf(
+                PageContainer(1, text.split("\n").mapIndexed { i, line ->
+                    LineContainer(i.toFloat(), line.split(" ").map {
+                        WordContainer(Word(null, it, i.toFloat(), i.toFloat(), i.toFloat(), i.toFloat()))
+                    }.toSet())
+                }.toSet())
+            )
+        }
+    }
 }

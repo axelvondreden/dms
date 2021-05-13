@@ -3,16 +3,19 @@ package com.dude.dms.ui.components.misc
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.docs.AttributeValue
+import com.dude.dms.backend.data.filter.AttributeFilter
+import com.dude.dms.backend.data.filter.TagFilter
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
 import com.dude.dms.ui.components.dialogs.DocSelectDialog
+import com.dude.dms.ui.components.tags.TagLabel
 import com.dude.dms.utils.aceEditor
 import com.dude.dms.utils.docParser
+import com.dude.dms.utils.tagFilterService
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.grid.Grid
-import com.vaadin.flow.component.html.Label
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -23,18 +26,18 @@ import de.f0rce.ace.AceTheme
 
 class FilterTestLayout : VerticalLayout() {
 
-    private var docContainer: DocContainer? = null
-
     private var extended = false
     private val extendedLayout: HorizontalLayout
 
     private lateinit var toggleButton: Button
     private lateinit var docSelectButton: Button
 
-    private lateinit var docLabel: Label
-    private lateinit var docText: AceEditor
+    private lateinit var testText: AceEditor
     private lateinit var tagGrid: Grid<TagContainer>
     private lateinit var attributeGrid: Grid<AttributeValue>
+
+    private var tempTagFilter: TagFilter? = null
+    private var tempAttributeFilter: AttributeFilter? = null
 
     init {
         isPadding = false
@@ -49,9 +52,8 @@ class FilterTestLayout : VerticalLayout() {
             }
             docSelectButton = button(t("doc.select")) {
                 isVisible = false
-                onLeftClick { DocSelectDialog { fill(it) }.open() }
+                onLeftClick { DocSelectDialog { testText.value = it.getFullText() }.open() }
             }
-            docLabel = label("") { isVisible = false }
         }
 
         extendedLayout = horizontalLayout {
@@ -61,16 +63,18 @@ class FilterTestLayout : VerticalLayout() {
             verticalLayout(isPadding = false) {
                 width = "40%"
 
-                docText = aceEditor {
+                testText = aceEditor {
                     setSizeFull()
                     theme = if (Options.get().view.darkMode) AceTheme.dracula else AceTheme.clouds
                     mode = AceMode.text
-                    isReadOnly = true
+                    addValueChangeListener {
+                        fill(tempTagFilter, tempAttributeFilter)
+                    }
                 }
             }
             tagGrid = grid {
                 width = "30%"
-                addColumn { it.tag }.setHeader(t("tag"))
+                addComponentColumn { TagLabel(it.tag) }.setHeader(t("tag"))
             }
             attributeGrid = grid {
                 width = "30%"
@@ -84,7 +88,6 @@ class FilterTestLayout : VerticalLayout() {
         extended = !extended
         extendedLayout.isVisible = extended
         docSelectButton.isVisible = extended
-        docLabel.isVisible = extended
         if (extended) {
             toggleButton.removeThemeVariants(ButtonVariant.LUMO_SUCCESS)
             toggleButton.addThemeVariants(ButtonVariant.LUMO_ERROR)
@@ -94,24 +97,33 @@ class FilterTestLayout : VerticalLayout() {
         }
     }
 
-    fun fill(testDoc: DocContainer) {
-        this.docContainer = testDoc
+    fun fill(overrideTagFilter: TagFilter? = null, overrideAttributeFilter: AttributeFilter? = null) {
+        tempTagFilter = overrideTagFilter
+        tempAttributeFilter = overrideAttributeFilter
 
-        docText.value = docContainer!!.getFullText()
-        docLabel.text = docContainer!!.guid
-
-        val tags = docParser.discoverTags(testDoc)
+        val doc = DocContainer.fromString(testText.value)
+        val tagFilters = if (overrideTagFilter == null) {
+            tagFilterService.findAll()
+        } else {
+            tagFilterService.findAll().filter { it.tag != overrideTagFilter.tag }.plus(overrideTagFilter)
+        }
+        val tags = docParser.filterTags(doc, tagFilters)
         tagGrid.setItems(tags)
 
-        val attributes = docParser.discoverAttributeValues(testDoc)
-        attributeGrid.setItems(attributes)
-    }
-
-    fun refresh() {
-        docContainer?.let { fill(it) }
+        val attributeFilters = if (overrideAttributeFilter == null) {
+            tags.flatMap { it.tag.attributes }.mapNotNull { it.attributeFilter }
+        } else {
+            tags.flatMap { it.tag.attributes }
+                .mapNotNull { it.attributeFilter }
+                .filter { it.attribute != overrideAttributeFilter.attribute }
+                .plus(overrideAttributeFilter)
+        }
+        val attributeValues = docParser.discoverAttributeValues(doc, attributeFilters)
+        attributeGrid.setItems(attributeValues)
     }
 
     fun clear() {
         tagGrid.setItems(emptyList())
+        attributeGrid.setItems(emptyList())
     }
 }

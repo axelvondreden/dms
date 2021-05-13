@@ -47,7 +47,7 @@ class AttributeView(
 
     private val filter: AttributeFilterText
 
-    private val filterTestLayout: FilterTestLayout
+    private lateinit var filterTestLayout: FilterTestLayout
 
     init {
         setSizeFull()
@@ -70,6 +70,9 @@ class AttributeView(
         }
         filter = attributeFilterText {
             setWidthFull()
+            onChange = {
+                if (it.isValid) filterTestLayout.fill(overrideAttributeFilter = AttributeFilter(attribute!!, filter.value))
+            }
         }
         filterTestLayout = filterTestLayout()
     }
@@ -101,7 +104,6 @@ class AttributeView(
         attributeService.save(attribute!!)
         LOGGER.showInfo(t("saved"), UI.getCurrent())
         fill()
-        filterTestLayout.refresh()
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, t: String) {

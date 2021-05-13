@@ -45,7 +45,7 @@ class TagView(
 
     private val filter: TagFilterText
 
-    private val filterTestLayout: FilterTestLayout
+    private lateinit var filterTestLayout: FilterTestLayout
 
     init {
         setSizeFull()
@@ -65,7 +65,12 @@ class TagView(
             }
             attributeSelector = attributeSelector { setHeightFull() }
         }
-        filter = tagFilterText { setWidthFull() }
+        filter = tagFilterText {
+            setWidthFull()
+            onChange = {
+                if (it.isValid) filterTestLayout.fill(overrideTagFilter = TagFilter(tag!!, filter.value))
+            }
+        }
         filterTestLayout = filterTestLayout()
     }
 
@@ -99,7 +104,6 @@ class TagView(
         docService.findByTag(tag!!).forEach { docService.save(it) }
         LOGGER.showInfo(t("saved"), UI.getCurrent())
         fill()
-        filterTestLayout.refresh()
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, t: String) {
