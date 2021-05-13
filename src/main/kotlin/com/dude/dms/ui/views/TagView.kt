@@ -63,14 +63,10 @@ class TagView(
                 nameTextField = textField(t("name")) { setWidthFull() }
                 colorPicker = colorPicker(t("color")) { setWidthFull() }
             }
-            attributeSelector = attributeSelector {
-                setHeightFull()
-            }
+            attributeSelector = attributeSelector { setHeightFull() }
         }
-        filter = tagFilterText {
-            setWidthFull()
-        }
-        filterTestLayout = filterTestLayout {  }
+        filter = tagFilterText { setWidthFull() }
+        filterTestLayout = filterTestLayout()
     }
 
     private fun fill() {

@@ -49,14 +49,7 @@ class FilterTestLayout : VerticalLayout() {
             }
             docSelectButton = button(t("doc.select")) {
                 isVisible = false
-                onLeftClick {
-                    DocSelectDialog {
-                        docContainer = it
-                        docText.value = docContainer!!.getFullText()
-                        docLabel.text = docContainer!!.guid
-                        fill(docContainer!!)
-                    }.open()
-                }
+                onLeftClick { DocSelectDialog { fill(it) }.open() }
             }
             docLabel = label("") { isVisible = false }
         }
@@ -103,6 +96,10 @@ class FilterTestLayout : VerticalLayout() {
 
     fun fill(testDoc: DocContainer) {
         this.docContainer = testDoc
+
+        docText.value = docContainer!!.getFullText()
+        docLabel.text = docContainer!!.guid
+
         val tags = docParser.discoverTags(testDoc)
         tagGrid.setItems(tags)
 
