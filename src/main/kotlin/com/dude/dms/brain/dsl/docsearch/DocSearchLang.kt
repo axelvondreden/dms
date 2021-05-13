@@ -194,7 +194,7 @@ object DocSearchLang {
 
 
     data class Search(val query: Query?, val docSearchOrder: OrderBy?) : Translatable {
-        override fun translate() = "${query?.let { "WHERE ${it.translate()}" } ?: ""} ${docSearchOrder?.translate() ?: ""}"
+        override fun translate() = "WHERE doc.deleted = false${query?.let { " AND (${it.translate()})" } ?: ""} ${docSearchOrder?.translate() ?: ""}"
     }
 
 
