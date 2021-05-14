@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 [theme~="dms-dialog"] header {
@@ -31,7 +31,7 @@
 }
 
 [theme~="dms-dialog"]::shadow div div div {
-  padding: 0px;
+  padding: 0;
 }
 
 /* DRAGGABLE and RESIZABLE */

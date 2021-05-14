@@ -1,5 +1,5 @@
 .doc-card {
-    padding: 0px 5px 5px 0px;
+    padding: 0 5px 5px 0;
 }
 
 .doc-card:hover .tag-container-compact {
@@ -8,7 +8,7 @@
 
 .doc-card:hover .doc-info-wrapper {
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
 }
 
 .doc-card:hover .attribute-container {
@@ -39,7 +39,7 @@
 .image-container {
     width: 100%;
     height: auto;
-    margin: 0px auto;
+    margin: 0 auto;
     position: relative;
     overflow-y: hidden;
     user-drag: none;
@@ -98,8 +98,8 @@
 }
 
 .word-dropdown-button {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
     z-index: 9;
 }
 

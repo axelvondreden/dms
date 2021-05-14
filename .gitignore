@@ -26,7 +26,6 @@ buildNumber.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -48,8 +47,10 @@ options.properties
 /.idea/
 /webdrivers.xml
 /webpack.config.js
-/options.json
-/package.json
+/config/options.json
 /pnpm-lock.yaml
 /pnpmfile.js
 /node/
+/dms.iml
+/build/
+/.gradle/

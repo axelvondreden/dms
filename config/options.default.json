@@ -1,0 +1,40 @@
+{
+  "view": {
+    "dateFormat": "dd.MM.yyyy",
+    "dateScanFormats": [
+      "dd.MM.yyyy",
+      "dd-MM-yyyy",
+      "dd/MM/yyyy"
+    ],
+    "locale": "en-Us",
+    "darkMode": false,
+    "notificationPosition": "BOTTOM_END",
+    "docCardSize": 200,
+    "itemsPerPage": 30,
+    "loadWordsInPreview": true
+  },
+  "doc": {
+    "pollingPath": "docs_in/",
+    "savePath": "docs/",
+    "imageParserDpi": 300.0,
+    "ocrLanguage": "deu"
+  },
+  "storage": {
+    "ftp": {
+      "url": "",
+      "user": "",
+      "password": "",
+      "port": 21
+    },
+    "backupMethod": "ftp",
+    "maxUploadFileSize": 10,
+    "offlineLinkLocation": ""
+  },
+  "tag": {
+    "automaticTags": [],
+    "simpleColors": false
+  },
+  "update": {
+    "checkInterval": 60
+  }
+}
