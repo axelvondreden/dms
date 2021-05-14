@@ -20,7 +20,7 @@ noArg {
 }
 
 group = "com.dude.dms"
-version = "0.2.5"
+version = "0.2.6"
 
 val karibudslVersion = "1.0.6"
 val vaadinVersion = "14.6.0"
