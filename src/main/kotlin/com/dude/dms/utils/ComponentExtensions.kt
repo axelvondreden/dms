@@ -26,10 +26,10 @@ import dev.mett.vaadin.tooltip.Tooltips
 
 @VaadinDsl
 fun HasComponents.tagLayout(
-        tags: MutableSet<Tag> = mutableSetOf(),
-        edit: Boolean = false,
-        compact: Boolean = false,
-        block: TagLayout.() -> Unit = {}
+    tags: MutableSet<Tag> = mutableSetOf(),
+    edit: Boolean = false,
+    compact: Boolean = false,
+    block: TagLayout.() -> Unit = {}
 ) = init(TagLayout(tags, edit, compact), block)
 
 @VaadinDsl
@@ -60,34 +60,28 @@ fun HasComponents.docImageEditor(block: DocImageEditor.() -> Unit = {}) = init(D
 fun HasComponents.docCard(docContainer: DocContainer, block: DocCard.() -> Unit = {}) = init(DocCard(docContainer), block)
 
 @VaadinDsl
-fun HasComponents.docImportCard(docContainer: DocContainer, block: DocImportCard.() -> Unit = {})
-        = init(DocImportCard(docContainer), block)
+fun HasComponents.docImportCard(docContainer: DocContainer, block: DocImportCard.() -> Unit = {}) = init(DocImportCard(docContainer), block)
 
 @VaadinDsl
-fun HasComponents.wordEditDialog(wordContainer: WordContainer, block: WordEditDialog.() -> Unit = {})
-        = init(WordEditDialog(wordContainer), block)
+fun HasComponents.wordEditDialog(wordContainer: WordContainer, block: WordEditDialog.() -> Unit = {}) = init(WordEditDialog(wordContainer), block)
 
 @VaadinDsl
 fun HasComponents.filterTestLayout(block: FilterTestLayout.() -> Unit = {}) = init(FilterTestLayout(), block)
 
 @VaadinDsl
-fun HasComponents.attributeValueLayout(imageEditor: DocImageEditor? = null, block: AttributeValueLayout.() -> Unit = {})
-        = init(AttributeValueLayout(imageEditor), block)
+fun HasComponents.attributeValueLayout(imageEditor: DocImageEditor? = null, block: AttributeValueLayout.() -> Unit = {}) = init(AttributeValueLayout(imageEditor), block)
 
 @VaadinDsl
-fun HasComponents.attributeValueSmallLayout(block: AttributeValueSmallLayout.() -> Unit = {})
-        = init(AttributeValueSmallLayout(), block)
+fun HasComponents.attributeValueSmallLayout(block: AttributeValueSmallLayout.() -> Unit = {}) = init(AttributeValueSmallLayout(), block)
 
 @VaadinDsl
 fun HasComponents.attributeCreateDialog(block: AttributeCreateDialog.() -> Unit = {}) = init(AttributeCreateDialog(), block)
 
 @VaadinDsl
-fun HasComponents.attributeValueField(attributeValue: AttributeValue, imageEditor: DocImageEditor? = null, block: AttributeValueField.() -> Unit = {})
-        = init(AttributeValueField(attributeValue, imageEditor), block)
+fun HasComponents.attributeValueField(attributeValue: AttributeValue, imageEditor: DocImageEditor? = null, block: AttributeValueField.() -> Unit = {}) = init(AttributeValueField(attributeValue, imageEditor), block)
 
 @VaadinDsl
-fun HasComponents.attributeValueLabel(attributeValue: AttributeValue, block: AttributeValueLabel.() -> Unit = {})
-        = init(AttributeValueLabel(attributeValue), block)
+fun HasComponents.attributeValueLabel(attributeValue: AttributeValue, block: AttributeValueLabel.() -> Unit = {}) = init(AttributeValueLabel(attributeValue), block)
 
 @VaadinDsl
 fun HasComponents.docDeleteDialog(docContainer: DocContainer, block: DocDeleteDialog.() -> Unit = {}) = init(DocDeleteDialog(docContainer), block)

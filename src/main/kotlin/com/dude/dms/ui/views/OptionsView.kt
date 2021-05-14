@@ -1,22 +1,34 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.backend.service.DocService
-import com.dude.dms.backend.service.TagService
+import com.dude.dms.backend.data.Tag
+import com.dude.dms.backend.data.docs.Attribute
+import com.dude.dms.backend.data.filter.AttributeFilter
+import com.dude.dms.backend.data.filter.DocFilter
+import com.dude.dms.backend.data.filter.TagFilter
+import com.dude.dms.backend.service.*
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.utils.card
 import com.dude.dms.ui.Const
+import com.dude.dms.ui.components.dialogs.DmsDialog
+import com.dude.dms.utils.card
+import com.dude.dms.utils.tooltip
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.Lumo
 import mslinks.ShellLink
+import org.vaadin.olli.FileDownloadWrapper
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -24,7 +36,14 @@ import kotlin.io.path.absolutePathString
 
 @Route(value = Const.PAGE_OPTIONS, layout = MainView::class)
 @PageTitle("Options")
-class OptionsView(private val tagService: TagService, private val docService: DocService) : VerticalLayout() {
+class OptionsView(
+    private val tagService: TagService,
+    private val tagFilterService: TagFilterService,
+    private val docService: DocService,
+    private val docFilterService: DocFilterService,
+    private val attributeService: AttributeService,
+    private val attributeFilterService: AttributeFilterService
+) : VerticalLayout() {
 
     private val options = Options.get()
 
@@ -204,6 +223,15 @@ class OptionsView(private val tagService: TagService, private val docService: Do
                             }
                         }
                         button(t("create.now")) { onLeftClick { createOfflineBackup() } }
+                        button(t("data.export"), VaadinIcon.FILE_ZIP.create()) {
+                            onLeftClick { exportData() }
+                            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                        }
+                        button(t("data.import"), VaadinIcon.PLUS_SQUARE_O.create()) {
+                            tooltip(t("import.info"))
+                            onLeftClick { importData() }
+                            addThemeVariants(ButtonVariant.LUMO_ERROR)
+                        }
                     }
                 }
             }
@@ -261,17 +289,15 @@ class OptionsView(private val tagService: TagService, private val docService: Do
 
     private fun createOfflineBackup() {
         if (options.storage.offlineLinkLocation.isNotBlank()) {
-            val docs = docService.findAll()
             val root = File(options.storage.offlineLinkLocation)
             val docPath = options.doc.savePath
-            for (doc in docs) {
+            docService.findAll().forEach { doc ->
                 if (doc.tags.isNullOrEmpty()) {
                     ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(root.absolutePath, doc.guid + ".lnk").toString())
                 } else {
-                    val tagOrders = permute(doc.tags.toList())
-                    for (order in tagOrders) {
+                    permute(doc.tags.toList()).forEach { order ->
                         var path = root
-                        for (tag in order) {
+                        order.forEach { tag ->
                             path = File(path, tag.name)
                             path.mkdir()
                         }
@@ -282,6 +308,78 @@ class OptionsView(private val tagService: TagService, private val docService: Do
             LOGGER.showInfo(t("done"), UI.getCurrent())
         }
     }
+
+    private fun exportData() {
+        DmsDialog(t("export")).apply {
+            verticalLayout(isPadding = false) {
+                val t = checkBox(t("tags")) {
+                    value = true
+                }
+                val a = checkBox(t("attributes")) { value = true }
+                val q = checkBox(t("queries")) { value = true }
+                val export = FileDownloadWrapper("export.json") { export(t.value, a.value, q.value) }
+                val exportButton = Button(t("export"), VaadinIcon.FILE_ZIP.create()).apply {
+                    addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                }.also { it.addClickListener { this@apply.close() } }
+                export.wrapComponent(exportButton)
+                add(export)
+
+                fun refresh() {
+                    if (t.value && a.value) {
+                        q.isReadOnly = false
+                    } else {
+                        q.isReadOnly = true
+                        q.value = false
+                    }
+                }
+
+                t.addValueChangeListener { if (it.isFromClient) refresh() }
+                a.addValueChangeListener { if (it.isFromClient) refresh() }
+            }
+        }.open()
+    }
+
+    private fun importData() {
+        DmsDialog(t("import")).apply {
+            width = "20vw"
+            height = "20vh"
+            val buffer = MemoryBuffer()
+            upload(buffer) {
+                setAcceptedFileTypes(".json")
+                maxFileSize = Options.get().storage.maxUploadFileSize * 1024 * 1024
+                height = "80%"
+                addFinishedListener {
+                    try {
+                        buffer.inputStream.use { inputStream ->
+                            val export = jacksonObjectMapper().readValue(inputStream.readAllBytes(), Export::class.java)
+                            export.queries.filter { docFilterService.findByName(it.name) == null }.forEach {
+                                docFilterService.create(DocFilter(it.name, it.filter))
+                            }
+                            export.attributes.filter { attributeService.findByName(it.name) == null }.forEach { exp ->
+                                val attr = attributeService.create(Attribute(exp.name, exp.required, Attribute.Type.valueOf(exp.type)))
+                                exp.filter?.let { attributeFilterService.create(AttributeFilter(attr, it)) }
+                            }
+                            export.tags.filter { tagService.findByName(it.name) == null }.forEach { exp ->
+                                val tag = tagService.create(Tag(exp.name, exp.color, attributes = exp.attributes.map { attributeService.findByName(it)!! }.toSet()))
+                                exp.filter?.let { tagFilterService.create(TagFilter(tag, it)) }
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        ex.message?.let { it1 -> LOGGER.error(it1, ex) }
+                    }
+                }
+                addAllFinishedListener { close() }
+            }
+        }.open()
+    }
+
+    private fun export(tags: Boolean, attributes: Boolean, queries: Boolean) = jacksonObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(
+        Export(
+            if (tags) tagService.findAll().map { tag -> TagExport(tag.name, tag.color, tag.tagFilter?.filter, if (attributes) tag.attributes.map { it.name } else emptyList()) }.toSet() else emptySet(),
+            if (attributes) attributeService.findAll().map { AttributeExport(it.name, it.isRequired, it.type.name, it.attributeFilter?.filter) }.toSet() else emptySet(),
+            if (queries) docFilterService.findAll().map { QueryExport(it.name, it.filter) }.toSet() else emptySet()
+        )
+    )
 
     private fun <T> permute(list: List<T>): List<List<T>> {
         if (list.size == 1) return listOf(list)
@@ -300,6 +398,11 @@ class OptionsView(private val tagService: TagService, private val docService: Do
         options.save()
         LOGGER.showInfo(t("settings.saved"), UI.getCurrent())
     }
+
+    data class AttributeExport(val name: String, val required: Boolean, val type: String, val filter: String?)
+    data class TagExport(val name: String, val color: String, val filter: String?, val attributes: List<String>)
+    data class QueryExport(val name: String, val filter: String)
+    data class Export(val tags: Set<TagExport>, val attributes: Set<AttributeExport>, val queries: Set<QueryExport>)
 
     companion object {
         private val LOGGER = DmsLogger.getLogger(OptionsView::class.java)

@@ -15,6 +15,8 @@ class LogEntry(
         var timestamp: LocalDateTime,
         var className: String,
         var path: String,
+        @Column(columnDefinition = "LONGVARCHAR")
+        @Size(max = 6000)
         var message: String,
         var level: DmsLogger.Level,
         @Column(columnDefinition = "LONGVARCHAR")
