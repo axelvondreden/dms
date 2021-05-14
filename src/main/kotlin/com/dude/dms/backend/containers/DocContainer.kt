@@ -88,7 +88,7 @@ class DocContainer(var guid: String, var file: File? = null) {
         }
 
     private fun getLine(word: WordContainer) =
-        doc?.getLine(word.word) ?: pages.flatMap { it.lines }.first { word in it.words }.line
+        word.word.line ?: doc?.getLine(word.word) ?: pages.flatMap { it.lines }.first { word in it.words }.line
 
     fun getFullTextLowerCase() = doc?.getFullTextLowerCase() ?: pages.sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
@@ -102,13 +102,13 @@ class DocContainer(var guid: String, var file: File? = null) {
         }
     }
 
-    fun checkTagFilter(filter: TagFilterLang.Query) = lines.any { filterIsValid(filter, it) }
+    fun checkTagFilter(filter: TagFilterLang.Query) = lines.firstOrNull { filterIsValid(filter, it) }
 
     private fun filterIsValid(filter: TagFilterLang.Query, line: LineContainer): Boolean = when (filter) {
         is TagFilterLang.Query.And -> filterIsValid(filter.left, line) && filterIsValid(filter.right, line)
         is TagFilterLang.Query.Or -> filterIsValid(filter.left, line) || filterIsValid(filter.right, line)
-        is TagFilterLang.Filter.Line -> testFilter(line.line.getFullText(), filter.value.value, filter.op)
-        is TagFilterLang.Filter.LineRegex -> testFilterRegex(line.line.getFullText(), filter.value.value, filter.op)
+        is TagFilterLang.Filter.Line -> testFilter(line.getFullText(), filter.value.value, filter.op)
+        is TagFilterLang.Filter.LineRegex -> testFilterRegex(line.getFullText(), filter.value.value, filter.op)
     }
 
     private fun testFilter(lineText: String, filterText: String, op: TagFilterLang.Operator) = when (op) {

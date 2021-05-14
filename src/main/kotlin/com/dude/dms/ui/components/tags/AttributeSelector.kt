@@ -16,7 +16,10 @@ class AttributeSelector : VerticalLayout() {
 
     var selectedAttributes: Set<Attribute>
         get() = grid.asMultiSelect().selectedItems
-        set(selected) = grid.asMultiSelect().select(selected)
+        set(selected) {
+            grid.asMultiSelect().deselectAll()
+            grid.asMultiSelect().select(selected)
+        }
 
     init {
         isPadding = false

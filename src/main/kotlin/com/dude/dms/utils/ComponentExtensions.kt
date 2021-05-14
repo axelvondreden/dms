@@ -17,11 +17,11 @@ import com.github.appreciated.card.label.SecondaryLabel
 import com.github.juchar.colorpicker.ColorPickerFieldRaw
 import com.github.mvysny.karibudsl.v10.VaadinDsl
 import com.github.mvysny.karibudsl.v10.init
+import com.hilerio.ace.AceEditor
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.HasStyle
 import com.vaadin.flow.component.progressbar.ProgressBar
-import de.f0rce.ace.AceEditor
 import dev.mett.vaadin.tooltip.Tooltips
 
 @VaadinDsl

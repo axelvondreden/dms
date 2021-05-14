@@ -13,6 +13,10 @@ import com.dude.dms.utils.aceEditor
 import com.dude.dms.utils.docParser
 import com.dude.dms.utils.tagFilterService
 import com.github.mvysny.karibudsl.v10.*
+import com.hilerio.ace.AceEditor
+import com.hilerio.ace.AceMode
+import com.hilerio.ace.AceTheme
+import com.vaadin.flow.component.ClientCallable
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.grid.Grid
@@ -20,9 +24,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import de.f0rce.ace.AceEditor
-import de.f0rce.ace.AceMode
-import de.f0rce.ace.AceTheme
+
 
 class FilterTestLayout : VerticalLayout() {
 
@@ -33,13 +35,14 @@ class FilterTestLayout : VerticalLayout() {
     private lateinit var docSelectButton: Button
 
     private lateinit var testText: AceEditor
-    private lateinit var tagGrid: Grid<TagContainer>
-    private lateinit var attributeGrid: Grid<AttributeValue>
+    private lateinit var tagGrid: Grid<Pair<TagContainer, Int>>
+    private lateinit var attributeGrid: Grid<Pair<AttributeValue, Int>>
 
     private var tempTagFilter: TagFilter? = null
     private var tempAttributeFilter: AttributeFilter? = null
 
     init {
+        element.executeJs("window.testLayout = this;")
         isPadding = false
         setWidthFull()
         maxHeight = "35em"
@@ -67,19 +70,29 @@ class FilterTestLayout : VerticalLayout() {
                     setSizeFull()
                     theme = if (Options.get().view.darkMode) AceTheme.dracula else AceTheme.clouds
                     mode = AceMode.text
-                    addValueChangeListener {
-                        fill(tempTagFilter, tempAttributeFilter)
-                    }
+                    element.executeJs("var ed = this.editor; ed.on('change', function(e) { window.testLayout.\$server.refresh(ed.getValue()); })")
                 }
             }
             tagGrid = grid {
                 width = "30%"
-                addComponentColumn { TagLabel(it.tag) }.setHeader(t("tag"))
+                setSelectionMode(Grid.SelectionMode.SINGLE)
+                addComponentColumn { TagLabel(it.first.tag) }.setHeader(t("tag"))
+                addSelectionListener { event ->
+                    event.firstSelectedItem.ifPresent {
+                        testText.setSelection(it.second, 0, it.second, 200, true)
+                    }
+                }
             }
             attributeGrid = grid {
                 width = "30%"
-                addColumn { it.attribute.name }.setHeader(t("attribute"))
-                addColumn { it.convertedValue }.setHeader(t("value"))
+                setSelectionMode(Grid.SelectionMode.SINGLE)
+                addColumn { it.first.attribute.name }.setHeader(t("attribute"))
+                addColumn { it.first.convertedValue }.setHeader(t("value"))
+                addSelectionListener { event ->
+                    event.firstSelectedItem.ifPresent {
+                        testText.setSelection(it.second, 0, it.second, 200, true)
+                    }
+                }
             }
         }
     }
@@ -97,6 +110,12 @@ class FilterTestLayout : VerticalLayout() {
         }
     }
 
+    @ClientCallable
+    fun refresh(text: String) {
+        testText.value = text
+        fill(tempTagFilter, tempAttributeFilter)
+    }
+
     fun fill(overrideTagFilter: TagFilter? = null, overrideAttributeFilter: AttributeFilter? = null) {
         tempTagFilter = overrideTagFilter
         tempAttributeFilter = overrideAttributeFilter
@@ -108,18 +127,18 @@ class FilterTestLayout : VerticalLayout() {
             tagFilterService.findAll().filter { it.tag != overrideTagFilter.tag }.plus(overrideTagFilter)
         }
         val tags = docParser.filterTags(doc, tagFilters)
-        tagGrid.setItems(tags)
+        tagGrid.setItems(tags.toList())
 
         val attributeFilters = if (overrideAttributeFilter == null) {
-            tags.flatMap { it.tag.attributes }.mapNotNull { it.attributeFilter }
+            tags.flatMap { it.key.tag.attributes }.mapNotNull { it.attributeFilter }
         } else {
-            tags.flatMap { it.tag.attributes }
+            tags.flatMap { it.key.tag.attributes }
                 .mapNotNull { it.attributeFilter }
                 .filter { it.attribute != overrideAttributeFilter.attribute }
                 .plus(overrideAttributeFilter)
         }
         val attributeValues = docParser.discoverAttributeValues(doc, attributeFilters)
-        attributeGrid.setItems(attributeValues)
+        attributeGrid.setItems(attributeValues.toList())
     }
 
     fun clear() {

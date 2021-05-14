@@ -101,7 +101,7 @@ class DocImportService(
 
                     dc.date = docParser.getMostFrequentDate(dc)
                     dc.tags = docParser.discoverTags(dc).toMutableSet()
-                    dc.attributeValues = docParser.discoverAttributeValues(dc).toMutableSet()
+                    dc.attributeValues = docParser.discoverAttributeValues(dc).map { it.key }.toMutableSet()
 
                     docs.add(dc)
                     currentImports.remove(dc.file?.name)

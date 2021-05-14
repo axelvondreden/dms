@@ -109,6 +109,10 @@ class DocImportPreview : VerticalLayout() {
                             onLeftClick { pickDate() }
                         }
                     }
+                    button(t("rules.rerun"), VaadinIcon.MAGIC.create()) {
+                        tooltip(t("rules.rerun.tooltip"))
+                        onLeftClick { rerunRules() }
+                    }
                     doneButton = button(t("done")) {
                         tooltip(t("doc.done"))
                         onLeftClick { if (infoLayout.validate()) onDone?.invoke(docContainer!!) }
@@ -150,6 +154,14 @@ class DocImportPreview : VerticalLayout() {
         date.value = docContainer.date
 
         refreshTextTools(docContainer)
+    }
+
+    private fun rerunRules() {
+        if (docContainer != null) {
+            docContainer!!.tags = docParser.discoverTags(docContainer!!)
+            docContainer!!.attributeValues = docParser.discoverAttributeValues(docContainer!!).map { it.key }.toMutableSet()
+            fill(docContainer!!)
+        }
     }
 
     fun clear() {

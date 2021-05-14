@@ -35,21 +35,22 @@ class DocParser(
 
     fun getText(img: File, rect: DmsOcrTextStripper.Rect, language: String = Options.get().doc.ocrLanguage) = ocrStripper.getTextFromArea(img, rect, language)
 
-    fun discoverTags(doc: DocContainer) = filterTags(doc, tagFilterService.findAll())
+    fun discoverTags(doc: DocContainer) = filterTags(doc, tagFilterService.findAll()).map { it.key }
         .plus(Options.get().tag.automaticTags
             .mapNotNull { tagService.findByName(it) }
             .map { TagContainer(it, t("automatic")) }).toSet()
 
-    fun filterTags(doc: DocContainer, filters: Collection<TagFilter>): List<TagContainer> {
+    fun filterTags(doc: DocContainer, filters: Collection<TagFilter>): Map<TagContainer, Int> {
         val parser = TagFilterParser()
         return filters
             .associateWith { parser.setInput(it.filter) }
-            .filter { it.value.tagFilter != null && it.value.isValid && doc.checkTagFilter(it.value.tagFilter!!) }
-            .map { TagContainer(it.key.tag) }
+            .filter { it.value.tagFilter != null && it.value.isValid }
+            .mapNotNull { pair -> doc.checkTagFilter(pair.value.tagFilter!!)?.let { TagContainer(pair.key.tag) to it.y.toInt() } }
+            .toMap()
     }
 
-    fun discoverAttributeValues(doc: DocContainer, filters: Collection<AttributeFilter> = doc.tagEntities.flatMap { it.attributes }.mapNotNull { it.attributeFilter }.toSet()): Set<AttributeValue> {
-        val values = mutableSetOf<AttributeValue>()
+    fun discoverAttributeValues(doc: DocContainer, filters: Collection<AttributeFilter> = doc.tagEntities.flatMap { it.attributes }.mapNotNull { it.attributeFilter }.toSet()): Map<AttributeValue, Int> {
+        val values = mutableMapOf<AttributeValue, Int>()
         val parser = AttributeFilterParser()
         filters.forEach { filter ->
             LOGGER.info(t("attribute.searching", filter.attribute.name))
@@ -65,7 +66,8 @@ class DocParser(
                         else -> true
                     }
                 }
-                val value = filtered.groupBy { it.text }.maxByOrNull { it.value.size }?.key
+                val finalWord = filtered.groupBy { it.text }.maxByOrNull { it.value.size }
+                val value = finalWord?.key
                 if (value != null) {
                     LOGGER.info("Found value: $value")
                     val av = AttributeValue(doc.doc, filter.attribute)
@@ -75,7 +77,7 @@ class DocParser(
                         Attribute.Type.FLOAT -> av.floatValue = value.findDecimal()!!.toFloat()
                         Attribute.Type.DATE -> av.dateValue = value.findDate()
                     }
-                    values.add(av)
+                    values[av] = finalWord.value.first().word.y.toInt()
                 }
             }
         }

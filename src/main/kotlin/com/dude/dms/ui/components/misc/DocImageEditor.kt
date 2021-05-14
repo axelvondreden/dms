@@ -296,6 +296,7 @@ class DocImageEditor : Div() {
                         line.words = line.words.plus(wordContainer)
                         wordContainer.spelling = Spellchecker(docContainer!!.language).check(txt)
                         pageContainer!!.lines = pageContainer!!.lines.minus(line).plus(line)
+                        docContainer!!.pages = docContainer!!.pages.minus(pageContainer!!).plus(pageContainer!!)
                         if (docContainer!!.inDB) {
                             wordService.create(wordContainer.word)
                             lineService.save(line.line)

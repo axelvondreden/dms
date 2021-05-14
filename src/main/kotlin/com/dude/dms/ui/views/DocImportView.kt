@@ -143,9 +143,9 @@ class DocImportView(private val docImportService: DocImportService, private val 
     }
 
     private fun rerunRules() {
-        docs.filter { !it.done }.forEach {
-            it.tags = docParser.discoverTags(it)
-            it.attributeValues = docParser.discoverAttributeValues(it).toMutableSet()
+        docs.filter { !it.done }.forEach { dc ->
+            dc.tags = docParser.discoverTags(dc)
+            dc.attributeValues = docParser.discoverAttributeValues(dc).map { it.key }.toMutableSet()
         }
         itemPreview.clear()
         fill()
