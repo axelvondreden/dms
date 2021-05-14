@@ -20,6 +20,7 @@ import mslinks.ShellLink
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
+import kotlin.io.path.absolutePathString
 
 @Route(value = Const.PAGE_OPTIONS, layout = MainView::class)
 @PageTitle("Options")
@@ -165,7 +166,7 @@ class OptionsView(private val tagService: TagService, private val docService: Do
 
                 content {
                     formLayout {
-                        textField(t("doc.save.path", Paths.get("../").toAbsolutePath())) {
+                        textField(t("doc.save.path", Paths.get("../").absolutePathString())) {
                             value = options.doc.savePath
                             addValueChangeListener {
                                 if (it.value.isNotEmpty()) {
@@ -188,7 +189,7 @@ class OptionsView(private val tagService: TagService, private val docService: Do
                                 }
                             }
                         }
-                        textField(t("doc.offline.path", Paths.get("../").toAbsolutePath())) {
+                        textField(t("doc.offline.path", Paths.get("../").absolutePathString())) {
                             value = options.storage.offlineLinkLocation
                             addValueChangeListener {
                                 if (it.value.isNotEmpty()) {
@@ -202,31 +203,7 @@ class OptionsView(private val tagService: TagService, private val docService: Do
                                 }
                             }
                         }
-                        button(t("create.now")) {
-                            onLeftClick {
-                                if (options.storage.offlineLinkLocation.isNotBlank()) {
-                                    val docs = docService.findAll()
-                                    val root = File(options.storage.offlineLinkLocation)
-                                    val docPath = options.doc.savePath
-                                    for (doc in docs) {
-                                        if (doc.tags.isNullOrEmpty()) {
-                                            ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(root.absolutePath, doc.guid + ".lnk").toString())
-                                        } else {
-                                            val tagOrders = permute(doc.tags.toList())
-                                            for (order in tagOrders) {
-                                                var path = root
-                                                for (tag in order) {
-                                                    path = File(path, tag.name)
-                                                    path.mkdir()
-                                                }
-                                                ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(path.absolutePath, doc.guid + ".lnk").toString())
-                                            }
-                                        }
-                                    }
-                                    LOGGER.showInfo(t("done"), UI.getCurrent())
-                                }
-                            }
-                        }
+                        button(t("create.now")) { onLeftClick { createOfflineBackup() } }
                     }
                 }
             }
@@ -279,6 +256,30 @@ class OptionsView(private val tagService: TagService, private val docService: Do
                     }
                 }
             }
+        }
+    }
+
+    private fun createOfflineBackup() {
+        if (options.storage.offlineLinkLocation.isNotBlank()) {
+            val docs = docService.findAll()
+            val root = File(options.storage.offlineLinkLocation)
+            val docPath = options.doc.savePath
+            for (doc in docs) {
+                if (doc.tags.isNullOrEmpty()) {
+                    ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(root.absolutePath, doc.guid + ".lnk").toString())
+                } else {
+                    val tagOrders = permute(doc.tags.toList())
+                    for (order in tagOrders) {
+                        var path = root
+                        for (tag in order) {
+                            path = File(path, tag.name)
+                            path.mkdir()
+                        }
+                        ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(path.absolutePath, doc.guid + ".lnk").toString())
+                    }
+                }
+            }
+            LOGGER.showInfo(t("done"), UI.getCurrent())
         }
     }
 
