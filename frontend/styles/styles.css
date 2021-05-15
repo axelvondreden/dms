@@ -118,3 +118,7 @@
 .v-drag-over-target {
     background-color: rgba(0, 150, 0, 0.5);
 }
+
+.app-layout-behaviour-left-responsive-hybrid-no-app-bar > div:nth-child(3) {
+    overflow-y: auto;
+}
