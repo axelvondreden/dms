@@ -28,7 +28,9 @@ class AttributeValueField(val attributeValue: AttributeValue, imageEditor: DocIm
             isAllowCustomValue = true
             val items = attributeValueService.findAutocomplete(attributeValue.attribute)
             if (items.isNotEmpty()) {
-                setItems()
+                setItems(items)
+            } else {
+                setItems("")
             }
             value = attributeValue.stringValue ?: ""
             addValueChangeListener { event ->

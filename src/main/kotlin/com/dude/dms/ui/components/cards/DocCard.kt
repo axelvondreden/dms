@@ -5,6 +5,7 @@ import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
+import com.dude.dms.ui.components.dialogs.DocDeleteDialog
 import com.dude.dms.utils.*
 import com.github.appreciated.app.layout.component.menu.left.items.LeftClickableItem
 import com.github.appreciated.card.ClickableCard
@@ -18,6 +19,7 @@ import com.vaadin.flow.component.dnd.DropTarget
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
@@ -26,11 +28,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
-class DocCard(val docContainer: DocContainer) : ClickableCard() {
+class DocCard(val docContainer: DocContainer, private val showContextMenu: Boolean = true) : ClickableCard() {
 
     private var imgDiv: Div? = null
 
     private val viewUI = UI.getCurrent()
+
+    lateinit var header: HorizontalLayout
 
     init {
         fill()
@@ -46,7 +50,7 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
     fun fill() {
         content.removeAll()
 
-        ContextMenu(this).fill()
+        if (showContextMenu) ContextMenu(this).fill()
 
         DropTarget.create(this).addDropListener { event ->
             val comp = event.source.ui.get().internals.activeDragSourceComponent
@@ -60,7 +64,7 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
             }
         }
 
-        horizontalLayout {
+        header = horizontalLayout {
             setWidthFull()
             style["paddingRight"] = "8px"
             alignItems = FlexComponent.Alignment.CENTER
@@ -116,7 +120,7 @@ class DocCard(val docContainer: DocContainer) : ClickableCard() {
                 val registration = VaadinSession.getCurrent().resourceRegistry.registerResource(resource)
                 UI.getCurrent().page.setLocation(registration.resourceUri)
             }
-            addItem(t("delete")) { docDeleteDialog(docContainer).open() }
+            addItem(t("delete")) { DocDeleteDialog(docContainer).open() }
         }
     }
 }

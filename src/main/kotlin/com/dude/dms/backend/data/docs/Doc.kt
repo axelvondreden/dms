@@ -15,7 +15,7 @@ import javax.persistence.*
 class Doc(
     var guid: String,
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE, CascadeType.REMOVE]) var docText: DocText? = null,
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE]) var docText: DocText? = null,
 
     var documentDate: LocalDate? = null,
 

@@ -20,7 +20,7 @@ noArg {
 }
 
 group = "com.dude.dms"
-version = "0.2.6"
+version = "0.2.7"
 
 val karibudslVersion = "1.0.6"
 val vaadinVersion = "14.6.0"
@@ -105,6 +105,10 @@ tasks.processResources {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
+}
+
+tasks.bootRun {
+    jvmArgs("-Xmx1g")
 }
 
 tasks.bootJar {

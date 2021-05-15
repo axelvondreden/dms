@@ -10,6 +10,8 @@ interface DocRepository : RestoreRepository<Doc> {
 
     fun findByTagsAndDeletedFalse(tag: Tag): Set<Doc>
 
+    fun findByTagsNotContainingAndDeletedFalse(tag: Tag): Set<Doc>
+
     fun countByTagsAndDeletedFalse(tag: Tag): Long
 
     fun findByAttributeValues_AttributeEqualsAndDeletedFalse(attribute: Attribute): Set<Doc>

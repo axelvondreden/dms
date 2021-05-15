@@ -1,15 +1,11 @@
 package com.dude.dms.utils
 
 import com.dude.dms.backend.containers.DocContainer
-import com.dude.dms.backend.containers.WordContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.brain.dsl.hint.Hint
 import com.dude.dms.ui.components.cards.DocCard
 import com.dude.dms.ui.components.cards.DocImportCard
-import com.dude.dms.ui.components.dialogs.AttributeCreateDialog
-import com.dude.dms.ui.components.dialogs.DocDeleteDialog
-import com.dude.dms.ui.components.dialogs.WordEditDialog
 import com.dude.dms.ui.components.misc.*
 import com.dude.dms.ui.components.tags.*
 import com.github.appreciated.card.Card
@@ -57,13 +53,10 @@ fun HasComponents.modeSelector(block: ModeSelector.() -> Unit = {}) = init(ModeS
 fun HasComponents.docImageEditor(block: DocImageEditor.() -> Unit = {}) = init(DocImageEditor(), block)
 
 @VaadinDsl
-fun HasComponents.docCard(docContainer: DocContainer, block: DocCard.() -> Unit = {}) = init(DocCard(docContainer), block)
+fun HasComponents.docCard(docContainer: DocContainer, showContextMenu: Boolean = true, block: DocCard.() -> Unit = {}) = init(DocCard(docContainer, showContextMenu), block)
 
 @VaadinDsl
 fun HasComponents.docImportCard(docContainer: DocContainer, block: DocImportCard.() -> Unit = {}) = init(DocImportCard(docContainer), block)
-
-@VaadinDsl
-fun HasComponents.wordEditDialog(wordContainer: WordContainer, block: WordEditDialog.() -> Unit = {}) = init(WordEditDialog(wordContainer), block)
 
 @VaadinDsl
 fun HasComponents.filterTestLayout(block: FilterTestLayout.() -> Unit = {}) = init(FilterTestLayout(), block)
@@ -75,16 +68,10 @@ fun HasComponents.attributeValueLayout(imageEditor: DocImageEditor? = null, bloc
 fun HasComponents.attributeValueSmallLayout(block: AttributeValueSmallLayout.() -> Unit = {}) = init(AttributeValueSmallLayout(), block)
 
 @VaadinDsl
-fun HasComponents.attributeCreateDialog(block: AttributeCreateDialog.() -> Unit = {}) = init(AttributeCreateDialog(), block)
-
-@VaadinDsl
 fun HasComponents.attributeValueField(attributeValue: AttributeValue, imageEditor: DocImageEditor? = null, block: AttributeValueField.() -> Unit = {}) = init(AttributeValueField(attributeValue, imageEditor), block)
 
 @VaadinDsl
 fun HasComponents.attributeValueLabel(attributeValue: AttributeValue, block: AttributeValueLabel.() -> Unit = {}) = init(AttributeValueLabel(attributeValue), block)
-
-@VaadinDsl
-fun HasComponents.docDeleteDialog(docContainer: DocContainer, block: DocDeleteDialog.() -> Unit = {}) = init(DocDeleteDialog(docContainer), block)
 
 @VaadinDsl
 fun HasComponents.card(block: Card.() -> Unit = {}) = init(Card(), block)
@@ -98,11 +85,6 @@ fun HasComponents.progressBar(block: ProgressBar.() -> Unit = {}) = init(Progres
 @VaadinDsl
 fun <T> T.tooltip(text: String?) where T : Component, T : HasStyle {
     Tooltips.getCurrent().setTooltip(this, text)
-}
-
-@VaadinDsl
-fun <T> T.showTooltip() where T : Component, T : HasStyle {
-    Tooltips.getCurrent().showTooltip(this)
 }
 
 @VaadinDsl
