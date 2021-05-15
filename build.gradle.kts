@@ -107,6 +107,10 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 
+tasks.bootRun {
+    jvmArgs("-Xmx1g")
+}
+
 tasks.bootJar {
     archiveBaseName.set("dms")
 }
