@@ -1,5 +1,6 @@
 package com.dude.dms.ui.views
 
+import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.filter.TagFilter
 import com.dude.dms.backend.service.TagFilterService
@@ -7,6 +8,7 @@ import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.DmsLogger
 import com.dude.dms.brain.t
 import com.dude.dms.ui.Const
+import com.dude.dms.ui.components.dialogs.DocMultiSelectDialog
 import com.dude.dms.ui.components.misc.FilterTestLayout
 import com.dude.dms.ui.components.misc.TagFilterText
 import com.dude.dms.ui.components.tags.AttributeSelector
@@ -35,13 +37,15 @@ class TagView(
     private var tag: Tag? = null
     private var tagFilter: TagFilter? = null
 
+    private lateinit var saveButton: Button
+
+    private lateinit var runButton: Button
+
     private lateinit var nameTextField: TextField
 
     private lateinit var colorPicker: ColorPickerFieldRaw
 
     private lateinit var attributeSelector: AttributeSelector
-
-    private lateinit var saveButton: Button
 
     private val filter: TagFilterText
 
@@ -59,6 +63,12 @@ class TagView(
                     setWidthFull()
                     onLeftClick { save() }
                     addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                }
+                runButton = button(t("run"), VaadinIcon.REFRESH.create()) {
+                    setWidthFull()
+                    onLeftClick { runForMissing() }
+                    addThemeVariants(ButtonVariant.LUMO_SUCCESS)
+                    tooltip(t("tag.run"))
                 }
                 nameTextField = textField(t("name")) { setWidthFull() }
                 colorPicker = colorPicker(t("color")) { setWidthFull() }
@@ -104,6 +114,19 @@ class TagView(
         docService.findByTag(tag!!).forEach { docService.save(it) }
         LOGGER.showInfo(t("saved"), UI.getCurrent())
         fill()
+    }
+
+    private fun runForMissing() {
+        if (tag!!.tagFilter != null) {
+            val docs = docService.findByTagNot(tag!!).map { DocContainer(it) }
+            val docs2 = docs.filter { docParser.filterTags(it, setOf(tag!!.tagFilter!!)).isNotEmpty() }
+            DocMultiSelectDialog(docs2) { items ->
+                items.mapNotNull { it.doc }.forEach {
+                    it.tags = it.tags.plus(tag!!)
+                    docService.save(it)
+                }
+            }.open()
+        }
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, t: String) {

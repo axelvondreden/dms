@@ -93,6 +93,8 @@ class DocService(
 
     fun findByTag(tag: Tag) = docRepository.findByTagsAndDeletedFalse(tag)
 
+    fun findByTagNot(tag: Tag) = docRepository.findByTagsNotContainingAndDeletedFalse(tag)
+
     fun countByTag(tag: Tag) = docRepository.countByTagsAndDeletedFalse(tag)
 
     fun findByAttribute(attribute: Attribute) = docRepository.findByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)

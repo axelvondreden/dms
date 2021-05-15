@@ -101,7 +101,7 @@ class DocSelectDialog(private val onSelect: (DocContainer) -> Unit) : DmsDialog(
         pageSelector.items = count.toInt()
         itemCount.text = "${t("items")}: ${docs.size}"
         docs.forEach {
-            itemContainer.docCard(DocContainer(it)) {
+            itemContainer.docCard(DocContainer(it), false) {
                 addClickListener {
                     onSelect.invoke(docContainer)
                     close()
