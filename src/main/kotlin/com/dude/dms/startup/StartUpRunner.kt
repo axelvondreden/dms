@@ -29,12 +29,6 @@ class StartUpRunner(
         fileManager.getAllPdfs().cleanup()
         fileManager.getAllImages().cleanup()
 
-        // Migration 0.2.5 -> 0.2.6
-        docService.findByTextIsNull().forEach {
-            LOGGER.info("Migrating ${it.guid}...")
-            docService.save(it)
-        }
-
         val count = docService.count()
         docService.findAll().forEachIndexed { i, doc ->
             if (i % 10 == 0) LOGGER.info("Updating document $i / $count")

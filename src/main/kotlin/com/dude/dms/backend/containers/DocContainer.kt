@@ -84,7 +84,7 @@ class DocContainer(var guid: String, var file: File? = null) {
     var thumbnail: File
         get() = pages.first { it.nr == 1 }.image!!
         set(value) {
-            pages.first { it.nr == 1 }.image = value
+            pages.firstOrNull { it.nr == 1 }?.image = value
         }
 
     private fun getLine(word: WordContainer) =
