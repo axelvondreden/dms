@@ -35,9 +35,10 @@ class StartUpRunner(
             docService.save(it)
         }
 
-        docService.findAll().forEach {
-            LOGGER.info("Updating text ${it.guid}...")
-            docService.save(it)
+        val count = docService.count()
+        docService.findAll().forEachIndexed { i, doc ->
+            if (i % 10 == 0) LOGGER.info("Updating document $i / $count")
+            docService.save(doc)
         }
 
         docImportService.import()
