@@ -9,6 +9,7 @@ import com.dude.dms.brain.t
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
+import java.io.File
 import java.util.*
 
 @Component
@@ -25,8 +26,8 @@ class StartUpRunner(
         optionsChecker.checkOptions()
         directoryChecker.checkDirectories()
         LOGGER.info("Cleaning up files...")
-        fileManager.getAllPdfs().forEach { file -> if (docService.findByGuid(file.name.takeWhile { it != '.' }) == null) file.delete() }
-        fileManager.getAllImages().forEach { file -> if (docService.findByGuid(file.name.takeWhile { it != '_' }) == null) file.delete() }
+        fileManager.getAllPdfs().cleanup()
+        fileManager.getAllImages().cleanup()
 
         // Migration 0.2.5 -> 0.2.6
         docService.findByTextIsNull().forEach {
@@ -46,5 +47,18 @@ class StartUpRunner(
 
     companion object {
         private val LOGGER = DmsLogger.getLogger(StartUpRunner::class.java)
+    }
+
+    private fun List<File>.cleanup() {
+        forEach { file ->
+            val guid = file.name.takeWhile { it != '.' }
+            val docs = docService.findByGuidAsSet(guid)
+            if (docs == null) {
+                file.delete()
+            } else if (docs.size > 1) {
+                LOGGER.warn("Found duplicate documents with GUID $guid. Keeping the older document...")
+                docs.sortedBy { it.insertTime }.stream().skip(1).forEach { docService.delete(it) }
+            }
+        }
     }
 }

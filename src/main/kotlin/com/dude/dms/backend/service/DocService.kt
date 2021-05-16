@@ -91,6 +91,8 @@ class DocService(
 
     fun findByGuid(guid: String) = docRepository.findByGuid(guid)
 
+    fun findByGuidAsSet(guid: String) = docRepository.findByGuidEquals(guid)
+
     fun findByTag(tag: Tag) = docRepository.findByTagsAndDeletedFalse(tag)
 
     fun findByTagNot(tag: Tag) = docRepository.findByTagsNotContainingAndDeletedFalse(tag)
