@@ -89,7 +89,6 @@ class DocCard(val docContainer: DocContainer, private val showContextMenu: Boole
             element.appendChild(image)
 
             GlobalScope.launch {
-                docContainer.thumbnail = fileManager.getImage(docContainer.guid)
                 viewUI.access {
                     image.setAttribute("data", StreamResource("image.png", InputStreamFactory {
                         FileHelper.getInputStream(docContainer.thumbnail)

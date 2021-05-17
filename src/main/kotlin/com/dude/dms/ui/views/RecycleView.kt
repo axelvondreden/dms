@@ -72,11 +72,7 @@ class RecycleView(private val docService: DocService, private val fileManager: F
 
     private fun fill() {
         itemContainer.removeAll()
-        docService.findDeleted().forEach { doc ->
-            val dc = DocContainer(doc)
-            dc.thumbnail = fileManager.getImage(dc.guid)
-            itemContainer.docCard(dc)
-        }
+        docService.findDeleted().forEach { itemContainer.docCard(DocContainer(it)) }
     }
 
     private fun empty() {

@@ -28,6 +28,14 @@ class StartUpRunner(
         LOGGER.info("Cleaning up files...")
         fileManager.getAllPdfs().cleanup()
         fileManager.getAllImages().cleanup()
+        fileManager.getAllThumbs().cleanup()
+
+        // Migration 0.2.7 -> 0.2.8
+        val thumbGuids = fileManager.getAllThumbs().map { file -> file.name.takeWhile { it != '.' } }
+        fileManager.getAllImages().map { file -> file.name.takeWhile { it != '_' } }.distinct().filter { it !in thumbGuids }.forEach {
+            LOGGER.info("Creating thumbnail for $it")
+            fileManager.createThumbnail(it)
+        }
 
         val count = docService.count()
         docService.findAll().forEachIndexed { i, doc ->
@@ -46,9 +54,10 @@ class StartUpRunner(
 
     private fun List<File>.cleanup() {
         forEach { file ->
-            val guid = file.name.takeWhile { it != '.' }
+            val guid = file.name.takeWhile { it != '.' && it != '_' }
             val docs = docService.findByGuidAsSet(guid)
-            if (docs == null) {
+            if (docs.isNullOrEmpty()) {
+                LOGGER.info("Deleting ${file.absolutePath}...")
                 file.delete()
             } else if (docs.size > 1) {
                 LOGGER.warn("Found duplicate documents with GUID $guid. Keeping the older document...")

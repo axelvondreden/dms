@@ -8,6 +8,7 @@ import com.dude.dms.backend.data.docs.Word
 import com.dude.dms.brain.dsl.attributefilter.*
 import com.dude.dms.brain.dsl.tagFilterLang.TagFilterLang
 import com.dude.dms.brain.options.Options
+import com.dude.dms.utils.fileManager
 import java.io.File
 import java.time.LocalDate
 
@@ -81,11 +82,8 @@ class DocContainer(var guid: String, var file: File? = null) {
     val words: Set<WordContainer>
         get() = pages.flatMap { it.lines }.flatMap { it.words }.toSet()
 
-    var thumbnail: File
-        get() = pages.first { it.nr == 1 }.image!!
-        set(value) {
-            pages.firstOrNull { it.nr == 1 }?.image = value
-        }
+    val thumbnail: File
+        get() = fileManager.getThumb(guid)
 
     private fun getLine(word: WordContainer) =
         word.word.line ?: doc?.getLine(word.word) ?: pages.flatMap { it.lines }.first { word in it.words }.line

@@ -2,6 +2,7 @@ package com.dude.dms.brain
 
 import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.brain.options.Options
+import net.coobird.thumbnailator.Thumbnails
 import org.apache.pdfbox.Loader
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -31,6 +32,10 @@ class FileManager {
 
     fun getAllImages() = File("${Options.get().doc.savePath}/img").listFiles()?.toList() ?: emptyList()
 
+    fun getThumb(guid: String) = File("${Options.get().doc.savePath}/thumbs/$guid.png")
+
+    fun getAllThumbs() = File("${Options.get().doc.savePath}/thumbs").listFiles()?.toList() ?: emptyList()
+
     fun getImages(guid: String) = File("${Options.get().doc.savePath}/img/").listFiles { _, name ->
         name.startsWith(guid) }!!.sortedBy { it.name }.withIndex()
 
@@ -44,9 +49,10 @@ class FileManager {
         if (!saveDir.exists()) {
             LOGGER.info(t("files.createdir", saveDir))
             saveDir.mkdir()
-            File(saveDir, "pdf").mkdir()
-            File(saveDir, "img").mkdir()
         }
+        File(saveDir, "pdf").mkdir()
+        File(saveDir, "img").mkdir()
+        File(saveDir, "thumbs").mkdir()
     }
 
     fun importPdf(pdf: File, move: Boolean = true): String? {
@@ -71,7 +77,10 @@ class FileManager {
         val guid = UUID.randomUUID().toString()
         LOGGER.info(t("image.import", img.name))
         try {
-            ImageIO.write(processImg(ImageIO.read(img)), "png", Paths.get(Options.get().doc.savePath, "img", "${guid}_0001.png").toFile())
+            val image = processImg(ImageIO.read(img))
+            ImageIO.write(image, "png", Paths.get(Options.get().doc.savePath, "img", "${guid}_0001.png").toFile())
+            LOGGER.info("Creating thumbnail for ${img.name}")
+            ImageIO.write(image.toThumbnail(), "png", Paths.get(Options.get().doc.savePath, "thumbs", "${guid}.png").toFile())
             if (move) img.delete()
         } catch (e: IOException) {
             LOGGER.error(e.message!!, e)
@@ -80,6 +89,10 @@ class FileManager {
 
         createPdfFromImage(guid)
         return guid
+    }
+
+    fun createThumbnail(guid: String) {
+        ImageIO.write(ImageIO.read(getImage(guid)).toThumbnail(), "png", Paths.get(Options.get().doc.savePath, "thumbs", "${guid}.png").toFile())
     }
 
     private fun createImageFromPdf(guid: String) {
@@ -91,6 +104,10 @@ class FileManager {
                 val out = File(Options.get().doc.savePath, String.format("img/%s_%04d.png", guid, i + 1))
                 LOGGER.info(t("image.save", out.name))
                 ImageIO.write(bi, "PNG", out)
+                if (i == 0) {
+                    LOGGER.info("Creating thumbnail for ${out.name}")
+                    ImageIO.write(bi.toThumbnail(), "png", Paths.get(Options.get().doc.savePath, "thumbs", "${guid}.png").toFile())
+                }
             } catch (e: IOException) {
                 LOGGER.error(t("image.save.error", e))
             }
@@ -143,6 +160,8 @@ class FileManager {
         val rescale = RescaleOp(config.first, config.second, null)
         return rescale.filter(processedImg, null)
     }
+
+    private fun BufferedImage.toThumbnail() = Thumbnails.of(this).size(240, 100000).asBufferedImage()
 
     companion object {
         private val LOGGER = getLogger(FileManager::class.java)
