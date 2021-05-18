@@ -1,20 +1,21 @@
 package com.dude.dms.ui.views
 
-import com.dude.dms.backend.data.filter.DocFilter
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.Attribute
+import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
+import com.dude.dms.backend.data.filter.DocFilter
 import com.dude.dms.backend.service.AttributeService
-import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.DocFilterService
+import com.dude.dms.backend.service.DocService
 import com.dude.dms.backend.service.TagService
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType.*
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.polling.DocImportService
 import com.dude.dms.brain.t
-import com.dude.dms.utils.tooltip
 import com.dude.dms.ui.components.dialogs.*
+import com.dude.dms.utils.tooltip
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder
 import com.github.appreciated.app.layout.component.menu.left.LeftSubmenu
@@ -24,7 +25,10 @@ import com.github.appreciated.app.layout.component.menu.left.items.LeftNavigatio
 import com.github.appreciated.app.layout.component.router.AppLayoutRouterLayout
 import com.github.appreciated.app.layout.entity.DefaultBadgeHolder
 import com.github.appreciated.app.layout.entity.Section
+import com.github.mvysny.karibudsl.v10.button
+import com.github.mvysny.karibudsl.v10.onLeftClick
 import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.UIDetachedException
 import com.vaadin.flow.component.contextmenu.ContextMenu
@@ -35,12 +39,13 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.router.AfterNavigationEvent
 import com.vaadin.flow.router.AfterNavigationObserver
+import com.vaadin.flow.server.Command
 import com.vaadin.flow.server.InitialPageSettings
 import com.vaadin.flow.server.PageConfigurator
 import com.vaadin.flow.theme.lumo.Lumo
 import org.springframework.beans.factory.annotation.Value
+import java.time.LocalDate
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
 @JsModule("@vaadin/vaadin-lumo-styles/presets/compact.js")
@@ -62,10 +67,12 @@ class MainView(
     private val tagBadges = HashMap<Long, DefaultBadgeHolder>()
 
     init {
-        init(AppLayoutBuilder.get(LeftLayouts.LeftResponsiveHybridNoAppBar::class.java)
+        init(
+            AppLayoutBuilder.get(LeftLayouts.LeftResponsiveHybridNoAppBar::class.java)
                 .withTitle("dms")
                 .withAppMenu(buildAppMenu())
-                .build())
+                .build()
+        )
         val ui = UI.getCurrent()
 
         eventManager.register(this, Doc::class, CREATE) { ui.access { docsBadge!!.increase(); fillBadgeCount(it) } }
@@ -78,8 +85,44 @@ class MainView(
         Timer().schedule(10 * 1000, 10 * 1000) {
             try {
                 ui.access { importsBadge!!.count = docImportService.count }
-            } catch (e: UIDetachedException) { }
+            } catch (e: UIDetachedException) {
+            }
         }
+
+        ui.addShortcutListener(Command {
+            DmsDialog("debug").apply {
+                button("direct import (${docImportService.count})") {
+                    onLeftClick {
+                        docImportService.findAll().forEach(docImportService::create)
+                        close()
+                    }
+                }
+                button("direct import (${docImportService.count}) with random tags") {
+                    onLeftClick {
+                        val tags = tagService.findAll()
+                        docImportService.findAll().forEach { dc ->
+                            val tagSubset = mutableSetOf(tags.random())
+                            repeat((0..2).random()) {
+                                tagSubset.add(tags.filter { it !in tagSubset }.random())
+                            }
+                            dc.tagEntities = tagSubset
+                            dc.attributeValues = tagSubset.flatMap { it.attributes }.distinct().map {
+                                val av = AttributeValue(null, it)
+                                when (it.type) {
+                                    Attribute.Type.STRING -> av.stringValue = "Lorem Ipsum"
+                                    Attribute.Type.INT -> av.intValue = 1337
+                                    Attribute.Type.FLOAT -> av.floatValue = 13.37F
+                                    Attribute.Type.DATE -> av.dateValue = LocalDate.of((1995..2022).random(), (1..12).random(), (1..28).random())
+                                }
+                                av
+                            }.toMutableSet()
+                            docImportService.create(dc)
+                        }
+                        close()
+                    }
+                }
+            }.open()
+        }, Key.F3)
     }
 
     private fun buildAppMenu(): Component {
@@ -93,24 +136,24 @@ class MainView(
         val attributesEntry = createAttributesEntry()
         val queriesEntry = createQueriesEntry()
         return LeftAppMenuBuilder.get()
-                .add(importDocEntry, docsEntry, tagsEntry, attributesEntry, queriesEntry)
-                .withStickyFooter()
-                .addToSection(Section.FOOTER,
-                        LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
-                        LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { ChangelogDialog().open() },
-                        LeftNavigationItem(t("administration"), VaadinIcon.DASHBOARD.create(), AdminView::class.java),
-                        LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java),
-                        recycleEntry)
-                .build()
+            .add(importDocEntry, docsEntry, tagsEntry, attributesEntry, queriesEntry)
+            .withStickyFooter()
+            .addToSection(
+                Section.FOOTER,
+                LeftNavigationItem("Log", VaadinIcon.CLIPBOARD_PULSE.create(), LogView::class.java),
+                LeftClickableItem(buildVersion, VaadinIcon.HAMMER.create()) { ChangelogDialog().open() },
+                LeftNavigationItem(t("administration"), VaadinIcon.DASHBOARD.create(), AdminView::class.java),
+                LeftNavigationItem(t("settings"), VaadinIcon.COG.create(), OptionsView::class.java),
+                recycleEntry
+            )
+            .build()
     }
 
     private fun createAttributesEntry(): LeftSubmenu {
         val attributeEntries = mutableListOf<Component>(
-                LeftClickableItem(t("attribute.new"), VaadinIcon.PLUS_CIRCLE.create()) {
-                    AttributeCreateDialog().open()
-                }
+            LeftClickableItem(t("attribute.new"), VaadinIcon.PLUS_CIRCLE.create()) { AttributeCreateDialog().open() }
         )
-        for (attribute in attributeService.findAll()) {
+        attributeService.findAll().forEach { attribute ->
             val icon = when (attribute.type) {
                 Attribute.Type.STRING -> VaadinIcon.TEXT_LABEL
                 Attribute.Type.INT -> VaadinIcon.HASH
@@ -136,11 +179,11 @@ class MainView(
     private fun createTagsEntry(): LeftSubmenu {
         tagBadges.clear()
         val tagEntries = mutableListOf<Component>(
-                LeftClickableItem(t("tag.add"), VaadinIcon.PLUS_CIRCLE.create()) {
-                    TagCreateDialog().open()
-                }
+            LeftClickableItem(t("tag.add"), VaadinIcon.PLUS_CIRCLE.create()) {
+                TagCreateDialog().open()
+            }
         )
-        for (tag in tagService.findAll().sortedByDescending { docService.countByTag(it) }) {
+        tagService.findAll().sortedByDescending { docService.countByTag(it) }.forEach { tag ->
             val entry = LeftClickableItem(tag.name, VaadinIcon.TAG.create().apply { color = tag.color }) { }
             DragSource.create(entry).addDragStartListener { it.setDragData(tag) }
             tagBadges[tag.id] = DefaultBadgeHolder().apply { bind(entry.badge) }
