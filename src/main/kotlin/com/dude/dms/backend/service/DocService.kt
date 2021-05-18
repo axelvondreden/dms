@@ -13,12 +13,12 @@ import javax.persistence.EntityManager
 
 @Service
 class DocService(
-        private val docRepository: DocRepository,
-        private val attributeValueService: AttributeValueService,
-        private val pageService: PageService,
-        private val docTextService: DocTextService,
-        eventManager: EventManager,
-        private val entityManager: EntityManager
+    private val docRepository: DocRepository,
+    private val attributeValueService: AttributeValueService,
+    private val pageService: PageService,
+    private val docTextService: DocTextService,
+    eventManager: EventManager,
+    private val entityManager: EntityManager
 ) : RestoreService<Doc>(docRepository, eventManager) {
 
     fun create(entity: Doc, attributeValues: Set<AttributeValue>): Doc {
@@ -74,20 +74,18 @@ class DocService(
 
     private fun createAttributeValues(doc: Doc) {
         doc.tags.flatMap { it.attributes }
-                .filter { attributeValueService.findByDocAndAttribute(doc, it) == null }
-                .map { AttributeValue(doc, it) }
-                .distinct()
-                .forEach { attributeValueService.create(it) }
+            .filter { attributeValueService.findByDocAndAttribute(doc, it) == null }
+            .map { AttributeValue(doc, it) }
+            .distinct()
+            .forEach { attributeValueService.create(it) }
     }
 
     private fun deleteAttributeValues(doc: Doc) {
         val attributes = doc.tags.flatMap { it.attributes }
         doc.attributeValues
-                .filter { it.attribute !in attributes }
-                .distinct().forEach { attributeValueService.delete(it) }
+            .filter { it.attribute !in attributes }
+            .distinct().forEach { attributeValueService.delete(it) }
     }
-
-    fun findByTextIsNull() = docRepository.findByDocTextIsNull()
 
     fun findByGuid(guid: String) = docRepository.findByGuid(guid)
 
@@ -104,26 +102,25 @@ class DocService(
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
     fun findByFilter(filter: String, pageable: Pageable): Set<Doc> {
-        if (filter.isBlank()) {
-            return findAll(pageable).toSet()
-        }
-        val query = entityManager.createQuery("""
+        if (filter.isBlank()) return findAll(pageable).toSet()
+        return entityManager.createQuery(
+            """
             SELECT distinct doc FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter
             """.trimIndent(), Doc::class.java
         ).apply {
             firstResult = pageable.offset.toInt()
             maxResults = pageable.pageSize
-        }
-        return query.resultList.toSet()
+        }.resultList.toSet()
     }
 
     fun countByFilter(filter: String): Long {
         if (filter.isBlank()) return count()
         //HACK
         val filterWithoutOrder = filter.replace(Regex("order by.*", RegexOption.IGNORE_CASE), "")
-        return entityManager.createQuery("""
-                SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filterWithoutOrder
-                """.trimIndent()
+        return entityManager.createQuery(
+            """
+            SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filterWithoutOrder
+            """.trimIndent()
         ).singleResult as Long
     }
 }
