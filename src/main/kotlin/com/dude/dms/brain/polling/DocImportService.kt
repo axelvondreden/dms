@@ -114,7 +114,7 @@ class DocImportService(
     }
 
     fun create(docContainer: DocContainer) {
-        val pages = docContainer.pages
+        val pages = docContainer.getPages()
         val doc = Doc(docContainer.guid, null, docContainer.date, LocalDateTime.now(), docContainer.tagEntities.toMutableSet())
         docService.create(doc, docContainer.attributeValues)
         pages.forEach { pageContainer ->

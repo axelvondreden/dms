@@ -27,8 +27,6 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 import org.springframework.data.domain.PageRequest
-import java.util.*
-import kotlin.concurrent.schedule
 import kotlin.streams.toList
 
 
@@ -36,11 +34,9 @@ import kotlin.streams.toList
 @RouteAlias(value = Const.PAGE_ROOT, layout = MainView::class)
 @PageTitle("Docs")
 class DocsView(
-        private val docService: DocService,
-        eventManager: EventManager
-) : VerticalLayout(), HasUrlParameter<String?> {
-
-    private var scheduler = Timer()
+    private val docService: DocService,
+    private val eventManager: EventManager
+) : VerticalLayout(), HasUrlParameter<String?>, BeforeLeaveObserver {
 
     private val viewUI = UI.getCurrent()
 
@@ -55,11 +51,11 @@ class DocsView(
     private var filter = ""
 
     init {
-        eventManager.register(this, Doc::class, EventType.CREATE) { softReload(viewUI) }
+        eventManager.register(this, Doc::class, EventType.CREATE) { fill(viewUI) }
         eventManager.register(this, Doc::class, EventType.UPDATE) { updateDoc(it, viewUI) }
         eventManager.register(this, Doc::class, EventType.DELETE) { deleteDoc(it, viewUI) }
-        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
-        eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { softReload(viewUI) }
+        eventManager.register(this, Tag::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fill(viewUI) }
+        eventManager.register(this, Attribute::class, EventType.CREATE, EventType.UPDATE, EventType.DELETE) { fill(viewUI) }
 
         style["paddingTop"] = "0px"
         style["paddingBottom"] = "0px"
@@ -73,7 +69,7 @@ class DocsView(
             style["backgroundColor"] = "var(--lumo-base-color)"
             onChange = {
                 this@DocsView.filter = it
-                fill(viewUI)
+                fill()
             }
         }
         itemContainer = div {
@@ -105,8 +101,8 @@ class DocsView(
             itemCount = text(t("items") + ":")
         }
 
-        pageSelector.setChangeListener { scheduleFill(viewUI) }
-        scheduleFill(viewUI)
+        pageSelector.setChangeListener { fill() }
+        fill()
     }
 
     private fun updateDoc(doc: Doc, ui: UI) {
@@ -121,10 +117,6 @@ class DocsView(
                 itemContainer.remove(it)
             }
         }
-    }
-
-    private fun softReload(ui: UI) {
-        scheduleFill(ui)
     }
 
     private fun grow() {
@@ -145,30 +137,16 @@ class DocsView(
         }
     }
 
-    private fun scheduleFill(ui: UI) {
-        scheduler.cancel()
-        scheduler = Timer()
-        scheduler.schedule(500) {
-            fill(ui)
-        }
+    private fun fill() {
+        val docs = docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value))
+        itemContainer.removeAll()
+        pageSelector.items = docService.countByFilter(filter).toInt()
+        itemCount.text = "${t("items")}: ${docs.size}"
+        docs.forEach { itemContainer.docCard(DocContainer(it)) { addClickListener { DocImageDialog(docContainer).open() } } }
     }
 
     private fun fill(ui: UI) {
-        val docs = docService.findByFilter(filter, PageRequest.of(pageSelector.page, pageSelector.pageSize.value))
-        val count = docService.countByFilter(filter)
-        ui.access {
-            itemContainer.removeAll()
-            pageSelector.items = count.toInt()
-            itemCount.text = "${t("items")}: ${docs.size}"
-        }
-        docs.forEach { doc ->
-            val dc = DocContainer(doc)
-            ui.access {
-                itemContainer.docCard(dc) {
-                    addClickListener { DocImageDialog(docContainer).open() }
-                }
-            }
-        }
+        ui.access { fill() }
     }
 
     override fun setParameter(beforeEvent: BeforeEvent, @OptionalParameter t: String?) {
@@ -180,5 +158,9 @@ class DocsView(
                 else -> docSearchBar.filter.clear()
             }
         }
+    }
+
+    override fun beforeLeave(event: BeforeLeaveEvent?) {
+        eventManager.unregister(this)
     }
 }

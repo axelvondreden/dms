@@ -40,8 +40,8 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
             setWidthFull()
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER
 
-            pageSelector = docPageSelector(docContainer.pages.size) {
-                setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!) }
+            pageSelector = docPageSelector(docContainer.getPages().size) {
+                setChangeListener { page -> imageEditor.fill(docContainer, docContainer.getPages().find { it.nr == page }!!) }
             }
             modeSelector = modeSelector { setChangeListener { imageEditor.mode = it } }
             horizontalLayout(isPadding = false, isSpacing = false) {

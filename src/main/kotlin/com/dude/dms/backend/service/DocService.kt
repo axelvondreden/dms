@@ -27,7 +27,7 @@ class DocService(
             it.doc = new
             attributeValueService.create(it)
         }
-        val text = DocText(new, new.getFullTextLowerCase())
+        val text = DocText(new, getFullTextLowerCase(new))
         docTextService.create(text)
         new.docText = text
         super.save(new)
@@ -37,7 +37,7 @@ class DocService(
     override fun create(entity: Doc): Doc {
         val new = super.create(entity)
         createAttributeValues(new)
-        val text = DocText(new, new.getFullTextLowerCase())
+        val text = DocText(new, getFullTextLowerCase(new))
         docTextService.save(text)
         return new
     }
@@ -48,10 +48,10 @@ class DocService(
         deleteAttributeValues(entity)
         val text = entity.docText
         if (text != null) {
-            text.text = entity.getFullTextLowerCase()
+            text.text = getFullTextLowerCase(entity)
             docTextService.save(text)
         } else {
-            val new = DocText(entity, entity.getFullTextLowerCase())
+            val new = DocText(entity, getFullTextLowerCase(entity))
             entity.docText = docTextService.create(new)
             super.save(entity)
         }
@@ -123,4 +123,6 @@ class DocService(
             """.trimIndent()
         ).singleResult as Long
     }
+
+    fun getFullTextLowerCase(doc: Doc) = pageService.findByDoc(doc).sortedBy { it.nr }.joinToString("\n") { it.getFullText() }.lowercase()
 }

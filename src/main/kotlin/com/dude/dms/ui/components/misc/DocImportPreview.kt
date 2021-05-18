@@ -81,7 +81,7 @@ class DocImportPreview : VerticalLayout() {
                             onLeftClick {
                                 docContainer?.let { dc ->
                                     dc.useOcrTxt = false
-                                    imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
+                                    imageEditor.fillWords(dc.getPages().find { it.nr == pageSelector.page }!!, true)
                                     refreshTextTools(dc)
                                 }
                             }
@@ -90,7 +90,7 @@ class DocImportPreview : VerticalLayout() {
                             onLeftClick {
                                 docContainer?.let { dc ->
                                     dc.useOcrTxt = true
-                                    imageEditor.fillWords(dc.pages.find { it.nr == pageSelector.page }!!, true)
+                                    imageEditor.fillWords(dc.getPages().find { it.nr == pageSelector.page }!!, true)
                                     refreshTextTools(dc)
                                 }
                             }
@@ -146,8 +146,8 @@ class DocImportPreview : VerticalLayout() {
 
     fun fill(docContainer: DocContainer) {
         this.docContainer = docContainer
-        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.pages.find { it.nr == page }!!, true) }
-        pageSelector.max = docContainer.pages.size
+        pageSelector.setChangeListener { page -> imageEditor.fill(docContainer, docContainer.getPages().find { it.nr == page }!!, true) }
+        pageSelector.max = docContainer.getPages().size
         pageSelector.page = 1
         modeSelector.setChangeListener { imageEditor.mode = it }
         infoLayout.fill(docContainer)

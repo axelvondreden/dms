@@ -3,12 +3,13 @@ package com.dude.dms.backend.containers
 import com.dude.dms.backend.data.Tag
 import com.dude.dms.backend.data.docs.AttributeValue
 import com.dude.dms.backend.data.docs.Doc
-import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.data.docs.Word
-import com.dude.dms.brain.dsl.attributefilter.*
+import com.dude.dms.brain.dsl.attributefilter.AttributeFilterLang
 import com.dude.dms.brain.dsl.tagFilterLang.TagFilterLang
 import com.dude.dms.brain.options.Options
+import com.dude.dms.utils.docService
 import com.dude.dms.utils.fileManager
+import com.dude.dms.utils.pageService
 import java.io.File
 import java.time.LocalDate
 
@@ -18,7 +19,6 @@ class DocContainer(var guid: String, var file: File? = null) {
         this.doc = doc
         tags = doc.tags.map { TagContainer(it) }.toMutableSet()
         date = doc.documentDate
-        pages = doc.pages.map { PageContainer(it) }.toSet()
     }
 
     var done: Boolean = false
@@ -66,35 +66,38 @@ class DocContainer(var guid: String, var file: File? = null) {
     val inDB: Boolean
         get() = doc != null
 
-    var pages: Set<PageContainer>
-        get() = if (useOcrTxt) ocrPages else pdfPages
-        set(value) = if (useOcrTxt) ocrPages = value else pdfPages = value
-
-    var pageEntities: Set<Page>
-        get() = pages.map { it.page }.toSet()
-        set(value) {
-            pages = value.map { PageContainer(it) }.toSet()
-        }
-
     val lines: Set<LineContainer>
-        get() = pages.flatMap { it.lines }.toSet()
+        get() = getPages().flatMap { it.lines }.toSet()
 
     val words: Set<WordContainer>
-        get() = pages.flatMap { it.lines }.flatMap { it.words }.toSet()
+        get() = lines.flatMap { it.words }.toSet()
 
     val thumbnail: File
         get() = fileManager.getThumb(guid)
 
-    private fun getLine(word: WordContainer) =
-        word.word.line ?: doc?.getLine(word.word) ?: pages.flatMap { it.lines }.first { word in it.words }.line
+    fun getPages(): Set<PageContainer> {
+        val pages = if (useOcrTxt) ocrPages else pdfPages
+        if (doc != null && pages.isEmpty()) {
+            setPages(pageService.findByDoc(doc!!).map { PageContainer(it) }.toSet())
+            return if (useOcrTxt) ocrPages else pdfPages
+        }
+        return pages
+    }
 
-    fun getFullTextLowerCase() = doc?.getFullTextLowerCase() ?: pages.sortedBy { it.nr }.joinToString("\n") { page ->
+    fun setPages(pages: Set<PageContainer>) {
+        if (useOcrTxt) ocrPages = pages else pdfPages = pages
+    }
+
+    private fun getLine(word: WordContainer) =
+        word.word.line ?: doc?.getLine(word.word) ?: getPages().flatMap { it.lines }.first { word in it.words }.line
+
+    fun getFullTextLowerCase() = doc?.let { docService.getFullTextLowerCase(it) } ?: getPages().sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
             line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
         }
     }.lowercase()
 
-    fun getFullText() = doc?.getFullText() ?: pages.sortedBy { it.nr }.joinToString("\n") { page ->
+    fun getFullText() = doc?.getFullText() ?: getPages().sortedBy { it.nr }.joinToString("\n") { page ->
         page.lines.sortedBy { it.y }.joinToString("\n") { line ->
             line.words.sortedBy { it.word.x }.joinToString(" ") { it.word.text.toString() }
         }
@@ -157,12 +160,14 @@ class DocContainer(var guid: String, var file: File? = null) {
 
     companion object {
         fun fromString(text: String) = DocContainer("temp").apply {
-            pages = setOf(
-                PageContainer(1, text.split("\n").mapIndexed { i, line ->
-                    LineContainer(i.toFloat(), line.split(" ").map {
-                        WordContainer(Word(null, it, i.toFloat(), i.toFloat(), i.toFloat(), i.toFloat()))
+            setPages(
+                setOf(
+                    PageContainer(1, text.split("\n").mapIndexed { i, line ->
+                        LineContainer(i.toFloat(), line.split(" ").map {
+                            WordContainer(Word(null, it, i.toFloat(), i.toFloat(), i.toFloat(), i.toFloat()))
+                        }.toSet())
                     }.toSet())
-                }.toSet())
+                )
             )
         }
     }

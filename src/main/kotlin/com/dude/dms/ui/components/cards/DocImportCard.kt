@@ -55,7 +55,7 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
                             style["maxWidth"] = "15px"
                             style["margin"] = "auto 0px auto auto"
                         },
-                        Label(docContainer.pages.size.toString()).apply { style["margin"] = "auto 0px auto auto" },
+                        Label(docContainer.getPages().size.toString()).apply { style["margin"] = "auto 0px auto auto" },
                         Icon(VaadinIcon.FILE_TEXT).apply {
                             style["maxWidth"] = "15px"
                             style["margin"] = "2px"

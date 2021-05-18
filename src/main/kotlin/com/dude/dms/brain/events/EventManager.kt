@@ -15,10 +15,14 @@ class EventManager {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : LogsEvents> register(holder: com.vaadin.flow.component.Component, target: KClass<T>, vararg types: EventType, func: (T) -> Unit) {
-        for (type in types) {
+        types.forEach { type ->
             val event = Event(holder, target, type, func) as Event<LogsEvents>
             listeners.remove(event)
             listeners.add(event)
         }
+    }
+
+    fun unregister(holder: com.vaadin.flow.component.Component) {
+        listeners.removeIf { it.holder == holder }
     }
 }

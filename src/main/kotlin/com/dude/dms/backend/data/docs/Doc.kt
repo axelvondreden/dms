@@ -24,14 +24,12 @@ class Doc(
     @ManyToMany(fetch = FetchType.EAGER)
     var tags: Set<Tag> = HashSet(),
 
-    @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
+    @OneToMany(mappedBy = "doc", fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     var pages: Set<Page> = HashSet(),
 
     @OneToMany(mappedBy = "doc", fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     var attributeValues: Set<AttributeValue> = HashSet()
 ) : RestorableEntity(), LogsEvents {
-
-    fun getFullTextLowerCase() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }.lowercase()
 
     fun getFullText() = pages.sortedBy { it.nr }.joinToString("\n") { it.getFullText() }
 

@@ -1,5 +1,6 @@
 package com.dude.dms.backend.service
 
+import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.data.docs.Page
 import com.dude.dms.backend.repositories.PageRepository
 import com.dude.dms.brain.events.EventManager
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class PageService(
-        pageRepository: PageRepository,
+        private val pageRepository: PageRepository,
         private val lineService: LineService,
         eventManager: EventManager
 ) : RestoreService<Page>(pageRepository, eventManager) {
@@ -26,4 +27,6 @@ class PageService(
         entity.lines.forEach(lineService::restore)
         super.restore(entity)
     }
+
+    fun findByDoc(doc: Doc) = pageRepository.findByDocAndDeletedFalse(doc)
 }
