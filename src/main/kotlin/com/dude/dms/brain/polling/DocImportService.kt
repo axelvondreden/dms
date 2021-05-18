@@ -36,12 +36,11 @@ class DocImportService(
     val progressText
         get() = progressTextBacking
 
-    val count: Int
-        get() {
-            val count = pdfs.size + imgs.size
-            if (count > docs.size && !importing) import()
-            return count
-        }
+    fun calculateCount(): Int {
+        val count = pdfs.size + imgs.size
+        if (count > docs.size && !importing) import()
+        return count
+    }
 
     private val pdfs
         get() = File(Options.get().doc.pollingPath).listFiles { _, name -> name.endsWith(".pdf") } ?: emptyArray()

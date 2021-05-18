@@ -84,20 +84,20 @@ class MainView(
 
         Timer().schedule(10 * 1000, 10 * 1000) {
             try {
-                ui.access { importsBadge!!.count = docImportService.count }
+                ui.access { importsBadge!!.count = docImportService.calculateCount() }
             } catch (e: UIDetachedException) {
             }
         }
 
         ui.addShortcutListener(Command {
             DmsDialog("debug").apply {
-                button("direct import (${docImportService.count})") {
+                button("direct import (${docImportService.calculateCount()})") {
                     onLeftClick {
                         docImportService.findAll().forEach(docImportService::create)
                         close()
                     }
                 }
-                button("direct import (${docImportService.count}) with random tags") {
+                button("direct import (${docImportService.calculateCount()}) with random tags") {
                     onLeftClick {
                         val tags = tagService.findAll()
                         docImportService.findAll().forEach { dc ->
@@ -127,7 +127,7 @@ class MainView(
 
     private fun buildAppMenu(): Component {
         val importDocEntry = LeftNavigationItem(t("import"), VaadinIcon.PLUS_CIRCLE.create(), DocImportView::class.java)
-        importsBadge = DefaultBadgeHolder(docImportService.count).apply { bind(importDocEntry.badge) }
+        importsBadge = DefaultBadgeHolder(docImportService.calculateCount()).apply { bind(importDocEntry.badge) }
         val docsEntry = LeftNavigationItem(t("docs"), VaadinIcon.FILE_TEXT.create(), DocsView::class.java)
         docsBadge = DefaultBadgeHolder(docService.count().toInt()).apply { bind(docsEntry.badge) }
         val recycleEntry = LeftNavigationItem(t("recyclebin"), VaadinIcon.TRASH.create(), RecycleView::class.java)
@@ -222,7 +222,7 @@ class MainView(
     private fun fillBadgeCount(doc: Doc) {
         doc.tags.forEach { fillBadgeCount(it) }
         recycleBadge?.count = docService.countDeleted().toInt()
-        importsBadge?.count = docImportService.count
+        importsBadge?.count = docImportService.calculateCount()
     }
 
     private fun fillBadgeCount(tag: Tag) {
