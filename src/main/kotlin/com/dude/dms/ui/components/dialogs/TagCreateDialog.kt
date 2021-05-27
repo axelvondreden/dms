@@ -9,46 +9,39 @@ import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.textfield.TextField
 
 class TagCreateDialog : DmsDialog(t("tag.create"), 35) {
-
-    private lateinit var name: TextField
 
     init {
         verticalLayout(isPadding = false, isSpacing = false) {
             setSizeFull()
 
-            name = textField(t("name")) { setWidthFull() }
+            val name = textField(t("name")) { setWidthFull() }
             horizontalLayout {
                 setWidthFull()
 
                 button(t("create"), VaadinIcon.PLUS.create()) {
-                    onLeftClick { create() }
                     setWidthFull()
                     addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                    onLeftClick {
+                        when {
+                            name.isEmpty -> LOGGER.showError(t("name.missing"), UI.getCurrent())
+                            tagService.findByName(name.value) != null -> LOGGER.showError(t("tag.exists"), UI.getCurrent())
+                            else -> {
+                                val tag = tagService.create(Tag(name.value, "white"))
+                                close()
+                                UI.getCurrent().navigate(TagView::class.java, tag.id.toString())
+                            }
+                        }
+                    }
                 }
                 button(t("close"), VaadinIcon.CLOSE.create()) {
-                    onLeftClick { close() }
                     setWidthFull()
                     addThemeVariants(ButtonVariant.LUMO_ERROR)
+                    onLeftClick { close() }
                 }
             }
         }
-    }
-
-    private fun create() {
-        if (name.isEmpty) {
-            LOGGER.showError(t("name.missing"), UI.getCurrent())
-            return
-        }
-        if (tagService.findByName(name.value) != null) {
-            LOGGER.showError(t("tag.exists"), UI.getCurrent())
-            return
-        }
-        val tag = tagService.create(Tag(name.value, "white"))
-        close()
-        UI.getCurrent().navigate(TagView::class.java, tag.id.toString())
     }
 
     companion object {

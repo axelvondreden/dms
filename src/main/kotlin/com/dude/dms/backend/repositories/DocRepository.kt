@@ -20,6 +20,4 @@ interface DocRepository : RestoreRepository<Doc> {
     fun findByAttributeValues_AttributeEqualsAndDeletedFalse(attribute: Attribute): Set<Doc>
 
     fun countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute: Attribute): Long
-
-    fun findByDocTextIsNull(): Set<Doc>
 }

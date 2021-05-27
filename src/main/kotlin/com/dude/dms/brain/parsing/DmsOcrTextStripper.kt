@@ -21,8 +21,8 @@ class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
 
     private val apis by lazy {
         mapOf(
-                "eng" to TessBaseAPI().apply { Init(tessdataPath, "eng") },
-                "deu" to TessBaseAPI().apply { Init(tessdataPath, "deu") }
+            "eng" to TessBaseAPI().apply { Init(tessdataPath, "eng") },
+            "deu" to TessBaseAPI().apply { Init(tessdataPath, "deu") }
         )
     }
 
@@ -60,11 +60,7 @@ class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
         val pageWidth = page.getAttribute("WIDTH").toFloat()
         val pageHeight = page.getAttribute("HEIGHT").toFloat()
 
-        val lines = mutableSetOf<Line>()
-
-        for (i in 0 until textLines.length) {
-            lines.add(getLine(textLines.item(i), pageWidth, pageHeight))
-        }
+        val lines = (0 until textLines.length).map { getLine(textLines.item(it), pageWidth, pageHeight) }.toSet()
         return PageContainer(Page(null, lines, pageNr))
     }
 
@@ -75,11 +71,11 @@ class DmsOcrTextStripper(private val fileManager: FileManager) : TextStripper {
         val words = mutableSetOf<Word>()
         val line = Line(null, words, node.attributes.getNamedItem("VPOS").nodeValue.toFloat() / pageHeight * 100.0F)
         val textWords = node.childNodes
-        for (j in 0 until textWords.length) {
-            val textWord = textWords.item(j)
+        (0 until textWords.length).forEach {
+            val textWord = textWords.item(it)
             if (textWord.nodeName == "String") {
                 val text = textWord.attributes.getNamedItem("CONTENT").nodeValue
-                if (!text.isValidWord()) continue
+                if (!text.isValidWord()) return@forEach
 
                 val width = textWord.attributes.getNamedItem("WIDTH").nodeValue.toFloat() / pageWidth * 100.0F
                 val x = textWord.attributes.getNamedItem("HPOS").nodeValue.toFloat() / pageWidth * 100.0F

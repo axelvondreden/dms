@@ -37,7 +37,8 @@ class FileManager {
     fun getAllThumbs() = File("${Options.get().doc.savePath}/thumbs").listFiles()?.toList() ?: emptyList()
 
     fun getImages(guid: String) = File("${Options.get().doc.savePath}/img/").listFiles { _, name ->
-        name.startsWith(guid) }!!.sortedBy { it.name }.withIndex()
+        name.startsWith(guid)
+    }!!.sortedBy { it.name }.withIndex()
 
     fun delete(guid: String) {
         getPdf(guid).delete()
@@ -98,13 +99,13 @@ class FileManager {
     private fun createImageFromPdf(guid: String) {
         val pdDoc = Loader.loadPDF(getPdf(guid))
         val pr = PDFRenderer(pdDoc)
-        for (i in 0 until pdDoc.numberOfPages) {
+        (0 until pdDoc.numberOfPages).forEach {
             try {
-                val bi = processImg(pr.renderImageWithDPI(i, Options.get().doc.imageParserDpi.toFloat()))
-                val out = File(Options.get().doc.savePath, String.format("img/%s_%04d.png", guid, i + 1))
+                val bi = processImg(pr.renderImageWithDPI(it, Options.get().doc.imageParserDpi.toFloat()))
+                val out = File(Options.get().doc.savePath, String.format("img/%s_%04d.png", guid, it + 1))
                 LOGGER.info(t("image.save", out.name))
                 ImageIO.write(bi, "PNG", out)
-                if (i == 0) {
+                if (it == 0) {
                     LOGGER.info("Creating thumbnail for ${out.name}")
                     ImageIO.write(bi.toThumbnail(), "png", Paths.get(Options.get().doc.savePath, "thumbs", "${guid}.png").toFile())
                 }

@@ -13,11 +13,9 @@ data class Event<T : LogsEvents>(val holder: Component, val target: KClass<T>, v
         if (javaClass != other?.javaClass) return false
 
         other as Event<*>
-
         if (holder::class != other.holder::class) return false
         if (target != other.target) return false
         if (type != other.type) return false
-
         return true
     }
 

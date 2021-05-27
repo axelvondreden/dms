@@ -9,17 +9,14 @@ import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.textfield.TextField
 import org.languagetool.rules.SuggestedReplacement
 
 class WordEditDialog(private val wordContainer: WordContainer) : DmsDialog(t("word.edit"), 40) {
 
     private val originalText = wordContainer.word.text
 
-    private var text: TextField
-
     init {
-        text = textField("Text") {
+        val text = textField("Text") {
             setWidthFull()
             value = originalText
         }
@@ -40,27 +37,24 @@ class WordEditDialog(private val wordContainer: WordContainer) : DmsDialog(t("wo
             setWidthFull()
 
             button(t("save"), VaadinIcon.DISC.create()) {
-                onLeftClick { save() }
                 setWidthFull()
                 addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                onLeftClick {
+                    if (text.isEmpty) {
+                        LOGGER.showError(t("text.missing"), UI.getCurrent())
+                    } else {
+                        wordContainer.word.text = text.value
+                        if (wordContainer.word.id > 0) wordService.save(wordContainer.word)
+                        close()
+                    }
+                }
             }
             button(t("close"), VaadinIcon.CLOSE.create()) {
-                onLeftClick { close() }
                 setWidthFull()
                 addThemeVariants(ButtonVariant.LUMO_ERROR)
+                onLeftClick { close() }
             }
         }
-    }
-
-    private fun save() {
-        if (text.isEmpty) {
-            LOGGER.showError(t("text.missing"), UI.getCurrent())
-            return
-        }
-        val newText = text.value
-        wordContainer.word.text = newText
-        if (wordContainer.word.id > 0) wordService.save(wordContainer.word)
-        close()
     }
 
     companion object {

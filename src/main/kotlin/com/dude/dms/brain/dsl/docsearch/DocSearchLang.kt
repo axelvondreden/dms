@@ -1,7 +1,6 @@
 package com.dude.dms.brain.dsl.docsearch
 
 import com.dude.dms.backend.data.docs.Attribute
-import com.dude.dms.brain.dsl.Translatable
 import com.dude.dms.brain.dsl.hint.Hint
 import com.dude.dms.brain.dsl.hint.Hints
 import com.dude.dms.brain.t
@@ -20,7 +19,6 @@ object DocSearchLang {
     private val tagList = tagService.findAll()
     private val attributeList = attributeService.findAll()
 
-    private val boolLiteral = oneOf(str("true"), str("false")).map { if (it == "true") Value.True else Value.False }
     private val intLiteral = Tokens.integer.map { Value.Int(it.toInt()) }
     private val floatLiteral = Tokens.number.map { Value.Float(it.toDouble()) }
     private val stringLiteral = Tokens.string.map { Value.String(it) }
@@ -36,22 +34,22 @@ object DocSearchLang {
     private val createdKey = token(t("created")).map { Key.Order.Created }
     private val tagKey = token(t("tag")).map { Key.Tag }
     private val stringAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.STRING }
-            .map { token(it.name) }).map { Key.Attribute.String(it) }
+        .map { token(it.name) }).map { Key.Attribute.String(it) }
     private val intAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.INT }
-            .map { token(it.name) }).map { Key.Attribute.Int(it) }
+        .map { token(it.name) }).map { Key.Attribute.Int(it) }
     private val floatAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.FLOAT }
-            .map { token(it.name) }).map { Key.Attribute.Float(it) }
+        .map { token(it.name) }).map { Key.Attribute.Float(it) }
     private val dateAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.DATE }
-            .map { token(it.name) }).map { Key.Attribute.Date(it) }
+        .map { token(it.name) }).map { Key.Attribute.Date(it) }
     private val attributeKey = oneOf(stringAttributeKey, intAttributeKey, floatAttributeKey, dateAttributeKey)
 
     private val orderAsc = token(t("search.order.asc")).map { OrderDirection.Asc }
     private val orderDesc = token(t("search.order.desc")).map { OrderDirection.Desc }
     private val orderBy = inOrder(
-            token(t("search.order")),
-            token(t("search.order.by")),
-            oneOf(dateKey, createdKey),
-            oneOf(orderAsc, orderDesc)
+        token(t("search.order")),
+        token(t("search.order.by")),
+        oneOf(dateKey, createdKey),
+        oneOf(orderAsc, orderDesc)
     ).map { OrderBy(it.val3, it.val4) }
 
     private val equal = token("=").map { Operator.Equal }
@@ -67,11 +65,11 @@ object DocSearchLang {
     private val dateFilter = inOrder(dateKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { Filter.Date(it.second, it.third) }
     private val createdFilter = inOrder(createdKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { Filter.Created(it.second, it.third) }
     private val tagFilter = inOrder(
-            tagKey,
-            oneOf(
-                    inOrder(oneOf(equal, notEqual), tagLiteral),
-                    inOrder(oneOf(inArray, notInArray), tagArrayLiteral),
-            )
+        tagKey,
+        oneOf(
+            inOrder(oneOf(equal, notEqual), tagLiteral),
+            inOrder(oneOf(inArray, notInArray), tagArrayLiteral),
+        )
     ).map { Filter.Tag(it.second.first, it.second.second) }
 
     private val stringAttributeFilter: Parser<Filter.StringAttribute> = inOrder(
@@ -79,18 +77,19 @@ object DocSearchLang {
             inOrder(oneOf(equal, notEqual), stringLiteral),
             inOrder(oneOf(like, notLike), stringLikeLiteral),
             inOrder(oneOf(inArray, notInArray), stringArrayLiteral)
-    )).map { Filter.StringAttribute(it.first.name, it.second.first, it.second.second) }
+        )
+    ).map { Filter.StringAttribute(it.first.name, it.second.first, it.second.second) }
 
     private val intAttributeFilter: Parser<Filter.IntAttribute> = inOrder(
-            intAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), intLiteral)
+        intAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), intLiteral)
     ).map { Filter.IntAttribute(it.first.name, it.second.first, it.second.second) }
 
     private val floatAttributeFilter: Parser<Filter.FloatAttribute> = inOrder(
-            floatAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), floatLiteral)
+        floatAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), floatLiteral)
     ).map { Filter.FloatAttribute(it.first.name, it.second.first, it.second.second) }
 
     private val dateAttributeFilter: Parser<Filter.DateAttribute> = inOrder(
-            dateAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), dateLiteral)
+        dateAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), dateLiteral)
     ).map { Filter.DateAttribute(it.first.name, it.second.first, it.second.second) }
 
     private val attributeFilter = oneOf(stringAttributeFilter, intAttributeFilter, floatAttributeFilter, dateAttributeFilter)
@@ -202,24 +201,31 @@ object DocSearchLang {
         data class Text(val op: Operator, val value: Value.StringLike) : Filter() {
             override fun translate() = "doc.docText.text ${op.translate()} lower(concat('%', ${value.translate()},'%'))"
         }
+
         data class Date(val op: Operator, val value: Value.Date) : Filter() {
             override fun translate() = "doc.documentDate ${op.translate()} ${value.translate()}"
         }
+
         data class Created(val op: Operator, val value: Value.Date) : Filter() {
             override fun translate() = "cast(doc.insertTime as LocalDate) ${op.translate()} ${value.translate()}"
         }
+
         data class Tag(val op: Operator, val value: Value) : Filter() {
             override fun translate() = "tag.name ${op.translate()} ${value.translate()}"
         }
+
         data class StringAttribute(val name: String, val op: Operator, val value: Value) : Filter() {
             override fun translate() = "(av.attribute.name = '$name' and av.stringValue ${op.translate()} ${value.translate()})"
         }
+
         data class IntAttribute(val name: String, val op: Operator, val value: Value.Int) : Filter() {
             override fun translate() = "(av.attribute.name = '$name' and av.intValue ${op.translate()} ${value.translate()})"
         }
+
         data class FloatAttribute(val name: String, val op: Operator, val value: Value.Float) : Filter() {
             override fun translate() = "(av.attribute.name = '$name' and av.floatValue ${op.translate()} ${value.translate()})"
         }
+
         data class DateAttribute(val name: String, val op: Operator, val value: Value.Date) : Filter() {
             override fun translate() = "(av.attribute.name = '$name' and av.dateValue ${op.translate()} ${value.translate()})"
         }
@@ -235,49 +241,61 @@ object DocSearchLang {
                 else -> emptyList()
             }
         }
-        object Tag: Key() {
-            override val hints get() = listOf(
-                Hint("=", t("search.equal")),
-                Hint("!=", t("search.notequal")),
-                Hint("in", t("search.inarray")),
-                Hint("!in", t("search.notinarray"))
-            )
+
+        object Tag : Key() {
+            override val hints
+                get() = listOf(
+                    Hint("=", t("search.equal")),
+                    Hint("!=", t("search.notequal")),
+                    Hint("in", t("search.inarray")),
+                    Hint("!in", t("search.notinarray"))
+                )
+
             override fun getValueHints(op: Operator) = when (op) {
                 is Operator.Equal, is Operator.NotEqual -> tagService.findAll().map { Hint(it.name, t("tag"), icon = VaadinIcon.TAG) }
                 is Operator.InArray, Operator.NotInArray -> listOf(Hint("[, ]", t("list"), 3, VaadinIcon.TAG))
                 else -> emptyList()
             }
         }
+
         sealed class Order : Key(), Translatable {
             abstract val orderHints: List<Hint>
+
             object Date : Order() {
-                override val hints get() = listOf(
-                    Hint("=", t("search.equal")),
-                    Hint("!=", t("search.notequal")),
-                    Hint("<", t("search.less")),
-                    Hint(">", t("search.greater"))
-                )
-                override val orderHints get() = listOf(
-                    Hint(t("search.order.asc"), t("ascending")),
-                    Hint(t("search.order.desc"), t("descending"))
-                )
+                override val hints
+                    get() = listOf(
+                        Hint("=", t("search.equal")),
+                        Hint("!=", t("search.notequal")),
+                        Hint("<", t("search.less")),
+                        Hint(">", t("search.greater"))
+                    )
+                override val orderHints
+                    get() = listOf(
+                        Hint(t("search.order.asc"), t("ascending")),
+                        Hint(t("search.order.desc"), t("descending"))
+                    )
+
                 override fun translate() = "doc.documentDate"
                 override fun getValueHints(op: Operator) = when (op) {
                     is Operator.Equal, is Operator.NotEqual, is Operator.Less, is Operator.Greater -> listOf(Hint(LocalDate.now().convert(), t("date")))
                     else -> emptyList()
                 }
             }
+
             object Created : Order() {
-                override val hints get() = listOf(
-                    Hint("=", t("search.equal")),
-                    Hint("!=", t("search.notequal")),
-                    Hint("<", t("search.less")),
-                    Hint(">", t("search.greater"))
-                )
-                override val orderHints get() = listOf(
-                    Hint(t("search.order.asc"), t("ascending")),
-                    Hint(t("search.order.desc"), t("descending"))
-                )
+                override val hints
+                    get() = listOf(
+                        Hint("=", t("search.equal")),
+                        Hint("!=", t("search.notequal")),
+                        Hint("<", t("search.less")),
+                        Hint(">", t("search.greater"))
+                    )
+                override val orderHints
+                    get() = listOf(
+                        Hint(t("search.order.asc"), t("ascending")),
+                        Hint(t("search.order.desc"), t("descending"))
+                    )
+
                 override fun translate() = "doc.insertTime"
                 override fun getValueHints(op: Operator) = when (op) {
                     is Operator.Equal, is Operator.NotEqual, is Operator.Less, is Operator.Greater -> listOf(Hint(LocalDate.now().convert(), t("date")))
@@ -285,23 +303,26 @@ object DocSearchLang {
                 }
             }
         }
-        sealed class Attribute(open val name: kotlin.String) : Key() {
-            override val hints get() = listOf(
-                Hint("=", t("search.equal")),
-                Hint("!=", t("search.notequal")),
-                Hint("<", t("search.less")),
-                Hint(">", t("search.greater"))
-            )
 
-            data class String(override val name: kotlin.String): Attribute(name) {
-                override val hints get() = listOf(
+        sealed class Attribute(open val name: kotlin.String) : Key() {
+            override val hints
+                get() = listOf(
                     Hint("=", t("search.equal")),
                     Hint("!=", t("search.notequal")),
-                    Hint("~=", t("search.like")),
-                    Hint("!~=", t("search.notlike")),
-                    Hint("in", t("search.inarray")),
-                    Hint("!in", t("search.notinarray"))
+                    Hint("<", t("search.less")),
+                    Hint(">", t("search.greater"))
                 )
+
+            data class String(override val name: kotlin.String) : Attribute(name) {
+                override val hints
+                    get() = listOf(
+                        Hint("=", t("search.equal")),
+                        Hint("!=", t("search.notequal")),
+                        Hint("~=", t("search.like")),
+                        Hint("!~=", t("search.notlike")),
+                        Hint("in", t("search.inarray")),
+                        Hint("!in", t("search.notinarray"))
+                    )
 
                 override fun getValueHints(op: Operator) = when (op) {
                     is Operator.Equal, is Operator.NotEqual, is Operator.Like, is Operator.NotLike -> listOf(Hint("\"\"", t("text"), 1))
@@ -310,15 +331,15 @@ object DocSearchLang {
                 }
             }
 
-            data class Int(override val name: kotlin.String): Attribute(name) {
+            data class Int(override val name: kotlin.String) : Attribute(name) {
                 override fun getValueHints(op: Operator) = listOf(Hint("0", "Integer"))
             }
 
-            data class Float(override val name: kotlin.String): Attribute(name) {
+            data class Float(override val name: kotlin.String) : Attribute(name) {
                 override fun getValueHints(op: Operator) = listOf(Hint("0.0", t("number")))
             }
 
-            data class Date(override val name: kotlin.String): Attribute(name) {
+            data class Date(override val name: kotlin.String) : Attribute(name) {
                 override fun getValueHints(op: Operator) = listOf(Hint(LocalDate.now().convert(), t("date")))
             }
         }
@@ -327,38 +348,47 @@ object DocSearchLang {
     sealed class Operator : Translatable, Hints {
         object Equal : Operator() {
             override fun translate() = " = "
-            override val hints get() = listOf(
-                Hint("\"\"", t("text"), 1),
-                Hint("0.0", t("number"))
-            )
+            override val hints
+                get() = listOf(
+                    Hint("\"\"", t("text"), 1),
+                    Hint("0.0", t("number"))
+                )
         }
+
         object NotEqual : Operator() {
             override fun translate() = " != "
-            override val hints get() = listOf(
-                Hint("\"\"", t("text"), 1),
-                Hint("0.0", t("number"))
-            )
+            override val hints
+                get() = listOf(
+                    Hint("\"\"", t("text"), 1),
+                    Hint("0.0", t("number"))
+                )
         }
+
         object Less : Operator() {
             override fun translate() = " <"
             override val hints get() = listOf(Hint("0.0", t("number")))
         }
+
         object Greater : Operator() {
             override fun translate() = " >"
             override val hints get() = listOf(Hint("0.0", t("number")))
         }
+
         object InArray : Operator() {
             override fun translate() = " IN "
             override val hints get() = listOf(Hint("[\"\", \"\"]", t("list"), 6))
         }
+
         object NotInArray : Operator() {
             override fun translate() = " NOT IN "
             override val hints get() = listOf(Hint("[\"\", \"\"]", t("list"), 6))
         }
+
         object Like : Operator() {
             override fun translate() = " LIKE "
             override val hints get() = listOf(Hint("\"\"", t("text"), 1))
         }
+
         object NotLike : Operator() {
             override fun translate() = " NOT LIKE "
             override val hints get() = listOf(Hint("\"\"", t("text"), 1))
@@ -374,6 +404,7 @@ object DocSearchLang {
         object Asc : OrderDirection() {
             override fun translate() = "ASC"
         }
+
         object Desc : OrderDirection() {
             override fun translate() = "DESC"
         }
@@ -381,49 +412,52 @@ object DocSearchLang {
 
 
     sealed class Query : Translatable, Hints {
-        override val hints get() = listOf(
-            Hint(t("and")),
-            Hint(t("or")),
-            Hint("${t("search.order")} ${t("search.order.by")}")
-        )
+        override val hints
+            get() = listOf(
+                Hint(t("and")),
+                Hint(t("or")),
+                Hint("${t("search.order")} ${t("search.order.by")}")
+            )
 
         data class And(val left: Query, val right: Query) : Query() {
             override fun translate() = "(" + left.translate() + " and " + right.translate() + ")"
         }
+
         data class Or(val left: Query, val right: Query) : Query() {
             override fun translate() = "(" + left.translate() + " or " + right.translate() + ")"
         }
     }
 
 
-    sealed class Value: Translatable {
-        object True : Value() {
-            override fun translate() = "true"
-        }
-        object False : Value() {
-            override fun translate() = "true"
-        }
+    sealed class Value : Translatable {
         data class Int(val value: kotlin.Int) : Value() {
             override fun translate() = value.toString()
         }
+
         data class Float(val value: Double) : Value() {
             override fun translate() = value.toString()
         }
+
         data class String(val value: kotlin.String) : Value() {
             override fun translate() = "'$value'"
         }
+
         data class StringLike(val value: kotlin.String) : Value() {
             override fun translate() = "'$value'"
         }
+
         data class Tag(val value: kotlin.String) : Value() {
             override fun translate() = "'${value}'"
         }
+
         data class Date(val day: kotlin.Int, val month: kotlin.Int, val year: kotlin.Int) : Value() {
             override fun translate() = "'$year-$month-$day'"
         }
+
         data class StringArray(val value: List<String>) : Value() {
             override fun translate() = "(${value.joinToString(", ") { it.translate() }})"
         }
+
         data class TagArray(val value: List<Tag>) : Value() {
             override fun translate() = "(${value.joinToString(", ") { it.translate() }})"
         }

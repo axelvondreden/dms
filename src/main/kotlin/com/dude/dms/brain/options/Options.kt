@@ -9,11 +9,12 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
 data class Options(
-        var view: ViewOptions,
-        var doc: DocOptions,
-        var storage: StorageOptions,
-        var tag: TagOptions,
-        var update: UpdateOptions) {
+    var view: ViewOptions,
+    var doc: DocOptions,
+    var storage: StorageOptions,
+    var tag: TagOptions,
+    var update: UpdateOptions
+) {
 
     fun save() {
         options = null

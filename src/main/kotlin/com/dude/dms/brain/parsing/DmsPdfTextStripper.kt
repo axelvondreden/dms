@@ -58,7 +58,7 @@ class DmsPdfTextStripper(private val fileManager: FileManager) : PDFTextStripper
             var xMax = Float.MIN_VALUE
             var yMin = Float.MAX_VALUE
             var yMax = Float.MIN_VALUE
-            for (letter in word) {
+            word.forEach { letter ->
                 xMin = min(xMin, letter.xDirAdj)
                 yMin = min(yMin, letter.yDirAdj)
                 xMax = max(xMax, letter.xDirAdj + letter.widthDirAdj)

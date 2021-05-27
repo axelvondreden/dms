@@ -1,37 +1,17 @@
 package com.dude.dms.ui.components.cards
 
 import com.dude.dms.backend.containers.DocContainer
+import com.dude.dms.utils.secondaryLabel
 import com.github.appreciated.card.Card
-import com.github.appreciated.card.label.SecondaryLabel
+import com.github.mvysny.karibudsl.v10.*
 import com.helger.commons.io.file.FileHelper
-import com.vaadin.flow.component.html.Div
-import com.vaadin.flow.component.html.Label
-import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.dom.Element
 import com.vaadin.flow.server.InputStreamFactory
 import com.vaadin.flow.server.StreamResource
 
 class DocImportCard(val docContainer: DocContainer) : Card() {
-
-    private val label = SecondaryLabel(docContainer.file?.name).apply {
-        setAlignSelf(FlexComponent.Alignment.CENTER)
-        width = null
-        style["padding"] = "4px"
-    }
-
-    private val imgDiv = Div().apply {
-        setWidthFull()
-        element.style["overflow"] = "hidden"
-        element.appendChild(Element("object").apply {
-            setAttribute("attribute.type", "image/png")
-            style["maxWidth"] = "100%"
-            setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(docContainer.thumbnail) }))
-        })
-    }
 
     init {
         setHeightFull()
@@ -41,40 +21,44 @@ class DocImportCard(val docContainer: DocContainer) : Card() {
         fill()
     }
 
-    fun clear() {
-        content.removeAll()
-    }
-
     fun fill() {
-        clear()
-        val wrapper = VerticalLayout(
-                HorizontalLayout(
-                        label,
-                        Label(docContainer.tags.size.toString()).apply { style["margin"] = "auto 0px auto auto" },
-                        Icon(VaadinIcon.TAGS).apply {
-                            style["maxWidth"] = "15px"
-                            style["margin"] = "auto 0px auto auto"
-                        },
-                        Label(docContainer.getPages().size.toString()).apply { style["margin"] = "auto 0px auto auto" },
-                        Icon(VaadinIcon.FILE_TEXT).apply {
-                            style["maxWidth"] = "15px"
-                            style["margin"] = "2px"
-                        }
-                ).apply {
-                    setWidthFull()
-                    alignItems = FlexComponent.Alignment.CENTER
-                    isPadding = false
-                    isSpacing = false
-                },
-                imgDiv
-        ).apply {
+        content.removeAll()
+
+        verticalLayout(isPadding = false, isSpacing = false) {
             setSizeFull()
             alignItems = FlexComponent.Alignment.CENTER
-            isPadding = false
-            isSpacing = false
             if (docContainer.done) style["backgroundColor"] = "rgba(0, 255, 0, 0.3)"
+
+            horizontalLayout(isPadding = false, isSpacing = false) {
+                setWidthFull()
+                alignItems = FlexComponent.Alignment.CENTER
+
+                secondaryLabel(docContainer.file?.name) {
+                    setAlignSelf(FlexComponent.Alignment.CENTER)
+                    width = null
+                    style["padding"] = "4px"
+                }
+                label(docContainer.tags.size.toString()) { style["margin"] = "auto 0px auto auto" }
+                icon(VaadinIcon.TAGS) {
+                    style["maxWidth"] = "15px"
+                    style["margin"] = "auto 0px auto auto"
+                }
+                label(docContainer.getPages().size.toString()) { style["margin"] = "auto 0px auto auto" }
+                icon(VaadinIcon.FILE_TEXT) {
+                    style["maxWidth"] = "15px"
+                    style["margin"] = "2px"
+                }
+            }
+            div {
+                setWidthFull()
+                element.style["overflow"] = "hidden"
+                element.appendChild(Element("object").apply {
+                    setAttribute("attribute.type", "image/png")
+                    style["maxWidth"] = "100%"
+                    setAttribute("data", StreamResource("image.png", InputStreamFactory { FileHelper.getInputStream(docContainer.thumbnail) }))
+                })
+            }
         }
-        add(wrapper)
     }
 
     fun select(selected: Boolean) {

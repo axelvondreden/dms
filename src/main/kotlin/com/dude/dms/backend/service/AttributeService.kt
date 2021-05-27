@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class AttributeService(
-        private val attributeRepository: AttributeRepository,
-        private val tagService: TagService,
-        private val attributeValueService: AttributeValueService,
-        private val attributeFilterService: AttributeFilterService,
-        eventManager: EventManager
+    private val attributeRepository: AttributeRepository,
+    private val tagService: TagService,
+    private val attributeValueService: AttributeValueService,
+    private val attributeFilterService: AttributeFilterService,
+    eventManager: EventManager
 ) : EventService<Attribute>(attributeRepository, eventManager) {
 
     override fun create(entity: Attribute): Attribute {

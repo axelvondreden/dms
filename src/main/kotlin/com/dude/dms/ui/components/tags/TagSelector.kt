@@ -2,6 +2,7 @@ package com.dude.dms.ui.components.tags
 
 import com.dude.dms.backend.containers.TagContainer
 import com.dude.dms.brain.t
+import com.dude.dms.utils.docService
 import com.dude.dms.utils.tagService
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Label
@@ -12,7 +13,7 @@ class TagSelector : Grid<TagContainer>() {
     var selectedTags: Set<TagContainer>
         get() = asMultiSelect().selectedItems
         set(tags) {
-            setItems(tags.sortedBy { it.tag.name }.toSet().plus(tagService.findAll().map { TagContainer(it) }.sortedBy { it.tag.name }.toSet()))
+            setItems(tags.sortedBy { it.tag.name }.toSet().plus(tagService.findAll().map { TagContainer(it) }.sortedByDescending { docService.countByTag(it.tag) }.toSet()))
             asMultiSelect().deselectAll()
             asMultiSelect().select(tags)
         }
@@ -20,7 +21,7 @@ class TagSelector : Grid<TagContainer>() {
     init {
         setSelectionMode(SelectionMode.MULTI)
         if (selectedTags.isNullOrEmpty()) {
-            setItems(tagService.findAll().map { TagContainer(it) }.sortedBy { it.tag.name })
+            setItems(tagService.findAll().map { TagContainer(it) }.sortedByDescending { docService.countByTag(it.tag) })
         }
         val tooltip = Tooltips.getCurrent()
         addComponentColumn { tagContainer ->

@@ -117,10 +117,11 @@ object TagFilterLang {
     }
 
     sealed class Operator : Hints {
-        override val hints get() = listOf(
-            Hint("\"\"", t("text"), 1),
-            Hint("r(\"\")", "Regex", 2)
-        )
+        override val hints
+            get() = listOf(
+                Hint("\"\"", t("text"), 1),
+                Hint("r(\"\")", "Regex", 2)
+            )
 
         object Contains : Operator()
         object NotContains : Operator()

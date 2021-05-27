@@ -91,10 +91,10 @@ class DocSearchParser {
 
     companion object {
         val searchKeys = listOf(
-                Hint(t("text"), t("doc.text")),
-                Hint(t("tag"), t("doc.tag")),
-                Hint(t("date"), t("doc.date")),
-                Hint(t("created"), t("doc.insert.date"))
+            Hint(t("text"), t("doc.text")),
+            Hint(t("tag"), t("doc.tag")),
+            Hint(t("date"), t("doc.date")),
+            Hint(t("created"), t("doc.insert.date"))
         ).plus(attributeService.findAll().map {
             val param = when (it.type) {
                 Attribute.Type.STRING -> "${t("attribute")} (${t("text")})" to VaadinIcon.TEXT_LABEL
@@ -105,8 +105,8 @@ class DocSearchParser {
             Hint(it.name, param.first, icon = param.second)
         })
         val orderKeys = listOf(
-                Hint(t("date"), t("doc.date")),
-                Hint(t("created"), t("doc.insert.date"))
+            Hint(t("date"), t("doc.date")),
+            Hint(t("created"), t("doc.insert.date"))
         )
     }
 }

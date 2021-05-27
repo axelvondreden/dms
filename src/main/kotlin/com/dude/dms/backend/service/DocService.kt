@@ -101,27 +101,18 @@ class DocService(
 
     fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
-    fun findByFilter(filter: String, pageable: Pageable): Set<Doc> {
-        if (filter.isBlank()) return findAll(pageable).toSet()
-        return entityManager.createQuery(
-            """
-            SELECT distinct doc FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter
-            """.trimIndent(), Doc::class.java
-        ).apply {
+    fun findByFilter(filter: String, pageable: Pageable): Set<Doc> =
+        if (filter.isBlank()) findAll(pageable).toSet()
+        else entityManager.createQuery("SELECT distinct doc FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter", Doc::class.java).apply {
             firstResult = pageable.offset.toInt()
             maxResults = pageable.pageSize
         }.resultList.toSet()
-    }
 
     fun countByFilter(filter: String): Long {
         if (filter.isBlank()) return count()
         //HACK
         val filterWithoutOrder = filter.replace(Regex("order by.*", RegexOption.IGNORE_CASE), "")
-        return entityManager.createQuery(
-            """
-            SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filterWithoutOrder
-            """.trimIndent()
-        ).singleResult as Long
+        return entityManager.createQuery("SELECT COUNT(distinct doc) FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filterWithoutOrder").singleResult as Long
     }
 
     fun getFullTextLowerCase(doc: Doc) = pageService.findByDoc(doc).sortedBy { it.nr }.joinToString("\n") { it.getFullText() }.lowercase()

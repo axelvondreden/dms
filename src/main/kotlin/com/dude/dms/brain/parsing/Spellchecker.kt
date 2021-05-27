@@ -9,8 +9,8 @@ import org.languagetool.rules.spelling.SpellingCheckRule
 class Spellchecker(language: String) {
 
     private val spellings = mapOf<String, Language>(
-            "eng" to BritishEnglish(),
-            "deu" to GermanyGerman()
+        "eng" to BritishEnglish(),
+        "deu" to GermanyGerman()
     )
 
     private val langTool = JLanguageTool(spellings[language]/*, null, UserConfig()*/).apply {

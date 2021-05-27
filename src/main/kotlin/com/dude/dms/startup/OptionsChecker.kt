@@ -29,11 +29,11 @@ class OptionsChecker {
     }
 
     private fun updateOptions(default: JsonNode, user: JsonNode) {
-        for (defaultField in default.fields()) {
-            if (!user.has(defaultField.key)) {
-                (user as ObjectNode).set<ObjectNode>(defaultField.key, defaultField.value)
-            } else if (defaultField.value.isContainerNode) {
-                updateOptions(defaultField.value, user[defaultField.key])
+        default.fields().forEach { field ->
+            if (!user.has(field.key)) {
+                (user as ObjectNode).set<ObjectNode>(field.key, field.value)
+            } else if (field.value.isContainerNode) {
+                updateOptions(field.value, user[field.key])
             }
         }
     }

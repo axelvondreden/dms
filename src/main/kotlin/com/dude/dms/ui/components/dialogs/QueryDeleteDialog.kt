@@ -16,15 +16,13 @@ class QueryDeleteDialog(private val docFilter: DocFilter) : DmsDialog(t("query.d
             setSizeFull()
 
             button(t("delete"), VaadinIcon.TRASH.create()) {
-                onLeftClick { delete() }
                 setWidthFull()
                 addThemeVariants(ButtonVariant.LUMO_ERROR)
+                onLeftClick {
+                    queryService.delete(docFilter)
+                    close()
+                }
             }
         }
-    }
-
-    private fun delete() {
-        queryService.delete(docFilter)
-        close()
     }
 }

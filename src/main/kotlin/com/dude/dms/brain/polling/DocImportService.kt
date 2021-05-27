@@ -20,12 +20,12 @@ import java.time.LocalDateTime
 
 @Component
 class DocImportService(
-        private val fileManager: FileManager,
-        private val docParser: DocParser,
-        private val docService: DocService,
-        private val pageService: PageService,
-        private val lineService: LineService,
-        private val wordService: WordService
+    private val fileManager: FileManager,
+    private val docParser: DocParser,
+    private val docService: DocService,
+    private val pageService: PageService,
+    private val lineService: LineService,
+    private val wordService: WordService
 ) {
 
     private val docs = mutableSetOf<DocContainer>()
@@ -44,9 +44,9 @@ class DocImportService(
 
     private val pdfs
         get() = File(Options.get().doc.pollingPath).listFiles { _, name -> name.endsWith(".pdf") } ?: emptyArray()
+
     private val imgs
-        get() = File(Options.get().doc.pollingPath).listFiles { _, name -> Const.IMAGE_FORMATS.any { name.endsWith(it) } }
-                ?: emptyArray()
+        get() = File(Options.get().doc.pollingPath).listFiles { _, name -> Const.IMAGE_FORMATS.any { name.endsWith(it) } } ?: emptyArray()
 
     fun import() {
         if (importing) return
@@ -60,14 +60,14 @@ class DocImportService(
                     progressTextBacking = "${pdf.index + 1} / ${newPdfs.size} ${t("saving", pdf.value.name)}"
                     progressBacking = pdf.index.toDouble() / newPdfs.size
                     dcs.add(fileManager.importPdf(pdf.value, false)?.let { guid -> DocContainer(guid, pdf.value) }
-                            ?: continue)
+                        ?: continue)
                 }
                 val newImgs = imgs.filter { img -> img.name !in docs.mapNotNull { it.file?.name } && img.name !in currentImports }
                 for (img in newImgs.withIndex()) {
                     progressTextBacking = "${img.index + 1} / ${newImgs.size} ${t("saving", img.value.name)}"
                     progressBacking = img.index.toDouble() / newImgs.size
                     dcs.add(fileManager.importImage(img.value, false)?.let { guid -> DocContainer(guid, img.value) }
-                            ?: continue)
+                        ?: continue)
                 }
                 currentImports.addAll(dcs.mapNotNull { it.file?.name })
                 val spellcheckers = Const.OCR_LANGUAGES.associate { it to Spellchecker(it) }

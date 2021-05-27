@@ -9,15 +9,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class AttributeValueService(
-        private val attributeValueRepository: AttributeValueRepository,
-        eventManager: EventManager
+    private val attributeValueRepository: AttributeValueRepository,
+    eventManager: EventManager
 ) : RestoreService<AttributeValue>(attributeValueRepository, eventManager) {
 
     fun findByDocAndAttribute(doc: Doc, attribute: Attribute) = attributeValueRepository.findByDocAndAttribute(doc, attribute)
 
     fun findByAttribute(attribute: Attribute) = attributeValueRepository.findByAttribute(attribute)
 
-    fun findAutocomplete(attribute: Attribute)
-            = attributeValueRepository.findByAttribute(attribute)
-            .groupBy { it.stringValue }.entries.sortedByDescending { it.value.size }.map { it.key }
+    fun findAutocomplete(attribute: Attribute) = attributeValueRepository.findByAttribute(attribute)
+        .groupBy { it.stringValue }.entries.sortedByDescending { it.value.size }.map { it.key }
 }

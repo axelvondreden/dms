@@ -11,45 +11,36 @@ import com.github.mvysny.karibudsl.v10.textField
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.textfield.TextField
 
 class QuerySaveDialog(private val searchText: String) : DmsDialog(t("search.save"), 40) {
 
-    private var name: TextField
-
     init {
-        name = textField("Name") {
-            setWidthFull()
-        }
+        val name = textField("Name") { setWidthFull() }
         horizontalLayout {
             setWidthFull()
 
             button(t("save"), VaadinIcon.DISC.create()) {
-                onLeftClick { save() }
                 setWidthFull()
                 addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+                onLeftClick {
+                    when {
+                        name.isEmpty -> LOGGER.showError(t("text.missing"), UI.getCurrent())
+                        queryService.findByName(name.value) != null -> LOGGER.showError(t("query.exists"), UI.getCurrent())
+                        else -> {
+                            queryService.create(DocFilter(name.value, searchText))
+                            close()
+                        }
+                    }
+                }
             }
             button(t("close"), VaadinIcon.CLOSE.create()) {
-                onLeftClick { close() }
                 setWidthFull()
                 addThemeVariants(ButtonVariant.LUMO_ERROR)
+                onLeftClick { close() }
             }
         }
 
         name.focus()
-    }
-
-    private fun save() {
-        if (name.isEmpty) {
-            LOGGER.showError(t("text.missing"), UI.getCurrent())
-            return
-        }
-        if (queryService.findByName(name.value) != null) {
-            LOGGER.showError(t("query.exists"), UI.getCurrent())
-            return
-        }
-        queryService.create(DocFilter(name.value, searchText))
-        close()
     }
 
     companion object {

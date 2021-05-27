@@ -60,19 +60,14 @@ class DocSelectDialog(private val onSelect: (DocContainer) -> Unit) : DmsDialog(
             style["backgroundColor"] = "var(--lumo-base-color)"
 
             label("${t("zoom")}:")
-            iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
-                onLeftClick { shrink() }
-            }
-            iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
-                onLeftClick { grow() }
-            }
+            iconButton(VaadinIcon.MINUS_CIRCLE.create()) { onLeftClick { shrink() } }
+            iconButton(VaadinIcon.PLUS_CIRCLE.create()) { onLeftClick { grow() } }
             div { width = "2em" }
-            pageSelector = viewPageSelector()
+            pageSelector = viewPageSelector { setChangeListener { fill() } }
             div { width = "2em" }
             itemCount = text(t("items") + ":")
         }
 
-        pageSelector.setChangeListener { fill() }
         fill()
     }
 

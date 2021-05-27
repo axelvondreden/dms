@@ -9,7 +9,7 @@ import parser4k.commonparsers.token
 
 object AttributeFilterLang {
 
-    private val stringLiteral = Tokens.string.map { Value.String(it)}
+    private val stringLiteral = Tokens.string.map { Value.String(it) }
 
     private val currentWordKey = token("this").map { Key.CurrentWord }
     private val nextWordKey = token("next").map { Key.NextWord }

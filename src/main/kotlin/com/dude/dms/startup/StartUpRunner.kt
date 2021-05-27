@@ -14,11 +14,11 @@ import java.util.*
 
 @Component
 class StartUpRunner(
-        private val docService: DocService,
-        private val fileManager: FileManager,
-        private val docImportService: DocImportService,
-        private val directoryChecker: DirectoryChecker,
-        private val optionsChecker: OptionsChecker
+    private val docService: DocService,
+    private val fileManager: FileManager,
+    private val docImportService: DocImportService,
+    private val directoryChecker: DirectoryChecker,
+    private val optionsChecker: OptionsChecker
 ) : CommandLineRunner {
 
     override fun run(vararg args: String) {

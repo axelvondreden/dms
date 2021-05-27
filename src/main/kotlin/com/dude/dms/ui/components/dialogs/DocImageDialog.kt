@@ -50,19 +50,11 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
                     addValueChangeListener { event -> event.value?.let { docContainer.date = it } }
                     locale = Locale.forLanguageTag(Options.get().view.locale)
                 }
-                datePick = iconButton(VaadinIcon.CROSSHAIRS.create()) {
-                    onLeftClick { pickDate() }
-                }
+                datePick = iconButton(VaadinIcon.CROSSHAIRS.create()) { onLeftClick { pickDate() } }
             }
-            iconButton(VaadinIcon.MINUS_CIRCLE.create()) {
-                onLeftClick { imageEditor.shrink(zoomButton) }
-            }
-            zoomButton = button("100%") {
-                onLeftClick { imageEditor.resetZoom(it.source) }
-            }
-            iconButton(VaadinIcon.PLUS_CIRCLE.create()) {
-                onLeftClick { imageEditor.grow(zoomButton) }
-            }
+            iconButton(VaadinIcon.MINUS_CIRCLE.create()) { onLeftClick { imageEditor.shrink(zoomButton) } }
+            zoomButton = button("100%") { onLeftClick { imageEditor.resetZoom(it.source) } }
+            iconButton(VaadinIcon.PLUS_CIRCLE.create()) { onLeftClick { imageEditor.grow(zoomButton) } }
             iconButton(VaadinIcon.AREA_SELECT.create()) {
                 tooltip(t("words.preview.show"))
                 addThemeVariants(if (Options.get().view.loadWordsInPreview) ButtonVariant.LUMO_SUCCESS else ButtonVariant.LUMO_ERROR)
@@ -93,16 +85,8 @@ class DocImageDialog(private val docContainer: DocContainer) : DmsDialog(t("doc.
             addToSecondary(docInfoLayout)
         }
 
-        addDialogCloseActionListener {
-            if (docInfoLayout.validate()) {
-                close()
-            }
-        }
-        addOpenedChangeListener {
-            if (!it.isOpened) {
-                docContainer.doc?.let(docService::save)
-            }
-        }
+        addDialogCloseActionListener { if (docInfoLayout.validate()) close() }
+        addOpenedChangeListener { if (!it.isOpened) docContainer.doc?.let(docService::save) }
 
         pageSelector.page = 1
     }
