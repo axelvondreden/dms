@@ -110,7 +110,7 @@ class TagView(
         tag!!.name = nameTextField.value
         tag!!.color = colorPicker.value
         tag!!.attributes = attributeSelector.selectedAttributes
-        tagService.save(tag!!)
+        tag = tagService.save(tag!!)
         docService.findByTag(tag!!).forEach { docService.save(it) }
         LOGGER.showInfo(t("saved"), UI.getCurrent())
         fill()
