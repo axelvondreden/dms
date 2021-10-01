@@ -59,14 +59,14 @@ class DocService(
     }
 
     override fun softDelete(entity: Doc) {
-        entity.pages.forEach(pageService::softDelete)
+        pageService.findByDoc(entity).forEach(pageService::softDelete)
         entity.attributeValues.forEach(attributeValueService::softDelete)
         entity.docText?.let { docTextService.softDelete(it) }
         super.softDelete(entity)
     }
 
     override fun restore(entity: Doc) {
-        entity.pages.forEach(pageService::restore)
+        pageService.findByDoc(entity).forEach(pageService::restore)
         entity.attributeValues.forEach(attributeValueService::restore)
         entity.docText?.let { docTextService.restore(it) }
         super.restore(entity)
