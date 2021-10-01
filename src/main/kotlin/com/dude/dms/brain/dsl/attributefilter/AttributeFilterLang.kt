@@ -136,7 +136,7 @@ object AttributeFilterLang {
     }
 
     sealed class Query : Hints {
-        override val hints get() = listOf(Hint(t("and")), Hint(t("or")))
+        override val hints get() = listOf(Hint("and"), Hint("or"))
 
         data class And(val left: Query, val right: Query) : Query()
         data class Or(val left: Query, val right: Query) : Query()
