@@ -29,28 +29,19 @@ object DocSearchLang {
     private val tagArrayLiteral = inOrder(token("["), tagLiteral.joinedWith(token(",")), token("]")).skipWrapper().map { Value.TagArray(it) }
     private val unaryMinus = inOrder(token("-"), intLiteral).map { (_, it) -> Value.Int(-it.value) }
 
-    private val textKey = token(t("text")).map { Key.Text }
-    private val dateKey = token(t("date")).map { Key.Order.Date }
-    private val createdKey = token(t("created")).map { Key.Order.Created }
-    private val tagKey = token(t("tag")).map { Key.Tag }
-    private val stringAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.STRING }
-        .map { token(it.name) }).map { Key.Attribute.String(it) }
-    private val intAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.INT }
-        .map { token(it.name) }).map { Key.Attribute.Int(it) }
-    private val floatAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.FLOAT }
-        .map { token(it.name) }).map { Key.Attribute.Float(it) }
-    private val dateAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.DATE }
-        .map { token(it.name) }).map { Key.Attribute.Date(it) }
+    private val textKey = token("Text").map { Key.Text }
+    private val dateKey = token("Date").map { Key.Order.Date }
+    private val createdKey = token("Created").map { Key.Order.Created }
+    private val tagKey = token("Tag").map { Key.Tag }
+    private val stringAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.STRING }.map { token(it.name) }).map { Key.Attribute.String(it) }
+    private val intAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.INT }.map { token(it.name) }).map { Key.Attribute.Int(it) }
+    private val floatAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.FLOAT }.map { token(it.name) }).map { Key.Attribute.Float(it) }
+    private val dateAttributeKey = oneOf(attributeList.filter { it.type == Attribute.Type.DATE }.map { token(it.name) }).map { Key.Attribute.Date(it) }
     private val attributeKey = oneOf(stringAttributeKey, intAttributeKey, floatAttributeKey, dateAttributeKey)
 
-    private val orderAsc = token(t("search.order.asc")).map { OrderDirection.Asc }
-    private val orderDesc = token(t("search.order.desc")).map { OrderDirection.Desc }
-    private val orderBy = inOrder(
-        token(t("search.order")),
-        token(t("search.order.by")),
-        oneOf(dateKey, createdKey),
-        oneOf(orderAsc, orderDesc)
-    ).map { OrderBy(it.val3, it.val4) }
+    private val orderAsc = token("asc").map { OrderDirection.Asc }
+    private val orderDesc = token("desc").map { OrderDirection.Desc }
+    private val orderBy = inOrder(token("Order"), token("by"), oneOf(dateKey, createdKey), oneOf(orderAsc, orderDesc)).map { OrderBy(it.val3, it.val4) }
 
     private val equal = token("=").map { Operator.Equal }
     private val notEqual = token("!=").map { Operator.NotEqual }
@@ -64,40 +55,24 @@ object DocSearchLang {
     private val textFilter = inOrder(textKey, oneOf(like, notLike), stringLikeLiteral).map { Filter.Text(it.second, it.third) }
     private val dateFilter = inOrder(dateKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { Filter.Date(it.second, it.third) }
     private val createdFilter = inOrder(createdKey, oneOf(equal, notEqual, less, greater), dateLiteral).map { Filter.Created(it.second, it.third) }
-    private val tagFilter = inOrder(
-        tagKey,
-        oneOf(
-            inOrder(oneOf(equal, notEqual), tagLiteral),
-            inOrder(oneOf(inArray, notInArray), tagArrayLiteral),
-        )
-    ).map { Filter.Tag(it.second.first, it.second.second) }
+    private val tagFilter = inOrder(tagKey, oneOf(inOrder(oneOf(equal, notEqual), tagLiteral), inOrder(oneOf(inArray, notInArray), tagArrayLiteral))).map { Filter.Tag(it.second.first, it.second.second) }
 
     private val stringAttributeFilter: Parser<Filter.StringAttribute> = inOrder(
-        stringAttributeKey, oneOf(
-            inOrder(oneOf(equal, notEqual), stringLiteral),
-            inOrder(oneOf(like, notLike), stringLikeLiteral),
-            inOrder(oneOf(inArray, notInArray), stringArrayLiteral)
-        )
+        stringAttributeKey, oneOf(inOrder(oneOf(equal, notEqual), stringLiteral), inOrder(oneOf(like, notLike), stringLikeLiteral), inOrder(oneOf(inArray, notInArray), stringArrayLiteral))
     ).map { Filter.StringAttribute(it.first.name, it.second.first, it.second.second) }
 
-    private val intAttributeFilter: Parser<Filter.IntAttribute> = inOrder(
-        intAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), intLiteral)
-    ).map { Filter.IntAttribute(it.first.name, it.second.first, it.second.second) }
+    private val intAttributeFilter: Parser<Filter.IntAttribute> = inOrder(intAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), intLiteral)).map { Filter.IntAttribute(it.first.name, it.second.first, it.second.second) }
 
-    private val floatAttributeFilter: Parser<Filter.FloatAttribute> = inOrder(
-        floatAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), floatLiteral)
-    ).map { Filter.FloatAttribute(it.first.name, it.second.first, it.second.second) }
+    private val floatAttributeFilter: Parser<Filter.FloatAttribute> = inOrder(floatAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), floatLiteral)).map { Filter.FloatAttribute(it.first.name, it.second.first, it.second.second) }
 
-    private val dateAttributeFilter: Parser<Filter.DateAttribute> = inOrder(
-        dateAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), dateLiteral)
-    ).map { Filter.DateAttribute(it.first.name, it.second.first, it.second.second) }
+    private val dateAttributeFilter: Parser<Filter.DateAttribute> = inOrder(dateAttributeKey, inOrder(oneOf(equal, notEqual, less, greater), dateLiteral)).map { Filter.DateAttribute(it.first.name, it.second.first, it.second.second) }
 
     private val attributeFilter = oneOf(stringAttributeFilter, intAttributeFilter, floatAttributeFilter, dateAttributeFilter)
 
     private val filter = oneOf(textFilter, tagFilter, dateFilter, createdFilter, attributeFilter)
 
-    private val and = inOrder(ref { query }, token(t("and")), ref { query }).map { Query.And(it.first, it.third) }
-    private val or = inOrder(ref { query }, token(t("or")), ref { query }).map { Query.Or(it.first, it.third) }
+    private val and = inOrder(ref { query }, token("and"), ref { query }).map { Query.And(it.first, it.third) }
+    private val or = inOrder(ref { query }, token("or"), ref { query }).map { Query.Or(it.first, it.third) }
 
     private val paren = inOrder(token("("), ref { query }, token(")")).skipWrapper()
 
@@ -271,8 +246,8 @@ object DocSearchLang {
                     )
                 override val orderHints
                     get() = listOf(
-                        Hint(t("search.order.asc"), t("ascending")),
-                        Hint(t("search.order.desc"), t("descending"))
+                        Hint("asc", t("ascending")),
+                        Hint("desc", t("descending"))
                     )
 
                 override fun translate() = "doc.documentDate"
@@ -292,8 +267,8 @@ object DocSearchLang {
                     )
                 override val orderHints
                     get() = listOf(
-                        Hint(t("search.order.asc"), t("ascending")),
-                        Hint(t("search.order.desc"), t("descending"))
+                        Hint("asc", t("ascending")),
+                        Hint("desc", t("descending"))
                     )
 
                 override fun translate() = "doc.insertTime"
@@ -413,11 +388,7 @@ object DocSearchLang {
 
     sealed class Query : Translatable, Hints {
         override val hints
-            get() = listOf(
-                Hint(t("and")),
-                Hint(t("or")),
-                Hint("${t("search.order")} ${t("search.order.by")}")
-            )
+            get() = listOf(Hint("and"), Hint("or"), Hint("Order by"))
 
         data class And(val left: Query, val right: Query) : Query() {
             override fun translate() = "(" + left.translate() + " and " + right.translate() + ")"

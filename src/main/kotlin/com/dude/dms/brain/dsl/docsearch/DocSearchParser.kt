@@ -35,11 +35,11 @@ class DocSearchParser {
             return HintResult(emptyList())
         }
         if (text.isBlank()) {
-            return HintResult(searchKeys.plus(Hint("${t("search.order")} ${t("search.order.by")}", t("sort"))))
+            return HintResult(searchKeys.plus(Hint("Order by", t("sort"))))
         }
-        val inOrderBy = text.contains(Regex("${t("search.order")}\\W*${t("search.order.by")}"))
+        val inOrderBy = text.contains(Regex("Order\\W*by"))
         if (inOrderBy) {
-            val inKeyPart = Regex("^.*${t("search.order")}\\W*${t("search.order.by")}\\W*\\w*\$", RegexOption.IGNORE_CASE).matches(text)
+            val inKeyPart = Regex("^.*Order\\W*by\\W*\\w*\$", RegexOption.IGNORE_CASE).matches(text)
             if (inKeyPart) {
                 if (text.endsWith(" ")) return HintResult(orderKeys)
                 val start = text.trim().split(Regex("\\s+")).last()
@@ -73,7 +73,7 @@ class DocSearchParser {
             }
             //TODO: clean up
             @Suppress("RegExpDuplicateAlternationBranch")
-            val inKeyPart = Regex("^\\w*\$|^.*(${t("and")}\\W*|${t("or")}\\W*|\\()\\w*\$", RegexOption.IGNORE_CASE).matches(text)
+            val inKeyPart = Regex("^\\w*\$|^.*(and\\W*|or\\W*|\\()\\w*\$", RegexOption.IGNORE_CASE).matches(text)
             if (inKeyPart) {
                 if (text.endsWith(" ")) return HintResult(searchKeys)
                 val start = text.trim().split(Regex("\\s+")).last()
@@ -91,10 +91,10 @@ class DocSearchParser {
 
     companion object {
         val searchKeys = listOf(
-            Hint(t("text"), t("doc.text")),
-            Hint(t("tag"), t("doc.tag")),
-            Hint(t("date"), t("doc.date")),
-            Hint(t("created"), t("doc.insert.date"))
+            Hint("Text", t("doc.text")),
+            Hint("Tag", t("doc.tag")),
+            Hint("Date", t("doc.date")),
+            Hint("Created", t("doc.insert.date"))
         ).plus(attributeService.findAll().map {
             val param = when (it.type) {
                 Attribute.Type.STRING -> "${t("attribute")} (${t("text")})" to VaadinIcon.TEXT_LABEL
@@ -105,8 +105,8 @@ class DocSearchParser {
             Hint(it.name, param.first, icon = param.second)
         })
         val orderKeys = listOf(
-            Hint(t("date"), t("doc.date")),
-            Hint(t("created"), t("doc.insert.date"))
+            Hint("Date", t("doc.date")),
+            Hint("Created", t("doc.insert.date"))
         )
     }
 }
