@@ -35,7 +35,7 @@ class DmsPdfTextStripper(private val fileManager: FileManager) : PDFTextStripper
 
     private fun createLine(textPositions: List<TextPosition>) {
         val words = createWords(textPositions.toList(), textPositions[0].pageWidth, textPositions[0].pageHeight)
-        if (!words.isNullOrEmpty()) {
+        if (words.isNotEmpty()) {
             val line = Line(null, words.map { it.word }.toMutableSet(), words.minOf { it.word.y })
             words.forEach { it.word.line = line }
             val page = pages.firstOrNull { it.nr == currentPageNo }

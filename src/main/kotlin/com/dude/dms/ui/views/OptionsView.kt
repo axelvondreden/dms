@@ -292,7 +292,7 @@ class OptionsView(
             val root = File(options.storage.offlineLinkLocation)
             val docPath = options.doc.savePath
             docService.findAll().forEach { doc ->
-                if (doc.tags.isNullOrEmpty()) {
+                if (doc.tags.isEmpty()) {
                     ShellLink.createLink(Paths.get(docPath, "pdf", doc.guid + ".pdf").toString(), Paths.get(root.absolutePath, doc.guid + ".lnk").toString())
                 } else {
                     permute(doc.tags.toList()).forEach { order ->

@@ -14,7 +14,7 @@ class AttributeValueLayout(private val imageEditor: DocImageEditor? = null) : Di
 
     fun fill(docContainer: DocContainer) {
         clear()
-        if (!docContainer.tags.isNullOrEmpty()) {
+        if (docContainer.tags.isNotEmpty()) {
             docContainer.attributeValues.forEach {
                 val field = attributeValueField(it, imageEditor)
                 fields.add(field)

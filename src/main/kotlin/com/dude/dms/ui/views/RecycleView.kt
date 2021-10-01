@@ -3,14 +3,13 @@ package com.dude.dms.ui.views
 import com.dude.dms.backend.containers.DocContainer
 import com.dude.dms.backend.data.docs.Doc
 import com.dude.dms.backend.service.DocService
-import com.dude.dms.brain.FileManager
 import com.dude.dms.brain.events.EventManager
 import com.dude.dms.brain.events.EventType
 import com.dude.dms.brain.options.Options
 import com.dude.dms.brain.t
-import com.dude.dms.utils.docCard
 import com.dude.dms.ui.Const
 import com.dude.dms.ui.components.cards.DocCard
+import com.dude.dms.utils.docCard
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.html.Div
@@ -22,7 +21,7 @@ import com.vaadin.flow.router.Route
 
 @Route(value = Const.PAGE_RECYCLE, layout = MainView::class)
 @PageTitle("Recycle Bin")
-class RecycleView(private val docService: DocService, private val fileManager: FileManager, eventManager: EventManager) : VerticalLayout() {
+class RecycleView(private val docService: DocService, eventManager: EventManager) : VerticalLayout() {
 
     private var itemContainer: Div
 

@@ -12,7 +12,7 @@ class AttributeValueSmallLayout : Div() {
 
     fun fill(docContainer: DocContainer) {
         clear()
-        if (!docContainer.tags.isNullOrEmpty()) {
+        if (docContainer.tags.isNotEmpty()) {
             docContainer.attributeValues.forEach {
                 attributeValueLabel(it)
             }

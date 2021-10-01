@@ -9,6 +9,4 @@ interface TagRepository : JpaRepository<Tag, Long> {
     fun findByName(name: String): Tag?
 
     fun findByAttributes(attribute: Attribute): Set<Tag>
-
-    fun countByAttributes(attribute: Attribute): Long
 }

@@ -28,6 +28,4 @@ class TagService(
     fun findByName(name: String) = tagRepository.findByName(name)
 
     fun findByAttribute(attribute: Attribute) = tagRepository.findByAttributes(attribute)
-
-    fun countByAttribute(attribute: Attribute) = tagRepository.countByAttributes(attribute)
 }

@@ -70,7 +70,7 @@ class DocImportService(
                         ?: continue)
                 }
                 currentImports.addAll(dcs.mapNotNull { it.file?.name })
-                val spellcheckers = Const.OCR_LANGUAGES.associate { it to Spellchecker(it) }
+                val spellcheckers = Const.OCR_LANGUAGES.associateWith { Spellchecker(it) }
                 val size = dcs.size
                 val progressMax = size * 4.0
                 progressBacking = 0.0

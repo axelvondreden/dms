@@ -32,7 +32,7 @@ class DocContainer(var guid: String, var file: File? = null) {
                 doc!!.tags = value.map { it.tag }.toMutableSet()
                 attributeValues = doc!!.attributeValues.toMutableSet()
             }
-            if (!value.isNullOrEmpty()) {
+            if (value.isNotEmpty()) {
                 attributeValues.removeIf { av -> value.none { av.attribute in it.tag.attributes } }
                 attributeValues.addAll(
                     value.flatMap { it.tag.attributes }

@@ -20,7 +20,7 @@ class TagSelector : Grid<TagContainer>() {
 
     init {
         setSelectionMode(SelectionMode.MULTI)
-        if (selectedTags.isNullOrEmpty()) {
+        if (selectedTags.isEmpty()) {
             setItems(tagService.findAll().map { TagContainer(it) }.sortedByDescending { docService.countByTag(it.tag) })
         }
         val tooltip = Tooltips.getCurrent()

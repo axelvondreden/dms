@@ -99,8 +99,6 @@ class DocService(
 
     fun findByAttribute(attribute: Attribute) = docRepository.findByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
 
-    fun countByAttribute(attribute: Attribute) = docRepository.countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute)
-
     fun findByFilter(filter: String, pageable: Pageable): Set<Doc> =
         if (filter.isBlank()) findAll(pageable).toSet()
         else entityManager.createQuery("SELECT distinct doc FROM Doc doc LEFT JOIN doc.tags tag LEFT JOIN doc.attributeValues av $filter", Doc::class.java).apply {

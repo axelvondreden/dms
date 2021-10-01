@@ -18,6 +18,4 @@ interface DocRepository : RestoreRepository<Doc> {
     fun countByTagsAndDeletedFalse(tag: Tag): Long
 
     fun findByAttributeValues_AttributeEqualsAndDeletedFalse(attribute: Attribute): Set<Doc>
-
-    fun countByAttributeValues_AttributeEqualsAndDeletedFalse(attribute: Attribute): Long
 }
