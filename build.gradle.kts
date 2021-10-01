@@ -12,7 +12,7 @@ plugins {
 }
 
 ext {
-    set("vaadinVersion", "14.6.0")
+    set("vaadinVersion", "14.6.8")
 }
 
 noArg {
@@ -23,7 +23,7 @@ group = "com.dude.dms"
 version = "0.2.7"
 
 val karibudslVersion = "1.0.6"
-val vaadinVersion = "14.6.0"
+val vaadinVersion = "14.6.8"
 
 defaultTasks("clean", "build")
 
@@ -86,7 +86,7 @@ dependencies {
     implementation("com.github.appreciated:apexcharts:2.0.0.beta11")
     implementation("com.github.appreciated:card:2.0.0")
     implementation("com.github.appreciated:color-picker-field-flow:2.0.0.beta6")
-    implementation("dev.mett.vaadin:tooltip:1.6.0")
+    implementation("dev.mett.vaadin:tooltip:1.7.2")
     implementation("org.vaadin.artur:spring-data-provider:2.1.0")
     implementation("org.vaadin.olli:file-download-wrapper:3.0.1")
     implementation("com.hilerio:ace-widget:1.0.2")
