@@ -108,7 +108,7 @@ class DocCard(val docContainer: DocContainer, private val showContextMenu: Boole
             addItem("Download") {
                 val resource = StreamResource("${docContainer.guid}.pdf") { -> fileManager.getPdf(docContainer.guid).inputStream() }
                 val registration = VaadinSession.getCurrent().resourceRegistry.registerResource(resource)
-                UI.getCurrent().page.setLocation(registration.resourceUri)
+                UI.getCurrent().page.open(registration.resourceUri.toString(), "_blank")
             }
             addItem(t("delete")) { DocDeleteDialog(docContainer).open() }
         }
