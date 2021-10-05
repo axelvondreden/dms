@@ -19,6 +19,9 @@ import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.dialog.Dialog
+import com.vaadin.flow.component.html.H1
+import com.vaadin.flow.component.html.H4
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
@@ -28,11 +31,16 @@ import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.Lumo
 import mslinks.ShellLink
+import org.springframework.beans.factory.annotation.Value
+import org.vaadin.barcodes.Barcode
 import org.vaadin.olli.FileDownloadWrapper
 import java.io.File
+import java.net.NetworkInterface
+import java.net.SocketException
 import java.nio.file.Paths
 import java.util.*
 import kotlin.io.path.absolutePathString
+
 
 @Route(value = Const.PAGE_OPTIONS, layout = MainView::class)
 @PageTitle("Options")
@@ -46,6 +54,9 @@ class OptionsView(
 ) : VerticalLayout() {
 
     private val options = Options.get()
+
+    @Value("\${server.port}")
+    private lateinit var port: String
 
     init {
         alignItems = FlexComponent.Alignment.CENTER
@@ -278,6 +289,60 @@ class OptionsView(
                                 if (it.value != null && it.value > 0) {
                                     options.update.checkInterval = it.value
                                     save()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        card {
+            width = "50vw"
+
+            details("Info") {
+                isOpened = true
+                style["width"] = "100%"
+                style["padding"] = "5px"
+
+                content {
+                    formLayout {
+                        button(t("server.url.show")) {
+                            onLeftClick {
+                                try {
+                                    val ips = mutableListOf<String>()
+                                    val interfaces = NetworkInterface.getNetworkInterfaces()
+                                    while (interfaces.hasMoreElements()) {
+                                        val iface = interfaces.nextElement()
+                                        // filters out 127.0.0.1 and inactive interfaces
+                                        if (iface.isLoopback || !iface.isUp) continue
+                                        val addresses = iface.inetAddresses
+                                        while (addresses.hasMoreElements()) {
+                                            val addr = addresses.nextElement()
+                                            if (':' !in addr.hostAddress) {
+                                                ips += addr.hostAddress
+                                            }
+                                        }
+                                    }
+                                    if (ips.isEmpty()) {
+                                        LOGGER.showError("no ip address found!", UI.getCurrent())
+                                    } else {
+                                        val ip = ips.first()
+                                        Dialog(
+                                            VerticalLayout(
+                                                H4(t("server.url")),
+                                                H1("$ip:$port"),
+                                                Barcode("$ip:$port", Barcode.Type.qrcode, "100%", "auto")
+                                            ).apply {
+                                                setSizeFull()
+                                                alignItems = FlexComponent.Alignment.CENTER
+                                            }
+                                        ).apply {
+                                            width = "40vw"
+                                            height = "60vh"
+                                        }.open()
+                                    }
+                                } catch (e: SocketException) {
+                                    LOGGER.showError(e.message ?: "", UI.getCurrent())
                                 }
                             }
                         }

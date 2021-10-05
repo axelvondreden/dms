@@ -54,6 +54,7 @@
     "@vaadin/vaadin-upload": "4.4.2",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "apexcharts": "3.25.0",
+    "bwip-js": "2.0.6",
     "construct-style-sheets-polyfill": "2.4.16",
     "lit-element": "2.5.1",
     "lit-html": "1.4.1",
@@ -139,6 +140,7 @@
       "@vaadin/vaadin-upload": "4.4.2",
       "@webcomponents/webcomponentsjs": "^2.2.10",
       "apexcharts": "3.25.0",
+      "bwip-js": "2.0.6",
       "construct-style-sheets-polyfill": "2.4.16",
       "lit-element": "2.5.1",
       "lit-html": "1.4.1",
@@ -165,6 +167,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "633d9e08ba85eee9faa49549ec494878c0684863572db0181dfc278c3880374b"
+    "hash": "0b8f7050bc534bba9fe3648c53ba0476ff3747e47f8ada8854853d29ff7599f4"
   }
 }

@@ -91,6 +91,7 @@ dependencies {
     implementation("org.vaadin.olli:file-download-wrapper:3.0.1")
     implementation("com.hilerio:ace-widget:1.0.2")
     implementation("net.coobird:thumbnailator:0.4.14")
+    implementation("org.vaadin.barcodes:barcode-bwipjs:1.0.0")
 }
 
 
