@@ -2,8 +2,10 @@ package com.dude.dms.api
 
 import com.dude.dms.backend.service.DocService
 import com.dude.dms.utils.fileManager
+import com.dude.dms.utils.queryService
 import com.dude.dms.utils.tagService
 import org.springframework.core.io.InputStreamResource
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -33,7 +35,8 @@ class Controller(private val docService: DocService) {
                 doc.attributeValues.associate { it.attribute.name to it.convertedValue }
             ).hashCode()
         }
-        return ResponseEntity.ok().body(DmsState(tags, docs))
+        val queries = queryService.findAll().associate { query -> query.name to docService.findByFilter(query.filter, Pageable.unpaged()).map { it.guid } }
+        return ResponseEntity.ok().body(DmsState(tags, docs, queries))
     }
 
     @GetMapping("/doc/{guid}")
@@ -70,5 +73,5 @@ class Controller(private val docService: DocService) {
 
     data class DocResponseWithHash(val guid: String, val hash: Int, val pages: Int, val text: String?, val documentDate: Long?, val insertTime: Long?, val tags: List<String>, val attributes: Map<String, String>)
 
-    data class DmsState(val tags: List<String>, val docs: Map<String, Int>)
+    data class DmsState(val tags: List<String>, val docs: Map<String, Int>, val queries: Map<String, List<String>>)
 }

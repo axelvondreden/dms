@@ -2,7 +2,7 @@ package com.dude.dms.brain
 
 import com.dude.dms.brain.DmsLogger.Companion.getLogger
 import com.dude.dms.brain.options.Options
-import net.coobird.thumbnailator.Thumbnails
+import com.dude.dms.utils.toThumbnail
 import org.apache.pdfbox.Loader
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -161,8 +161,6 @@ class FileManager {
         val rescale = RescaleOp(config.first, config.second, null)
         return rescale.filter(processedImg, null)
     }
-
-    private fun BufferedImage.toThumbnail() = Thumbnails.of(this).size(240, 100000).asBufferedImage()
 
     companion object {
         private val LOGGER = getLogger(FileManager::class.java)

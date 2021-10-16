@@ -1,6 +1,8 @@
 package com.dude.dms.utils
 
 import com.dude.dms.brain.options.Options
+import net.coobird.thumbnailator.Thumbnails
+import java.awt.image.BufferedImage
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -57,3 +59,5 @@ fun Double.round(decimals: Int): Double {
     repeat(decimals) { multiplier *= 10 }
     return kotlin.math.round(this * multiplier) / multiplier
 }
+
+fun BufferedImage.toThumbnail(width: Int = 240) = Thumbnails.of(this).size(width, 100000).asBufferedImage()
