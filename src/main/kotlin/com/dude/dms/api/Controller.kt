@@ -1,11 +1,12 @@
 package com.dude.dms.api
 
 import com.dude.dms.backend.service.DocService
+import com.dude.dms.brain.dsl.docsearch.DocSearchParser
 import com.dude.dms.utils.fileManager
 import com.dude.dms.utils.queryService
 import com.dude.dms.utils.tagService
 import org.springframework.core.io.InputStreamResource
-import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,6 +18,8 @@ import java.time.ZoneOffset
 @RestController
 @RequestMapping("/api")
 class Controller(private val docService: DocService) {
+
+    private val searchParser by lazy { DocSearchParser() }
 
     @GetMapping("/system/test")
     fun test() = true
@@ -35,7 +38,9 @@ class Controller(private val docService: DocService) {
                 doc.attributeValues.associate { it.attribute.name to it.convertedValue }
             ).hashCode()
         }
-        val queries = queryService.findAll().associate { query -> query.name to docService.findByFilter(query.filter, Pageable.unpaged()).map { it.guid } }
+        val queries = queryService.findAll().associate { query ->
+            query.name to docService.findByFilter(searchParser.setInput(query.filter).docSearch!!.translate(), PageRequest.of(0, Int.MAX_VALUE)).map { it.guid }
+        }
         return ResponseEntity.ok().body(DmsState(tags, docs, queries))
     }
 
